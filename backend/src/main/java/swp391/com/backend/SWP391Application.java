@@ -1,13 +1,13 @@
-package hsf302.chapter01.com.swp301;
+package swp391.com.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Swp301Application {
+public class SWP391Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(Swp301Application.class, args);
+        SpringApplication.run(SWP391Application.class, args);
     }
 
 }

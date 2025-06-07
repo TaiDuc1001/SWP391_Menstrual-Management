@@ -1,4 +1,4 @@
-package hsf302.chapter01.com.swp301;
+package swp391.com.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
