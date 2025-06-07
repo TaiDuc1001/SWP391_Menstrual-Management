@@ -23,8 +23,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
             <NavLink
               to={option.path}
               className={({ isActive }) => `flex items-center w-full px-4 py-3 rounded-xl font-poppins text-base gap-3 transition-all duration-200 relative group
-                ${isActive ? 'bg-pink-100 text-pink-500 font-semibold shadow-sm' : 'text-gray-700 hover:bg-pink-50 hover:text-pink-500'}
-              `}
+                ${isActive ? 'bg-pink-100 text-pink-500 font-bold shadow-sm' : 'text-gray-700 hover:bg-pink-50 hover:text-pink-500 font-normal'} active:font-bold focus:font-bold`
+              }
             >
               {({ isActive }) => (
                 <>
