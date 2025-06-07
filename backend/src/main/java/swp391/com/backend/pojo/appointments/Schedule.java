@@ -1,29 +1,25 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.appointments;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
-
+import swp391.com.backend.pojo.roles.Doctor;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Symptom{
+public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    private Doctor doctor;
 
-    @Column(name = "is_active")
+    private Integer slot;
     private Boolean isActive;
-
-    @OneToMany(mappedBy = "symptoms")
-    private List<CycleSymptomByDate> cycleSymptoms;
 }
 

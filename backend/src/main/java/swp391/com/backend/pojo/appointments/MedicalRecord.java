@@ -1,9 +1,10 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.appointments;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import swp391.com.backend.pojo.roles.Customer;
 
 import java.time.LocalDateTime;
 
