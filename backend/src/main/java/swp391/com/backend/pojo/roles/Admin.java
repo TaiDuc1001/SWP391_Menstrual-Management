@@ -1,4 +1,4 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.roles;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,16 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Result {
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "order_id", unique = true)
-    private Order order;
-
-    @OneToMany(mappedBy = "result")
-    private List<ResultDetail> resultDetails;
+    @JoinColumn(name = "account_id", unique = true)
+    private Account account;
 }
 

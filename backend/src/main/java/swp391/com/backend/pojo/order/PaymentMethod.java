@@ -1,4 +1,4 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.order;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,16 +9,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Schedule {
+public class PaymentMethod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id")
-    private Doctor doctor;
+    @Column(name = "method_name")
+    private String methodName;
 
-    private Integer slot;
+    @Lob
+    private String description;
+
+    @Column(name = "is_active")
     private Boolean isActive;
 }
 

@@ -1,17 +1,19 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.cycle;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import swp391.com.backend.pojo.roles.Account;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Cycles {
+public class Cycle{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -1,4 +1,4 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.cycle;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,18 +28,18 @@ public class CycleSymptomByDate {
 
     @ManyToOne
     @JoinColumn(name = "cycle_id", insertable = false, updatable = false)
-    private Cycles cycles;
+    private Cycle cycles;
 
     @ManyToOne
     @JoinColumn(name = "symptom_id", insertable = false, updatable = false)
-    private Symptoms symptoms;
+    private Symptom symptoms;
 }
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CycleSymptomByDateId implements Serializable {
+class CycleSymptomByDateId implements Serializable {
     private Integer cycleId;
     private Integer symptomId;
     private LocalDateTime date;
