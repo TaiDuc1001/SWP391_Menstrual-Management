@@ -1,4 +1,4 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.order;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,22 +11,16 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Test {
+public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "order_id", unique = true)
+    private Order order;
 
-    @Lob
-    private String description;
-
-    @Column(name = "is_active")
-    private Boolean isActive;
-
-    @OneToMany(mappedBy = "test")
-    private List<PackageTest> packageTests;
-
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "result")
     private List<ResultDetail> resultDetails;
 }
+

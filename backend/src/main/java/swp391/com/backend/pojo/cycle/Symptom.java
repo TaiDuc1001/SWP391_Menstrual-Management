@@ -1,4 +1,4 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.cycle;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,21 +7,23 @@ import lombok.Setter;
 
 import java.util.List;
 
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Staff {
+public class Symptom{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", unique = true)
-    private Account account;
+    @Column(unique = true)
+    private String name;
 
-    private String specialization;
+    @Column(name = "is_active")
+    private Boolean isActive;
 
-    @OneToMany(mappedBy = "staff")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "symptoms")
+    private List<CycleSymptomByDate> cycleSymptoms;
 }
+

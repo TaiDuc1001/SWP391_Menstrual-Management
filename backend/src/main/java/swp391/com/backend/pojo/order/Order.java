@@ -1,9 +1,12 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.order;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import swp391.com.backend.pojo.test.Package;
+import swp391.com.backend.pojo.roles.Customer;
+import swp391.com.backend.pojo.roles.Staff;
 
 import java.math.BigDecimal;
 

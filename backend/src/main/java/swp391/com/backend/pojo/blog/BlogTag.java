@@ -1,4 +1,4 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.blog;
 
 import jakarta.persistence.*;
 import lombok.*;

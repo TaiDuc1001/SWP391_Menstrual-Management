@@ -1,35 +1,33 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.test;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import swp391.com.backend.pojo.order.ResultDetail;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Package {
+public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "order_id", unique = true)
-    private Order order;
-
-    private String packageName;
+    private String name;
 
     @Lob
     private String description;
 
-    private BigDecimal price;
-    private Integer duration;
+    @Column(name = "is_active")
     private Boolean isActive;
 
-    @OneToMany(mappedBy = "aPackage")
+    @OneToMany(mappedBy = "test")
     private List<PackageTest> packageTests;
+
+    @OneToMany(mappedBy = "test")
+    private List<ResultDetail> resultDetails;
 }
