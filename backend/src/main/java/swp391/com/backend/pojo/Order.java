@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,7 +20,7 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    private LocalDateTime orderSlot;
+    private String orderSlot;
     private BigDecimal totalAmount;
     private String orderStatus;
 
@@ -34,8 +33,11 @@ public class Order {
     @JoinColumn(name = "staff_id")
     private Staff staff;
 
-    @OneToOne(mappedBy = "order")
-    private Invoice invoice;
+    private Integer amount;
+
+    @OneToOne
+    @JoinColumn(name = "payment_method_id")
+    private PaymentMethod paymentMethod;
 
     @OneToOne(mappedBy = "order")
     private Package aPackage;

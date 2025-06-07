@@ -1,9 +1,6 @@
 package swp391.com.backend.pojo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -32,7 +29,7 @@ public class BlogTag {
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BlogTagId implements Serializable {
+class BlogTagId implements Serializable {
     private Integer blogId;
     private Integer tagId;
 }

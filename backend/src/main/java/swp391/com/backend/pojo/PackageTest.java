@@ -1,3 +1,5 @@
+package swp391.com.backend.pojo;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +35,7 @@ public class PackageTest {
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PackageTestId implements Serializable {
+class PackageTestId implements Serializable {
     private Integer testId;
     private Integer packageId;
 }

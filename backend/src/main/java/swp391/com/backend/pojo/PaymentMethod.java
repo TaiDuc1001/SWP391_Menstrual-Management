@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -24,8 +22,5 @@ public class PaymentMethod {
 
     @Column(name = "is_active")
     private Boolean isActive;
-
-    @OneToMany(mappedBy = "paymentMethod")
-    private List<Invoice> invoices;
 }
 
