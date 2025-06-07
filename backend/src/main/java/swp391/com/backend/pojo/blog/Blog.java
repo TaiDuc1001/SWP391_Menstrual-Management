@@ -1,11 +1,13 @@
-package swp391.com.backend.pojo;
+package swp391.com.backend.pojo.blog;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import swp391.com.backend.pojo.roles.Account;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
