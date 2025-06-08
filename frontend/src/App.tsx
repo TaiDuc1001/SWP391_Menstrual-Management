@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
+import AdminLayout from "./layouts/AdminLayout";
 import './index.css';
 
 function App() {
@@ -17,6 +18,13 @@ function App() {
         handleLogin={handleLogin}
         handleSignUp={handleSignUp}
       />
+
+        {/*chưa chia role*/}
+
+      {/*<AdminLayout*/}
+      {/*    isAuthenticated={isAuthenticated}*/}
+      {/*    onAuthToggle={handleAuthToggle}*/}
+      {/*/>*/}
     </Router>
   );
 }
