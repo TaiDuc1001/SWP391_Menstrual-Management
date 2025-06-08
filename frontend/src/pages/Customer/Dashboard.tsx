@@ -1,7 +1,6 @@
 // Dashboard page for authenticated users
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-// Import SVG icons from assets
 import plusIcon from '../../assets/icons/plus-white.svg';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import notificationIcon from '../../assets/icons/notification.svg';
@@ -40,7 +39,10 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-500">Hôm nay bạn cảm thấy thế nào? Hãy kiểm tra nhanh sức khỏe & cập nhật lịch chu kỳ nhé!</p>
         </div>
         <div className="flex gap-3 mt-4 md:mt-0">
-          <button className="bg-pink-400 hover:bg-pink-500 text-white font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+          <button
+            className="bg-pink-400 hover:bg-pink-500 text-white font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2"
+            onClick={() => navigate('/menstrual-cycles', { state: { openCyclePopup: true } })}
+          >
             <img src={plusIcon} alt="New" className="w-4 h-4" /> New menstrual cycle
           </button>
           <button className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
