@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 // import Header from '../../components/Header/Header';
-import Sidebar from '../../components/Sidebar/Sidebar';
 
 
 const MenstrualCycles: React.FC = () => {
@@ -46,13 +45,10 @@ const MenstrualCycles: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            {/* <Header isAuthenticated={true} onAuthToggle={() => {}} /> */}
-            <div className="flex gap-2 p-6">
-                <aside className="w-64 flex-shrink-0">
-                    <Sidebar />
-                </aside>
-                <main className="flex-1 ml-2">
+        <div className="p-6 bg-gray-50 min-h-screen w-full">
+            <div className="flex w-full">
+                {/* Removed Sidebar */}
+                <main className="flex-1 w-full">
                     {/* Top bar */}
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold text-pink-600 flex items-center gap-2">
@@ -90,8 +86,7 @@ const MenstrualCycles: React.FC = () => {
                                             {day ? (
                                                 <div className={getDayStyle(day, type)}>
                                                     {day}
-                                                    {/* Dot for symptom */}
-                                                    {type === 'symptom' && <span className="absolute w-2 h-2 bg-blue-400 rounded-full -bottom-1 left-1/2 -translate-x-1/2"></span>}
+                                                    {/* Removed blue dot for symptom */}
                                                 </div>
                                             ) : <div className="w-10 h-8"></div>}
                                         </div>
@@ -165,9 +160,6 @@ const MenstrualCycles: React.FC = () => {
                     </div>
                 </main>
             </div>
-            <footer className="mt-6 text-center text-gray-500">
-                <span>❤️ GenHealth © 2024</span> | <a href="#" className="underline">Chính sách bảo mật</a> | <a href="#" className="underline">Điều khoản sử dụng</a> | <a href="#" className="underline">Liên hệ & hỗ trợ</a>
-            </footer>
         </div>
     );
 };
