@@ -11,6 +11,7 @@ import SearchInput from '../../components/Filter/SearchInput';
 import DropdownSelect from '../../components/Filter/DropdownSelect';
 import MultiSelectDropdown from '../../components/Filter/MultiSelectDropdown';
 import DatePickerInput from '../../components/Filter/DatePickerInput';
+import TestResultPopup from '../../components/Popup/TestResultPopup';
 
 const plusIcon = plusWhiteIcon; 
 
@@ -48,6 +49,7 @@ const STITests: React.FC = () => {
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [hideRows, setHideRows] = useState<number[]>([]);
+  const [showResultPopup, setShowResultPopup] = useState(false);
   const navigate = useNavigate();
 
   const handleCheckboxChange = (id: number) => {
@@ -167,11 +169,11 @@ const STITests: React.FC = () => {
           setHideRows(prev => [...prev, ...ids]);
           setSelected([]);
         }}
-        onViewRows={(ids) => {
-          setHideRows(prev => [...prev, ...ids]);
-          setSelected([]);
-        }}
+        onViewRows={() => setShowResultPopup(true)}
       />
+      {showResultPopup && (
+        <TestResultPopup onClose={() => setShowResultPopup(false)} />
+      )}
     </div>
   );
 };
