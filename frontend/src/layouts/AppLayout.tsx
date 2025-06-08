@@ -15,6 +15,9 @@ import Login from '../pages/Public/Login';
 import SignUp from '../pages/Public/SignUp';
 import NotFound from '../pages/Public/NotFound';
 import RequireLogin from '../pages/Public/RequireLogin';
+import STIPackages from '../pages/Customer/STIPackages';
+import STIPackageDetail from '../pages/Customer/STIPackageDetail';
+import BookTestPage from '../pages/Customer/BookTestPage';
 
 interface AppLayoutProps {
   isAuthenticated: boolean;
@@ -30,6 +33,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
     '/menstrual-cycles',
     '/appointments',
     '/sti-tests',
+    '/sti-tests/packages',
     '/profile',
   ];
   const isProtectedRoute = sidebarRoutes.some((route) => location.pathname.startsWith(route));
@@ -53,6 +57,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
             <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <RequireLogin />} />
             <Route path="/sti-tests" element={isAuthenticated ? <STITests /> : <RequireLogin />} />
             <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
+            <Route path="/sti-tests/packages" element={<STIPackages />} />
+            <Route path="/sti-tests/packages/:id" element={<STIPackageDetail />} />
+            <Route path="/sti-tests/book" element={<BookTestPage />} />
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>

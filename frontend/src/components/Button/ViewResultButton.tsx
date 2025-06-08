@@ -1,5 +1,5 @@
 import React from 'react';
-import SquaredButton from '../Button/SquaredButton';
+import SquaredButton from './SquaredButton';
 
 interface ViewResultsButtonProps {
   onClick?: () => void;

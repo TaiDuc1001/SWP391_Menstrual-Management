@@ -21,6 +21,7 @@ This document lists the sources for all SVG icons and font assets used in this p
 | pending.svg       | https://www.flaticon.com/free-icon/pending_6877368?term=pending&page=1&position=60&origin=search&related_id=6877368               |
 | search.svg       | https://www.flaticon.com/free-icon/search_149852?term=search&page=1&position=3&origin=search&related_id=149852                |
 | plus-white.svg   | https://www.flaticon.com/free-icon/add_149705?term=plus&page=1&position=17&origin=search&related_id=149705                |
+| blood-testing.svg | https://www.flaticon.com/free-icon/forensic-science_8859014?term=medical+test&page=1&position=84&origin=search&related_id=8859014 |
 
 ## Fonts
 | File Name             | Source URL                |
