@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" fill="none">
+    <!-- Clock face -->
+    <circle cx="16" cy="16" r="12" fill="#f8bbd0" stroke="#ec407a" stroke-width="2"/>
+    <!-- Hour hand -->
+    <line x1="16" y1="16" x2="16" y2="9" stroke="#ec407a" stroke-width="2" stroke-linecap="round"/>
+    <!-- Minute hand -->
+    <line x1="16" y1="16" x2="22" y2="16" stroke="#ec407a" stroke-width="2" stroke-linecap="round"/>
+</svg>
