@@ -7,7 +7,7 @@ interface ViewResultsButtonProps {
 
 const ViewResultButton: React.FC<ViewResultsButtonProps> = ({ onClick }) => (
   <SquaredButton onClick={onClick}>
-    View results
+    View
   </SquaredButton>
 );
 
