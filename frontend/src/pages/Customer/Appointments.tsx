@@ -3,8 +3,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
-import TestingTitleBar from '../../components/TitleBar/TestingTitleBar';
-import TestingUtilityBar from '../../components/UtilityBar/TestingUtilityBar';
+import AppointmentTitleBar from '../../components/TitleBar/AppointmentTitleBar';
+import AppointmentUtilityBar from '../../components/UtilityBar/AppointmentUtilityBar';
 import AppointmentTable from '../../components/Table/AppointmentTable';
 import SearchInput from '../../components/Filter/SearchInput';
 import DropdownSelect from '../../components/Filter/DropdownSelect';
@@ -23,17 +23,30 @@ const statusOptions = [
   { value: 'Pending', label: 'Pending' },
 ];
 
+const slotOptions = [
+  { value: '', label: 'All slots' },
+  { value: 'morning', label: 'Morning (08:00 - 12:00)' },
+  { value: 'afternoon', label: 'Afternoon (13:00 - 17:00)' },
+  { value: 'evening', label: 'Evening (18:00 - 21:00)' },
+];
+const slotTimeMap: Record<string, string> = {
+  morning: '08:00 - 12:00',
+  afternoon: '13:00 - 17:00',
+  evening: '18:00 - 21:00',
+};
+
 const mockAppointments = [
-  { id: 1, name: 'BS. Lê Văn Anh', date: '27/05/2024', time: '15:00', status: 'Completed', code: 'TV20201' },
-  { id: 2, name: 'BS. Nguyễn Hoàng Đức', date: '22/05/2024', time: '10:30', status: 'Cancelled', code: 'TV20032' },
-  { id: 3, name: 'BS. Hà Quỳnh Trang', date: '20/05/2024', time: '18:00', status: 'Confirmed', code: 'TV20027' },
-  { id: 4, name: 'BS. Trần Minh Phương', date: '18/05/2024', time: '09:00', status: 'Pending', code: 'TV20010' },
+  { id: 1, name: 'BS. Lê Văn Anh', date: '27/05/2024', time: '15:00', status: 'Completed', code: 'TV20201', slot: 'afternoon' },
+  { id: 2, name: 'BS. Nguyễn Hoàng Đức', date: '22/05/2024', time: '10:30', status: 'Cancelled', code: 'TV20032', slot: 'morning' },
+  { id: 3, name: 'BS. Hà Quỳnh Trang', date: '20/05/2024', time: '18:00', status: 'Confirmed', code: 'TV20027', slot: 'evening' },
+  { id: 4, name: 'BS. Trần Minh Phương', date: '18/05/2024', time: '09:00', status: 'Pending', code: 'TV20010', slot: 'morning' },
 ];
 
 const AppointmentHistory: React.FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
   const [selectedDateTo, setSelectedDateTo] = useState<Date | null>(null);
   const [hideRows, setHideRows] = useState<number[]>([]);
@@ -56,7 +69,8 @@ const AppointmentHistory: React.FC = () => {
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    return searchMatch && statusMatch && fromMatch && toMatch;
+    const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
+    return searchMatch && statusMatch && fromMatch && toMatch && slotMatch;
   });
 
   const handleCheckboxChange = (id: number) => {
@@ -90,11 +104,13 @@ const AppointmentHistory: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <TestingTitleBar
+      <AppointmentTitleBar
         title="Appointment history"
-        onNewOrder={() => { /* navigate to new appointment page if needed */ }}
-        newOrderIcon={<img src={plusIcon} alt="Plus" className="w-5 h-5" />} />
-      <TestingUtilityBar>
+        onNewAppointment={() => { /* navigate to new appointment page if needed */ }}
+        icon={<img src={plusIcon} alt="Plus" className="w-5 h-5" />}
+        buttonText="New appointment"
+      />
+      <AppointmentUtilityBar>
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}
@@ -104,6 +120,11 @@ const AppointmentHistory: React.FC = () => {
           value={selectedStatus}
           onChange={setSelectedStatus}
           options={statusOptions}
+        />
+        <DropdownSelect
+          value={selectedSlot}
+          onChange={setSelectedSlot}
+          options={slotOptions}
         />
         <DatePickerInput
           selected={selectedDateFrom}
@@ -117,9 +138,9 @@ const AppointmentHistory: React.FC = () => {
           placeholder="To date"
           minDate={selectedDateFrom || undefined}
         />
-      </TestingUtilityBar>
+      </AppointmentUtilityBar>
       <AppointmentTable
-        records={filteredRecords}
+        records={filteredRecords.map(r => ({ ...r, slotTime: slotTimeMap[r.slot] || r.time }))}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
