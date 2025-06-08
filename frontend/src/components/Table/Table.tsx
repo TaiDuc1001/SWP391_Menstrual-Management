@@ -35,9 +35,16 @@ const Table: React.FC<TableProps> = ({ columns, data, children }) => (
           </tr>
         ) : (
           data.map((row, idx) => (
-            <tr key={row.id || idx} className="border-t">
-              {columns.map(col => (
-                <td key={col.key} className={`p-2 ${col.cellClassName || ''}`}>
+            <tr
+              key={row.id || idx}
+              className="bg-white"
+              style={{ zIndex: 0 }}
+            >
+              {columns.map((col, colIdx) => (
+                <td
+                  key={col.key}
+                  className={`p-2 align-middle ${col.cellClassName || ''} border-r last:border-r-0 border-gray-100`}
+                >
                   {col.render ? col.render(row) : row[col.key]}
                 </td>
               ))}
