@@ -25,9 +25,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @PostMapping("/api/orders/create")
+    @PostMapping("/api/orders")
     public ResponseEntity<?> createOrder(@RequestBody OrderRequestDTO orderRequest) {
         Order order = new Order();
+        order.setAPackage(orderRequest.getAPackage());
         order.setCustomer(orderRequest.getCustomer());
         order.setDate(orderRequest.getDate());
         order.setTotalAmount(orderRequest.getTotalAmount());
