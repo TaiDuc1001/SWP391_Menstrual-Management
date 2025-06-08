@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
 import SuccessPopup from '../../components/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
+import DayNotePopup from '../../components/Popup/DayNotePopup';
 // import Header from '../../components/Header/Header';
 
 
@@ -11,6 +12,8 @@ const MenstrualCycles: React.FC = () => {
     const [showCyclePopup, setShowCyclePopup] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
+    const [showDayNote, setShowDayNote] = useState(false);
+    const [selectedDay, setSelectedDay] = useState<number|null>(null);
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 
@@ -87,12 +90,20 @@ const MenstrualCycles: React.FC = () => {
                                 ))}
                                 {days.map((day, idx) => {
                                     const type = getDayType(day);
+                                    const isPast = day && new Date(currentYear, currentMonth, day) < new Date();
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
-                                                <div className={getDayStyle(day, type)}>
+                                                <div
+                                                    className={getDayStyle(day, type) + (isPast ? ' cursor-pointer' : '')}
+                                                    onClick={() => {
+                                                        if (isPast) {
+                                                            setSelectedDay(day);
+                                                            setShowDayNote(true);
+                                                        }
+                                                    }}
+                                                >
                                                     {day}
-                                                    {/* Removed blue dot for symptom */}
                                                 </div>
                                             ) : <div className="w-10 h-8"></div>}
                                         </div>
@@ -178,6 +189,15 @@ const MenstrualCycles: React.FC = () => {
                       onClose={() => setShowReminderPopup(false)}
                       onSave={() => {
                         setShowReminderPopup(false);
+                        setShowSuccess(true);
+                        setTimeout(() => setShowSuccess(false), 1200);
+                      }}
+                    />
+                    <DayNotePopup 
+                      open={showDayNote} 
+                      onClose={() => setShowDayNote(false)}
+                      onSave={() => {
+                        setShowDayNote(false);
                         setShowSuccess(true);
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
