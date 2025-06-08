@@ -25,6 +25,8 @@ public class Account {
 
     private String accountStatus;
 
+    private String email;
+
     @OneToOne(mappedBy = "account")
     private Customer customer;
 
