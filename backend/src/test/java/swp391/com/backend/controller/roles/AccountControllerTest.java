@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import swp391.com.backend.dto.LoginRequestDTO;
 import swp391.com.backend.dto.RegisterDTO;
 import swp391.com.backend.pojo.roles.Account;
-import swp391.com.backend.service.AccountService;
+import swp391.com.backend.service.roles.AccountService;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
