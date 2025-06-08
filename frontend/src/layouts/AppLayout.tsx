@@ -16,6 +16,7 @@ import SignUp from '../pages/Public/SignUp';
 import NotFound from '../pages/Public/NotFound';
 import RequireLogin from '../pages/Public/RequireLogin';
 import STIPackages from '../pages/Customer/STIPackages';
+import STIPackageDetail from '../pages/Customer/STIPackageDetail';
 
 interface AppLayoutProps {
   isAuthenticated: boolean;
@@ -56,6 +57,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
             <Route path="/sti-tests" element={isAuthenticated ? <STITests /> : <RequireLogin />} />
             <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
             <Route path="/sti-tests/packages" element={<STIPackages />} />
+            <Route path="/sti-tests/packages/:id" element={<STIPackageDetail />} />
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
