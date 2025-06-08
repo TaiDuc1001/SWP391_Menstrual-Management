@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useNavigate } from 'react-router-dom';
 
-import eyeIcon from '../../assets/icons/eye.svg';
-import trashBinIcon from '../../assets/icons/trash-bin.svg';
-import searchIcon from '../../assets/icons/search.svg';
-import dropDownIcon from '../../assets/icons/drop-down.svg';
-import calendarIcon from '../../assets/icons/calendar.svg';
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 
 import TestingTitleBar from '../../components/TitleBar/TestingTitleBar';
@@ -52,6 +48,7 @@ const STITests: React.FC = () => {
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [hideRows, setHideRows] = useState<number[]>([]);
+  const navigate = useNavigate();
 
   const handleCheckboxChange = (id: number) => {
     setSelected((prev) =>
@@ -73,7 +70,6 @@ const STITests: React.FC = () => {
     const [day, month, year] = str.split('/').map(Number);
     return new Date(year, month - 1, day);
   };
-
 
   const filteredRecords = testRecords.filter((record) => {
     if (hideRows.includes(record.id)) {
@@ -99,19 +95,25 @@ const STITests: React.FC = () => {
     return searchMatch && slotMatch && typeMatch && statusMatch && fromMatch && toMatch;
   });
   React.useEffect(() => {
-    setSelected((prev) => prev.filter(id => !hideRows.includes(id)));
+    const newSelected = selected.filter(id => !hideRows.includes(id));
+    if (newSelected.length !== selected.length) {
+      setSelected(newSelected);
+    }
   }, [hideRows]);
 
   React.useEffect(() => {
     const visibleIds = filteredRecords.map(r => r.id);
-    setSelected(prev => prev.filter(id => visibleIds.includes(id)));
+    const newSelected = selected.filter(id => visibleIds.includes(id));
+    if (newSelected.length !== selected.length) {
+      setSelected(newSelected);
+    }
   }, [filteredRecords]);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <TestingTitleBar
         title="Testing history"
-        onNewOrder={() => {}}
+        onNewOrder={() => { navigate('/sti-tests/packages'); }}
         newOrderIcon={<img src={plusIcon} alt="Plus" className="w-5 h-5" />} />
       <TestingUtilityBar>
         <SearchInput
