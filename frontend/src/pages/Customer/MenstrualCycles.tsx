@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
+import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
+import SuccessPopup from '../../components/Popup/SuccessPopup';
+import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
+import DayNotePopup from '../../components/Popup/DayNotePopup';
 // import Header from '../../components/Header/Header';
-import Sidebar from '../../components/Sidebar/Sidebar';
 
 
 const MenstrualCycles: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState(4); // May 2025 (0-indexed)
     const [currentYear, setCurrentYear] = useState(2025);
+    const [showCyclePopup, setShowCyclePopup] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showReminderPopup, setShowReminderPopup] = useState(false);
+    const [showDayNote, setShowDayNote] = useState(false);
+    const [selectedDay, setSelectedDay] = useState<number|null>(null);
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 
@@ -42,17 +50,21 @@ const MenstrualCycles: React.FC = () => {
     const historyData = [
         { startDate: '13/05/2024', endDate: '17/05/2024', duration: 5, cycle: 28 },
         { startDate: '16/04/2024', endDate: '19/04/2024', duration: 4, cycle: 29 },
-        { startDate: '16/03/2024', endDate: '20/03/2024', duration: 5, cycle: 28 }
+        { startDate: '16/03/2024', endDate: '20/03/2024', duration: 5, cycle: 28 },
+        { startDate: '15/02/2024', endDate: '19/02/2024', duration: 5, cycle: 28 },
+        { startDate: '18/01/2024', endDate: '22/01/2024', duration: 5, cycle: 30 },
+        { startDate: '20/12/2023', endDate: '24/12/2023', duration: 5, cycle: 29 },
+        { startDate: '22/11/2023', endDate: '26/11/2023', duration: 5, cycle: 28 },
+        { startDate: '25/10/2023', endDate: '29/10/2023', duration: 5, cycle: 28 },
+        { startDate: '27/09/2023', endDate: '01/10/2023', duration: 5, cycle: 29 },
+        { startDate: '29/08/2023', endDate: '02/09/2023', duration: 5, cycle: 28 }
     ];
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            {/* <Header isAuthenticated={true} onAuthToggle={() => {}} /> */}
-            <div className="flex gap-2 p-6">
-                <aside className="w-64 flex-shrink-0">
-                    <Sidebar />
-                </aside>
-                <main className="flex-1 ml-2">
+        <div className="p-6 bg-gray-50 min-h-screen w-full">
+            <div className="flex w-full">
+                {/* Removed Sidebar */}
+                <main className="flex-1 w-full">
                     {/* Top bar */}
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold text-pink-600 flex items-center gap-2">
@@ -60,8 +72,8 @@ const MenstrualCycles: React.FC = () => {
                             Chu Kỳ Của Tôi
                         </h2>
                         <div className="flex gap-2">
-                            <button className="bg-pink-500 text-white px-4 py-2 rounded font-semibold shadow hover:bg-pink-600 transition">Khai Báo Chu Kỳ</button>
-                            <button className="bg-white border border-pink-400 text-pink-500 px-4 py-2 rounded font-semibold shadow hover:bg-pink-50 transition">Cài đặt</button>
+                            <button className="bg-pink-500 text-white px-4 py-2 rounded font-semibold shadow hover:bg-pink-600 transition" onClick={() => setShowCyclePopup(true)}>Khai Báo Chu Kỳ</button>
+                            <button className="bg-white border border-pink-400 text-pink-500 px-4 py-2 rounded font-semibold shadow hover:bg-pink-50 transition" onClick={() => setShowReminderPopup(true)}>Cài đặt</button>
                         </div>
                     </div>
                     {/* Main grid */}
@@ -85,13 +97,20 @@ const MenstrualCycles: React.FC = () => {
                                 ))}
                                 {days.map((day, idx) => {
                                     const type = getDayType(day);
+                                    const isPast = day && new Date(currentYear, currentMonth, day) < new Date();
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
-                                                <div className={getDayStyle(day, type)}>
+                                                <div
+                                                    className={getDayStyle(day, type) + (isPast ? ' cursor-pointer' : '')}
+                                                    onClick={() => {
+                                                        if (isPast) {
+                                                            setSelectedDay(day);
+                                                            setShowDayNote(true);
+                                                        }
+                                                    }}
+                                                >
                                                     {day}
-                                                    {/* Dot for symptom */}
-                                                    {type === 'symptom' && <span className="absolute w-2 h-2 bg-blue-400 rounded-full -bottom-1 left-1/2 -translate-x-1/2"></span>}
                                                 </div>
                                             ) : <div className="w-10 h-8"></div>}
                                         </div>
@@ -126,28 +145,34 @@ const MenstrualCycles: React.FC = () => {
                                     <span className="inline-block w-4 h-4 bg-pink-400 rounded-full"></span>
                                     Lịch sử chu kỳ
                                 </h3>
-                                <a href="#" className="text-pink-500 text-sm font-semibold hover:underline">Xem tất cả</a>
+                                <a href="#" className="text-pink-500 text-sm font-semibold hover:underline" onClick={e => {
+                                    e.preventDefault();
+                                    const tableBody = document.getElementById('cycle-history-body');
+                                    if (tableBody) tableBody.classList.toggle('max-h-32');
+                                }}>Xem tất cả</a>
                             </div>
-                            <table className="w-full text-sm mt-2">
-                                <thead>
-                                    <tr className="text-gray-500">
-                                        <th className="py-1 font-medium">Bắt đầu</th>
-                                        <th className="py-1 font-medium">Kết thúc</th>
-                                        <th className="py-1 font-medium">Số ngày</th>
-                                        <th className="py-1 font-medium">Chu kỳ (ngày)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {historyData.map((row, idx) => (
-                                        <tr key={idx} className="text-center border-b last:border-b-0">
-                                            <td className="py-1">{row.startDate}</td>
-                                            <td className="py-1">{row.endDate}</td>
-                                            <td className="py-1">{row.duration}</td>
-                                            <td className="py-1">{row.cycle}</td>
+                            <div className={historyData.length > 3 ? "overflow-y-auto max-h-32 transition-all" : ""} id="cycle-history-body">
+                                <table className="w-full text-sm mt-2">
+                                    <thead>
+                                        <tr className="text-gray-500">
+                                            <th className="py-1 font-medium">Bắt đầu</th>
+                                            <th className="py-1 font-medium">Kết thúc</th>
+                                            <th className="py-1 font-medium">Số ngày</th>
+                                            <th className="py-1 font-medium">Chu kỳ (ngày)</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {historyData.map((row, idx) => (
+                                            <tr key={idx} className="text-center border-b last:border-b-0">
+                                                <td className="py-1">{row.startDate}</td>
+                                                <td className="py-1">{row.endDate}</td>
+                                                <td className="py-1">{row.duration}</td>
+                                                <td className="py-1">{row.cycle}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         {/* AI Suggestion Card */}
                         <div className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl shadow p-6 col-span-2 flex flex-col gap-3">
@@ -163,11 +188,36 @@ const MenstrualCycles: React.FC = () => {
                             </ul>
                         </div>
                     </div>
+                    <MenstrualCyclePopup 
+                      open={showCyclePopup} 
+                      onClose={() => setShowCyclePopup(false)}
+                      onSave={() => {
+                        setShowCyclePopup(false);
+                        setShowSuccess(true);
+                        setTimeout(() => setShowSuccess(false), 1200);
+                      }}
+                    />
+                    <ReminderSettingsPopup 
+                      open={showReminderPopup} 
+                      onClose={() => setShowReminderPopup(false)}
+                      onSave={() => {
+                        setShowReminderPopup(false);
+                        setShowSuccess(true);
+                        setTimeout(() => setShowSuccess(false), 1200);
+                      }}
+                    />
+                    <DayNotePopup 
+                      open={showDayNote} 
+                      onClose={() => setShowDayNote(false)}
+                      onSave={() => {
+                        setShowDayNote(false);
+                        setShowSuccess(true);
+                        setTimeout(() => setShowSuccess(false), 1200);
+                      }}
+                    />
+                    <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
                 </main>
             </div>
-            <footer className="mt-6 text-center text-gray-500">
-                <span>❤️ GenHealth © 2024</span> | <a href="#" className="underline">Chính sách bảo mật</a> | <a href="#" className="underline">Điều khoản sử dụng</a> | <a href="#" className="underline">Liên hệ & hỗ trợ</a>
-            </footer>
         </div>
     );
 };
