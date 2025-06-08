@@ -50,7 +50,14 @@ const MenstrualCycles: React.FC = () => {
     const historyData = [
         { startDate: '13/05/2024', endDate: '17/05/2024', duration: 5, cycle: 28 },
         { startDate: '16/04/2024', endDate: '19/04/2024', duration: 4, cycle: 29 },
-        { startDate: '16/03/2024', endDate: '20/03/2024', duration: 5, cycle: 28 }
+        { startDate: '16/03/2024', endDate: '20/03/2024', duration: 5, cycle: 28 },
+        { startDate: '15/02/2024', endDate: '19/02/2024', duration: 5, cycle: 28 },
+        { startDate: '18/01/2024', endDate: '22/01/2024', duration: 5, cycle: 30 },
+        { startDate: '20/12/2023', endDate: '24/12/2023', duration: 5, cycle: 29 },
+        { startDate: '22/11/2023', endDate: '26/11/2023', duration: 5, cycle: 28 },
+        { startDate: '25/10/2023', endDate: '29/10/2023', duration: 5, cycle: 28 },
+        { startDate: '27/09/2023', endDate: '01/10/2023', duration: 5, cycle: 29 },
+        { startDate: '29/08/2023', endDate: '02/09/2023', duration: 5, cycle: 28 }
     ];
 
     return (
@@ -138,28 +145,34 @@ const MenstrualCycles: React.FC = () => {
                                     <span className="inline-block w-4 h-4 bg-pink-400 rounded-full"></span>
                                     Lịch sử chu kỳ
                                 </h3>
-                                <a href="#" className="text-pink-500 text-sm font-semibold hover:underline">Xem tất cả</a>
+                                <a href="#" className="text-pink-500 text-sm font-semibold hover:underline" onClick={e => {
+                                    e.preventDefault();
+                                    const tableBody = document.getElementById('cycle-history-body');
+                                    if (tableBody) tableBody.classList.toggle('max-h-32');
+                                }}>Xem tất cả</a>
                             </div>
-                            <table className="w-full text-sm mt-2">
-                                <thead>
-                                    <tr className="text-gray-500">
-                                        <th className="py-1 font-medium">Bắt đầu</th>
-                                        <th className="py-1 font-medium">Kết thúc</th>
-                                        <th className="py-1 font-medium">Số ngày</th>
-                                        <th className="py-1 font-medium">Chu kỳ (ngày)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {historyData.map((row, idx) => (
-                                        <tr key={idx} className="text-center border-b last:border-b-0">
-                                            <td className="py-1">{row.startDate}</td>
-                                            <td className="py-1">{row.endDate}</td>
-                                            <td className="py-1">{row.duration}</td>
-                                            <td className="py-1">{row.cycle}</td>
+                            <div className={historyData.length > 3 ? "overflow-y-auto max-h-32 transition-all" : ""} id="cycle-history-body">
+                                <table className="w-full text-sm mt-2">
+                                    <thead>
+                                        <tr className="text-gray-500">
+                                            <th className="py-1 font-medium">Bắt đầu</th>
+                                            <th className="py-1 font-medium">Kết thúc</th>
+                                            <th className="py-1 font-medium">Số ngày</th>
+                                            <th className="py-1 font-medium">Chu kỳ (ngày)</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {historyData.map((row, idx) => (
+                                            <tr key={idx} className="text-center border-b last:border-b-0">
+                                                <td className="py-1">{row.startDate}</td>
+                                                <td className="py-1">{row.endDate}</td>
+                                                <td className="py-1">{row.duration}</td>
+                                                <td className="py-1">{row.cycle}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         {/* AI Suggestion Card */}
                         <div className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl shadow p-6 col-span-2 flex flex-col gap-3">
