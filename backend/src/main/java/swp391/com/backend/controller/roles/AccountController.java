@@ -3,13 +3,13 @@ package swp391.com.backend.controller.roles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import swp391.com.backend.dto.AccountDTO;
 import swp391.com.backend.dto.LoginRequestDTO;
 import swp391.com.backend.dto.RegisterDTO;
 import swp391.com.backend.pojo.roles.Account;
-import swp391.com.backend.service.AccountService;
+import swp391.com.backend.service.roles.AccountService;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class AccountController {
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestParam LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         Account account = accountService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         if (account == null) {
             return ResponseEntity
@@ -33,7 +33,7 @@ public class AccountController {
     }
 
     @PostMapping("/api/register")
-    public ResponseEntity<AccountDTO> register(@RequestParam RegisterDTO registerDTO) {
+    public ResponseEntity<AccountDTO> register(@RequestBody RegisterDTO registerDTO) {
         Account account = new Account();
         account.setEmail(registerDTO.getEmail());
         account.setPassword(registerDTO.getPassword());

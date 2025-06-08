@@ -1,4 +1,4 @@
-package swp391.com.backend.service;
+package swp391.com.backend.service.roles;
 
 import org.springframework.stereotype.Service;
 import swp391.com.backend.pojo.roles.Account;

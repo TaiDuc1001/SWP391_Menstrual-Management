@@ -19,6 +19,8 @@ public class Test {
 
     private String name;
 
+    private String type;
+
     @Lob
     private String description;
 
