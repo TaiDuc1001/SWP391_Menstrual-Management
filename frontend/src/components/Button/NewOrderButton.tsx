@@ -1,5 +1,5 @@
 import React from 'react';
-import SquaredButton from '../Button/SquaredButton';
+import SquaredButton from './SquaredButton';
 
 interface NewOrderButtonProps extends React.ComponentProps<typeof SquaredButton> {
   icon?: React.ReactNode;
