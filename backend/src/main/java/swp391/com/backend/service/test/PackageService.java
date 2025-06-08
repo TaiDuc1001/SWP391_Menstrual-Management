@@ -2,6 +2,7 @@ package swp391.com.backend.service.test;
 
 import org.springframework.stereotype.Service;
 import swp391.com.backend.repository.test.PackageRepository;
+import swp391.com.backend.pojo.test.Package;
 
 import java.util.List;
 
