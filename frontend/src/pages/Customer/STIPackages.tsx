@@ -223,7 +223,7 @@ const STIPackages: React.FC = () => {
                   outlined
                   variant="secondary"
                   actionType="learn-more"
-                  onClick={() => {/* handle learn more */}}
+                  onClick={() => navigate(`/sti-tests/packages/${pkg.id}`)}
                 >
                   Learn more
                 </ActionButton>
