@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
+import SuccessPopup from '../../components/Popup/SuccessPopup';
 // import Header from '../../components/Header/Header';
 
 
 const MenstrualCycles: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState(4); // May 2025 (0-indexed)
     const [currentYear, setCurrentYear] = useState(2025);
+    const [showCyclePopup, setShowCyclePopup] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 
@@ -56,7 +60,7 @@ const MenstrualCycles: React.FC = () => {
                             Chu Kỳ Của Tôi
                         </h2>
                         <div className="flex gap-2">
-                            <button className="bg-pink-500 text-white px-4 py-2 rounded font-semibold shadow hover:bg-pink-600 transition">Khai Báo Chu Kỳ</button>
+                            <button className="bg-pink-500 text-white px-4 py-2 rounded font-semibold shadow hover:bg-pink-600 transition" onClick={() => setShowCyclePopup(true)}>Khai Báo Chu Kỳ</button>
                             <button className="bg-white border border-pink-400 text-pink-500 px-4 py-2 rounded font-semibold shadow hover:bg-pink-50 transition">Cài đặt</button>
                         </div>
                     </div>
@@ -158,6 +162,16 @@ const MenstrualCycles: React.FC = () => {
                             </ul>
                         </div>
                     </div>
+                    <MenstrualCyclePopup 
+                      open={showCyclePopup} 
+                      onClose={() => setShowCyclePopup(false)}
+                      onSave={() => {
+                        setShowCyclePopup(false);
+                        setShowSuccess(true);
+                        setTimeout(() => setShowSuccess(false), 1200);
+                      }}
+                    />
+                    <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
                 </main>
             </div>
         </div>
