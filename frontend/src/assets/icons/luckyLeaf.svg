@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    <!-- Top leaf -->
+    <ellipse cx="50" cy="25" rx="12" ry="18" fill="#4caf50" transform="rotate(0 50 25)"/>
+
+    <!-- Left leaf -->
+    <ellipse cx="30" cy="45" rx="12" ry="18" fill="#4caf50" transform="rotate(-60 30 45)"/>
+
+    <!-- Right leaf -->
+    <ellipse cx="70" cy="45" rx="12" ry="18" fill="#4caf50" transform="rotate(60 70 45)"/>
+
+    <!-- Fourth leaf (optional - for 4-leaf clover) -->
+    <ellipse cx="50" cy="65" rx="12" ry="18" fill="#4caf50" transform="rotate(180 50 65)"/>
+
+    <!-- Stem -->
+    <rect x="48" y="60" width="4" height="25" fill="#2e7d32" rx="2"/>
+
+    <!-- Center highlight -->
+    <circle cx="50" cy="45" r="8" fill="#66bb6a" opacity="0.7"/>
+
+    <!-- Inner highlights on leaves -->
+    <ellipse cx="50" cy="28" rx="6" ry="10" fill="#81c784" opacity="0.6"/>
+    <ellipse cx="33" cy="48" rx="6" ry="10" fill="#81c784" opacity="0.6" transform="rotate(-60 33 48)"/>
+    <ellipse cx="67" cy="48" rx="6" ry="10" fill="#81c784" opacity="0.6" transform="rotate(60 67 48)"/>
+    <ellipse cx="50" cy="62" rx="6" ry="10" fill="#81c784" opacity="0.6" transform="rotate(180 50 62)"/>
+</svg>

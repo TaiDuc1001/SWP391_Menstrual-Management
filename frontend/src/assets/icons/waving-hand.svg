@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" fill="none">
+    <g transform="rotate(-20 16 16)">
+        <!-- Hand -->
+        <path d="M10 16V8a2 2 0 1 1 4 0v8" stroke="#fbc02d" stroke-width="2" stroke-linecap="round"/>
+        <path d="M14 16V6a2 2 0 1 1 4 0v10" stroke="#fbc02d" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18 16V10a2 2 0 1 1 4 0v6" stroke="#fbc02d" stroke-width="2" stroke-linecap="round"/>
+        <path d="M22 16v2a6 6 0 0 1-12 0v-2" fill="#fbc02d" stroke="#fbc02d" stroke-width="2"/>
+        <!-- Motion lines -->
+        <path d="M6 12c-1-2 1-4 3-3" stroke="#fbc02d" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M26 12c1-2-1-4-3-3" stroke="#fbc02d" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+</svg>
