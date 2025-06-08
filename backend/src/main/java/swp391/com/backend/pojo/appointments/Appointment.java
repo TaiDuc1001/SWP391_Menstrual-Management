@@ -8,7 +8,6 @@ import swp391.com.backend.pojo.roles.Customer;
 import swp391.com.backend.pojo.roles.Doctor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -27,13 +26,15 @@ public class Appointment {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    private LocalDate appointmentDate;
+    private String appointmentDate;
 
     private Integer slot;
 
     private String googleMeetUrl;
 
     private String appointmentStatus;
+
+    private String description;
 
     @Lob
     private String notes;
