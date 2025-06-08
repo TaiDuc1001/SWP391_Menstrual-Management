@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" fill="none">
+    <!-- Apple body -->
+    <ellipse cx="16" cy="20" rx="10" ry="8" fill="#e53935" stroke="#b71c1c" stroke-width="2"/>
+    <!-- Stem (now red) -->
+    <path d="M16 10 Q16 6, 18 8" fill="none" stroke="#b71c1c" stroke-width="2"/>
+</svg>
