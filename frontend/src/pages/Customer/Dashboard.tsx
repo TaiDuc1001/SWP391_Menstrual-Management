@@ -45,7 +45,10 @@ const Dashboard: React.FC = () => {
           >
             <img src={plusIcon} alt="New" className="w-4 h-4" /> New menstrual cycle
           </button>
-          <button className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+          <button
+            className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2"
+            onClick={() => navigate('/appointments/book')}
+          >
             <img src={calendarIcon} alt="Calendar" className="w-4 h-4" /> Book an appointment
           </button>
         </div>
