@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" fill="none">
+    <!-- Left half filled pink -->
+    <path d="M16 4 L4 8 V16 C4 23 10 27 16 29 V4 Z" fill="#f8bbd0"/>
+    <!-- Shield outline -->
+    <path d="M16 4 L28 8 V16 C28 23 22 27 16 29 C10 27 4 23 4 16 V8 Z"
+          stroke="#ec407a" stroke-width="2" fill="none"/>
+</svg>
