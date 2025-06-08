@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TitleBar from '../../components/TitleBar/TitleBar';
+import ActionButton from '../../components/Button/ActionButton';
 
 const availablePackages = [
   {
@@ -103,12 +104,13 @@ const STIPackageDetail: React.FC = () => {
           <div className="mb-2 text-gray-600">{pkg.resultTime}</div>
           <div className="mb-2 text-gray-600">Consultation: {pkg.consultation}</div>
           <div className="flex gap-4 mt-6">
-            <button
-              className="bg-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-pink-600 transition"
-              onClick={() => {/* handle book */}}
+            <ActionButton
+              variant="primary"
+              actionType="book"
+              onClick={() => navigate('/sti-tests/book')}
             >
               Book
-            </button>
+            </ActionButton>
           </div>
         </div>
       </div>
