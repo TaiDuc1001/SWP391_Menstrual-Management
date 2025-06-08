@@ -47,7 +47,7 @@ const TestTable: React.FC<TestTableProps> = ({
     { key: 'slot', label: 'Time', render: (row: TestRecord) => slotTimeMap[row.slot], width: 'w-32' },
     { key: 'panels', label: 'Test panels', width: 'w-56' },
     { key: 'status', label: 'Status', render: (row: TestRecord) => <StatusBadge status={row.status} />, width: 'w-32', headerClassName: 'text-center', cellClassName: 'text-center' },
-    { key: 'actions', label: '', render: (row: TestRecord) => row.status === 'Completed' ? <ViewResultButton /> : null, width: 'w-16' },
+    { key: 'actions', label: '', render: (row: TestRecord) => row.status === 'Completed' ? <ViewResultButton onClick={() => onViewRows && onViewRows([row.id])} /> : null, width: 'w-16' },
   ];
 
   return (
