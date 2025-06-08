@@ -230,7 +230,7 @@ const STIPackages: React.FC = () => {
                 <ActionButton
                   variant="primary"
                   actionType="book"
-                  onClick={() => {/* handle book */}}
+                  onClick={() => navigate('/sti-tests/book')}
                 >
                   Book
                 </ActionButton>
