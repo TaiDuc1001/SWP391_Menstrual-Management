@@ -2,10 +2,7 @@ package swp391.com.backend.controller.order;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.dto.OrderRequestDTO;
 import swp391.com.backend.pojo.order.Order;
 import swp391.com.backend.service.order.OrderService;
@@ -37,5 +34,10 @@ public class OrderController {
         Order createdOrder = orderService.createOrder(order);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdOrder);
+    }
+    @DeleteMapping("/api/orders/{id}")
+    public ResponseEntity<Void> deleteOrder(@RequestBody OrderRequestDTO orderRequest) {
+        orderService.deleteOrder(orderRequest.getId());
+        return ResponseEntity.noContent().build();
     }
 }

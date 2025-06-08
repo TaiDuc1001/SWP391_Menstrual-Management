@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class OrderRequestDTO {
+    private Integer id;
     private Package aPackage;
     private String date;
     private String slot;
