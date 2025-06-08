@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="flex justify-between items-center mt-2">
             <span className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></span>
-            <button className="text-pink-500 hover:underline text-sm">Xem lịch</button>
+            <button className="text-pink-500 hover:underline text-sm" onClick={() => navigate('/menstrual-cycles')}>Xem lịch</button>
           </div>
         </div>
         {/* Cycle chart */}
