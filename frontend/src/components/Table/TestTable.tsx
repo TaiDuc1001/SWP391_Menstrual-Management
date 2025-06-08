@@ -1,5 +1,5 @@
 import React from 'react';
-import StatusBadge from '../StatusBadge/StatusBadge';
+import StatusBadge from '../Badge/StatusBadge';
 import ViewResultButton from '../Button/ViewResultButton';
 import eyeIcon from '../../assets/icons/eye.svg';
 import trashBinIcon from '../../assets/icons/trash-bin.svg';
