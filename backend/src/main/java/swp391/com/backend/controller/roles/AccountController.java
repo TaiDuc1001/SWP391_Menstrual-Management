@@ -1,0 +1,44 @@
+package swp391.com.backend.controller.roles;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import swp391.com.backend.dto.AccountDTO;
+import swp391.com.backend.dto.LoginRequestDTO;
+import swp391.com.backend.dto.RegisterDTO;
+import swp391.com.backend.pojo.roles.Account;
+import swp391.com.backend.service.AccountService;
+
+import java.util.Map;
+
+@RestController
+public class AccountController {
+    private final AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    @PostMapping("/api/login")
+    public ResponseEntity<?> login(@RequestParam LoginRequestDTO loginRequestDTO) {
+        Account account = accountService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        if (account == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Login failed: Invalid email or password"));
+        }
+        return ResponseEntity.ok(new AccountDTO(account.getId(), account.getEmail()));
+    }
+
+    @PostMapping("/api/register")
+    public ResponseEntity<AccountDTO> register(@RequestParam RegisterDTO registerDTO) {
+        Account account = new Account();
+        account.setEmail(registerDTO.getEmail());
+        account.setPassword(registerDTO.getPassword());
+        Account createdAccount = accountService.createAccount(account);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new AccountDTO(createdAccount.getId(), createdAccount.getEmail()));
+    }
+}

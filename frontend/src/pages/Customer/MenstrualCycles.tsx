@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 // import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
 
+
 const MenstrualCycles: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState(4); // May 2025 (0-indexed)
     const [currentYear, setCurrentYear] = useState(2025);
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
 
     const getDaysInMonth = (month: number, year: number) => {
         const firstDay = new Date(year, month, 1);
