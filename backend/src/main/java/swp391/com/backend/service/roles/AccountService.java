@@ -1,8 +1,8 @@
 package swp391.com.backend.service.roles;
 
 import org.springframework.stereotype.Service;
-import swp391.com.backend.pojo.roles.Account;
-import swp391.com.backend.repository.roles.AccountRepository;
+import swp391.com.backend.jpa.pojo.roles.Account;
+import swp391.com.backend.jpa.repository.roles.AccountRepository;
 
 @Service
 public class AccountService {

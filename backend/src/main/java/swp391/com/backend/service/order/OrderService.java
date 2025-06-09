@@ -2,8 +2,8 @@ package swp391.com.backend.service.order;
 
 
 import org.springframework.stereotype.Service;
-import swp391.com.backend.pojo.order.Order;
-import swp391.com.backend.repository.order.OrderRepository;
+import swp391.com.backend.jpa.pojo.order.Order;
+import swp391.com.backend.jpa.repository.order.OrderRepository;
 
 import java.util.List;
 
