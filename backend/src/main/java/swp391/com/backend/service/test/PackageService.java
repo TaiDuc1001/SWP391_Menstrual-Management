@@ -21,4 +21,8 @@ public class PackageService {
     public List<Package> getAllPackages(){
         return packageRepository.findAll();
     }
+
+    public void deletePackageById(Integer id) {
+        packageRepository.deleteById(id);
+    }
 }
