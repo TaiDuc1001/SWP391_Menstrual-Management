@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Popup from '../Popup/Popup';
+import Woman from '../../assets/images/Woman.svg';
 
 interface MenstrualCyclePopupProps {
   open: boolean;
@@ -19,51 +20,59 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
   };
 
   return (
-    <Popup open={open} onClose={onClose} className="max-w-2xl w-full p-8">
+    <Popup open={open} onClose={onClose} className="max-w-3xl w-full p-6">
       <div className="flex flex-col md:flex-row gap-8 items-center">
-        <form onSubmit={handleSubmit} className="flex-1 min-w-[300px]">
-          <div className="text-lg font-semibold text-pink-600 mb-6 flex items-center gap-2">
-            <span className="inline-block w-5 h-5 bg-pink-400 rounded-full"></span>
+        <form onSubmit={handleSubmit} className="flex-1 min-w-[320px]">
+          <div className="text-xl font-semibold text-gray-800 mb-8 flex items-center gap-2">
+            <span className="inline-block w-7 h-7 bg-pink-100 rounded-full flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.5 2.5L17.5 13.5M17.5 13.5L13.5 17.5M17.5 13.5L2.5 13.5" stroke="#EC4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
             Khai Báo Chu Kỳ Kinh
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Ngày bắt đầu kỳ kinh</label>
+          <div className="mb-5">
+            <label className="block text-gray-700 mb-2 font-medium">Ngày bắt đầu kỳ kinh</label>
             <input
               type="date"
-              className="w-full border rounded px-3 py-2 focus:outline-pink-400"
+              className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400"
               value={startDate}
               onChange={e => setStartDate(e.target.value)}
               required
+              placeholder="mm/dd/yyyy"
+              pattern="\\d{4}-\\d{2}-\\d{2}"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Số ngày hành kinh</label>
+          <div className="mb-5">
+            <label className="block text-gray-700 mb-2 font-medium">Số ngày hành kinh</label>
             <input
               type="number"
               min={1}
               max={15}
-              className="w-full border rounded px-3 py-2 focus:outline-pink-400"
+              className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base"
               value={duration}
               onChange={e => setDuration(Number(e.target.value))}
               required
             />
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-1">Độ dài chu kỳ kinh nguyệt</label>
+          <div className="mb-8">
+            <label className="block text-gray-700 mb-2 font-medium">Độ dài chu kỳ kinh nguyệt</label>
             <input
               type="number"
               min={20}
               max={40}
-              className="w-full border rounded px-3 py-2 focus:outline-pink-400"
+              className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base"
               value={cycleLength}
               onChange={e => setCycleLength(Number(e.target.value))}
               required
             />
           </div>
-          <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded font-semibold hover:bg-pink-600 transition">Lưu chu kỳ</button>
+          <div className="flex justify-end">
+            <button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-8 py-2 transition-all text-base shadow" style={{minWidth: 140}}>Lưu chu kỳ</button>
+          </div>
         </form>
-        <div className="hidden md:block flex-1">
-          <img src={require('../../assets/images/blood-testing.svg')} alt="Menstrual Illustration" className="w-full max-w-xs mx-auto" />
+        <div className="hidden md:flex flex-1 items-center justify-center">
+          <img src={Woman} alt="Menstrual Illustration" className="w-full max-w-xs mx-auto" />
         </div>
       </div>
     </Popup>
