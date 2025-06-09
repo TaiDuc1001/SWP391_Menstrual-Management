@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Popup from '../Popup/Popup';
 import Woman from '../../assets/images/Woman.svg';
+import pen from '../../assets/icons/pen.svg';
 
 interface MenstrualCyclePopupProps {
   open: boolean;
@@ -18,16 +19,20 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
     if (onSave) onSave({ startDate, duration, cycleLength });
     onClose();
   };
-
   return (
-    <Popup open={open} onClose={onClose} className="max-w-3xl w-full p-6">
+    <Popup open={open} onClose={onClose} className="max-w-3xl w-full p-6 relative">
+      <button
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors text-2xl z-10 focus:outline-none focus:ring-2 focus:ring-pink-400 rounded-full bg-white shadow-md w-10 h-10 flex items-center justify-center"
+        onClick={onClose}
+        aria-label="Close"
+      >
+        &times;
+      </button>
       <div className="flex flex-col md:flex-row gap-8 items-center">
         <form onSubmit={handleSubmit} className="flex-1 min-w-[320px]">
           <div className="text-xl font-semibold text-gray-800 mb-8 flex items-center gap-2">
             <span className="inline-block w-7 h-7 bg-pink-100 rounded-full flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.5 2.5L17.5 13.5M17.5 13.5L13.5 17.5M17.5 13.5L2.5 13.5" stroke="#EC4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <img src={pen} alt="Pen" className="w-4 h-4" />
             </span>
             Khai Báo Chu Kỳ Kinh
           </div>
