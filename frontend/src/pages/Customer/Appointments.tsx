@@ -158,10 +158,10 @@ const AppointmentHistory: React.FC = () => {
               date: appointment.date,
               time: appointment.time,
               status: appointment.status,
-              problem: 'Mô tả vấn đề mẫu',
-              doctorNote: 'Ghi chú từ bác sĩ mẫu',
+              problem: 'Sample problem description',
+              doctorNote: "Sample doctor's note",
               rating: 4,
-              ratingComment: 'Bác sĩ rất tận tình.'
+              ratingComment: 'The doctor was very dedicated.'
             });
             setShowDetailPopup(true);
           }
