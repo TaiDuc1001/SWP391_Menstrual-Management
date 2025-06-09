@@ -167,13 +167,15 @@ const AppointmentHistory: React.FC = () => {
           placeholder="To date"
           minDate={selectedDateFrom || undefined}
         />
-      </AppointmentUtilityBar>
+      </AppointmentUtilityBar>      
       <AppointmentTable
-        records={pagedRecords.map(r => ({ ...r, slotTime: slotTimeMap[r.slot] || r.time }))}
+        records={filteredRecords.map(r => ({ ...r, slotTime: slotTimeMap[r.slot] || r.time }))}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
         hideRows={hideRows}
+        currentPage={currentPage}
+        appointmentsPerPage={APPOINTMENTS_PER_PAGE}
         onCancelRows={(ids) => {
           setHideRows(prev => [...prev, ...ids]);
           setSelected([]);
