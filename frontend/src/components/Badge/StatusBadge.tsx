@@ -5,6 +5,7 @@ import yellowClockIcon from '../../assets/icons/yellow-clock.svg';
 import pendingIcon from '../../assets/icons/pending.svg';
 import confirmedIcon from '../../assets/icons/confirm.svg';
 import cancelIcon from '../../assets/icons/cancel.svg';
+import upcomingIcon from '../../assets/icons/upcoming.svg';
 
 const inProgressIcon = yellowClockIcon;
 
@@ -42,8 +43,8 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
       break;
     case 'Upcoming':
       badgeClass = 'bg-blue-50 text-blue-700';
-      icon = yellowClockIcon;
-      textColor = '#2563EB';
+      icon = upcomingIcon;
+      textColor = '#54A8A0';
       border = 'border border-blue-200';
       shadow = 'shadow-blue-100';
       break;
