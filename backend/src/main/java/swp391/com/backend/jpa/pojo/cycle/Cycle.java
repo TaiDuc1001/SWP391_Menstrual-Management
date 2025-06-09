@@ -1,6 +1,8 @@
 package swp391.com.backend.jpa.pojo.cycle;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.roles.Account;
@@ -11,7 +13,9 @@ import java.util.List;
 @Entity
 @Table(name = "cycles")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Cycle{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +27,6 @@ public class Cycle{
 
     @Column(name = "cycle_start_date")
     private LocalDate cycleStartDate;
-
-    @Column(name = "cycle_end_date")
-    private LocalDate cycleEndDate;
 
     @Column(name = "cycle_length")
     private Integer cycleLength;
