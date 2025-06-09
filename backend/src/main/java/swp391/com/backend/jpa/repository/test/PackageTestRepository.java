@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface PackageTestRepository extends JpaRepository<PackageTest, Integer> {
     List<Test> findTestsByPackageId(Integer packageId);
+
+    void deleteByPackageIdAndTestId(Integer packageId, Integer testId);
 }

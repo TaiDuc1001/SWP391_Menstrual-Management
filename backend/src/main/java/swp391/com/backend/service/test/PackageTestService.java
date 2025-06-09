@@ -25,4 +25,8 @@ public class PackageTestService {
         packageTest.setTestId(testId);
         packageTestRepository.save(packageTest);
     }
+
+    public void removeTestFromPackage(Integer packageId, Integer testId) {
+        packageTestRepository.deleteByPackageIdAndTestId(packageId, testId);
+    }
 }
