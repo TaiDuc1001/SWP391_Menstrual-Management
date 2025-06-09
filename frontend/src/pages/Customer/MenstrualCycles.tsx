@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
 import SuccessPopup from '../../components/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
@@ -16,17 +15,7 @@ const MenstrualCycles: React.FC = () => {
     const [showDayNote, setShowDayNote] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number|null>(null);
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-    const location = useLocation();
-    const navigate = useNavigate();
 
-
-    useEffect(() => {
-        if (location.state && location.state.openCyclePopup) {
-            setShowCyclePopup(true);
-            // Remove the state so popup doesn't show again on back/forward
-            navigate(location.pathname, { replace: true, state: {} });
-        }
-    }, [location, navigate]);
 
     const getDaysInMonth = (month: number, year: number) => {
         const firstDay = new Date(year, month, 1);
