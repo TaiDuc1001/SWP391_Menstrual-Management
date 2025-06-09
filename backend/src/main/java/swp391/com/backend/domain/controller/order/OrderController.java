@@ -3,7 +3,7 @@ package swp391.com.backend.domain.controller.order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swp391.com.backend.domain.dto.OrderRequestDTO;
+import swp391.com.backend.domain.dto.request.OrderRequestDTO;
 import swp391.com.backend.jpa.pojo.order.Order;
 import swp391.com.backend.service.order.OrderService;
 
