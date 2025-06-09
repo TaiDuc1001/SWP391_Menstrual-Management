@@ -1,6 +1,8 @@
 package swp391.com.backend.jpa.pojo.appointments;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.roles.Customer;
@@ -11,7 +13,9 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "appointments")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +29,9 @@ public class Appointment {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    private String appointmentDate;
+    private String date;
 
-    private Integer slot;
+    private String slot;
 
     private String googleMeetUrl;
 
@@ -36,7 +40,7 @@ public class Appointment {
     private String description;
 
     @Lob
-    private String notes;
+    private String note;
 
     private Boolean isActive;
 

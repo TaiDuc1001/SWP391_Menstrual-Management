@@ -23,7 +23,7 @@ public class OrderController {
     public ResponseEntity<List<OrderDTO>> getAllOrders() {
         List<OrderDTO> result = orderService.getAllOrders()
                 .stream()
-                .map(orderMapper::toDto)
+                .map(orderMapper::toDTO)
                 .toList();
         return ResponseEntity.ok(result);
     }
@@ -41,7 +41,7 @@ public class OrderController {
         Order createdOrder = orderService.createOrder(order);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderMapper.toDto(createdOrder));
+                .body(orderMapper.toDTO(createdOrder));
     }
 
 
