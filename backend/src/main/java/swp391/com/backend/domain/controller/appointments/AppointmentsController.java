@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import swp391.com.backend.domain.dto.AppointmentDTO;
 import swp391.com.backend.domain.dto.request.AppointmentCreateRequest;
 import swp391.com.backend.domain.mapper.AppointmentMapper;
-import swp391.com.backend.domain.mapper.OrderMapper;
 import swp391.com.backend.jpa.pojo.appointments.Appointment;
 import swp391.com.backend.service.appointments.AppointmentsService;
 
@@ -22,7 +21,6 @@ import java.util.List;
 public class AppointmentsController {
     private final AppointmentsService appointmentsService;
     private final AppointmentMapper appointmentMapper;
-    private final OrderMapper orderMapper;
 
     @GetMapping
     public ResponseEntity<List<AppointmentDTO>> getAllAppointments() {
