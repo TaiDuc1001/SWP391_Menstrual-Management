@@ -1,8 +1,8 @@
 package swp391.com.backend.service.appointments;
 
 import org.springframework.stereotype.Service;
-import swp391.com.backend.pojo.appointments.Appointment;
-import swp391.com.backend.repository.appointments.AppointmentsRepository;
+import swp391.com.backend.jpa.pojo.appointments.Appointment;
+import swp391.com.backend.jpa.repository.appointments.AppointmentsRepository;
 
 import java.util.List;
 
