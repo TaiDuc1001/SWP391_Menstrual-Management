@@ -1,42 +1,53 @@
 package swp391.com.backend.domain.controller.order;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swp391.com.backend.domain.dto.request.OrderRequestDTO;
+import swp391.com.backend.domain.dto.OrderDTO;
+import swp391.com.backend.domain.dto.request.OrderCreateRequest;
+import swp391.com.backend.domain.mapper.OrderMapper;
 import swp391.com.backend.jpa.pojo.order.Order;
 import swp391.com.backend.service.order.OrderService;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final OrderMapper orderMapper;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
+    @GetMapping
+    public ResponseEntity<List<OrderDTO>> getAllOrders() {
+        List<OrderDTO> result = orderService.getAllOrders()
+                .stream()
+                .map(orderMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/api/orders")
-    public ResponseEntity<List<Order>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders());
-    }
+    @PostMapping
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateRequest request) {
 
-    @PostMapping("/api/orders")
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDTO orderRequest) {
-        Order order = new Order();
-        order.setAPackage(orderRequest.getAPackage());
-        order.setCustomer(orderRequest.getCustomer());
-        order.setDate(orderRequest.getDate());
-        order.setTotalAmount(orderRequest.getTotalAmount());
-        order.setNote(orderRequest.getNote());
-        order.setSlot(orderRequest.getSlot());
+        Order order = Order.builder()
+                .aPackage(request.getAPackage())
+                .date(request.getDate())
+                .slot(request.getSlot())
+                .note(request.getNote())
+                .build();
+
         Order createdOrder = orderService.createOrder(order);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(createdOrder);
+                .body(orderMapper.toDto(createdOrder));
     }
+
+
+
     @DeleteMapping("/api/orders/{id}")
-    public ResponseEntity<Void> deleteOrder(@RequestBody OrderRequestDTO orderRequest) {
+    public ResponseEntity<Void> deleteOrder(@RequestBody OrderDTO orderRequest) {
         orderService.deleteOrder(orderRequest.getId());
         return ResponseEntity.noContent().build();
     }

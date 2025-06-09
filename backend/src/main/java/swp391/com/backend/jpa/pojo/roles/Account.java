@@ -26,7 +26,7 @@ public class Account {
 
     private String password;
 
-    private String accountStatus;
+    private Boolean accountStatus;
 
     private String email;
 
