@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
 import SuccessPopup from '../../components/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
-import DayNotePopup from '../../components/Popup/DayNotePopup';
+import DayNotePopup from '../../components/Popup/DayNotePopup'; 
+import Woman from '../../assets/images/Woman.svg';
 // import Header from '../../components/Header/Header';
 
 
