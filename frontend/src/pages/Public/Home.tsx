@@ -115,7 +115,7 @@ const Home: React.FC = () => {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <button
                                     className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                    onClick={() => navigate('/blogs')}
+                                    onClick={() => navigate('/about-us')}
                                 >
                                     More about us
                                 </button>
