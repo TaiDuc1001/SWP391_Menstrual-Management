@@ -5,6 +5,7 @@ import SuccessPopup from '../../components/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../components/Popup/DayNotePopup'; 
 import Woman from '../../assets/images/Woman.svg';
+import pen from '../../assets/images/pen.svg';
 // import Header from '../../components/Header/Header';
 
 
