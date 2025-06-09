@@ -7,5 +7,5 @@ import swp391.com.backend.jpa.pojo.order.Order;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
     Order toEntity(OrderDTO dto);
-    OrderDTO toDto(Order entity);
+    OrderDTO toDTO(Order entity);
 }
