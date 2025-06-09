@@ -1,5 +1,4 @@
-package swp391.com.backend.domain.dto.request;
-
+package swp391.com.backend.domain.dto;
 
 import lombok.Data;
 import swp391.com.backend.jpa.pojo.roles.Customer;
@@ -8,7 +7,7 @@ import swp391.com.backend.jpa.pojo.test.Package;
 import java.math.BigDecimal;
 
 @Data
-public class OrderRequestDTO {
+public class OrderDTO {
     private Integer id;
     private Package aPackage;
     private String date;

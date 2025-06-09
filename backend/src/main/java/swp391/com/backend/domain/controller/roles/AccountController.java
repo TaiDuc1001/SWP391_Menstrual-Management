@@ -1,45 +1,59 @@
 package swp391.com.backend.domain.controller.roles;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swp391.com.backend.domain.dto.AccountDTO;
-import swp391.com.backend.domain.dto.request.LoginRequestDTO;
-import swp391.com.backend.domain.dto.RegisterDTO;
+import swp391.com.backend.domain.dto.request.AccountCreateRequest;
+import swp391.com.backend.domain.dto.request.LoginRequest;
+import swp391.com.backend.domain.mapper.AccountMapper;
 import swp391.com.backend.jpa.pojo.roles.Account;
 import swp391.com.backend.service.roles.AccountService;
 
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/accounts")
+@RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+    private final AccountMapper accountMapper;
 
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
-    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-    @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        Account account = accountService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        Account account = accountService.login(loginRequest.getEmail(), loginRequest.getPassword());
+
+        //Verify account is not null
         if (account == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Login failed: Invalid email or password"));
         }
-        return ResponseEntity.ok(new AccountDTO(account.getId(), account.getEmail()));
+
+        return ResponseEntity.ok(accountMapper.toDTO(account));
     }
 
-    @PostMapping("/api/register")
-    public ResponseEntity<AccountDTO> register(@RequestBody RegisterDTO registerDTO) {
+
+
+    @PostMapping("/register")
+    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountCreateRequest request) {
+
+        // Create account entity from request
         Account account = Account.builder()
-                .email(registerDTO.getEmail())
-                .password(registerDTO.getPassword())
+                .email(request.getEmail())
+                .password(request.getPassword())
                 .build();
+
+
         Account createdAccount = accountService.createAccount(account);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new AccountDTO(createdAccount.getId(), createdAccount.getEmail()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountMapper.toDTO(createdAccount));
     }
+
+
 }
