@@ -32,12 +32,30 @@ const availableTypes = [
   'Syphilis',
 ];
 
+const TESTS_PER_PAGE = 5;
+
 const STITests: React.FC = () => {
   const testRecords = [
     { id: 1, date: '22/05/2025', slot: '2', panels: 'HIV, Gonorrhea, Syphilis', status: 'Pending'},
     { id: 2, date: '22/05/2025', slot: '2', panels: 'HIV, Gonorrhea, Syphilis', status: 'In progress'},
     { id: 3, date: '22/05/2025', slot: '2', panels: 'HIV, Gonorrhea, Syphilis', status: 'Completed'},
     { id: 4, date: '22/05/2025', slot: '3', panels: 'HIV, Gonorrhea, Syphilis', status: 'Completed'},
+    { id: 5, date: '21/05/2025', slot: '1', panels: 'HIV', status: 'Pending'},
+    { id: 6, date: '20/05/2025', slot: '4', panels: 'Syphilis', status: 'Completed'},
+    { id: 7, date: '19/05/2025', slot: '5', panels: 'Gonorrhea', status: 'In progress'},
+    { id: 8, date: '18/05/2025', slot: '6', panels: 'HIV, Syphilis', status: 'Completed'},
+    { id: 9, date: '17/05/2025', slot: '7', panels: 'Gonorrhea, Syphilis', status: 'Pending'},
+    { id: 10, date: '16/05/2025', slot: '8', panels: 'HIV', status: 'Completed'},
+    { id: 11, date: '15/05/2025', slot: '1', panels: 'Syphilis', status: 'Completed'},
+    { id: 12, date: '14/05/2025', slot: '2', panels: 'Gonorrhea', status: 'In progress'},
+    { id: 13, date: '13/05/2025', slot: '3', panels: 'HIV, Gonorrhea', status: 'Pending'},
+    { id: 14, date: '12/05/2025', slot: '4', panels: 'Syphilis', status: 'Completed'},
+    { id: 15, date: '11/05/2025', slot: '5', panels: 'HIV, Syphilis', status: 'Completed'},
+    { id: 16, date: '10/05/2025', slot: '6', panels: 'Gonorrhea', status: 'Pending'},
+    { id: 17, date: '09/05/2025', slot: '7', panels: 'HIV', status: 'Completed'},
+    { id: 18, date: '08/05/2025', slot: '8', panels: 'Syphilis', status: 'Completed'},
+    { id: 19, date: '07/05/2025', slot: '1', panels: 'Gonorrhea, Syphilis', status: 'In progress'},
+    { id: 20, date: '06/05/2025', slot: '2', panels: 'HIV, Gonorrhea', status: 'Completed'},
   ];
 
   const [selected, setSelected] = useState<number[]>([]);
@@ -50,6 +68,7 @@ const STITests: React.FC = () => {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [hideRows, setHideRows] = useState<number[]>([]);
   const [showResultPopup, setShowResultPopup] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const handleCheckboxChange = (id: number) => {
@@ -96,6 +115,17 @@ const STITests: React.FC = () => {
 
     return searchMatch && slotMatch && typeMatch && statusMatch && fromMatch && toMatch;
   });
+
+  // Paging should use filteredRecords
+  const totalPages = Math.ceil(filteredRecords.length / TESTS_PER_PAGE);
+  const startIdx = (currentPage - 1) * TESTS_PER_PAGE;
+  const endIdx = startIdx + TESTS_PER_PAGE;
+  const pagedRecords = filteredRecords.slice(startIdx, endIdx);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedSlot, selectedTypes, selectedStatus, selectedDateFrom, selectedDateTo]);
+
   React.useEffect(() => {
     const newSelected = selected.filter(id => !hideRows.includes(id));
     if (newSelected.length !== selected.length) {
@@ -170,7 +200,37 @@ const STITests: React.FC = () => {
           setSelected([]);
         }}
         onViewRows={() => setShowResultPopup(true)}
+        currentPage={currentPage}
+        testsPerPage={TESTS_PER_PAGE}
       />
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-pink-100 text-pink-600 hover:bg-pink-200'}`}
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-pink-100'}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400' : 'bg-pink-100 text-pink-600 hover:bg-pink-200'}`}
+          >
+            Next
+          </button>
+        </div>
+      )}
       {showResultPopup && (
         <TestResultPopup onClose={() => setShowResultPopup(false)} />
       )}
