@@ -84,4 +84,8 @@ public class CycleService {
 
         return predictedCycle;
     }
+
+    public void deleteCycle(Integer cycleId) {
+        cycleRepository.deleteById(cycleId);
+    }
 }
