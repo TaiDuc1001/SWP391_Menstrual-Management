@@ -6,6 +6,7 @@ import calendarIcon from '../../assets/icons/calendar.svg';
 import notificationIcon from '../../assets/icons/notification.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
 import pdfIcon from '../../assets/icons/pdf.svg';
+import donutIcon from '../../assets/icons/donut.svg';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -72,13 +73,8 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Cycle chart */}
         <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center justify-center">
-          {/* Simple donut chart mockup */}
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="50" fill="#fde8f3" />
-            <path d="M60 10 A50 50 0 1 1 110 60" stroke="#f472b6" strokeWidth="15" fill="none" />
-            <circle cx="60" cy="60" r="35" fill="#fff" />
-            <polygon points="60,35 65,55 60,50 55,55" fill="#f472b6" />
-          </svg>
+          {/* Use imported donut chart icon instead of SVG */}
+          <img src={donutIcon} alt="Donut chart" width={120} height={120} />
           <div className="text-center mt-2">
             <div className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></div>
             <button className="text-pink-500 hover:underline text-sm">View cycle</button>
