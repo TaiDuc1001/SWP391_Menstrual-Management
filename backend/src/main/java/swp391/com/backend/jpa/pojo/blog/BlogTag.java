@@ -12,17 +12,19 @@ import java.io.Serializable;
 @IdClass(BlogTagId.class)
 public class BlogTag {
     @Id
+    @Column(name = "blog_id")
     private Integer blogId;
 
     @Id
+    @Column(name = "tag_id")
     private Integer tagId;
 
     @ManyToOne
-    @JoinColumn(name = "blog_id", insertable = false, updatable = false)
+    @JoinColumn(name = "blog_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Blog blog;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id", insertable = false, updatable = false)
+    @JoinColumn(name = "tag_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Tag tag;
 }
 
@@ -33,4 +35,3 @@ class BlogTagId implements Serializable {
     private Integer blogId;
     private Integer tagId;
 }
-
