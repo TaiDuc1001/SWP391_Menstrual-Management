@@ -113,7 +113,9 @@ const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="text-pink-500 hover:underline text-sm mt-2 w-max">Xem chi tiết</button>
+          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments')}>
+            Xem chi tiết
+          </button>
         </div>
         {/* Latest screenings */}
         <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
