@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axios';
 import shieldIcon from '../../assets/icons/shield.svg';
 import userIcon from '../../assets/icons/multi-user.svg';
 import keyIcon from '../../assets/icons/key.svg';
@@ -16,12 +17,31 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
   const [agree, setAgree] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     if (!agree) return;
-    onSignUp();
-    navigate('/dashboard');
+    if (password !== rePassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    try {
+      await api.post('/accounts/register', { email, password }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      onSignUp();
+      navigate('/dashboard');
+    } catch (err: any) {
+      console.error('Registration error:', err, err.response);
+      setError(err.response?.data?.message || 'Registration failed');
+    }
   };
 
   return (
@@ -33,18 +53,19 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
         <h2 className="text-2xl font-bold mb-1 text-gray-800 text-center">Register</h2>
         <p className="text-gray-500 text-sm mb-6 text-center">Please fill out all fields to continue</p>
         <form onSubmit={handleSubmit} className="w-full">
+          {error && <div className="text-red-500 text-sm mb-2 text-center">{error}</div>}
           <div className="mb-4">
             <label className="block text-xs font-semibold mb-1">Email / Username</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><img src={userIcon} alt="User" className="w-5 h-5" /></span>
-              <input type="email" required className="w-full p-2 pl-10 rounded border border-gray-300 focus:outline-pink-400" placeholder="" />
+              <input type="email" required className="w-full p-2 pl-10 rounded border border-gray-300 focus:outline-pink-400" placeholder="" value={email} onChange={e => setEmail(e.target.value)} />
             </div>
           </div>
           <div className="mb-4">
             <label className="block text-xs font-semibold mb-1">Password</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><img src={keyIcon} alt="Key" className="w-5 h-5" /></span>
-              <input type={showPassword ? 'text' : 'password'} required className="w-full p-2 pl-10 pr-10 rounded border border-gray-300 focus:outline-pink-400" />
+              <input type={showPassword ? 'text' : 'password'} required className="w-full p-2 pl-10 pr-10 rounded border border-gray-300 focus:outline-pink-400" value={password} onChange={e => setPassword(e.target.value)} />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" onClick={() => setShowPassword(v => !v)}><img src={eyeIcon} alt="Show" className="w-5 h-5" /></span>
             </div>
           </div>
@@ -52,7 +73,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
             <label className="block text-xs font-semibold mb-1">Re-enter password</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><img src={keyIcon} alt="Key" className="w-5 h-5" /></span>
-              <input type={showRePassword ? 'text' : 'password'} required className="w-full p-2 pl-10 pr-10 rounded border border-gray-300 focus:outline-pink-400" />
+              <input type={showRePassword ? 'text' : 'password'} required className="w-full p-2 pl-10 pr-10 rounded border border-gray-300 focus:outline-pink-400" value={rePassword} onChange={e => setRePassword(e.target.value)} />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" onClick={() => setShowRePassword(v => !v)}><img src={eyeIcon} alt="Show" className="w-5 h-5" /></span>
             </div>
           </div>

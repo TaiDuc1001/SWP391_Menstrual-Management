@@ -5,6 +5,7 @@ import keyIcon from '../../assets/icons/key.svg';
 import eyeIcon from '../../assets/icons/eye.svg';
 import googleIcon from '../../assets/icons/google.svg';
 import facebookIcon from '../../assets/icons/facebook.svg';
+import api from '../../api/axios';
 
 interface LoginProps {
   onLogin: () => void;
@@ -15,11 +16,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
   const handleShowPassword = () => setShowPassword((prev) => !prev);
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin();
-    navigate('/dashboard');
+    setError('');
+    try {
+      await api.post('/accounts/login', { email, password });
+      onLogin();
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Login failed');
+    }
   };
   return (
     <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-2xl shadow-2xl flex flex-col items-center">
@@ -29,6 +37,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       <h2 className="text-2xl font-bold mb-1 text-center text-gray-800">Log in to your account</h2>
       <p className="text-gray-400 text-center mb-6 text-sm">Please fill out all fields to continue</p>
       <form onSubmit={handleSubmit} className="w-full">
+        {error && <div className="text-red-500 text-sm mb-2 text-center">{error}</div>}
         <div className="mb-4 relative">
           <label className="block mb-1 font-semibold text-gray-700">Email / Username</label>
           <span className="absolute left-3 top-9 flex items-center h-10">
