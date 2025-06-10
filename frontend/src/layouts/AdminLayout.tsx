@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import AdminHeader from "../components/Header/AdminHeader";
 import AdminSidebar from "../components/Sidebar/AdminSidebar";
 import Footer from '../components/Footer/Footer';
-import AdminDashboard from '../pages/Admin/Dashboard';
+import AdminDashboard from '../pages/Admin/AdminDashboard';
 import UserManagement from '../pages/Admin/UserManagement';
 import ServiceManagement from '../pages/Admin/ServiceManagement';
 import ContentManagement from '../pages/Admin/ContentManagement';
