@@ -39,9 +39,16 @@ const MenstrualCyclesAll: React.FC = () => {
       row.endDate.includes(search) ||
       row.duration.toString().includes(search) ||
       row.cycle.toString().includes(search);
+    // Format dates for search like STITests.tsx
+    const formattedStart = row.startDate;
+    const formattedEnd = row.endDate;
+    const searchLower = search.toLowerCase();
+    const dateMatch =
+      formattedStart.toLowerCase().includes(searchLower) ||
+      formattedEnd.toLowerCase().includes(searchLower);
     const start = fromDate ? parseDate(row.startDate) >= fromDate : true;
     const end = toDate ? parseDate(row.endDate) <= toDate : true;
-    return searchMatch && start && end;
+    return (searchMatch || dateMatch) && start && end;
   });
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
