@@ -5,24 +5,19 @@ import DatePickerInput from '../../components/Filter/DatePickerInput';
 import Table from '../../components/Table/Table';
 import ActionButton from '../../components/Button/ActionButton';
 import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
-
-const mockData = [
-  { id: 1, startDate: '13/05/2024', endDate: '17/05/2024', duration: 5, cycle: 28 },
-  { id: 2, startDate: '16/04/2024', endDate: '19/04/2024', duration: 4, cycle: 29 },
-  { id: 3, startDate: '16/03/2024', endDate: '20/03/2024', duration: 5, cycle: 28 },
-  { id: 4, startDate: '15/02/2024', endDate: '19/02/2024', duration: 5, cycle: 28 },
-  { id: 5, startDate: '18/01/2024', endDate: '22/01/2024', duration: 5, cycle: 30 },
-];
+import SuccessPopup from '../../components/Popup/SuccessPopup';
+import { MenstrualCycleProvider, useMenstrualCycles } from '../../context/MenstrualCycleContext';
 
 const MenstrualCyclesAll: React.FC = () => {
   const [search, setSearch] = useState('');
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
-  const [data, setData] = useState(mockData);
   const [showCyclePopup, setShowCyclePopup] = useState(false);
   const [editRow, setEditRow] = useState<any>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
+  const { cycles, setCycles } = useMenstrualCycles();
 
   const parseDate = (str: string) => {
     // Ensure dd/mm/yyyy format is parsed correctly
@@ -32,7 +27,14 @@ const MenstrualCyclesAll: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
-  const filteredData = data.filter(row => {
+  const formatDate = (str: string) => {
+    if (!str) return '';
+    const [day, month, year] = str.split('/');
+    if (!day || !month || !year) return str;
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  };
+
+  const filteredData = cycles.filter(row => {
     const searchMatch =
       search === '' ||
       row.startDate.includes(search) ||
@@ -64,13 +66,9 @@ const MenstrualCyclesAll: React.FC = () => {
   };
 
   const handleDelete = (ids?: number[]) => {
-    if (ids && ids.length > 0) {
-      setData(prev => prev.filter(row => !ids.includes(row.id)));
-      setSelected([]);
-    } else {
-      setData(prev => prev.filter(row => !selected.includes(row.id)));
-      setSelected([]);
-    }
+    const idsToDelete = ids && ids.length > 0 ? ids : selected;
+    setCycles(prev => prev.filter(row => !idsToDelete.includes(row.id)));
+    setSelected([]);
   };
 
   return (
@@ -97,15 +95,15 @@ const MenstrualCyclesAll: React.FC = () => {
               <input type="checkbox" checked={selected.length === filteredData.length && filteredData.length > 0} onChange={handleSelectAll} className="accent-pink-500" />
               {selected.length} selected
             </span>
-            <button className="text-xl text-pink-400 hover:text-pink-600" title="View"><i className="fa fa-eye"></i></button>
             <button
-              className="text-xl text-pink-400 hover:text-pink-600"
+              className="text-sm px-3 py-1 rounded bg-red-100 text-red-600 font-semibold shadow hover:bg-red-200 transition disabled:opacity-50"
               title="Delete"
               onClick={() => handleDelete(selected)}
               disabled={selected.length === 0}
             >
-              <i className="fa fa-trash"></i>
+              Delete
             </button>
+            <button className="text-xl text-pink-400 hover:text-pink-600" title="View"><i className="fa fa-eye"></i></button>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -126,8 +124,8 @@ const MenstrualCyclesAll: React.FC = () => {
                   <td className="py-2">
                     <input type="checkbox" checked={selected.includes(row.id)} onChange={() => handleCheckboxChange(row.id)} className="accent-pink-500" />
                   </td>
-                  <td className="py-2 font-semibold text-gray-700">{row.startDate}</td>
-                  <td className="py-2 font-semibold text-gray-700">{row.endDate}</td>
+                  <td className="py-2 font-semibold text-gray-700">{formatDate(row.startDate)}</td>
+                  <td className="py-2 font-semibold text-gray-700">{formatDate(row.endDate)}</td>
                   <td className="py-2">{row.duration}</td>
                   <td className="py-2">{row.cycle}</td>
                   <td className="py-2">
@@ -156,12 +154,27 @@ const MenstrualCyclesAll: React.FC = () => {
         onSave={() => {
           setShowCyclePopup(false);
           setEditRow(null);
-          // Optionally update data here
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 1500);
         }}
         // Optionally pass editRow for editing
       />
+      {showSuccess && (
+        <SuccessPopup
+          open={showSuccess}
+          onClose={() => setShowSuccess(false)}
+          message="Successfully"
+        />
+      )}
     </div>
   );
 };
 
-export default MenstrualCyclesAll;
+// Wrap the page with MenstrualCycleProvider
+export default function MenstrualCyclesAllWithProvider() {
+  return (
+    <MenstrualCycleProvider>
+      <MenstrualCyclesAll />
+    </MenstrualCycleProvider>
+  );
+}
