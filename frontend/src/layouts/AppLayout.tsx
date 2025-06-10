@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import Footer from '../components/Footer/Footer';
 import Dashboard from '../pages/Customer/Dashboard';
 import MenstrualCycles from '../pages/Customer/MenstrualCycles';
+import MenstrualCyclesAll from '../pages/Customer/MenstrualCyclesAll';
 import Appointments from '../pages/Customer/Appointments';
 import STITests from '../pages/Customer/STITests';
 import Profile from '../pages/Customer/Profile';
@@ -57,6 +58,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
             {/* Protected routes */}
             <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <RequireLogin />} />
             <Route path="/menstrual-cycles" element={isAuthenticated ? <MenstrualCycles /> : <RequireLogin />} />
+            <Route path="/menstrual-cycles/all" element={<MenstrualCyclesAll />} />
             <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <RequireLogin />} />
             <Route path="/sti-tests" element={isAuthenticated ? <STITests /> : <RequireLogin />} />
             <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
