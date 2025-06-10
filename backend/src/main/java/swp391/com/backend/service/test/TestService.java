@@ -21,4 +21,8 @@ public class TestService {
     public Test createTest(Test test) {
         return testRepository.save(test);
     }
+
+    public void deleteTestById(Integer id) {
+        testRepository.deleteById(id);
+    }
 }
