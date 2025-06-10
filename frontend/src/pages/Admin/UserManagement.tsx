@@ -1,12 +1,10 @@
 import React, {useState, useEffect, useRef} from 'react';
 import dropDownIcon from '../../assets/icons/drop-down.svg';
-import NewUserButton from "../../components/Button/NewUserButton";
+import NewUserButton from "../../components/Button/AdminCreateButton";
 import plusWhiteIcon from "../../assets/icons/plus-white.svg";
 import searchIcon from "../../assets/icons/search.svg";
 import refreshIcon from "../../assets/icons/refresh.svg";
 import editIcon from '../../assets/icons/edit.svg';
-import lockIcon from '../../assets/icons/shield.svg';
-import unlockIcon from '../../assets/icons/green-check.svg';
 import deleteIcon from '../../assets/icons/trash-bin.svg';
 import userAvt from '../../assets/icons/avatar.svg';
 
@@ -166,7 +164,7 @@ const UserManagement: React.FC = () => {
                 {/*all roles*/}
                 <div className="relative" ref={roleRef}>
                     <button
-                        className="border px-4 py-2 rounded flex items-center gap-2 min-w-[150px]"
+                        className="border px-4 py-2 rounded flex items-center justify-between gap-2 min-w-[100px]"
                         onClick={() => {
                             setShowRoleDropdown(!showRoleDropdown);
                             setShowStatusDropdown(false);
@@ -205,7 +203,7 @@ const UserManagement: React.FC = () => {
                 {/*all status*/}
                 <div className="relative" ref={statusRef}>
                     <button
-                        className="border px-4 py-2 rounded flex items-center gap-2 min-w-[150px]"
+                        className="border px-2 py-2 rounded flex justify-between items-center gap-2 min-w-[100px]"
                         onClick={() => {
                             setShowStatusDropdown(!showStatusDropdown);
                             setShowRoleDropdown(false);
@@ -293,9 +291,8 @@ const UserManagement: React.FC = () => {
                                 </td>
                                 <td className="p-2 border text-center">{user.phone}</td>
                                 <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
-                                <td className="p-2 border flex gap-2 justify-center">
-                                    <button title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4" /></button>
-                                    <button title={user.status === 'Locked' ? 'Unlock' : 'Lock'}><img src={user.status === 'Locked' ? unlockIcon : lockIcon} alt="lock" className="w-4 h-4" /></button>
+                                <td className="p-2 border text-center">
+                                    <button title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4 mr-4" /></button>
                                     <button title="Delete"><img src={deleteIcon} alt="delete" className="w-4 h-4" /></button>
                                 </td>
                             </tr>
@@ -304,7 +301,7 @@ const UserManagement: React.FC = () => {
                     </tbody>
                 </table>
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>Hiển thị 1-10 trên {totalUsers.toLocaleString()} người dùng</span>
+                    <span>Displaying 1-4 of {totalUsers.toLocaleString()} users</span>
                     <div className="flex items-center gap-1">
                         <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-white border'}`}>{'<'}</button>
                         {[...Array(3)].map((_, i) => (
