@@ -7,16 +7,40 @@ interface MenstrualCyclePopupProps {
   open: boolean;
   onClose: () => void;
   onSave?: (data: { startDate: string; duration: number; cycleLength: number }) => void;
+  editRow?: { id?: number; startDate?: string; endDate?: string; duration?: number; cycle?: number } | null;
 }
 
-const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose, onSave }) => {
+const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose, onSave, editRow }) => {
+  // If editing, prefill values
   const [startDate, setStartDate] = useState('');
   const [duration, setDuration] = useState(5);
   const [cycleLength, setCycleLength] = useState(28);
 
+  React.useEffect(() => {
+    if (editRow) {
+      // Convert dd/mm/yyyy to yyyy-mm-dd for input type="date"
+      if (editRow.startDate) {
+        const [day, month, year] = editRow.startDate.split('/');
+        setStartDate(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+      }
+      setDuration(editRow.duration || 5);
+      setCycleLength(editRow.cycle || 28);
+    } else {
+      setStartDate('');
+      setDuration(5);
+      setCycleLength(28);
+    }
+  }, [editRow, open]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSave) onSave({ startDate, duration, cycleLength });
+    // Convert yyyy-mm-dd to dd/mm/yyyy for storage
+    let formattedDate = startDate;
+    if (startDate && startDate.includes('-')) {
+      const [year, month, day] = startDate.split('-');
+      formattedDate = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+    }
+    if (onSave) onSave({ startDate: formattedDate, duration, cycleLength });
     onClose();
   };
   return (
@@ -44,8 +68,8 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
               value={startDate}
               onChange={e => setStartDate(e.target.value)}
               required
-              placeholder="mm/dd/yyyy"
-              pattern="\\d{4}-\\d{2}-\\d{2}"
+              placeholder="dd/mm/yyyy"
+              pattern="\d{4}-\d{2}-\d{2}"
             />
           </div>
           <div className="mb-5">
