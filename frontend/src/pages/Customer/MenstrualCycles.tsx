@@ -22,7 +22,7 @@ const MenstrualCycles: React.FC = () => {
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const location = useLocation();
     const navigate = useNavigate();
-    const { cycles } = useMenstrualCycles();
+    const { cycles, setCycles } = useMenstrualCycles();
 
 
     useEffect(() => {
@@ -202,9 +202,19 @@ const MenstrualCycles: React.FC = () => {
                     <MenstrualCyclePopup 
                       open={showCyclePopup} 
                       onClose={() => setShowCyclePopup(false)}
-                      onSave={() => {
+                      onSave={(data) => {
                         setShowCyclePopup(false);
                         setShowSuccess(true);
+                        setCycles(prev => [
+                          ...prev,
+                          {
+                            id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
+                            startDate: data.startDate,
+                            endDate: '', // You may want to update this logic
+                            duration: data.duration,
+                            cycle: data.cycleLength
+                          }
+                        ]);
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
                     />

@@ -151,13 +151,34 @@ const MenstrualCyclesAll: React.FC = () => {
           setShowCyclePopup(false);
           setEditRow(null);
         }}
-        onSave={() => {
+        onSave={(data) => {
           setShowCyclePopup(false);
           setEditRow(null);
+          // If editing, update; else, add new
+          if (editRow && editRow.id) {
+            setCycles(prev => prev.map(row => row.id === editRow.id ? {
+              ...row,
+              startDate: data.startDate,
+              endDate: '', // You may want to update this logic
+              duration: data.duration,
+              cycle: data.cycleLength
+            } : row));
+          } else {
+            setCycles(prev => [
+              ...prev,
+              {
+                id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
+                startDate: data.startDate,
+                endDate: '', // You may want to update this logic
+                duration: data.duration,
+                cycle: data.cycleLength
+              }
+            ]);
+          }
           setShowSuccess(true);
           setTimeout(() => setShowSuccess(false), 1500);
         }}
-        // Optionally pass editRow for editing
+        editRow={editRow}
       />
       {showSuccess && (
         <SuccessPopup
