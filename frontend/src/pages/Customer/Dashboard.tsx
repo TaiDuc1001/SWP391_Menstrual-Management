@@ -113,7 +113,7 @@ const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments')}>
+          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments/book')}>
             Xem chi tiết
           </button>
         </div>
