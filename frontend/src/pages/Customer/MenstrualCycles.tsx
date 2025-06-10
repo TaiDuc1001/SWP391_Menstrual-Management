@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
@@ -6,6 +7,7 @@ import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup'
 import DayNotePopup from '../../components/Popup/DayNotePopup'; 
 import Woman from '../../assets/images/Woman.svg';
 import pen from '../../assets/images/pen.svg';
+import MenstrualCyclesAll from './MenstrualCyclesAll';
 // import Header from '../../components/Header/Header';
 
 
@@ -158,11 +160,16 @@ const MenstrualCycles: React.FC = () => {
                                     <span className="inline-block w-4 h-4 bg-pink-400 rounded-full"></span>
                                     Lịch sử chu kỳ
                                 </h3>
-                                <a href="#" className="text-pink-500 text-sm font-semibold hover:underline" onClick={e => {
-                                    e.preventDefault();
-                                    const tableBody = document.getElementById('cycle-history-body');
-                                    if (tableBody) tableBody.classList.toggle('max-h-32');
-                                }}>Xem tất cả</a>
+                                <a
+                                    href="/menstrual-cycles/all"
+                                    className="text-pink-500 text-sm font-semibold hover:underline"
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        navigate('/menstrual-cycles/all');
+                                    }}
+                                >
+                                    Xem tất cả
+                                </a>
                             </div>
                             <div className={historyData.length > 3 ? "overflow-y-auto max-h-32 transition-all" : ""} id="cycle-history-body">
                                 <table className="w-full text-sm mt-2">
