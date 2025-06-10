@@ -6,6 +6,10 @@ import calendarIcon from '../../assets/icons/calendar.svg';
 import notificationIcon from '../../assets/icons/notification.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
 import pdfIcon from '../../assets/icons/pdf.svg';
+import donutIcon from '../../assets/icons/donut.svg';
+import bloodIcon from '../../assets/icons/blood.svg';
+import strawberyyIcon from '../../assets/icons/strawberyy.svg';
+import angryIcon from '../../assets/icons/angry.svg';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +19,7 @@ const Dashboard: React.FC = () => {
   const ovulationDate = '18/05';
   const daysToOvulation = 3;
   const cycleStatus = 'Girlie cramps';
-  const cycleEmojis = ['🍓', '🩸', '😡'];
+  const cycleEmojis = [strawberyyIcon, bloodIcon, angryIcon];
   const appointments = [
     { id: 1, name: 'Dr. Jack97', date: '21/05/2025', time: '15:00', avatar: '', rating: 5 },
     { id: 2, name: 'Dr. Thịnh Thất Bồng Lai', date: '21/05/2025', time: '15:00', avatar: '', rating: 4.5 },
@@ -63,7 +67,11 @@ const Dashboard: React.FC = () => {
           <div className="text-gray-500 text-sm">Starting date: <span className="text-pink-600 font-bold">{cycleStart}</span></div>
           <div className="bg-pink-100 rounded-xl p-4 flex flex-col items-center">
             <div className="text-2xl font-bold text-pink-600 mb-1">{cycleStatus}</div>
-            <div className="text-2xl">{cycleEmojis.join(' ')}</div>
+            <div className="text-2xl flex gap-2">
+              {cycleEmojis.map((icon, idx) => (
+                <img key={idx} src={icon} alt="cycle emoji" className="w-7 h-7 inline" />
+              ))}
+            </div>
           </div>
           <div className="flex justify-between items-center mt-2">
             <span className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></span>
@@ -72,13 +80,8 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Cycle chart */}
         <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center justify-center">
-          {/* Simple donut chart mockup */}
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="50" fill="#fde8f3" />
-            <path d="M60 10 A50 50 0 1 1 110 60" stroke="#f472b6" strokeWidth="15" fill="none" />
-            <circle cx="60" cy="60" r="35" fill="#fff" />
-            <polygon points="60,35 65,55 60,50 55,55" fill="#f472b6" />
-          </svg>
+          {/* Use imported donut chart icon instead of SVG */}
+          <img src={donutIcon} alt="Donut chart" width={120} height={120} />
           <div className="text-center mt-2">
             <div className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></div>
             <button className="text-pink-500 hover:underline text-sm">View cycle</button>
@@ -113,7 +116,9 @@ const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="text-pink-500 hover:underline text-sm mt-2 w-max">Xem chi tiết</button>
+          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments/book')}>
+            Xem chi tiết
+          </button>
         </div>
         {/* Latest screenings */}
         <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
