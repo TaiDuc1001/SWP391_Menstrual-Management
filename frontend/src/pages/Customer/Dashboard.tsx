@@ -7,6 +7,9 @@ import notificationIcon from '../../assets/icons/notification.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
 import pdfIcon from '../../assets/icons/pdf.svg';
 import donutIcon from '../../assets/icons/donut.svg';
+import bloodIcon from '../../assets/icons/blood.svg';
+import strawberyyIcon from '../../assets/icons/strawberyy.svg';
+import angryIcon from '../../assets/icons/angry.svg';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +19,7 @@ const Dashboard: React.FC = () => {
   const ovulationDate = '18/05';
   const daysToOvulation = 3;
   const cycleStatus = 'Girlie cramps';
-  const cycleEmojis = ['🍓', '🩸', '😡'];
+  const cycleEmojis = [strawberyyIcon, bloodIcon, angryIcon];
   const appointments = [
     { id: 1, name: 'Dr. Jack97', date: '21/05/2025', time: '15:00', avatar: '', rating: 5 },
     { id: 2, name: 'Dr. Thịnh Thất Bồng Lai', date: '21/05/2025', time: '15:00', avatar: '', rating: 4.5 },
@@ -64,7 +67,11 @@ const Dashboard: React.FC = () => {
           <div className="text-gray-500 text-sm">Starting date: <span className="text-pink-600 font-bold">{cycleStart}</span></div>
           <div className="bg-pink-100 rounded-xl p-4 flex flex-col items-center">
             <div className="text-2xl font-bold text-pink-600 mb-1">{cycleStatus}</div>
-            <div className="text-2xl">{cycleEmojis.join(' ')}</div>
+            <div className="text-2xl flex gap-2">
+              {cycleEmojis.map((icon, idx) => (
+                <img key={idx} src={icon} alt="cycle emoji" className="w-7 h-7 inline" />
+              ))}
+            </div>
           </div>
           <div className="flex justify-between items-center mt-2">
             <span className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></span>
