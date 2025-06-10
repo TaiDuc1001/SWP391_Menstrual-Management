@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import StatusBadge from '../Badge/StatusBadge';
 import ViewResultButton from '../Button/ViewResultButton';
 import eyeIcon from '../../assets/icons/eye.svg';
@@ -22,17 +22,83 @@ interface TestTableProps {
   hideRows: number[];
   onDeleteRows?: (ids: number[]) => void;
   onViewRows?: (ids: number[]) => void;
+  currentPage?: number;
+  testsPerPage?: number;
 }
 
 const TestTable: React.FC<TestTableProps> = ({
-  filteredRecords, slotTimeMap, selected, handleCheckboxChange, handleSelectAll, hideRows, onDeleteRows, onViewRows
+  filteredRecords, slotTimeMap, selected, handleCheckboxChange, handleSelectAll, hideRows, onDeleteRows, onViewRows, currentPage = 1, testsPerPage = 5
 }) => {
+  // Sorting state
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+
   const visibleRecords = filteredRecords.filter(record => !hideRows.includes(record.id));
   const visibleSelected = selected.filter(id => visibleRecords.some(r => r.id === id));
   const completedSelected = visibleSelected.filter(id => {
     const rec = visibleRecords.find(r => r.id === id);
     return rec && rec.status === 'Completed';
   });
+
+  // Sorting logic
+  const sortedRecords = React.useMemo(() => {
+    if (!sortConfig) return visibleRecords;
+    const sorted = [...visibleRecords];
+    sorted.sort((a, b) => {
+      let aValue: string | number = '';
+      let bValue: string | number = '';
+      switch (sortConfig.key) {
+        case 'date':
+          aValue = a.date;
+          bValue = b.date;
+          break;
+        case 'slot':
+          aValue = slotTimeMap[a.slot] || '';
+          bValue = slotTimeMap[b.slot] || '';
+          break;
+        case 'panels':
+          aValue = a.panels;
+          bValue = b.panels;
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        default:
+          aValue = '';
+          bValue = '';
+      }
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortConfig.direction === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+      return 0;
+    });
+    return sorted;
+  }, [visibleRecords, sortConfig, slotTimeMap]);
+
+  // Paging logic (after sorting)
+  const startIdx = (currentPage - 1) * testsPerPage;
+  const endIdx = startIdx + testsPerPage;
+  const pagedRecords = sortedRecords.slice(startIdx, endIdx);
+
+  // Sort handler
+  const handleSort = (key: string) => {
+    setSortConfig(prev => {
+      if (prev && prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+
+  const getSortIndicator = (key: string) => {
+    if (!sortConfig || sortConfig.key !== key) return null;
+    return sortConfig.direction === 'asc' ? '▲' : '▼';
+  };
 
   const columns = [
     {
@@ -43,10 +109,10 @@ const TestTable: React.FC<TestTableProps> = ({
       ),
       width: 'w-8',
     },
-    { key: 'date', label: 'Date', width: 'w-32' },
-    { key: 'slot', label: 'Time', render: (row: TestRecord) => slotTimeMap[row.slot], width: 'w-32' },
-    { key: 'panels', label: 'Test panels', width: 'w-56' },
-    { key: 'status', label: 'Status', render: (row: TestRecord) => <StatusBadge status={row.status} />, width: 'w-32', headerClassName: 'text-center', cellClassName: 'text-center' },
+    { key: 'date', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('date')}>Date {getSortIndicator('date')}</button>, width: 'w-32' },
+    { key: 'slot', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('slot')}>Time {getSortIndicator('slot')}</button>, render: (row: TestRecord) => slotTimeMap[row.slot], width: 'w-32' },
+    { key: 'panels', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('panels')}>Test panels {getSortIndicator('panels')}</button>, width: 'w-56' },
+    { key: 'status', label: <button type="button" className="flex items-center gap-1 justify-center w-full text-center" onClick={() => handleSort('status')}>Status {getSortIndicator('status')}</button>, render: (row: TestRecord) => <StatusBadge status={row.status} />, width: 'w-32', headerClassName: 'text-center', cellClassName: 'text-center' },
     { key: 'actions', label: '', render: (row: TestRecord) => row.status === 'Completed' ? <ViewResultButton onClick={() => onViewRows && onViewRows([row.id])} /> : null, width: 'w-16' },
   ];
 
@@ -86,7 +152,7 @@ const TestTable: React.FC<TestTableProps> = ({
           </button>
         </div>
       </div>
-      <Table columns={columns} data={visibleRecords} />
+      <Table columns={columns} data={pagedRecords} />
     </div>
   );
 };

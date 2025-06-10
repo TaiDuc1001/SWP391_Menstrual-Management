@@ -21,6 +21,9 @@ import STIPackageDetail from '../pages/Customer/STIPackageDetail';
 import BookTestPage from '../pages/Customer/BookTestPage';
 import BookAppointmentPage from '../pages/Customer/BookAppointmentPage';
 import DoctorDetailPage from '../pages/Customer/DoctorDetailPage';
+import ForgotPassword from '../pages/Public/ForgotPassword';
+import EnterOTP from '../pages/Public/EnterOTP';
+import ChangePassword from '../pages/Public/ChangePassword';
 
 interface AppLayoutProps {
   isAuthenticated: boolean;
@@ -55,6 +58,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/signup" element={<SignUp onSignUp={handleSignUp} />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/enter-otp" element={<EnterOTP />} />
+            <Route path="/change-password" element={<ChangePassword />} />
             {/* Protected routes */}
             <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <RequireLogin />} />
             <Route path="/menstrual-cycles" element={isAuthenticated ? <MenstrualCycles /> : <RequireLogin />} />

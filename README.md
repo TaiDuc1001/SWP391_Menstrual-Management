@@ -9,13 +9,18 @@ A full-stack web application for menstrual health management, appointment bookin
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [System Architecture](#system-architecture)
+- [Project Structure](#project-structure)
 - [Setup & Installation](#setup--installation)
+  - [Prerequisites](#prerequisites)
   - [Backend Setup](#backend-setup)
   - [Frontend Setup](#frontend-setup)
+  - [Additional Frontend Scripts](#additional-frontend-scripts)
 - [Running the Application](#running-the-application)
-- [Project Structure](#project-structure)
-- [Team Members](#team-members)
+- [Backend Details](#backend-details)
+- [Frontend Details](#frontend-details)
 - [Useful Commands](#useful-commands)
+- [Team Members](#team-members)
+- [Asset & Icon Sources](#asset--icon-sources)
 - [License](#license)
 
 ---
@@ -46,6 +51,28 @@ This project provides a platform for users to manage their menstrual cycles, boo
 ## System Architecture
 ```
 [Frontend (React)] <----REST API----> [Backend (Spring Boot)] <----> [Database]
+```
+
+## Project Structure
+```
+Menstrual-Management/
+├── backend/
+│   ├── src/main/java/swp391/com/backend/
+│   │   ├── SWP391Application.java
+│   │   └── pojo/         # JPA Entities
+│   ├── src/main/resources/
+│   │   └── application.properties
+│   └── ...
+├── frontend/
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── layouts/      # Layouts
+│   │   ├── pages/        # Page components
+│   │   ├── assets/       # Images, icons, fonts
+│   │   └── docs/         # Documentation (e.g., asset_sources.md)
+│   ├── public/
+│   └── ...
+└── README.md
 ```
 
 ## Setup & Installation
@@ -89,7 +116,7 @@ This project provides a platform for users to manage their menstrual cycles, boo
    ```
    - The frontend will run on `http://localhost:3000` by default.
 
-#### Additional Frontend Scripts
+### Additional Frontend Scripts
 In the `frontend` directory, you can also run:
 
 - `npm test` — Launches the test runner in interactive watch mode.
@@ -103,33 +130,105 @@ See the [Create React App documentation](https://facebook.github.io/create-react
 - **Frontend:** `http://localhost:3000`
 - The frontend is configured to interact with the backend REST API.
 
-## Project Structure
-```
-Menstrual-Management/
-├── backend/
-│   ├── src/main/java/swp391/com/backend/
-│   │   ├── SWP391Application.java
-│   │   └── pojo/         # JPA Entities
-│   ├── src/main/resources/
-│   │   └── application.properties
-│   └── ...
-├── frontend/
-│   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── layouts/      # Layouts
-│   │   ├── pages/        # Page components
-│   │   └── assets/       # Images, icons, fonts
-│   ├── public/
-│   └── ...
-└── README.md
-```
+## Backend Details
 
-<!-- ## Team Members
-- **Nguyen Van A** - Backend Developer
-- **Tran Thi B** - Frontend Developer
-- **Le Van C** - Fullstack Developer
-- **Pham Thi D** - UI/UX Designer
-- **Hoang Van E** - Tester -->
+The backend of the Menstrual Management System is built using Java and Spring Boot, following a modular and scalable architecture. It exposes a RESTful API that serves as the main interface for the frontend application and external clients.
+
+### Key Technologies
+- **Spring Boot:** Provides rapid setup, dependency injection, and production-ready features.
+- **JPA (Hibernate):** Handles object-relational mapping for database access.
+- **H2 Database:** Used for development and testing; can be replaced with other databases in production.
+- **Maven:** Manages dependencies and build lifecycle.
+- **JUnit:** Used for unit and integration testing.
+
+### Directory Structure
+- `src/main/java/swp391/com/backend/`
+  - `SWP391Application.java`: Main entry point for the Spring Boot application.
+  - `pojo/`: Contains JPA entity classes representing database tables.
+  - `controller/`: REST controllers that define API endpoints.
+  - `service/`: Business logic and service layer.
+  - `repository/`: Spring Data JPA repositories for data access.
+- `src/main/resources/`
+  - `application.properties`: Configuration for database, server port, etc.
+
+### REST API Structure
+- Follows RESTful conventions with endpoints grouped by resource (e.g., `/users`, `/appointments`, `/cycles`, `/tests`).
+- Uses standard HTTP methods: `GET`, `POST`, `PUT`, `DELETE`.
+- Example endpoint:
+  - `GET /api/cycles` — Retrieve menstrual cycle data for a user.
+  - `POST /api/appointments` — Book a new appointment.
+
+### Database Configuration
+- Default: H2 in-memory database for development.
+- Configured in `src/main/resources/application.properties`.
+- JPA entities are auto-mapped to tables; schema auto-generated on startup.
+- Easily switch to MySQL, PostgreSQL, etc., by updating properties.
+
+### Adding New Endpoints or Entities
+1. Create a new entity class in `pojo/`.
+2. Add a repository interface in `repository/`.
+3. Implement business logic in `service/`.
+4. Expose endpoints in a controller under `controller/`.
+
+### Testing
+- Unit and integration tests are written using JUnit.
+- Test classes are located under `src/test/java/swp391/com/backend/`.
+- Run tests with `./mvnw test` or `mvnw.cmd test`.
+
+### Frontend Integration
+- The backend exposes a REST API at `http://localhost:8080`.
+- CORS is configured to allow requests from the frontend (`http://localhost:3000`).
+- All business logic and data persistence are handled server-side, with the frontend acting as a client.
+
+For more details, see the code in the `backend/` directory and the `application.properties` file for configuration options.
+
+## Frontend Details
+
+The frontend of the Menstrual Management System is built with React and TypeScript, providing a modern, responsive, and user-friendly interface. It communicates with the backend via RESTful APIs and is styled using Tailwind CSS for rapid UI development.
+
+### Key Technologies
+- **React:** Component-based UI library for building interactive interfaces.
+- **TypeScript:** Adds static typing to JavaScript for improved code quality and maintainability.
+- **Tailwind CSS:** Utility-first CSS framework for fast and consistent styling.
+- **React Router:** Handles client-side routing and navigation.
+- **React Testing Library:** Used for unit and integration testing of React components.
+
+### Directory Structure
+- `src/components/`: Reusable UI components (e.g., Button, Table, Header, Footer, Sidebar, Popup, etc.)
+- `src/layouts/`: Layout components for different user roles or page types (e.g., AdminLayout, AppLayout).
+- `src/pages/`: Page-level components grouped by feature or user role (e.g., Admin, Customer, Public).
+- `src/assets/`: Static assets such as images, icons, and fonts.
+- `src/docs/`: Documentation files (e.g., asset_sources.md).
+- `src/index.tsx`: Entry point for the React application.
+- `src/App.tsx`: Main app component and route definitions.
+
+### State Management & Routing
+- Uses React's built-in state management (hooks) for local state.
+- For global state or complex flows, context or third-party libraries can be integrated as needed.
+- Client-side routing is managed by React Router, enabling navigation between pages without full reloads.
+
+### Styling & Theming
+- Tailwind CSS is used for all styling, ensuring a consistent and responsive design.
+- Custom themes or additional styles can be added via Tailwind configuration.
+
+### Testing
+- React Testing Library is used for writing unit and integration tests for components and pages.
+- Test files are typically placed alongside the components they test or in a dedicated `__tests__` directory.
+- Run tests with `npm test` or `yarn test`.
+
+### Backend Integration
+- The frontend communicates with the backend REST API at `http://localhost:8080` using fetch or libraries like axios.
+- API endpoints are organized by resource (e.g., `/api/cycles`, `/api/appointments`).
+- Authentication and authorization are handled via tokens or session management as implemented in the backend.
+
+### Adding New Pages or Components
+1. Create a new component in `src/components/` or a new page in `src/pages/`.
+2. Add any required assets to `src/assets/`.
+3. Define routes for new pages in `src/App.tsx`.
+4. Use Tailwind CSS classes for styling.
+5. Write tests for new components/pages using React Testing Library.
+
+For more details, see the code in the `frontend/` directory and the documentation in `src/docs/`.
 
 ## Useful Commands
 ### Backend
@@ -145,6 +244,18 @@ Menstrual-Management/
 - Eject (irreversible): `npm run eject`
 
 See the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started) and [React documentation](https://reactjs.org/) for more frontend details.
+
+## Team Members
+<!--
+- **Nguyen Van A** - Backend Developer
+- **Tran Thi B** - Frontend Developer
+- **Le Van C** - Fullstack Developer
+- **Pham Thi D** - UI/UX Designer
+- **Hoang Van E** - Tester
+-->
+
+## Asset & Icon Sources
+See `frontend/src/docs/asset_sources.md` for attributions and sources of all icons, images, and fonts used in the project.
 
 ## License
 This project is for educational purposes. See `LICENSE` if available.

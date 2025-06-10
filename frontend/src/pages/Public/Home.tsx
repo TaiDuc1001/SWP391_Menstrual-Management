@@ -115,13 +115,13 @@ const Home: React.FC = () => {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <button
                                     className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                    onClick={() => navigate('/signup')}
+                                    onClick={() => navigate('/about-us')}
                                 >
                                     More about us
                                 </button>
                                 <button
                                     className="px-8 py-4 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-full transition-all duration-300 backdrop-blur-sm border border-white/30"
-                                    onClick={() => navigate('/login')}
+                                    onClick={() => navigate('/signup')}
                                 >
                                     Sign up for a free account
                                 </button>
@@ -227,18 +227,38 @@ const Home: React.FC = () => {
             {/* Blogs Section */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-6">
-                    <h2 className="text-4xl font-bold text-pink-500 mb-12">Blogs on health</h2>
+                    <div className="flex justify-between items-center mb-12">
+                        <h2 className="text-4xl font-bold text-pink-500">Blogs on health</h2>
+                        <button
+                            className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300"
+                            onClick={() => navigate('/blogs')}
+                        >
+                            View all blogs →
+                        </button>
+                    </div>
                     <div className="grid md:grid-cols-3 gap-8">
                         {blogPosts.map((post, index) => (
-                            <div key={index} className="bg-gray-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                            <div
+                                key={index}
+                                className="bg-gray-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+                                onClick={() => navigate('/blogs')}
+                            >
                                 <div className="h-48 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                     <span className="text-6xl">{post.image}</span>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-sm text-pink-500 font-medium mb-2">{post.category}</div>
+                                    <div className="text-sm text-pink-500 font-medium mb-2 bg-pink-50 px-3 py-1 rounded-full inline-block">
+                                        {post.category}
+                                    </div>
                                     <h3 className="text-xl font-bold text-gray-800 mb-4">{post.title}</h3>
                                     <p className="text-gray-600 mb-4 leading-relaxed">{post.description}</p>
-                                    <button className="text-pink-500 hover:text-pink-600 font-medium">
+                                    <button
+                                        className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate('/blogs');
+                                        }}
+                                    >
                                         Read more →
                                     </button>
                                 </div>
