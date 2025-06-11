@@ -173,6 +173,7 @@ The backend of the Menstrual Management System is built using Java and Spring Bo
 ### Testing
 - Unit and integration tests are written using JUnit.
 - Test classes are located under `src/test/java/swp391/com/backend/`.
+- ```$env:JAVA_HOME="$HOME\.jdks\ms-17.0.15" ; .\mvnw spring-boot:run```
 - Run tests with `./mvnw test` or `mvnw.cmd test`.
 
 ### Frontend Integration
