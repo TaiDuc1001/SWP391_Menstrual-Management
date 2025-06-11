@@ -5,9 +5,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class OrderDTO {
-    private Integer id;
-    private PackageDTO aPackage;
+public class ExaminationDTO {
+    private Long id;
+    private PanelDTO panel;
     private String date;
     private Integer slot;
     private String note;

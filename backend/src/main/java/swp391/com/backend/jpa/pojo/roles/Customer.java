@@ -1,10 +1,12 @@
 package swp391.com.backend.jpa.pojo.roles;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.appointments.Appointment;
-import swp391.com.backend.jpa.pojo.order.Examination;
+import swp391.com.backend.jpa.pojo.examination.Examination;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,8 +14,10 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-public class Customer {
+public class Customer implements Role{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

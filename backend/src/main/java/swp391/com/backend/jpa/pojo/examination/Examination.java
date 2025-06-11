@@ -1,4 +1,4 @@
-package swp391.com.backend.jpa.pojo.order;
+package swp391.com.backend.jpa.pojo.examination;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +8,6 @@ import swp391.com.backend.jpa.pojo.roles.Staff;
 import swp391.com.backend.jpa.pojo.schedule.Slot;
 import swp391.com.backend.jpa.pojo.test.Panel;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -42,4 +41,6 @@ public class Examination {
 
     @OneToOne(mappedBy = "examinations")
     private Result result;
+
+    private ExaminationStatus examinationStatus;
 }

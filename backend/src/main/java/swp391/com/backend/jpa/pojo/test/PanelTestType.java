@@ -34,5 +34,4 @@ public class PanelTestType {
 @AllArgsConstructor
 class PanelTestTypeID implements Serializable {
     private Long testId;
-    private Long packageId;
 }

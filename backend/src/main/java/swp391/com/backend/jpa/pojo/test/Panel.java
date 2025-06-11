@@ -3,7 +3,7 @@ package swp391.com.backend.jpa.pojo.test;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import swp391.com.backend.jpa.pojo.order.Examination;
+import swp391.com.backend.jpa.pojo.examination.Examination;
 
 import java.math.BigDecimal;
 import java.util.List;
