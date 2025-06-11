@@ -39,7 +39,7 @@ public class Examination {
     @JoinColumn(name = "panel_id")
     private Panel panel;
 
-    @OneToOne(mappedBy = "examinations")
+    @OneToOne(mappedBy = "examination")
     private Result result;
 
     private ExaminationStatus examinationStatus;

@@ -23,6 +23,6 @@ public class TestService {
     }
 
     public void deleteTestById(Integer id) {
-        testRepository.deleteById(id);
+        testRepository.deleteById(id.longValue());
     }
 }

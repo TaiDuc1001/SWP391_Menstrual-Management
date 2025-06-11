@@ -12,15 +12,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CycleSymptomByDate {
     @Id
+    @Column(name = "cycle_id")
     private Long cycleId;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "cycle_id")
+    private Cycle cycle;
 
     private LocalDateTime date;
 
+    @Enumerated(EnumType.STRING)
     private Symptom symptom;
-
-    @ManyToOne
-    @JoinColumn(name = "cycle_id", insertable = false, updatable = false)
-    private Cycle cycles;
 }
 
 

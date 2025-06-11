@@ -19,7 +19,7 @@ public class AppointmentsService {
     }
 
     public void deleteAppointment(Integer id) {
-        Appointment appointment = appointmentsRepository.findById(id)
+        Appointment appointment = appointmentsRepository.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
         appointmentsRepository.delete(appointment);
     }

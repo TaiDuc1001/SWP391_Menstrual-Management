@@ -23,9 +23,9 @@ public class TestType {
     @Lob
     private String description;
 
-    @OneToMany(mappedBy = "test_type")
+    @OneToMany(mappedBy = "testType")
     private List<PanelTestType> panelTestTypes;
 
-    @OneToMany(mappedBy = "test_type")
+    @OneToMany(mappedBy = "testType")
     private List<ResultDetail> resultDetails;
 }

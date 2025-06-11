@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.roles.Customer;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "cycles")
@@ -49,8 +48,5 @@ public class Cycle{
 
     @Column(name = "contraceptive_reminder")
     private String contraceptiveReminder;
-
-    @OneToMany(mappedBy = "cycles")
-    private List<CycleSymptomByDate> cycleSymptoms;
 }
 

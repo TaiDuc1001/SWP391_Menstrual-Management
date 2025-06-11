@@ -33,5 +33,6 @@ public class PanelTestType {
 @NoArgsConstructor
 @AllArgsConstructor
 class PanelTestTypeID implements Serializable {
-    private Long testId;
+    private Long testTypeId;
+    private Long panelId;
 }

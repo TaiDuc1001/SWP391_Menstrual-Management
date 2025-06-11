@@ -37,9 +37,9 @@ public class AppointmentsController {
     public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentCreateRequest request) {
 
         Appointment appointment = Appointment.builder()
-                .date(request.getDate())
-                .slot(request.getSlot())
-                .note(request.getNote())
+                .date(java.time.LocalDate.parse(request.getDate()))
+                .slot(swp391.com.backend.jpa.pojo.schedule.Slot.values()[request.getSlot()])
+                .customerNote(request.getNote())
                 .description(request.getDescription())
                 .build();
 

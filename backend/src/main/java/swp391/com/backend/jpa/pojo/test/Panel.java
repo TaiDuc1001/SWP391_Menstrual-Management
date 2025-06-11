@@ -32,7 +32,7 @@ public class Panel {
 
     private PanelTag panelTag;
 
-    @OneToMany(mappedBy = "panel")
+    @OneToMany(mappedBy = "aPanel")
     private List<PanelTestType> panelTestTypes;
 
     @OneToMany(mappedBy = "panel")

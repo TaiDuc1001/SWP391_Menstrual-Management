@@ -2,31 +2,30 @@ package swp391.com.backend.service.test;
 
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.test.PanelTestType;
-import swp391.com.backend.jpa.pojo.test.TestType;
-import swp391.com.backend.jpa.repository.test.PackageTestRepository;
+import swp391.com.backend.jpa.repository.test.PanelTestTypeRepository;
 
 import java.util.List;
 
 @Service
 public class PackageTestService {
-    private final PackageTestRepository packageTestRepository;
+    private final PanelTestTypeRepository panelTestTypeRepository;
 
-    public PackageTestService(PackageTestRepository packageTestRepository) {
-        this.packageTestRepository = packageTestRepository;
+    public PackageTestService(PanelTestTypeRepository panelTestTypeRepository) {
+        this.panelTestTypeRepository = panelTestTypeRepository;
     }
 
-    public List<TestType> getTestsByPackageId(Integer packageId) {
-        return packageTestRepository.findTestsByPackageId(packageId);
+    public List<PanelTestType> getTestsByPackageId(Long packageId) {
+        return panelTestTypeRepository.findTestsByPanelId(packageId);
     }
 
-    public void addTestToPackage(Integer packageId, Integer testId) {
+    public void addTestToPackage(Long packageId, Long testTypeId) {
         PanelTestType panelTestType = new PanelTestType();
-        panelTestType.setPackageId(packageId);
-        panelTestType.setTestId(testId);
-        packageTestRepository.save(panelTestType);
+        panelTestType.setPanelId(packageId);
+        panelTestType.setTestTypeId(testTypeId);
+        panelTestTypeRepository.save(panelTestType);
     }
 
-    public void removeTestFromPackage(Integer packageId, Integer testId) {
-        packageTestRepository.deleteByPackageIdAndTestId(packageId, testId);
+    public void removeTestFromPackage(Long packageId, Long testTypeId) {
+        panelTestTypeRepository.deleteByPanelIdAndTestTypeId(packageId, testTypeId);
     }
 }
