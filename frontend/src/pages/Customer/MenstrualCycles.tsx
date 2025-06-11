@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
@@ -8,6 +7,7 @@ import DayNotePopup from '../../components/Popup/DayNotePopup';
 import Woman from '../../assets/images/Woman.svg';
 import pen from '../../assets/images/pen.svg';
 import MenstrualCyclesAll from './MenstrualCyclesAll';
+import { MenstrualCycleProvider, useMenstrualCycles } from '../../context/MenstrualCycleContext';
 // import Header from '../../components/Header/Header';
 
 
@@ -22,6 +22,7 @@ const MenstrualCycles: React.FC = () => {
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const location = useLocation();
     const navigate = useNavigate();
+    const { cycles, setCycles } = useMenstrualCycles();
 
 
     useEffect(() => {
@@ -62,18 +63,8 @@ const MenstrualCycles: React.FC = () => {
             default: return `${baseStyle} bg-gray-100 text-gray-600 hover:bg-gray-200`;
         }
     };
-    const historyData = [
-        { startDate: '13/05/2024', endDate: '17/05/2024', duration: 5, cycle: 28 },
-        { startDate: '16/04/2024', endDate: '19/04/2024', duration: 4, cycle: 29 },
-        { startDate: '16/03/2024', endDate: '20/03/2024', duration: 5, cycle: 28 },
-        { startDate: '15/02/2024', endDate: '19/02/2024', duration: 5, cycle: 28 },
-        { startDate: '18/01/2024', endDate: '22/01/2024', duration: 5, cycle: 30 },
-        { startDate: '20/12/2023', endDate: '24/12/2023', duration: 5, cycle: 29 },
-        { startDate: '22/11/2023', endDate: '26/11/2023', duration: 5, cycle: 28 },
-        { startDate: '25/10/2023', endDate: '29/10/2023', duration: 5, cycle: 28 },
-        { startDate: '27/09/2023', endDate: '01/10/2023', duration: 5, cycle: 29 },
-        { startDate: '29/08/2023', endDate: '02/09/2023', duration: 5, cycle: 28 }
-    ];
+    // Replace historyData with cycles from context
+    const historyData = cycles;
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen w-full">
@@ -211,9 +202,19 @@ const MenstrualCycles: React.FC = () => {
                     <MenstrualCyclePopup 
                       open={showCyclePopup} 
                       onClose={() => setShowCyclePopup(false)}
-                      onSave={() => {
+                      onSave={(data) => {
                         setShowCyclePopup(false);
                         setShowSuccess(true);
+                        setCycles(prev => [
+                          ...prev,
+                          {
+                            id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
+                            startDate: data.startDate,
+                            endDate: '', // You may want to update this logic
+                            duration: data.duration,
+                            cycle: data.cycleLength
+                          }
+                        ]);
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
                     />
@@ -242,4 +243,11 @@ const MenstrualCycles: React.FC = () => {
     );
 };
 
-export default MenstrualCycles;
+// Wrap the page with MenstrualCycleProvider
+export default function MenstrualCyclesWithProvider() {
+  return (
+    <MenstrualCycleProvider>
+      <MenstrualCycles />
+    </MenstrualCycleProvider>
+  );
+}

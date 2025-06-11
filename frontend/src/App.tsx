@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import AdminLayout from "./layouts/AdminLayout";
+import StaffLayout from './layouts/StaffLayout';
 import './index.css';
 
 function App() {
@@ -21,10 +22,14 @@ function App() {
 
         {/*chưa chia role*/}
 
-      {/*<AdminLayout*/}
-      {/*    isAuthenticated={isAuthenticated}*/}
-      {/*    onAuthToggle={handleAuthToggle}*/}
-      {/*/>*/}
+      {/* <AdminLayout
+        isAuthenticated={isAuthenticated}
+        onAuthToggle={handleAuthToggle}
+      /> */}
+      {/* <StaffLayout
+        isAuthenticated={isAuthenticated}
+        onAuthToggle={handleAuthToggle}
+      /> */}
     </Router>
   );
 }
