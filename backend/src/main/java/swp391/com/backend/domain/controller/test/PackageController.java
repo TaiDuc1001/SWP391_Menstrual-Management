@@ -3,7 +3,7 @@ package swp391.com.backend.domain.controller.test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import swp391.com.backend.jpa.pojo.test.Package;
+import swp391.com.backend.jpa.pojo.test.Panel;
 import swp391.com.backend.service.test.PackageService;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class PackageController {
     }
 
     @GetMapping("/api/packages")
-    public ResponseEntity<List<Package>> getAllPackages(){
+    public ResponseEntity<List<Panel>> getAllPackages(){
         return ResponseEntity.ok(packageService.getAllPackages());
     }
 }

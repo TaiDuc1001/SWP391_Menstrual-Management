@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import swp391.com.backend.jpa.pojo.roles.Account;
-
+import swp391.com.backend.jpa.pojo.roles.Customer;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,11 +18,16 @@ import java.util.List;
 public class Cycle{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private CycleSymptomByDate cycleSymptomByDate;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @Column(name = "cycle_start_date")
     private LocalDate cycleStartDate;
@@ -45,9 +49,6 @@ public class Cycle{
 
     @Column(name = "contraceptive_reminder")
     private String contraceptiveReminder;
-
-    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
-    private Boolean isActive;
 
     @OneToMany(mappedBy = "cycles")
     private List<CycleSymptomByDate> cycleSymptoms;

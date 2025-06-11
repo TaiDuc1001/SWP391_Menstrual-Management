@@ -1,17 +1,12 @@
 package swp391.com.backend.domain.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import swp391.com.backend.domain.dto.CustomerDTO;
-import swp391.com.backend.domain.dto.OrderDTO;
-import swp391.com.backend.domain.dto.PackageDTO;
-import swp391.com.backend.jpa.pojo.order.Order;
+import swp391.com.backend.domain.dto.dto.OrderDTO;
+import swp391.com.backend.jpa.pojo.order.Examination;
 
-@Mapper(componentModel = "spring", uses = {CustomerMapper.class, PackageMapper.class})
+@Mapper(componentModel = "spring")
 public interface OrderMapper {
-    @Mapping(target = "customer", source = "customer")
-    @Mapping(target = "APackage", source = "APackage")
-    @Mapping(target = "status", source = "status") 
-    OrderDTO toDTO(Order entity);
-    Order toEntity(OrderDTO dto);
+    OrderDTO toDTO(Examination entity);
+    Examination toEntity(OrderDTO dto);
 }
+

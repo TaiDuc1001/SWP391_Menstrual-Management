@@ -1,30 +1,46 @@
 package swp391.com.backend.jpa.pojo.order;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import swp391.com.backend.jpa.pojo.test.Test;
+import lombok.*;
+import swp391.com.backend.jpa.pojo.test.TestType;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "result_details")
 @Data
 @NoArgsConstructor
+@IdClass(ResultDetailId.class)
 public class ResultDetail {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "result_id")
+    private Long resultId;
+
+    @Id
+    @Column(name = "test_type_id")
+    private Long testTypeId;
+
+    private Integer testIndex;
+    private String notes;
+
+    @Column(name = "diagnosis", columnDefinition = "TINYINT(1)")
+    private Boolean diagnosis;
 
     @ManyToOne
     @JoinColumn(name = "result_id")
     private Result result;
 
     @ManyToOne
-    @JoinColumn(name = "test_id")
-    private Test test;
-
-    private Integer score;
-    private String notes;
-    @Column(name = "results", columnDefinition = "TINYINT(1)")
-    private Boolean results;
+    @JoinColumn(name = "test_type_id")
+    private TestType testType;
 }
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+class ResultDetailId implements Serializable {
+    private Long resultId;
+    private Long testTypeId;
+}

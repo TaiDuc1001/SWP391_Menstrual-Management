@@ -2,7 +2,7 @@ package swp391.com.backend.service.order;
 
 
 import org.springframework.stereotype.Service;
-import swp391.com.backend.jpa.pojo.order.Order;
+import swp391.com.backend.jpa.pojo.order.Examination;
 import swp391.com.backend.jpa.repository.order.OrderRepository;
 
 import java.util.List;
@@ -15,16 +15,16 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public List<Order> getAllOrders() {
+    public List<Examination> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    public Order createOrder(Order order) {
-        return orderRepository.save(order);
+    public Examination createOrder(Examination examination) {
+        return orderRepository.save(examination);
     }
 
     public void deleteOrder(Integer id){
-        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
-        orderRepository.delete(order);
+        Examination examination = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        orderRepository.delete(examination);
     }
 }

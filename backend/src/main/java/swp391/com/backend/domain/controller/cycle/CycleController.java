@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import swp391.com.backend.domain.dto.CycleDTO;
+import swp391.com.backend.domain.dto.dto.CycleDTO;
 import swp391.com.backend.domain.dto.request.CycleCreationRequest;
 import swp391.com.backend.domain.mapper.CycleMapper;
 import swp391.com.backend.jpa.pojo.cycle.Cycle;

@@ -4,22 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "payment_methods")
-@Data
-@NoArgsConstructor
-public class PaymentMethod {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(name = "method_name")
-    private String methodName;
-
-    @Lob
-    private String description;
-
-    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
-    private Boolean isActive;
+public enum PaymentMethod {
+    MOMO,
+    BANK_TRANSFER,
+    CASH_ON_DELIVERY
 }
 
