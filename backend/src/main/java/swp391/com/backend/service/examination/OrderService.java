@@ -1,9 +1,9 @@
-package swp391.com.backend.service.order;
+package swp391.com.backend.service.examination;
 
 
 import org.springframework.stereotype.Service;
-import swp391.com.backend.jpa.pojo.order.Examination;
-import swp391.com.backend.jpa.repository.order.OrderRepository;
+import swp391.com.backend.jpa.pojo.examination.Examination;
+import swp391.com.backend.jpa.repository.examination.OrderRepository;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class OrderService {
         return orderRepository.save(examination);
     }
 
-    public void deleteOrder(Integer id){
+    public void deleteOrder(Long id){
         Examination examination = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
         orderRepository.delete(examination);
     }

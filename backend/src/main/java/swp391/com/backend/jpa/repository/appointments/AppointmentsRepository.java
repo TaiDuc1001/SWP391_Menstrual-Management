@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import swp391.com.backend.jpa.pojo.appointments.Appointment;
 
 @Repository
-public interface AppointmentsRepository extends JpaRepository<Appointment, Integer> {
+public interface AppointmentsRepository extends JpaRepository<Appointment, Long> {
 }

@@ -16,4 +16,7 @@ public class AccountCreateRequest {
 
     @NotBlank(message = "Mật khẩu không được để trống")
     String password;
+
+    @NotBlank(message = "Vai trò không được để trống")
+    String role;
 }

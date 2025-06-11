@@ -1,17 +1,21 @@
 package swp391.com.backend.jpa.pojo.roles;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import swp391.com.backend.jpa.pojo.order.Examination;
+import swp391.com.backend.jpa.pojo.examination.Examination;
 
 import java.util.List;
 
 @Entity
 @Table(name = "staffs")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-public class Staff {
+public class Staff implements Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

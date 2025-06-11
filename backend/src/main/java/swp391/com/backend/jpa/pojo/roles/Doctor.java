@@ -1,6 +1,8 @@
 package swp391.com.backend.jpa.pojo.roles;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.appointments.Appointment;
@@ -12,8 +14,10 @@ import java.util.List;
 @Entity
 @Table(name = "doctors")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-public class Doctor {
+public class Doctor implements Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

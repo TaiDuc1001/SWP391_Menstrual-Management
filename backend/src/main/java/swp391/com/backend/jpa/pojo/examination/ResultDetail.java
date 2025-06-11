@@ -1,4 +1,4 @@
-package swp391.com.backend.jpa.pojo.order;
+package swp391.com.backend.jpa.pojo.examination;
 
 import jakarta.persistence.*;
 import lombok.*;

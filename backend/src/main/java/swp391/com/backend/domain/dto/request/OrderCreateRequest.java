@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import swp391.com.backend.jpa.pojo.schedule.Slot;
 import swp391.com.backend.jpa.pojo.test.Panel;
+
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -19,10 +22,10 @@ public class OrderCreateRequest {
     Panel aPanel;
 
     @NotBlank(message = "Ngày không được để trống")
-    String date;
+    LocalDate date;
 
     @NotNull(message = "Khung giờ không được để trống")
-    Integer slot;
+    Slot slot;
 
     String note;
 
