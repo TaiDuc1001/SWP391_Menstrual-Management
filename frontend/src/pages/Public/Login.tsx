@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import avatarIcon from '../../assets/icons/avatar.svg';
-import keyIcon from '../../assets/icons/key.svg';
+import keyIcon from '../../assets/icons/eye.svg';
 import eyeIcon from '../../assets/icons/eye.svg';
 import googleIcon from '../../assets/icons/google.svg';
 import facebookIcon from '../../assets/icons/facebook.svg';
@@ -98,7 +98,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </button>
         </div>
         <div className="text-center text-sm text-gray-500">
-          No account? <button type="button" className="text-pink-400 font-semibold hover:underline">Signup now</button>
+          No account? <button type="button" className="text-pink-400 font-semibold hover:underline" onClick={() => navigate('/signup')}>Signup now</button>
         </div>
       </form>
     </div>
