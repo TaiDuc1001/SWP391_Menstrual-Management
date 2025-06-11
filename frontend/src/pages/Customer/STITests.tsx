@@ -24,6 +24,18 @@ const availableTypes = [
 
 const TESTS_PER_PAGE = 5;
 
+// Slot number to time mapping
+const slotTimeMap: Record<number, string> = {
+  1: '08:00-09:00',
+  2: '09:00-10:00',
+  3: '10:00-11:00',
+  4: '11:00-12:00',
+  5: '13:00-14:00',
+  6: '14:00-15:00',
+  7: '15:00-16:00',
+  8: '16:00-17:00',
+};
+
 const STITests: React.FC = () => {
   const [testRecords, setTestRecords] = useState<any[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
@@ -51,11 +63,15 @@ const STITests: React.FC = () => {
           data = [];
         }
       }
+      console.log('Processed data:', data);
       setTestRecords(data.map((order: any) => ({
         id: order.id,
         date: order.date ? new Date(order.date).toLocaleDateString('en-GB') : '',
-        slot: order.slot ? String(order.slot) : '',
-        panels: order.aPackage?.package_name || order.note || 'No info',
+        slot: order.slot ?? '',
+        panels: (
+          order.apackage?.packageName ||
+          'No info'
+        ),
         status: order.status
           ? order.status.toLowerCase() === 'completed' ? 'Completed'
             : order.status.toLowerCase() === 'pending' ? 'Pending'
@@ -184,7 +200,7 @@ const STITests: React.FC = () => {
       </TestingUtilityBar>      
       <TestTable
         filteredRecords={filteredRecords}
-        slotTimeMap={{}} // not used for display anymore
+        slotTimeMap={slotTimeMap} 
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}

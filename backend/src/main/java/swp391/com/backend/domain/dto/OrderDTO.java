@@ -15,4 +15,5 @@ public class OrderDTO {
     private String note;
     private CustomerDTO customer;
     private BigDecimal totalAmount;
+    private String status; 
 }

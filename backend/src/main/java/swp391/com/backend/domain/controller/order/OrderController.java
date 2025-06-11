@@ -25,6 +25,7 @@ public class OrderController {
                 .stream()
                 .map(orderMapper::toDTO)
                 .toList();
+        result.forEach(System.out::println);
         return ResponseEntity.ok(result);
     }
 

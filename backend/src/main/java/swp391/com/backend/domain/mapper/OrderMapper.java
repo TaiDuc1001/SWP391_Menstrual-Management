@@ -11,6 +11,7 @@ import swp391.com.backend.jpa.pojo.order.Order;
 public interface OrderMapper {
     @Mapping(target = "customer", source = "customer")
     @Mapping(target = "APackage", source = "APackage")
+    @Mapping(target = "status", source = "status") 
     OrderDTO toDTO(Order entity);
     Order toEntity(OrderDTO dto);
 }
