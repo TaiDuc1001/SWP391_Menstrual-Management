@@ -24,6 +24,7 @@ public class ResultDetail {
 
     private Integer score;
     private String notes;
+    @Column(name = "results", columnDefinition = "TINYINT(1)")
     private Boolean results;
 }
 

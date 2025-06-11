@@ -21,8 +21,8 @@ public class OrderCreateRequest {
     @NotBlank(message = "Ngày không được để trống")
     String date;
 
-    @NotBlank(message = "Khung giờ không được để trống")
-    String slot;
+    @NotNull(message = "Khung giờ không được để trống")
+    Integer slot;
 
     String note;
 

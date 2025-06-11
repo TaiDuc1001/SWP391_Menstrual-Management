@@ -10,7 +10,7 @@ public class AppointmentDTO {
     private String date;
     private String status;
     private Doctor doctor;
-    private String slot;
+    private Integer slot;
     private String note;
     private String description;
 

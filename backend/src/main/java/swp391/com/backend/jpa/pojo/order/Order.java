@@ -24,7 +24,8 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    private String slot;
+    @Column(name = "slot", columnDefinition = "TINYINT(1)")
+    private Integer slot;
     private BigDecimal totalAmount;
     private String status;
     private String date;
@@ -32,6 +33,7 @@ public class Order {
     @Lob
     private String note;
 
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @ManyToOne

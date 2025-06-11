@@ -46,7 +46,7 @@ public class Cycle{
     @Column(name = "contraceptive_reminder")
     private String contraceptiveReminder;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "cycles")

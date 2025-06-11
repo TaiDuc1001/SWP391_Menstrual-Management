@@ -38,6 +38,6 @@ public class RatingFeedback {
     @Column(name = "rating_date")
     private LocalDateTime ratingDate;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 }

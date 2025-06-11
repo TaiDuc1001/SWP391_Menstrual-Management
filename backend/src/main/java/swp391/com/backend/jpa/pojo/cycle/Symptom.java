@@ -19,7 +19,7 @@ public class Symptom{
     @Column(unique = true)
     private String name;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "symptoms")

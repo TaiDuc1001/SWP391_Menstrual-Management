@@ -19,7 +19,7 @@ public class PaymentMethod {
     @Lob
     private String description;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 }
 

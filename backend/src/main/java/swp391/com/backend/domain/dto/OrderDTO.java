@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 @Data
 public class OrderDTO {
     private Integer id;
-    private Package aPackage;
+    private PackageDTO aPackage;
     private String date;
-    private String slot;
+    private Integer slot;
     private String note;
-    private Customer customer;
+    private CustomerDTO customer;
     private BigDecimal totalAmount;
 }

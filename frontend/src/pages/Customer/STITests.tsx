@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axios';
 
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 
@@ -15,17 +16,6 @@ import TestResultPopup from '../../components/Popup/TestResultPopup';
 
 const plusIcon = plusWhiteIcon; 
 
-const slotTimeMap: { [key: string]: string } = {
-  '1': '7:00 - 9:00',
-  '2': '9:00 - 11:00',
-  '3': '11:00 - 13:00',
-  '4': '13:00 - 15:00',
-  '5': '15:00 - 17:00',
-  '6': '17:00 - 19:00',
-  '7': '19:00 - 21:00',
-  '8': '21:00 - 23:00',
-};
-
 const availableTypes = [
   'HIV',
   'Gonorrhea',
@@ -35,29 +25,7 @@ const availableTypes = [
 const TESTS_PER_PAGE = 5;
 
 const STITests: React.FC = () => {
-  const testRecords = [
-    { id: 1, date: '22/05/2025', slot: '2', panels: 'HIV, Gonorrhea, Syphilis', status: 'Pending'},
-    { id: 2, date: '22/05/2025', slot: '2', panels: 'HIV, Gonorrhea, Syphilis', status: 'In progress'},
-    { id: 3, date: '22/05/2025', slot: '2', panels: 'HIV, Gonorrhea, Syphilis', status: 'Completed'},
-    { id: 4, date: '22/05/2025', slot: '3', panels: 'HIV, Gonorrhea, Syphilis', status: 'Completed'},
-    { id: 5, date: '21/05/2025', slot: '1', panels: 'HIV', status: 'Pending'},
-    { id: 6, date: '20/05/2025', slot: '4', panels: 'Syphilis', status: 'Completed'},
-    { id: 7, date: '19/05/2025', slot: '5', panels: 'Gonorrhea', status: 'In progress'},
-    { id: 8, date: '18/05/2025', slot: '6', panels: 'HIV, Syphilis', status: 'Completed'},
-    { id: 9, date: '17/05/2025', slot: '7', panels: 'Gonorrhea, Syphilis', status: 'Pending'},
-    { id: 10, date: '16/05/2025', slot: '8', panels: 'HIV', status: 'Completed'},
-    { id: 11, date: '15/05/2025', slot: '1', panels: 'Syphilis', status: 'Completed'},
-    { id: 12, date: '14/05/2025', slot: '2', panels: 'Gonorrhea', status: 'In progress'},
-    { id: 13, date: '13/05/2025', slot: '3', panels: 'HIV, Gonorrhea', status: 'Pending'},
-    { id: 14, date: '12/05/2025', slot: '4', panels: 'Syphilis', status: 'Completed'},
-    { id: 15, date: '11/05/2025', slot: '5', panels: 'HIV, Syphilis', status: 'Completed'},
-    { id: 16, date: '10/05/2025', slot: '6', panels: 'Gonorrhea', status: 'Pending'},
-    { id: 17, date: '09/05/2025', slot: '7', panels: 'HIV', status: 'Completed'},
-    { id: 18, date: '08/05/2025', slot: '8', panels: 'Syphilis', status: 'Completed'},
-    { id: 19, date: '07/05/2025', slot: '1', panels: 'Gonorrhea, Syphilis', status: 'In progress'},
-    { id: 20, date: '06/05/2025', slot: '2', panels: 'HIV, Gonorrhea', status: 'Completed'},
-  ];
-
+  const [testRecords, setTestRecords] = useState<any[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
   const [selectedDateTo, setSelectedDateTo] = useState<Date | null>(null);
@@ -70,6 +38,32 @@ const STITests: React.FC = () => {
   const [showResultPopup, setShowResultPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    api.get('/orders').then(res => {
+      console.log('Fetched /orders response:', res.data); // Debug log
+      let data = res.data;
+      if (!Array.isArray(data)) {
+        // If backend returns a single object, wrap it in an array
+        if (data && typeof data === 'object') {
+          data = [data];
+        } else {
+          data = [];
+        }
+      }
+      setTestRecords(data.map((order: any) => ({
+        id: order.id,
+        date: order.date ? new Date(order.date).toLocaleDateString('en-GB') : '',
+        slot: order.slot ? String(order.slot) : '',
+        panels: order.aPackage?.package_name || order.note || 'No info',
+        status: order.status
+          ? order.status.toLowerCase() === 'completed' ? 'Completed'
+            : order.status.toLowerCase() === 'pending' ? 'Pending'
+            : order.status.charAt(0).toUpperCase() + order.status.slice(1)
+          : '',
+      })));
+    });
+  }, []);
 
   const handleCheckboxChange = (id: number) => {
     setSelected((prev) =>
@@ -92,27 +86,27 @@ const STITests: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
+  // Get all unique slot ids from data for filter dropdown
+  const slotOptions = React.useMemo(() => {
+    const slots = Array.from(new Set(testRecords.map(r => r.slot).filter(Boolean)));
+    return [{ value: '', label: 'All slots' }, ...slots.map(slot => ({ value: slot, label: `Slot ${slot}` }))];
+  }, [testRecords]);
+
   const filteredRecords = testRecords.filter((record) => {
     if (hideRows.includes(record.id)) {
       return false;
     }
-
     const searchMatch =
       record.date.includes(searchTerm) ||
-      slotTimeMap[record.slot].includes(searchTerm) ||
+      record.slot.includes(searchTerm) ||
       record.panels.toLowerCase().includes(searchTerm.toLowerCase());
-
     const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
-
-    const recordPanelList = record.panels.split(',').map(p => p.trim());
+    const recordPanelList = record.panels.split(',').map((p: string) => p.trim());
     const typeMatch = selectedTypes.length === 0 ? true : selectedTypes.some(type => recordPanelList.includes(type));
-
     const statusMatch = selectedStatus ? record.status === selectedStatus : true;
-
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-
     return searchMatch && slotMatch && typeMatch && statusMatch && fromMatch && toMatch;
   });
 
@@ -151,12 +145,12 @@ const STITests: React.FC = () => {
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}
-          placeholder="Search by date, time, or test panels"
+          placeholder="Search by date, slot, or test panels"
         />
         <DropdownSelect
           value={selectedSlot}
           onChange={setSelectedSlot}
-          options={[{ value: '', label: 'All slots' }, ...Object.entries(slotTimeMap).map(([slot, time]) => ({ value: slot, label: `Slot ${slot}` }))]}
+          options={slotOptions}
         />
         <MultiSelectDropdown
           selected={selectedTypes}
@@ -190,7 +184,7 @@ const STITests: React.FC = () => {
       </TestingUtilityBar>      
       <TestTable
         filteredRecords={filteredRecords}
-        slotTimeMap={slotTimeMap}
+        slotTimeMap={{}} // not used for display anymore
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
