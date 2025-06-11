@@ -2,7 +2,7 @@ package swp391.com.backend.service.test;
 
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.repository.test.PackageRepository;
-import swp391.com.backend.jpa.pojo.test.Package;
+import swp391.com.backend.jpa.pojo.test.Panel;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ public class PackageService {
         this.packageRepository = packageRepository;
     }
 
-    public Package createPackage(Package aPackage) {
-        return packageRepository.save(aPackage);
+    public Panel createPackage(Panel aPanel) {
+        return packageRepository.save(aPanel);
     }
 
-    public List<Package> getAllPackages(){
+    public List<Panel> getAllPackages(){
         return packageRepository.findAll();
     }
 

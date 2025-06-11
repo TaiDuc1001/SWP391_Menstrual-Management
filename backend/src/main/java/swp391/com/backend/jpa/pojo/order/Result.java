@@ -13,13 +13,14 @@ import java.util.List;
 public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    private String code;
 
     @OneToOne
     @JoinColumn(name = "order_id", unique = true)
-    private Order order;
+    private Examination examination;
 
     @OneToMany(mappedBy = "result")
     private List<ResultDetail> resultDetails;
 }
-

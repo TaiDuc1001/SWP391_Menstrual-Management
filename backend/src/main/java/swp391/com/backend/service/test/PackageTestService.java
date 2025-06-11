@@ -1,8 +1,8 @@
 package swp391.com.backend.service.test;
 
 import org.springframework.stereotype.Service;
-import swp391.com.backend.jpa.pojo.test.PackageTest;
-import swp391.com.backend.jpa.pojo.test.Test;
+import swp391.com.backend.jpa.pojo.test.PanelTestType;
+import swp391.com.backend.jpa.pojo.test.TestType;
 import swp391.com.backend.jpa.repository.test.PackageTestRepository;
 
 import java.util.List;
@@ -15,15 +15,15 @@ public class PackageTestService {
         this.packageTestRepository = packageTestRepository;
     }
 
-    public List<Test> getTestsByPackageId(Integer packageId) {
+    public List<TestType> getTestsByPackageId(Integer packageId) {
         return packageTestRepository.findTestsByPackageId(packageId);
     }
 
     public void addTestToPackage(Integer packageId, Integer testId) {
-        PackageTest packageTest = new PackageTest();
-        packageTest.setPackageId(packageId);
-        packageTest.setTestId(testId);
-        packageTestRepository.save(packageTest);
+        PanelTestType panelTestType = new PanelTestType();
+        panelTestType.setPackageId(packageId);
+        panelTestType.setTestId(testId);
+        packageTestRepository.save(panelTestType);
     }
 
     public void removeTestFromPackage(Integer packageId, Integer testId) {

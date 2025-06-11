@@ -1,4 +1,4 @@
-package swp391.com.backend.domain.dto;
+package swp391.com.backend.domain.dto.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;

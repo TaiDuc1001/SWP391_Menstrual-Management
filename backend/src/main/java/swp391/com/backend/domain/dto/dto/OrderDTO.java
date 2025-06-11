@@ -1,8 +1,6 @@
-package swp391.com.backend.domain.dto;
+package swp391.com.backend.domain.dto.dto;
 
 import lombok.Data;
-import swp391.com.backend.jpa.pojo.roles.Customer;
-import swp391.com.backend.jpa.pojo.test.Package;
 
 import java.math.BigDecimal;
 

@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swp391.com.backend.domain.dto.OrderDTO;
+import swp391.com.backend.domain.dto.dto.OrderDTO;
 import swp391.com.backend.domain.dto.request.OrderCreateRequest;
 import swp391.com.backend.domain.mapper.OrderMapper;
-import swp391.com.backend.jpa.pojo.order.Order;
+import swp391.com.backend.jpa.pojo.order.Examination;
 import swp391.com.backend.service.order.OrderService;
 
 import java.util.List;
@@ -32,17 +32,17 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateRequest request) {
 
-        Order order = Order.builder()
-                .aPackage(request.getAPackage())
+        Examination examination = Examination.builder()
+                .aPanel(request.getAPanel())
                 .date(request.getDate())
                 .slot(request.getSlot())
                 .note(request.getNote())
                 .build();
 
-        Order createdOrder = orderService.createOrder(order);
+        Examination createdExamination = orderService.createOrder(examination);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderMapper.toDTO(createdOrder));
+                .body(orderMapper.toDTO(createdExamination));
     }
 
 

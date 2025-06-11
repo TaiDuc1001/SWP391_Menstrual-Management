@@ -7,8 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.roles.Customer;
 import swp391.com.backend.jpa.pojo.roles.Doctor;
+import swp391.com.backend.jpa.pojo.schedule.Slot;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "appointments")
@@ -19,7 +20,7 @@ import java.math.BigDecimal;
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -29,25 +30,20 @@ public class Appointment {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    private String date;
-
-    @Column(name = "slot", columnDefinition = "TINYINT(1)")
-    private Integer slot;
-
-    private String googleMeetUrl;
-
-    private String appointmentStatus;
-
+    private LocalDate date;
+    private Slot slot;
+    private String url;
+    private AppointmentStatus appointmentStatus;
     private String description;
 
     @Lob
-    private String note;
+    private String doctorNote;
 
-    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
-    private Boolean isActive;
+    @Lob
+    private String customerNote;
 
-    private BigDecimal price;
+    @Lob
+    private String feedback;
 
-    @OneToOne(mappedBy = "appointment")
-    private RatingFeedback ratingFeedback;
+    private int score;
 }

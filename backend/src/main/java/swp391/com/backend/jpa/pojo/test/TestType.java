@@ -8,27 +8,24 @@ import swp391.com.backend.jpa.pojo.order.ResultDetail;
 import java.util.List;
 
 @Entity
-@Table(name = "tests")
+@Table(name = "test_types")
 @Data
 @NoArgsConstructor
-public class Test {
+public class TestType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
 
-    private String type;
+    private String normalRange;
 
     @Lob
     private String description;
 
-    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
-    private Boolean isActive;
+    @OneToMany(mappedBy = "test_type")
+    private List<PanelTestType> panelTestTypes;
 
-    @OneToMany(mappedBy = "test")
-    private List<PackageTest> packageTests;
-
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "test_type")
     private List<ResultDetail> resultDetails;
 }

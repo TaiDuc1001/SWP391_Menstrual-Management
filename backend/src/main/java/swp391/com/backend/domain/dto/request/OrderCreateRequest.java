@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import swp391.com.backend.jpa.pojo.test.Package;
+import swp391.com.backend.jpa.pojo.test.Panel;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +16,7 @@ import swp391.com.backend.jpa.pojo.test.Package;
 public class OrderCreateRequest {
 
     @NotNull(message = "Gói xét nghiệm không được để trống")
-    Package aPackage;
+    Panel aPanel;
 
     @NotBlank(message = "Ngày không được để trống")
     String date;
