@@ -24,4 +24,7 @@ public class Staff {
 
     @OneToMany(mappedBy = "staff")
     private List<Order> orders;
+
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
+    private Boolean isActive;
 }

@@ -31,7 +31,8 @@ public class Appointment {
 
     private String date;
 
-    private String slot;
+    @Column(name = "slot", columnDefinition = "TINYINT(1)")
+    private Integer slot;
 
     private String googleMeetUrl;
 
@@ -42,6 +43,7 @@ public class Appointment {
     @Lob
     private String note;
 
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     private BigDecimal price;

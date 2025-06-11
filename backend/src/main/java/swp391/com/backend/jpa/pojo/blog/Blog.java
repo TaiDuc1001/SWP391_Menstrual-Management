@@ -38,6 +38,7 @@ public class Blog {
 
     private LocalDateTime publishDate;
     private String status;
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "blog")

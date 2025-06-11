@@ -18,7 +18,10 @@ public class Schedule {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
+    @Column(name = "slot", columnDefinition = "TINYINT(1)")
     private Integer slot;
+
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 }
 

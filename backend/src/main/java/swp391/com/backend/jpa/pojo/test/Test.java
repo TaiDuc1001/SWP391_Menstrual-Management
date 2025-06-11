@@ -23,7 +23,7 @@ public class Test {
     @Lob
     private String description;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "test")

@@ -24,6 +24,7 @@ public class Doctor {
 
     private Integer experience;
     private String specialization;
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "doctor")

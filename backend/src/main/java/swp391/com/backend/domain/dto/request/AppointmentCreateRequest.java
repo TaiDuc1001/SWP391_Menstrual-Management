@@ -18,7 +18,7 @@ public class AppointmentCreateRequest {
     String date;
 
     @NotNull(message = "Khung giờ không được để trống")
-    String slot;
+    Integer slot;
 
     String note;
 

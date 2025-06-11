@@ -26,6 +26,7 @@ public class Account {
 
     private String password;
 
+    @Column(columnDefinition = "TINYINT(1)")
     private Boolean accountStatus;
 
     private String email;

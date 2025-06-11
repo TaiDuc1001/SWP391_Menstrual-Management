@@ -28,6 +28,8 @@ public class Package {
 
     private BigDecimal price;
     private Integer duration;
+
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "aPackage")

@@ -29,7 +29,7 @@ public class MedicalRecord {
     @Lob
     private String description;
 
-    @Column(name = "is_confidential")
+    @Column(name = "is_confidential", columnDefinition = "TINYINT(1)")
     private Boolean isConfidential;
 }
 
