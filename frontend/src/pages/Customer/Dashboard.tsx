@@ -11,6 +11,7 @@ import bloodIcon from '../../assets/icons/blood.svg';
 import strawberyyIcon from '../../assets/icons/strawberyy.svg';
 import angryIcon from '../../assets/icons/angry.svg';
 import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
+import SuccessPopup from '../../components/Popup/SuccessPopup';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Dashboard: React.FC = () => {
     { name: 'Khám Thai', date: '05/11/2024', time: '15:30', place: 'Viện Pasteur', status: 'Chưa xác nhận' },
   ];
   const [showReminderPopup, setShowReminderPopup] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -158,8 +160,13 @@ const Dashboard: React.FC = () => {
       <ReminderSettingsPopup 
         open={showReminderPopup} 
         onClose={() => setShowReminderPopup(false)}
-        onSave={() => setShowReminderPopup(false)}
+        onSave={() => {
+          setShowReminderPopup(false);
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 1200);
+        }}
       />
+      <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
     </div>
   );
 };
