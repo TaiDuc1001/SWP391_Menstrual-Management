@@ -1,18 +1,18 @@
 package swp391.com.backend.service.appointments;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.appointments.Appointment;
 import swp391.com.backend.jpa.repository.appointments.AppointmentsRepository;
+import swp391.com.backend.service.roles.DoctorService;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AppointmentsService {
     private final AppointmentsRepository appointmentsRepository;
-
-    public AppointmentsService(AppointmentsRepository appointmentsRepository) {
-        this.appointmentsRepository = appointmentsRepository;
-    }
+    private final DoctorService doctorService;
 
     public List<Appointment> getAllAppointments() {
         return appointmentsRepository.findAll();
