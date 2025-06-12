@@ -1,85 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TitleBar from '../../components/TitleBar/TitleBar';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import { useNavigate } from 'react-router-dom';
 import DropdownSelect from '../../components/Filter/DropdownSelect';
 import SearchInput from '../../components/Filter/SearchInput';
 import BookingSuccessPopup from '../../components/Popup/BookingSuccessPopup';
-
-const mockAdvisors = [
-  {
-    id: 1,
-    name: 'Dr. Nguyễn Văn A',
-    avatar: '', // You can use a placeholder image or avatar
-    rating: 4.5,
-    reviews: 45,
-    appointments: 133,
-    specialization: 'General',
-  },
-  {
-    id: 2,
-    name: 'Dr. Trần Thị B',
-    avatar: '', // You can use a placeholder image or avatar
-    rating: 4.8,
-    reviews: 60,
-    appointments: 200,
-    specialization: 'Gynecology',
-  },
-  {
-    id: 3,
-    name: 'Dr. Lê Văn C',
-    avatar: '', // You can use a placeholder image or avatar
-    rating: 4.2,
-    reviews: 30,
-    appointments: 90,
-    specialization: 'Endocrinology',
-  },
-  {
-    id: 4,
-    name: 'Dr. Phạm Thị D',
-    avatar: '', // You can use a placeholder image or avatar
-    rating: 4.9,
-    reviews: 80,
-    appointments: 250,
-    specialization: 'Obstetrics',
-  },
-  {
-    id: 5,
-    name: 'Dr. Nguyễn Thị E',
-    avatar: '',
-    rating: 4.7,
-    reviews: 55,
-    appointments: 180,
-    specialization: 'General',
-  },
-  {
-    id: 6,
-    name: 'Dr. Đặng Văn F',
-    avatar: '',
-    rating: 4.3,
-    reviews: 38,
-    appointments: 120,
-    specialization: 'Gynecology',
-  },
-  {
-    id: 7,
-    name: 'Dr. Hồ Thị G',
-    avatar: '',
-    rating: 4.6,
-    reviews: 70,
-    appointments: 210,
-    specialization: 'Obstetrics',
-  },
-  {
-    id: 8,
-    name: 'Dr. Vũ Văn H',
-    avatar: '',
-    rating: 4.1,
-    reviews: 25,
-    appointments: 80,
-    specialization: 'Endocrinology',
-  },
-];
+import api from '../../api/axios';
 
 const timeSlots = [
   '09:00-09:30',
@@ -93,31 +19,82 @@ const reviewOptions = [
   { value: 'high', label: 'Highest Rated' },
   { value: 'low', label: 'Lowest Rated' },
 ];
-const specializationOptions = [
-  { value: '', label: 'Specialization' },
-  ...Array.from(new Set(mockAdvisors.map(a => a.specialization))).map(s => ({ value: s, label: s }))
-];
 
 const BookAppointmentPage: React.FC = () => {
+  const [advisors, setAdvisors] = useState<any[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [selectedAdvisor, setSelectedAdvisor] = useState(1);
+  const [selectedAdvisor, setSelectedAdvisor] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [problem, setProblem] = useState('');
   const [reviewFilter, setReviewFilter] = useState('');
   const [specializationFilter, setSpecializationFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowSuccess(true);
-    setTimeout(() => {
-      navigate('/appointments');
-    }, 10000);
+  const customerId = 3; // TODO: Replace with real customer id from auth context if available
+
+  const slotMap: Record<string, string> = {
+    '09:00-09:30': 'ONE',
+    '10:00-10:30': 'TWO',
+    '11:00-11:30': 'THREE',
+    '14:00-14:30': 'FOUR',
   };
 
-  const advisor = mockAdvisors.find(a => a.id === selectedAdvisor);
+  useEffect(() => {
+    api.get('/doctors')
+      .then(res => {
+        const data = res.data;
+        setAdvisors(
+          data.map((d: any) => ({
+            id: d.id,
+            name: d.name,
+            avatar: '', // Placeholder
+            rating: 4.5, // Default or random, since API doesn't provide
+            reviews: 10, // Default
+            appointments: 0, // Default
+            specialization: d.specialization,
+            price: d.price,
+          }))
+        );
+      })
+      .catch(err => {
+        // Optionally handle error
+        setAdvisors([]);
+      });
+  }, []);
+
+  const specializationOptions = [
+    { value: '', label: 'Specialization' },
+    ...Array.from(new Set(advisors.map(a => a.specialization))).map(s => ({ value: s, label: s }))
+  ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAdvisor || !selectedDate || !selectedTime) return;
+    setLoading(true);
+    try {
+      const response = await api.post('/appointments', {
+        doctorId: selectedAdvisor,
+        customerId,
+        date: selectedDate,
+        slot: slotMap[selectedTime],
+        customerNote: problem,
+      });
+      console.log('Appointment booked:', response.data);
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate('/appointments');
+      }, 10000);
+    } catch (err) {
+      // Optionally show error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const advisor = advisors.find(a => a.id === selectedAdvisor);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
@@ -153,7 +130,7 @@ const BookAppointmentPage: React.FC = () => {
                 {/* Advisor List - allow dropdown selection */}
                 <div className="bg-gray-50 rounded-xl p-4 cursor-pointer border border-pink-200 max-h-64 overflow-y-auto">
                   <div className="flex flex-col gap-2">
-                    {mockAdvisors
+                    {advisors
                       .filter(a =>
                         (!specializationFilter || a.specialization === specializationFilter) &&
                         (a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -180,6 +157,7 @@ const BookAppointmentPage: React.FC = () => {
                                 <span className="text-yellow-500 font-bold">{a.rating} ★</span>
                                 <span>({a.reviews} reviews)</span>
                                 <span className="ml-2 text-xs text-gray-400">({a.appointments} appointments given)</span>
+                                <span className="ml-2 text-xs text-pink-500 font-bold">{a.price ? `${a.price}k` : ''}</span>
                               </div>
                             </div>
                           </div>
@@ -240,11 +218,11 @@ const BookAppointmentPage: React.FC = () => {
               </div>
               <button
                 type="submit"
-                className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 text-lg hover:bg-pink-500 transition shadow flex items-center justify-center gap-2"
-                disabled={!selectedTime || !selectedDate}
+                className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 text-lg hover:bg-pink-500 transition shadow flex items-center justify-center gap-2 disabled:opacity-60"
+                disabled={!selectedTime || !selectedDate || loading}
               >
                 <img src={calendarIcon} alt="calendar" className="w-6 h-6" />
-                Book
+                {loading ? 'Booking...' : 'Book'}
               </button>
             </div>
           </div>

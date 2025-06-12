@@ -36,6 +36,18 @@ const slotTimeMap: Record<number, string> = {
   8: '16:00-17:00',
 };
 
+// Slot code to time mapping for string slots
+const slotCodeTimeMap: Record<string, string> = {
+  ONE: '08:00-09:00',
+  TWO: '09:00-10:00',
+  THREE: '10:00-11:00',
+  FOUR: '11:00-12:00',
+  FIVE: '13:00-14:00',
+  SIX: '14:00-15:00',
+  SEVEN: '15:00-16:00',
+  EIGHT: '16:00-17:00',
+};
+
 const STITests: React.FC = () => {
   const [testRecords, setTestRecords] = useState<any[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
@@ -52,8 +64,8 @@ const STITests: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/orders').then(res => {
-      console.log('Fetched /orders response:', res.data); // Debug log
+    api.get('/examinations').then(res => {
+      console.log('Fetched /examinations response:', res.data); // Debug log
       let data = res.data;
       if (!Array.isArray(data)) {
         // If backend returns a single object, wrap it in an array
@@ -68,14 +80,13 @@ const STITests: React.FC = () => {
         id: order.id,
         date: order.date ? new Date(order.date).toLocaleDateString('en-GB') : '',
         slot: order.slot ?? '',
-        panels: (
-          order.apackage?.packageName ||
-          'No info'
-        ),
-        status: order.status
-          ? order.status.toLowerCase() === 'completed' ? 'Completed'
-            : order.status.toLowerCase() === 'pending' ? 'Pending'
-            : order.status.charAt(0).toUpperCase() + order.status.slice(1)
+        time: slotCodeTimeMap[String(order.slot).toUpperCase()] || '',
+        panels: order.panelName || 'No info',
+        status: order.examinationStatus
+          ? order.examinationStatus.toLowerCase() === 'completed' ? 'Completed'
+            : order.examinationStatus.toLowerCase() === 'pending' ? 'Pending'
+            : order.examinationStatus.toLowerCase() === 'in_progress' ? 'In progress'
+            : order.examinationStatus.charAt(0).toUpperCase() + order.examinationStatus.slice(1).toLowerCase()
           : '',
       })));
     });
