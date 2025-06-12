@@ -1,4 +1,4 @@
-package swp391.com.backend.domain.dto.dto;
+package swp391.com.backend.domain.dto.simpledto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

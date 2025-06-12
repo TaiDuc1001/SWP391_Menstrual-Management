@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.domain.dto.dto.ExaminationDTO;
-import swp391.com.backend.domain.dto.dto.SimpleExaminationDTO;
+import swp391.com.backend.domain.dto.simpledto.SimpleExaminationDTO;
 import swp391.com.backend.domain.dto.request.OrderCreateRequest;
 import swp391.com.backend.domain.mapper.ExaminationMapper;
 import swp391.com.backend.jpa.pojo.examination.Examination;

@@ -3,7 +3,7 @@ package swp391.com.backend.domain.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import swp391.com.backend.domain.dto.dto.ExaminationDTO;
-import swp391.com.backend.domain.dto.dto.SimpleExaminationDTO;
+import swp391.com.backend.domain.dto.simpledto.SimpleExaminationDTO;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 
 @Mapper(componentModel = "spring")

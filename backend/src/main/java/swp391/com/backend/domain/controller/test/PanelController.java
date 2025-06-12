@@ -5,9 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import swp391.com.backend.domain.dto.dto.SimplePanelDTO;
+import swp391.com.backend.domain.dto.simpledto.SimplePanelDTO;
 import swp391.com.backend.domain.mapper.PanelMapper;
-import swp391.com.backend.jpa.pojo.test.Panel;
 import swp391.com.backend.service.test.PanelService;
 
 import java.util.List;
