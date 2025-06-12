@@ -9,7 +9,7 @@ import swp391.com.backend.domain.dto.dto.SimpleExaminationDTO;
 import swp391.com.backend.domain.dto.request.OrderCreateRequest;
 import swp391.com.backend.domain.mapper.ExaminationMapper;
 import swp391.com.backend.jpa.pojo.examination.Examination;
-import swp391.com.backend.service.examination.OrderService;
+import swp391.com.backend.service.examination.ExaminationService;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ import java.util.List;
 @RequestMapping("/api/examinations")
 @RequiredArgsConstructor
 public class ExaminationController {
-    private final OrderService orderService;
+    private final ExaminationService examinationService;
     private final ExaminationMapper examinationMapper;
 
     @GetMapping
     public ResponseEntity<List<SimpleExaminationDTO>> getAllOrders() {
-        List<SimpleExaminationDTO> result = orderService.getAllOrders()
+        List<SimpleExaminationDTO> result = examinationService.getAllOrders()
                 .stream()
                 .map(examinationMapper::toSimpleDTO)
                 .toList();
@@ -38,7 +38,7 @@ public class ExaminationController {
                 .slot(request.getSlot())
                 .build();
 
-        Examination createdExamination = orderService.createOrder(examination);
+        Examination createdExamination = examinationService.createOrder(examination);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(examinationMapper.toDTO(createdExamination));
@@ -48,7 +48,7 @@ public class ExaminationController {
 
     @DeleteMapping("/api/orders/{id}")
     public ResponseEntity<Void> deleteOrder(@RequestBody ExaminationDTO orderRequest) {
-        orderService.deleteOrder(orderRequest.getId());
+        examinationService.deleteOrder(orderRequest.getId());
         return ResponseEntity.noContent().build();
     }
 }

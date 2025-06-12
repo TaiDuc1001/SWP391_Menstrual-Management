@@ -1,6 +1,7 @@
 package swp391.com.backend.service.examination;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 import swp391.com.backend.jpa.repository.examination.OrderRepository;
@@ -8,12 +9,9 @@ import swp391.com.backend.jpa.repository.examination.OrderRepository;
 import java.util.List;
 
 @Service
-public class OrderService {
+@RequiredArgsConstructor
+public class ExaminationService {
     private final OrderRepository orderRepository;
-
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     public List<Examination> getAllOrders() {
         return orderRepository.findAll();
