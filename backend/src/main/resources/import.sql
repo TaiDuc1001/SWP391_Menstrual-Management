@@ -20,7 +20,7 @@ INSERT INTO accounts (id, email, password, status) VALUES (19, 'mai.le@example.c
 INSERT INTO accounts (id, email, password, status) VALUES (20, 'hieu.pham@example.com', '123', 1);
 
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (3, 'Customer test account', '1990-01-01', 1, '0123456789', '123456789012', '123 Test Street, Test City');
-INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (5, 'Nguyen Thi Mai', '1985-03-15', 0, '0912345678', '123456789012', '123 Le Loi, Hanoi');
+INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (5, 'Nguyen Thi Mai', '1985-03-15', 0, '0912345678', '123456789013', '123 Le Loi, Hanoi');
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (19, 'Tran Van Hung', '1990-07-22', 1, '0987654321', '987654321098', '456 Nguyen Trai, Ho Chi Minh City');
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (20, 'Le Thi Hoa', '1978-11-30', 0, '0932123456', '456789123456', '789 Tran Hung Dao, Da Nang');
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (16, 'Pham Minh Tuan', '1995-05-10', 1, '0908765432', '321654987123', '101 Vo Van Tan, Hanoi');
@@ -65,30 +65,29 @@ INSERT INTO schedules (date, slot, doctor_id) VALUES ('2025-06-18', '2', 6);
 
 
 -- INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (0, 3, 1, '2025-06-12', 1, 'https://zoom.us/j/100', 'Experiencing irregular periods ', 'Recommend tracking ', 'The doctor was', 5, 0);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (0, 3, 1, '2025-06-12', 1, 'https://zoom.us/j/100', 'Experiencing irregular periods and mild cramps for the past week.', 'Recommend tracking cycle and consider ultrasound if persists.', 'The doctor was very attentive and explained everything clearly. I feel more confident about managing my symptoms now.', 5, 0);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (1, 4, 6, '2025-06-13', 2, 'https://zoom.us/j/101', 'Lower abdominal pain and occasional nausea.', 'Advised rest, hydration, and prescribed mild pain relief.', 'I appreciate the doctor taking time to listen to my concerns and providing practical advice. The session was very helpful.', 5, 0);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (1, 3, 6, '2025-06-13', 2, 'https://zoom.us/j/101', 'Lower abdominal pain and occasional nausea.', 'Advised rest, hydration, and prescribed mild pain relief.', 'I appreciate the doctor taking time to listen to my concerns and providing practical advice. The session was very helpful.', 5, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (2, 5, 7, '2025-06-14', 3, 'https://zoom.us/j/102', 'Fever and burning sensation during urination.', 'Ordered urine test and recommended antibiotics if infection confirmed.', NULL, NULL, 3);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (3, 16, 8, '2025-06-15', 4, 'https://zoom.us/j/103', 'Unusual vaginal discharge and mild itching.', 'Suggested swab test and maintain hygiene.', NULL, NULL, 1);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (4, 17, 9, '2025-06-16', 5, 'https://zoom.us/j/104', 'Severe cramps and heavy bleeding during period.', 'Recommended iron supplements and further blood tests.', 'The doctor was knowledgeable and gave me clear instructions on what to do next. I feel reassured after the visit.', 4, 0);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (5, 18, 10, '2025-06-17', 6, 'https://zoom.us/j/105', 'Recurring headaches and fatigue.', 'Advised regular sleep and hydration, consider blood pressure check.', NULL, NULL, 1);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (5, 3, 10, '2025-06-17', 6, 'https://zoom.us/j/105', 'Recurring headaches and fatigue.', 'Advised regular sleep and hydration, consider blood pressure check.', NULL, NULL, 1);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (6, 19, 1, '2025-06-18', 7, 'https://zoom.us/j/106', 'Mild pelvic pain and irregular spotting.', 'Monitor symptoms, return if worsens.', NULL, NULL, 2);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (7, 20, 6, '2025-06-19', 8, 'https://zoom.us/j/107', 'Painful urination and lower back pain.', 'Prescribed antibiotics and recommended follow-up.', 'Very satisfied with the care I received. The doctor explained the treatment plan thoroughly and answered all my questions.', 5, 0);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (7, 20, 6, '2025-06-19', 0, 'https://zoom.us/j/107', 'Painful urination and lower back pain.', 'Prescribed antibiotics and recommended follow-up.', 'Very satisfied with the care I received. The doctor explained the treatment plan thoroughly and answered all my questions.', 5, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (8, 3, 7, '2025-06-20', 1, 'https://zoom.us/j/108', 'Itching and redness in genital area.', 'Suggested antifungal cream and hygiene tips.', NULL, NULL, 4);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (9, 4, 8, '2025-06-21', 2, 'https://zoom.us/j/109', 'Mild fever and body aches.', 'Recommended paracetamol and rest.', NULL, NULL, 3);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (9, 3, 8, '2025-06-21', 2, 'https://zoom.us/j/109', 'Mild fever and body aches.', 'Recommended paracetamol and rest.', NULL, NULL, 3);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (10, 5, 9, '2025-06-22', 3, 'https://zoom.us/j/110', 'Pain during intercourse and unusual discharge.', 'Advised pelvic exam and prescribed medication.', 'The doctor was professional and made me feel comfortable discussing sensitive issues. I appreciate the support and advice.', 5, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (11, 16, 10, '2025-06-23', 4, 'https://zoom.us/j/111', 'Missed period and breast tenderness.', 'Suggested pregnancy test and follow-up.', NULL, NULL, 1);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (12, 17, 1, '2025-06-24', 5, 'https://zoom.us/j/112', 'Mild abdominal pain and bloating.', 'Recommended dietary changes and observation.', NULL, NULL, 2);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (13, 18, 6, '2025-06-25', 6, 'https://zoom.us/j/113', 'Recurring yeast infections.', 'Prescribed antifungal medication and discussed prevention.', 'I am grateful for the doctors thorough explanation and preventive tips. The session was informative and reassuring.', 4, 0);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (13, 3, 6, '2025-06-25', 6, 'https://zoom.us/j/113', 'Recurring yeast infections.', 'Prescribed antifungal medication and discussed prevention.', 'I am grateful for the doctors thorough explanation and preventive tips. The session was informative and reassuring.', 4, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (14, 19, 7, '2025-06-26', 7, 'https://zoom.us/j/114', 'Painful periods and mood swings.', 'Suggested hormonal evaluation and stress management.', NULL, NULL, 1);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (15, 20, 8, '2025-06-27', 8, 'https://zoom.us/j/115', 'Mild lower back pain.', 'Advised stretching exercises and posture correction.', NULL, NULL, 3);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (15, 20, 8, '2025-06-27', 0, 'https://zoom.us/j/115', 'Mild lower back pain.', 'Advised stretching exercises and posture correction.', NULL, NULL, 3);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (16, 3, 9, '2025-06-28', 1, 'https://zoom.us/j/116', 'Spotting between periods.', 'Monitor for changes, return if persists.', 'The doctor was very helpful and provided clear guidance on what to watch for. I feel more at ease now.', 5, 0);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (17, 4, 10, '2025-06-29', 2, 'https://zoom.us/j/117', 'Mild fever and chills.', 'Recommended blood test and hydration.', NULL, NULL, 4);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (17, 3, 10, '2025-06-29', 2, 'https://zoom.us/j/117', 'Mild fever and chills.', 'Recommended blood test and hydration.', NULL, NULL, 4);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (18, 5, 1, '2025-06-30', 3, 'https://zoom.us/j/118', 'Mild pelvic discomfort.', 'Suggested warm compress and observation.', NULL, NULL, 5);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (19, 16, 6, '2025-07-01', 4, 'https://zoom.us/j/119', 'Heavy bleeding and dizziness.', 'Recommended blood test and iron supplements.', 'The doctor took my symptoms seriously and explained the next steps in detail. I appreciate the care and attention.', 5, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (20, 3, 6, '2025-06-15', 1, 'https://zoom.us/j/123456789', 'Concern about STI symptoms', 'Order HIV test', NULL, NULL, 3);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (21, 4, 8, '2025-06-16', 3, 'https://zoom.us/j/987654321', 'Unusual discharge', 'Chlamydia PCR test', 'Very informative', 4, 0);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (21, 3, 8, '2025-06-16', 3, 'https://zoom.us/j/987654321', 'Unusual discharge', 'Chlamydia PCR test', 'Very informative', 4, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (22, 5, 9, '2025-06-17', 5, 'https://zoom.us/j/456789123', 'Pain during urination', 'Test for gonorrhea', NULL, NULL, 1);
-INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (23, 18, 10, '2025-06-18', 2, 'https://zoom.us/j/654321987', 'Routine STI check', 'Full STI panel', NULL, NULL, 3);
+INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (23, 19, 10, '2025-06-18', 2, 'https://zoom.us/j/654321987', 'Routine STI check', 'Full STI panel', NULL, NULL, 3);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (24, 19, 6, '2025-06-19', 4, 'https://zoom.us/j/321654987', 'Sores on genitals', 'Syphilis test ordered', 'Professional care', 5, 0);
 
 -- INSERT INTO panels (id, panel_name, description, price, response_time, duration, panel_type, panel_tag) VALUES (18, 'Chlamydia & Gonorrhea Pane', 'The Chlamydia & Gonorrhea Panel ', 85.00, 48, 30, 1, 1);
@@ -116,30 +115,29 @@ INSERT INTO panels (id, panel_name, description, price, response_time, duration,
 
 -- INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (18, 4, 2, 18, 1, '2025-07-02', 2, 3);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (1, 3, 11, 1, 1, '2025-06-15', 1, 1);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (2, 4, 12, 2, 3, '2025-06-16', 5, 2);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (2, 3, 12, 2, 3, '2025-06-16', 5, 2);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (3, 5, 13, 3, 5, '2025-06-17', 1, 4);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (4, 16, 14, 4, 2, '2025-06-18', 5, 1);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (5, 17, 15, 5, 4, '2025-06-19', 1, 2);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (6, 18, 2, 6, 5, '2025-06-20', 2, 1);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (7, 19, 11, 7, 6, '2025-06-21', 3, 6);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (6, 19, 2, 6, 5, '2025-06-20', 2, 1);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (7, 19, 11, 7, 6, '2025-06-21', 3, 0);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (8, 20, 12, 8, 7, '2025-06-22', 4, 3);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (9, 3, 13, 9, 8, '2025-06-23', 1, 5);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (10, 4, 14, 10, 1, '2025-06-24', 5, 2);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (9, 3, 13, 9, 0, '2025-06-23', 1, 5);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (10, 3, 14, 10, 1, '2025-06-24', 5, 2);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (11, 5, 15, 11, 2, '2025-06-25', 2, 1);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (12, 16, 2, 12, 3, '2025-06-26', 3, 6);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (12, 16, 2, 12, 3, '2025-06-26', 3, 0);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (13, 17, 11, 13, 4, '2025-06-27', 4, 3);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (14, 18, 12, 14, 5, '2025-06-28', 1, 5);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (14, 19, 12, 14, 5, '2025-06-28', 1, 5);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (15, 19, 13, 15, 6, '2025-06-29', 5, 2);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (16, 20, 14, 16, 7, '2025-06-30', 2, 1);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (17, 3, 15, 17, 8, '2025-07-01', 3, 6);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (18, 4, 2, 18, 1, '2025-07-02', 4, 3);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (17, 3, 15, 17, 0, '2025-07-01', 3, 0);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (18, 3, 2, 18, 1, '2025-07-02', 4, 3);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (19, 5, 11, 19, 2, '2025-07-03', 1, 5);
 INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (20, 16, 12, 20, 3, '2025-07-04', 2, 2);
 
 
 
 -- INSERT INTO results (id, order_id, code) VALUES (17, 18, 'RES-20250702-018');
-INSERT INTO results (id, order_id, code) VALUES (0, 1, 'RES-20250615-001');
 INSERT INTO results (id, order_id, code) VALUES (1, 2, 'RES-20250616-002');
 INSERT INTO results (id, order_id, code) VALUES (2, 3, 'RES-20250617-003');
 INSERT INTO results (id, order_id, code) VALUES (3, 4, 'RES-20250618-004');
@@ -161,7 +159,6 @@ INSERT INTO results (id, order_id, code) VALUES (18, 19, 'RES-20250703-019');
 INSERT INTO results (id, order_id, code) VALUES (19, 20, 'RES-20250704-020');
 
 -- INSERT INTO test_types (id, name, normal_range, description) VALUES (18, 'Hepatitis C Viral Load', '<15 IU/mL', 'Quantifies Hepatitis C virus RNA');
-INSERT INTO test_types (id, name, normal_range, description) VALUES (0, 'HIV 1/2 Antibody/Antigen', 'Negative', 'Screening for HIV-1 and HIV-2 infection');
 INSERT INTO test_types (id, name, normal_range, description) VALUES (1, 'Chlamydia trachomatis PCR', 'Negative', 'Detects Chlamydia trachomatis DNA in urine or swab');
 INSERT INTO test_types (id, name, normal_range, description) VALUES (2, 'Syphilis RPR', '<1:8', 'Rapid Plasma Reagin for syphilis screening');
 INSERT INTO test_types (id, name, normal_range, description) VALUES (3, 'Gonorrhea PCR', 'Negative', 'Detects Neisseria gonorrhoeae DNA in urine or swab');
@@ -187,7 +184,6 @@ INSERT INTO test_types (id, name, normal_range, description) VALUES (22, 'Neisse
 INSERT INTO test_types (id, name, normal_range, description) VALUES (23, 'Trichomonas Wet Mount', 'No motile trichomonads', 'Microscopy for Trichomonas vaginalis');
 
 -- INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 18);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 1);  
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13, 1); 
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (14, 1); 
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 2);  
@@ -196,7 +192,6 @@ INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 3);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 3); 
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 4);  
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (22, 4); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 5);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 5);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 5);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 5);
@@ -218,7 +213,6 @@ INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (20, 5);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (21, 5);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (22, 5);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (23, 5);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 6);
@@ -236,82 +230,9 @@ INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (16, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (17, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 6);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 6);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (20, 6);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (21, 6);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (22, 6);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (23, 6);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 7);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 7); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 8);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 8);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7, 9);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (8, 9);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (16, 9); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (17, 9); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 9); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (11, 10); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (12, 10); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 10);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 10); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (23, 10); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 11);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 11);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 11); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 12);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 12);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 12);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 12);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (4, 13);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (21, 13); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (5, 14);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (23, 14); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (4, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (5, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (8, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (9, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (10, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (11, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (12, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (14, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (16, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (17, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (20, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (21, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (22, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (23, 15);
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 16);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 16); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 17);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 17);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 17);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 18);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 18);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 19);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 19); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7, 19);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (8, 19);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (16, 19); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (17, 19); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 19); 
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (0, 20);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 20);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 20);  
-INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 20);  
 
 
 -- INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (17, 18, '12 IU/mL', 'Hepatitis B viral load undetectable', 0);
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (0, 0, 'Negative', 'No HIV detected', 0);
 INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (1, 1, 'Negative', 'No Chlamydia trachomatis DNA found', 0);
 INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (2, 2, 'Non-reactive', 'No syphilis antibodies detected', 0);
 INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (3, 3, 'Negative', 'No Neisseria gonorrhoeae DNA detected', 0);
@@ -333,33 +254,26 @@ INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosi
 INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (19, 19, 'Negative', 'No HPV 16/18 DNA detected', 0);
 
 -- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (4, 3, '2025-07-01', 28, 5, '2025-07-15', '2025-07-13', '2025-07-17');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (0, 5, '2025-06-05', 28, 6, '2025-06-19', '2025-06-17', '2025-06-21');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (1, 7, '2025-06-10', 28, 5, '2025-06-24', '2025-06-22', '2025-06-26');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (1, 17, '2025-06-10', 28, 5, '2025-06-24', '2025-06-22', '2025-06-26');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (2, 3, '2025-05-01', 28, 5, '2025-05-14', '2025-05-12', '2025-05-16');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (3, 5, '2025-05-05', 28, 6, '2025-05-19', '2025-05-17', '2025-05-21');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (4, 3, '2025-07-01', 28, 5, '2025-07-15', '2025-07-13', '2025-07-17');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (5, 4, '2025-07-03', 29, 6, '2025-07-18', '2025-07-16', '2025-07-20');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (6, 5, '2025-07-05', 27, 5, '2025-07-19', '2025-07-17', '2025-07-21');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (7, 7, '2025-07-07', 28, 6, '2025-07-21', '2025-07-19', '2025-07-23');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (8, 16, '2025-07-09', 28, 5, '2025-07-23', '2025-07-21', '2025-07-25');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (9, 17, '2025-07-11', 29, 6, '2025-07-26', '2025-07-24', '2025-07-28');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (10, 18, '2025-07-13', 27, 5, '2025-07-27', '2025-07-25', '2025-07-29');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (11, 19, '2025-07-15', 28, 6, '2025-07-29', '2025-07-27', '2025-07-31');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (12, 20, '2025-07-17', 28, 5, '2025-07-31', '2025-07-29', '2025-08-02');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (13, 3, '2025-07-19', 29, 6, '2025-08-03', '2025-08-01', '2025-08-05');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (14, 4, '2025-07-21', 27, 5, '2025-08-04', '2025-08-02', '2025-08-06');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (15, 5, '2025-07-23', 28, 6, '2025-08-07', '2025-08-05', '2025-08-09');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (16, 7, '2025-07-25', 28, 5, '2025-08-08', '2025-08-06', '2025-08-10');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (17, 16, '2025-07-27', 29, 6, '2025-08-11', '2025-08-09', '2025-08-13');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (18, 17, '2025-07-29', 27, 5, '2025-08-12', '2025-08-10', '2025-08-14');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (19, 18, '2025-08-01', 28, 6, '2025-08-15', '2025-08-13', '2025-08-17');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (20, 19, '2025-08-03', 28, 5, '2025-08-17', '2025-08-15', '2025-08-19');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (21, 20, '2025-08-05', 29, 6, '2025-08-20', '2025-08-18', '2025-08-22');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (22, 3, '2025-08-07', 27, 5, '2025-08-21', '2025-08-19', '2025-08-23');
-INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (23, 4, '2025-08-09', 28, 6, '2025-08-23', '2025-08-21', '2025-08-25');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (5, 5, '2025-07-05', 27, 5, '2025-07-19', '2025-07-17', '2025-07-21');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (6, 17, '2025-07-07', 28, 6, '2025-07-21', '2025-07-19', '2025-07-23');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (7, 16, '2025-07-09', 28, 5, '2025-07-23', '2025-07-21', '2025-07-25');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (8, 17, '2025-07-11', 29, 6, '2025-07-26', '2025-07-24', '2025-07-28');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (9, 19, '2025-07-15', 28, 6, '2025-07-29', '2025-07-27', '2025-07-31');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (10, 20, '2025-07-17', 28, 5, '2025-07-31', '2025-07-29', '2025-08-02');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (11, 3, '2025-07-19', 29, 6, '2025-08-03', '2025-08-01', '2025-08-05');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (12, 5, '2025-07-23', 28, 6, '2025-08-07', '2025-08-05', '2025-08-09');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (13, 17, '2025-07-25', 28, 5, '2025-08-08', '2025-08-06', '2025-08-10');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (14, 16, '2025-07-27', 29, 6, '2025-08-11', '2025-08-09', '2025-08-13');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (15, 17, '2025-07-29', 27, 5, '2025-08-12', '2025-08-10', '2025-08-14');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (16, 19, '2025-08-03', 28, 5, '2025-08-17', '2025-08-15', '2025-08-19');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (17, 20, '2025-08-05', 29, 6, '2025-08-20', '2025-08-18', '2025-08-22');
+INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (18, 3, '2025-08-07', 27, 5, '2025-08-21', '2025-08-19', '2025-08-23');
 
 -- INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (4, 14, '2025-07-02 12:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (0, 6, '2025-06-06 08:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (1, 2, '2025-06-11 09:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (2, 10, '2025-05-02 10:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (3, 8, '2025-05-06 11:00:00');
@@ -377,13 +291,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 4, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 6, '2025-07-24 23:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 2, '2025-07-26 08:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (17, 10, '2025-07-28 09:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (18, 8, '2025-07-30 10:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (19, 4, '2025-08-01 11:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (20, 6, '2025-08-03 12:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (21, 2, '2025-08-05 13:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (22, 10, '2025-08-07 14:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (23, 8, '2025-08-09 15:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (0, 4, '2025-06-07 08:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (1, 6, '2025-06-12 09:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (2, 2, '2025-05-03 10:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (3, 10, '2025-05-07 11:00:00');
@@ -402,11 +309,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 7, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 11, '2025-07-27 08:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (17, 2, '2025-07-29 09:00:00');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (18, 10, '2025-07-31 10:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (19, 12, '2025-08-02 11:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (20, 7, '2025-08-04 12:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (21, 11, '2025-08-06 13:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (22, 2, '2025-08-08 14:00:00');
-INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (23, 10, '2025-08-10 15:00:00');
 
 
 -- INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (4, 'understanding-hpv', 4, 14, 'Understanding HPV and Its Risks', 'Human Papillomavirus (HPV) ', '2025-06-15 09:00:00');
@@ -438,14 +340,10 @@ INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) V
 
 INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (17, 'coping-with-pms-symptoms', 4, 0, 'Coping with PMS Symptoms: Strategies for Relief','Premenstrual Syndrome (PMS) affects many women in the days leading up to their period, causing symptoms like mood swings, bloating, headaches, fatigue, and irritability. While PMS is common, its severity can vary greatly. Managing PMS starts with understanding your body and tracking symptoms to identify patterns. Lifestyle changes such as regular exercise, a balanced diet rich in whole grains and vegetables, and adequate sleep can help reduce symptoms. Reducing caffeine, salt, and sugar intake may also provide relief. Stress management techniques like yoga, meditation, or deep breathing exercises can improve emotional well-being. For some, over-the-counter pain relievers or prescribed medications may be necessary. If PMS significantly interferes with your daily life, consult a healthcare provider for further evaluation. Remember, you are not alone, and support is available. Open communication with friends, family, or support groups can also make a difference in coping with PMS and improving your quality of life.','2025-06-28 09:00:00');
 
-INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (18, 'fertility-awareness-basics', 4, 1, 'Fertility Awareness: Understanding Your Cycle',
-'Fertility awareness involves tracking your menstrual cycle to identify fertile and infertile days. This knowledge can help with family planning, whether you are trying to conceive or avoid pregnancy. Methods include monitoring basal body temperature, cervical mucus changes, and using ovulation predictor kits. Keeping a daily record of these signs can help you understand your unique cycle patterns. Fertility awareness is most effective when practiced consistently and correctly. It is important to note that factors like stress, illness, or travel can affect your cycle. While fertility awareness can be empowering, it may not be as reliable as other contraceptive methods, especially if your cycles are irregular. Combining methods or consulting a healthcare provider can improve accuracy. Education and communication with your partner are key to successful fertility awareness. Remember, understanding your body is a powerful tool for reproductive health and can help you make informed decisions about your future.',
-'2025-06-29 10:00:00');
+INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (18, 'fertility-awareness-basics', 4, 1, 'Fertility Awareness: Understanding Your Cycle','Fertility awareness involves tracking your menstrual cycle to identify fertile and infertile days. This knowledge can help with family planning, whether you are trying to conceive or avoid pregnancy. Methods include monitoring basal body temperature, cervical mucus changes, and using ovulation predictor kits. Keeping a daily record of these signs can help you understand your unique cycle patterns. Fertility awareness is most effective when practiced consistently and correctly. It is important to note that factors like stress, illness, or travel can affect your cycle. While fertility awareness can be empowering, it may not be as reliable as other contraceptive methods, especially if your cycles are irregular. Combining methods or consulting a healthcare provider can improve accuracy. Education and communication with your partner are key to successful fertility awareness. Remember, understanding your body is a powerful tool for reproductive health and can help you make informed decisions about your future.','2025-06-29 10:00:00');
 
-INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (19, 'managing-menstrual-fatigue', 4, 0, 'Managing Menstrual Fatigue: Tips for More Energy',
-'Many women experience fatigue before and during their period due to hormonal changes, blood loss, and disrupted sleep. To combat menstrual fatigue, prioritize rest and aim for consistent sleep patterns. Eating iron-rich foods like leafy greens, beans, and lean meats can help prevent anemia, a common cause of tiredness. Staying hydrated and limiting caffeine can also improve energy levels. Light exercise, such as walking or stretching, may boost mood and reduce fatigue. If you notice persistent or severe tiredness, consult your healthcare provider to rule out underlying conditions like thyroid disorders or iron deficiency. Tracking your symptoms can help you identify triggers and develop effective coping strategies. Remember, it is okay to listen to your body and take breaks when needed. Self-care and support from loved ones can make a significant difference in managing menstrual fatigue and maintaining your overall well-being.','2025-06-30 11:00:00');
+INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (19, 'managing-menstrual-fatigue', 4, 0, 'Managing Menstrual Fatigue: Tips for More Energy','Many women experience fatigue before and during their period due to hormonal changes, blood loss, and disrupted sleep. To combat menstrual fatigue, prioritize rest and aim for consistent sleep patterns. Eating iron-rich foods like leafy greens, beans, and lean meats can help prevent anemia, a common cause of tiredness. Staying hydrated and limiting caffeine can also improve energy levels. Light exercise, such as walking or stretching, may boost mood and reduce fatigue. If you notice persistent or severe tiredness, consult your healthcare provider to rule out underlying conditions like thyroid disorders or iron deficiency. Tracking your symptoms can help you identify triggers and develop effective coping strategies. Remember, it is okay to listen to your body and take breaks when needed. Self-care and support from loved ones can make a significant difference in managing menstrual fatigue and maintaining your overall well-being.','2025-06-30 11:00:00');
 
 INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (20, 'understanding-menstrual-cups', 4, 0, 'Understanding Menstrual Cups: Benefits and Tips','Menstrual cups are a reusable, eco-friendly alternative to pads and tampons. Made from medical-grade silicone or rubber, they are inserted into the vagina to collect menstrual fluid. Many women find menstrual cups comfortable, cost-effective, and less likely to cause dryness or irritation. They can be worn for up to 12 hours, depending on flow, and are suitable for most activities, including swimming and exercise. Learning to insert and remove a cup may take practice, but most users adjust quickly. To use a cup safely, wash your hands before insertion and clean the cup thoroughly between uses. Sterilize it at the end of each cycle. If you have an IUD or specific health concerns, consult your healthcare provider before switching. Menstrual cups can reduce waste and save money over time. Remember, every body is different, so choose the menstrual product that works best for your needs and lifestyle.','2025-07-01 12:00:00');
-
 
 INSERT INTO blogs (id, slug, admin_id, category, title, content, publish_date) VALUES (21, 'exercise-and-menstrual-health', 4, 0, 'Exercise and Menstrual Health: Finding the Right Balance','Regular physical activity offers many benefits for menstrual health, including reduced cramps, improved mood, and better overall well-being. Exercise can help regulate hormones, support weight management, and decrease stress, all of which contribute to a healthier cycle. Activities like walking, swimming, yoga, and cycling are gentle on the body and can be adapted to your energy levels throughout your cycle. During menstruation, listen to your body and adjust intensity as needed—some women feel energized, while others prefer rest. Staying hydrated and wearing comfortable clothing can enhance your workout experience. If you experience severe pain or unusual symptoms during exercise, consult your healthcare provider. Remember, consistency is more important than intensity, and even light movement can make a difference. Find activities you enjoy and make them a regular part of your routine to support both your menstrual and overall health.','2025-07-02 13:00:00');

@@ -35,14 +35,12 @@ public class Appointment {
     private String url;
     private AppointmentStatus appointmentStatus;
 
-    @Lob
     private String doctorNote;
 
-    @Lob
     private String customerNote;
 
     @Lob
     private String feedback;
 
-    private int score;
+    private Integer score;
 }

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 
+import api from '../../api/axios';
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 import AppointmentTitleBar from '../../components/TitleBar/AppointmentTitleBar';
 import AppointmentUtilityBar from '../../components/UtilityBar/AppointmentUtilityBar';
@@ -25,42 +26,35 @@ const statusOptions = [
 
 const slotOptions = [
   { value: '', label: 'All slots' },
-  { value: 'morning', label: 'Morning (08:00 - 12:00)' },
-  { value: 'afternoon', label: 'Afternoon (13:00 - 17:00)' },
-  { value: 'evening', label: 'Evening (18:00 - 21:00)' },
+  { value: 'ONE', label: '08:00 - 09:00' },
+  { value: 'TWO', label: '09:00 - 10:00' },
+  { value: 'THREE', label: '10:00 - 11:00' },
+  { value: 'FOUR', label: '11:00 - 12:00' },
+  { value: 'FIVE', label: '13:00 - 14:00' },
+  { value: 'SIX', label: '14:00 - 15:00' },
+  { value: 'SEVEN', label: '15:00 - 16:00' },
+  { value: 'EIGHT', label: '16:00 - 17:00' },
 ];
-const slotTimeMap: Record<string, string> = {
-  morning: '08:00 - 12:00',
-  afternoon: '13:00 - 17:00',
-  evening: '18:00 - 21:00',
-};
 
-const mockAppointments = [
-  { id: 1, name: 'BS. Lê Văn Anh', date: '27/05/2024', time: '15:00', status: 'Completed', code: 'TV20201', slot: 'afternoon' },
-  { id: 2, name: 'BS. Nguyễn Hoàng Đức', date: '22/05/2024', time: '10:30', status: 'Cancelled', code: 'TV20032', slot: 'morning' },
-  { id: 3, name: 'BS. Hà Quỳnh Trang', date: '20/05/2024', time: '18:00', status: 'Confirmed', code: 'TV20027', slot: 'evening' },
-  { id: 4, name: 'BS. Trần Minh Phương', date: '18/05/2024', time: '09:00', status: 'Pending', code: 'TV20010', slot: 'morning' },
-  { id: 5, name: 'BS. Nguyễn Văn A', date: '15/05/2024', time: '11:00', status: 'Upcoming', code: 'TV20011', slot: 'morning' },
-  { id: 6, name: 'BS. Trần Thị B', date: '14/05/2024', time: '14:00', status: 'Completed', code: 'TV20012', slot: 'afternoon' },
-  { id: 7, name: 'BS. Lê Văn C', date: '13/05/2024', time: '19:00', status: 'Cancelled', code: 'TV20013', slot: 'evening' },
-  { id: 8, name: 'BS. Nguyễn Thị D', date: '12/05/2024', time: '08:30', status: 'Confirmed', code: 'TV20014', slot: 'morning' },
-  { id: 9, name: 'BS. Phạm Văn E', date: '11/05/2024', time: '16:00', status: 'Pending', code: 'TV20015', slot: 'afternoon' },
-  { id: 10, name: 'BS. Đỗ Thị F', date: '10/05/2024', time: '20:00', status: 'Upcoming', code: 'TV20016', slot: 'evening' },
-  { id: 11, name: 'BS. Nguyễn Văn G', date: '09/05/2024', time: '09:30', status: 'Completed', code: 'TV20017', slot: 'morning' },
-  { id: 12, name: 'BS. Trần Thị H', date: '08/05/2024', time: '13:00', status: 'Cancelled', code: 'TV20018', slot: 'afternoon' },
-  { id: 13, name: 'BS. Lê Văn I', date: '07/05/2024', time: '18:30', status: 'Confirmed', code: 'TV20019', slot: 'evening' },
-  { id: 14, name: 'BS. Nguyễn Thị K', date: '06/05/2024', time: '10:00', status: 'Pending', code: 'TV20020', slot: 'morning' },
-  { id: 15, name: 'BS. Phạm Văn L', date: '05/05/2024', time: '15:30', status: 'Upcoming', code: 'TV20021', slot: 'afternoon' },
-  { id: 16, name: 'BS. Đỗ Thị M', date: '04/05/2024', time: '19:30', status: 'Completed', code: 'TV20022', slot: 'evening' },
-  { id: 17, name: 'BS. Nguyễn Văn N', date: '03/05/2024', time: '08:00', status: 'Cancelled', code: 'TV20023', slot: 'morning' },
-  { id: 18, name: 'BS. Trần Thị O', date: '02/05/2024', time: '12:30', status: 'Confirmed', code: 'TV20024', slot: 'afternoon' },
-  { id: 19, name: 'BS. Lê Văn P', date: '01/05/2024', time: '17:00', status: 'Pending', code: 'TV20025', slot: 'evening' },
-  { id: 20, name: 'BS. Nguyễn Thị Q', date: '30/04/2024', time: '09:00', status: 'Upcoming', code: 'TV20026', slot: 'morning' },
-];
+
+// Add slot code to time range mapping
+const slotCodeTimeMap: Record<string, string> = {
+  ONE: '08:00 - 09:00',
+  TWO: '09:00 - 10:00',
+  THREE: '10:00 - 11:00',
+  FOUR: '11:00 - 12:00',
+  FIVE: '13:00 - 14:00',
+  SIX: '14:00 - 15:00',
+  SEVEN: '15:00 - 16:00',
+  EIGHT: '16:00 - 17:00',
+};
 
 const APPOINTMENTS_PER_PAGE = 5;
 
 const AppointmentHistory: React.FC = () => {
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -79,16 +73,41 @@ const AppointmentHistory: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
-  const filteredRecords = mockAppointments.filter((record) => {
+  useEffect(() => {
+    setLoading(true);
+    api.get('/appointments')
+      .then(res => {
+        // Map API data to table format
+        const mapped = res.data.map((item: any) => ({
+          id: item.id,
+          name: item.doctorName,
+          date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
+          time: slotCodeTimeMap[item.slot] || '',
+          status: item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase(),
+          code: '',
+          slot: item.slot ? String(item.slot).toUpperCase() : '', // Ensure slot is always uppercase string
+          slotCode: item.slot,
+        }));
+        setAppointments(mapped);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to load appointments');
+        setLoading(false);
+      });
+  }, []);
+
+  const filteredRecords = appointments.filter((record) => {
     if (hideRows.includes(record.id)) return false;
     const searchMatch =
-      record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      record.code.toLowerCase().includes(searchTerm.toLowerCase());
+      (record.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.code?.toLowerCase().includes(searchTerm.toLowerCase()));
     const statusMatch = selectedStatus ? record.status === selectedStatus : true;
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
+    // Compare slot as uppercase string for robust filtering
+    const slotMatch = selectedSlot ? String(record.slot).toUpperCase() === selectedSlot : true;
     return searchMatch && statusMatch && fromMatch && toMatch && slotMatch;
   });
 
@@ -131,6 +150,9 @@ const AppointmentHistory: React.FC = () => {
     }
   }, [filteredRecords]);
 
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (error) return <div className="p-6 text-red-500">{error}</div>;
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <AppointmentTitleBar
@@ -169,7 +191,7 @@ const AppointmentHistory: React.FC = () => {
         />
       </AppointmentUtilityBar>      
       <AppointmentTable
-        records={filteredRecords.map(r => ({ ...r, slotTime: slotTimeMap[r.slot] || r.time }))}
+        records={filteredRecords.map(r => ({ ...r, slotTime: r.time }))}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
