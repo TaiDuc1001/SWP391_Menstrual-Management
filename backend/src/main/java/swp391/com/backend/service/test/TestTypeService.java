@@ -7,10 +7,10 @@ import swp391.com.backend.jpa.repository.test.TestTypeRepository;
 import java.util.List;
 
 @Service
-public class TestService {
+public class TestTypeService {
      private final TestTypeRepository testTypeRepository;
 
-    public TestService(TestTypeRepository testTypeRepository) {
+    public TestTypeService(TestTypeRepository testTypeRepository) {
         this.testTypeRepository = testTypeRepository;
     }
 
@@ -22,7 +22,12 @@ public class TestService {
         return testTypeRepository.save(testType);
     }
 
-    public void deleteTestById(Integer id) {
-        testTypeRepository.deleteById(id.longValue());
+    public void deleteTestById(Long id) {
+        testTypeRepository.deleteById(id); }
+
+
+    public TestType findTestById(Long id) {
+        return testTypeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Test type not found with id: " + id));
     }
 }

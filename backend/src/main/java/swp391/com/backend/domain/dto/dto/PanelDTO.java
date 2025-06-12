@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import swp391.com.backend.jpa.pojo.test.PanelTag;
-import swp391.com.backend.jpa.pojo.test.PanelTestType;
 import swp391.com.backend.jpa.pojo.test.PanelType;
 
 import java.math.BigDecimal;

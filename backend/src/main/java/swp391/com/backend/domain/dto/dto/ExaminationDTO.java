@@ -1,17 +1,17 @@
 package swp391.com.backend.domain.dto.dto;
 
 import lombok.Data;
+import swp391.com.backend.jpa.pojo.schedule.Slot;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class ExaminationDTO {
     private Long id;
-    private PanelDTO panel;
-    private String date;
-    private Integer slot;
-    private String note;
-    private CustomerDTO customer;
-    private BigDecimal totalAmount;
-    private String status; 
+    private List<TestResultListDTO> testResults;
+    private LocalDate date;
+    private Slot slot;
+    private String customerName;
 }

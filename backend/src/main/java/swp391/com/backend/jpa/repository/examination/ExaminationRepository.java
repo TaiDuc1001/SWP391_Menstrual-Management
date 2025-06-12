@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Examination, Long> {
+public interface ExaminationRepository extends JpaRepository<Examination, Long> {
+    Examination findExaminationById(Long id);
 }
