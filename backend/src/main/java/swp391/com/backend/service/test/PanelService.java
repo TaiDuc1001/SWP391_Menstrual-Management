@@ -18,6 +18,11 @@ public class PanelService {
 
     public List<Panel> getAllPanels(){ return panelRepository.findAll(); }
 
+    public Panel findPanelById(Long id) {
+        return panelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Panel not found with id: " + id));
+    }
+
     public void deletePackageById(Long id) {
         panelRepository.deleteById(id);
     }

@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import swp391.com.backend.jpa.pojo.test.TestType;
 
 @Repository
-public interface TestRepository extends JpaRepository<TestType, Long> {
+public interface TestTypeRepository extends JpaRepository<TestType, Long> {
 }

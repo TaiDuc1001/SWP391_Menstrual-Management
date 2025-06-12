@@ -11,4 +11,8 @@ public interface PanelTestTypeRepository extends JpaRepository<PanelTestType, Lo
     List<PanelTestType> findTestsByPanelId(Long packageId);
 
     void deleteByPanelIdAndTestTypeId(Long panelId, Long testTypeId);
+
+    List<PanelTestType> findPanelTestTypesByPanelId(Long panelId);
+
+    List<PanelTestType> findTestTypesByPanelId(Long panelId);
 }

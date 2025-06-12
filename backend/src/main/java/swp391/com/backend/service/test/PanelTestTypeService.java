@@ -1,21 +1,29 @@
 package swp391.com.backend.service.test;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.test.PanelTestType;
+import swp391.com.backend.jpa.pojo.test.TestType;
+import swp391.com.backend.jpa.repository.test.PanelRepository;
 import swp391.com.backend.jpa.repository.test.PanelTestTypeRepository;
+import swp391.com.backend.jpa.repository.test.TestTypeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PackageTestService {
+@RequiredArgsConstructor
+public class PanelTestTypeService {
     private final PanelTestTypeRepository panelTestTypeRepository;
+    private final PanelRepository panelRepository;
+    private final TestTypeRepository testTypeRepository;
 
-    public PackageTestService(PanelTestTypeRepository panelTestTypeRepository) {
-        this.panelTestTypeRepository = panelTestTypeRepository;
-    }
-
-    public List<PanelTestType> getTestsByPackageId(Long packageId) {
-        return panelTestTypeRepository.findTestsByPanelId(packageId);
+    public List<TestType> getTestTypesByPanelId(Long panelId) {
+        List<TestType> testTypes = panelTestTypeRepository.findPanelTestTypesByPanelId(panelId)
+                .stream()
+                .map(panelTestType -> testTypeRepository.findById(panelTestType.getTestTypeId()).orElse(null))
+                .toList();
+        return testTypes;
     }
 
     public void addTestToPackage(Long packageId, Long testTypeId) {
