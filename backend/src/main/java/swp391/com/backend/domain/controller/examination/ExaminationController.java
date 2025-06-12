@@ -14,7 +14,7 @@ import swp391.com.backend.service.examination.OrderService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/examinations")
 @RequiredArgsConstructor
 public class ExaminationController {
     private final OrderService orderService;
@@ -26,7 +26,6 @@ public class ExaminationController {
                 .stream()
                 .map(examinationMapper::toSimpleDTO)
                 .toList();
-        result.forEach(System.out::println);
         return ResponseEntity.ok(result);
     }
 
