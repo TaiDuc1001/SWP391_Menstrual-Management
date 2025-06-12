@@ -16,6 +16,9 @@ const SuccessPopup: React.FC<SuccessPopupProps> = ({ open, onClose, message = 'S
         <img src={greenCheckIcon} alt="success" className="w-12 h-12 mb-2" />
         <div className="text-xl font-bold text-green-600 mb-2">{message}</div>
       </div>
+      <button onClick={onClose} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-xl font-bold">
+        &times;
+      </button>
     </Popup>
   );
 };

@@ -10,6 +10,8 @@ import donutIcon from '../../assets/icons/donut.svg';
 import bloodIcon from '../../assets/icons/blood.svg';
 import strawberyyIcon from '../../assets/icons/strawberyy.svg';
 import angryIcon from '../../assets/icons/angry.svg';
+import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
+import SuccessPopup from '../../components/Popup/SuccessPopup';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +35,8 @@ const Dashboard: React.FC = () => {
     { name: 'Gói tổng quát STIs', date: '05/06/2024', time: '15:30', place: 'Viện Pasteur', status: 'Chưa xác nhận' },
     { name: 'Khám Thai', date: '05/11/2024', time: '15:30', place: 'Viện Pasteur', status: 'Chưa xác nhận' },
   ];
+  const [showReminderPopup, setShowReminderPopup] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -95,7 +99,7 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center gap-2 text-pink-600 font-bold text-lg">
             <span>Only <span className="text-pink-500">{daysToOvulation} days</span> until your next <span className="underline">ovulation</span> ({ovulationDate})</span>
           </div>
-          <button className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition w-max">Set reminder</button>
+          <button className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition w-max" onClick={() => setShowReminderPopup(true)}>Set reminder</button>
         </div>
       </div>
       {/* Lower grid */}
@@ -153,6 +157,16 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      <ReminderSettingsPopup 
+        open={showReminderPopup} 
+        onClose={() => setShowReminderPopup(false)}
+        onSave={() => {
+          setShowReminderPopup(false);
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 1200);
+        }}
+      />
+      <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
     </div>
   );
 };
