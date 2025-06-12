@@ -23,7 +23,14 @@ const ReminderSettingsPopup: React.FC<ReminderSettingsPopupProps> = ({ open, onC
   };
 
   return (
-    <Popup open={open} onClose={onClose} className="max-w-xs w-full p-6">
+    <Popup open={open} onClose={onClose} className="max-w-xs w-full p-6 relative">
+      <button
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors text-2xl z-10 focus:outline-none focus:ring-2 focus:ring-pink-400 rounded-full bg-white shadow-md w-10 h-10 flex items-center justify-center"
+        onClick={onClose}
+        aria-label="Close"
+      >
+        &times;
+      </button>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="text-pink-600 font-bold text-lg mb-2 flex items-center gap-2">
           <span className="inline-block w-5 h-5 bg-pink-400 rounded-full"></span>
