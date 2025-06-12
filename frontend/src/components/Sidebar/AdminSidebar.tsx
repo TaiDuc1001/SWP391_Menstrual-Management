@@ -18,7 +18,7 @@ const AdminSidebar: React.FC<SidebarProps> = () => {
     ];
 
     return (
-        <aside className="fixed top-24 left-8 bg-white/95 backdrop-blur-lg border border-blue-100 px-6 py-6 flex flex-col gap-4 min-w-[200px] max-w-[240px] rounded-3xl shadow-md z-30 transition-all duration-300 hover:shadow-blue-100">
+        <aside className="fixed top-24 left-5 bg-white/95 backdrop-blur-lg border border-blue-100 px-6 py-6 flex flex-col gap-4 min-w-[200px] max-w-[240px] rounded-3xl shadow-md z-30 transition-all duration-300 hover:shadow-blue-100">
             <ul className="list-none p-0 m-0 flex flex-col gap-2">
                 {options.map((option) => (
                     <li key={option.label} className="">

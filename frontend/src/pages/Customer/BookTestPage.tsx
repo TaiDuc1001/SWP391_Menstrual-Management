@@ -2,18 +2,50 @@ import React, { useState } from 'react';
 import TitleBar from '../../components/TitleBar/TitleBar';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import bloodTestingImage from '../../assets/images/blood-testing.svg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import api from '../../api/axios';
 
 const BookTestPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [date, setDate] = useState('');
+  const [slot, setSlot] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { panelId: panelIdParam } = useParams();
+  const location = useLocation();
+  // Prefer panelId from params, fallback to location.state
+  const panelId = panelIdParam || (location.state && location.state.panelId);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (!panelId) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center justify-center">
+        <div className="bg-white rounded-xl shadow-md p-8 text-center">
+          <div className="text-2xl font-bold text-red-500 mb-4">Panel ID is missing!</div>
+          <div className="text-gray-600">Please select a test package to book.</div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowSuccess(true);
-    setTimeout(() => {
-      navigate('/sti-tests');
-    }, 1800);
+    setError('');
+    if (!date || !slot) {
+      setError('Please select date and time slot.');
+      return;
+    }
+    try {
+      console.log('Booking: sending POST to /panels/' + panelId, { date, slot });
+      const res = await api.post(`/panels/${panelId}`, { date, slot });
+      console.log('Booking: response', res);
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate('/sti-tests');
+      }, 1800);
+    } catch (err) {
+      console.error('Booking: error', err);
+      setError('Booking failed. Please try again.');
+    }
   };
 
   return (
@@ -34,22 +66,24 @@ const BookTestPage: React.FC = () => {
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="block text-gray-700 font-semibold mb-1">Date</label>
-                  <input type="date" className="w-full border rounded px-4 py-2" />
+                  <input type="date" className="w-full border rounded px-4 py-2" value={date} onChange={e => setDate(e.target.value)} />
                 </div>
                 <div className="flex-1">
                   <label className="block text-gray-700 font-semibold mb-1">Time Slot</label>
-                  <select className="w-full border rounded px-4 py-2">
-                    <option>07:00 - 09:00</option>
-                    <option>09:00 - 11:00</option>
-                    <option>13:00 - 15:00</option>
-                    <option>15:00 - 17:00</option>
+                  <select className="w-full border rounded px-4 py-2" value={slot} onChange={e => setSlot(e.target.value)}>
+                    <option value="">Select slot</option>
+                    <option value="ONE">07:00 - 09:00</option>
+                    <option value="TWO">09:00 - 11:00</option>
+                    <option value="THREE">13:00 - 15:00</option>
+                    <option value="FOUR">15:00 - 17:00</option>
                   </select>
                 </div>
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-1">Additional Notes</label>
-                <input type="text" className="w-full border rounded px-4 py-2" placeholder="Enter any notes if needed..." />
+                <input type="text" className="w-full border rounded px-4 py-2" placeholder="Enter any notes if needed..." disabled />
               </div>
+              {error && <div className="text-red-500 text-sm">{error}</div>}
               <button type="submit" className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 flex items-center justify-center gap-2 text-lg hover:bg-pink-500 transition">
                 <img src={calendarIcon} alt="calendar" className="w-6 h-6" />
                 Book

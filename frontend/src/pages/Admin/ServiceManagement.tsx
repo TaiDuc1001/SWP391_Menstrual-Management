@@ -123,7 +123,7 @@ const ServiceManagement: React.FC = () => {
                                     <td className="p-2 text-center text-blue-600 font-semibold">{s.price}</td>
                                     <td className="p-2 text-center">{getStatusBadge(s.status)}</td>
                                     <td className="p-2 text-center">
-                                        <button className="inline-block mr-2" title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4" /></button>
+                                        <button className="inline-block mr-4" title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4" /></button>
                                         <button className="inline-block" title="Delete"><img src={deleteIcon} alt="delete" className="w-4 h-4" /></button>
                                     </td>
                                 </tr>

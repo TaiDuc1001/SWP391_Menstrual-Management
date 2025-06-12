@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import swp391.com.backend.jpa.pojo.cycle.CycleSymptomByDate;
 
 @Repository
-public interface CycleSymptomByDateRepository extends JpaRepository<CycleSymptomByDate, Integer> {
+public interface CycleSymptomByDateRepository extends JpaRepository<CycleSymptomByDate, Long> {
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import avatarIcon from '../../assets/icons/avatar.svg';
-import keyIcon from '../../assets/icons/key.svg';
+import keyIcon from '../../assets/icons/eye.svg';
 import eyeIcon from '../../assets/icons/eye.svg';
 import googleIcon from '../../assets/icons/google.svg';
 import facebookIcon from '../../assets/icons/facebook.svg';
@@ -16,13 +16,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [role, setRole] = React.useState('');
   const [error, setError] = React.useState('');
   const handleShowPassword = () => setShowPassword((prev) => !prev);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      await api.post('/accounts/login', { email, password });
+      await api.post('/accounts/login', { email, password, role });
       onLogin();
       navigate('/dashboard');
     } catch (err: any) {
@@ -51,6 +52,24 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             className="w-full h-10 p-2 pl-10 rounded border border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-blue-50"
             placeholder="Enter your email or username"
           />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 font-semibold text-gray-700">Role</label>
+          <div className="relative">
+            <select
+              className="w-full h-10 p-2 pl-4 pr-8 rounded border border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-blue-50 appearance-none text-gray-700 font-medium"
+              style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill=\'gray\' height=\'20\' viewBox=\'0 0 20 20\' width=\'20\'><path d=\'M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z\'/></svg>')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1.5em 1.5em' }}
+              required
+              value={role}
+              onChange={e => setRole(e.target.value)}
+            >
+              <option value="" disabled>Select role</option>
+              <option value="admin">Admin</option>
+              <option value="staff">Staff</option>
+              <option value="customer">Customer</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </div>
         </div>
         <div className="mb-2 relative">
           <label className="block mb-1 font-semibold text-gray-700">Password</label>
@@ -98,7 +117,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </button>
         </div>
         <div className="text-center text-sm text-gray-500">
-          No account? <button type="button" className="text-pink-400 font-semibold hover:underline">Signup now</button>
+          No account? <button type="button" className="text-pink-400 font-semibold hover:underline" onClick={() => navigate('/signup')}>Signup now</button>
         </div>
       </form>
     </div>

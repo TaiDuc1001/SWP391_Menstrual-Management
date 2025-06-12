@@ -24,6 +24,8 @@ import DoctorDetailPage from '../pages/Customer/DoctorDetailPage';
 import ForgotPassword from '../pages/Public/ForgotPassword';
 import EnterOTP from '../pages/Public/EnterOTP';
 import ChangePassword from '../pages/Public/ChangePassword';
+import Contact from '../pages/Public/Contact';
+import Services from '../pages/Public/Services';
 
 interface AppLayoutProps {
   isAuthenticated: boolean;
@@ -61,6 +63,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/enter-otp" element={<EnterOTP />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/services" element={<Services />} />
             {/* Protected routes */}
             <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <RequireLogin />} />
             <Route path="/menstrual-cycles" element={isAuthenticated ? <MenstrualCycles /> : <RequireLogin />} />

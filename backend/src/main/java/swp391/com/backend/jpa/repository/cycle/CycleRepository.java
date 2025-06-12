@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import swp391.com.backend.jpa.pojo.cycle.Cycle;
 
 @Repository
-public interface CycleRepository extends JpaRepository<Cycle, Integer> {
+public interface CycleRepository extends JpaRepository<Cycle, Long> {
 }

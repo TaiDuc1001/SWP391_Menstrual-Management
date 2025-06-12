@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.roles.Account;
+import swp391.com.backend.jpa.pojo.roles.Admin;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,15 +16,11 @@ import java.util.List;
 public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
 
     @Column(unique = true)
     private String slug;
@@ -33,13 +30,7 @@ public class Blog {
     @Lob
     private String content;
 
-    @Lob
-    private String excerpt;
-
     private LocalDateTime publishDate;
-    private String status;
-    private Boolean isActive;
 
-    @OneToMany(mappedBy = "blog")
-    private List<BlogTag> blogTags;
+    private BlogCategory category;
 }

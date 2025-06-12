@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import swp391.com.backend.jpa.pojo.roles.Staff;
 
 @Repository
-public interface StaffRepository extends JpaRepository<Staff, Integer> {
+public interface StaffRepository extends JpaRepository<Staff, Long> {
 }

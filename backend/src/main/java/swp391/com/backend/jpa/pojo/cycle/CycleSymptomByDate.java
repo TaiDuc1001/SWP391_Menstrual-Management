@@ -14,22 +14,18 @@ import java.time.LocalDateTime;
 public class CycleSymptomByDate {
     @Id
     @Column(name = "cycle_id")
-    private Integer cycleId;
+    private Long cycleId;
 
-    @Id
-    @Column(name = "symptom_id")
-    private Integer symptomId;
+    @ManyToOne
+    @JoinColumn(name = "cycle_id", insertable = false, updatable = false)
+    private Cycle cycle;
 
     @Id
     private LocalDateTime date;
 
-    @ManyToOne
-    @JoinColumn(name = "cycle_id", insertable = false, updatable = false)
-    private Cycle cycles;
-
-    @ManyToOne
-    @JoinColumn(name = "symptom_id", insertable = false, updatable = false)
-    private Symptom symptoms;
+    @Id
+    @Enumerated(EnumType.STRING)
+    private Symptom symptom;
 }
 
 @Getter
@@ -37,8 +33,8 @@ public class CycleSymptomByDate {
 @NoArgsConstructor
 @AllArgsConstructor
 class CycleSymptomByDateId implements Serializable {
-    private Integer cycleId;
-    private Integer symptomId;
+    private Long cycleId;
     private LocalDateTime date;
+    private Symptom symptom;
 }
 

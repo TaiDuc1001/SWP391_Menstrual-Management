@@ -9,6 +9,7 @@ interface TestRecord {
   id: number;
   date: string;
   slot: string;
+  time?: string;
   panels: string;
   status: string;
 }
@@ -110,7 +111,7 @@ const TestTable: React.FC<TestTableProps> = ({
       width: 'w-8',
     },
     { key: 'date', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('date')}>Date {getSortIndicator('date')}</button>, width: 'w-32' },
-    { key: 'slot', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('slot')}>Time {getSortIndicator('slot')}</button>, render: (row: TestRecord) => slotTimeMap[row.slot], width: 'w-32' },
+    { key: 'slot', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('slot')}>Time {getSortIndicator('slot')}</button>, render: (row: TestRecord) => slotTimeMap[row.slot] || row.time || '', width: 'w-32' },
     { key: 'panels', label: <button type="button" className="flex items-center gap-1" onClick={() => handleSort('panels')}>Test panels {getSortIndicator('panels')}</button>, width: 'w-56' },
     { key: 'status', label: <button type="button" className="flex items-center gap-1 justify-center w-full text-center" onClick={() => handleSort('status')}>Status {getSortIndicator('status')}</button>, render: (row: TestRecord) => <StatusBadge status={row.status} />, width: 'w-32', headerClassName: 'text-center', cellClassName: 'text-center' },
     { key: 'actions', label: '', render: (row: TestRecord) => row.status === 'Completed' ? <ViewResultButton onClick={() => onViewRows && onViewRows([row.id])} /> : null, width: 'w-16' },

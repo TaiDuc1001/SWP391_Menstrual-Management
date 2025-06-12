@@ -86,6 +86,6 @@ public class CycleService {
     }
 
     public void deleteCycle(Integer cycleId) {
-        cycleRepository.deleteById(cycleId);
+        cycleRepository.deleteById(cycleId.longValue());
     }
 }
