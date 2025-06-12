@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import swp391.com.backend.domain.dto.dto.AppointmentDTO;
+import swp391.com.backend.domain.dto.dto.SimpleAppointmentDTO;
 import swp391.com.backend.domain.dto.request.AppointmentCreateRequest;
 import swp391.com.backend.domain.mapper.AppointmentMapper;
 import swp391.com.backend.jpa.pojo.appointments.Appointment;
@@ -23,13 +24,15 @@ public class AppointmentsController {
     private final AppointmentMapper appointmentMapper;
 
     @GetMapping
-    public ResponseEntity<List<AppointmentDTO>> getAllAppointments() {
+    public ResponseEntity<List<SimpleAppointmentDTO>> getAllAppointments() {
         // Logic to get all appointments
-        List<AppointmentDTO> results = appointmentsService.getAllAppointments()
+//        List<Appointment> results_ = appointmentsService.getAllAppointments();
+//        results_.forEach(appointments -> System.out.println(appointments.getAppointmentStatus()));
+        List<SimpleAppointmentDTO> results = appointmentsService.getAllAppointments()
                 .stream()
-                .map(appointmentMapper::toDTO)
+                .map(appointmentMapper::toSimpleDTO)
                 .toList();
-
+//        results.forEach(appointments -> System.out.println(appointments.getStatus()));
         return ResponseEntity.ok(results);
     }
 
