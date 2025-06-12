@@ -32,7 +32,5 @@ public class Blog {
 
     private LocalDateTime publishDate;
 
-    private BlogTag blogTag;
-
-    private BlogCategory blogCategory;
+    private BlogCategory category;
 }

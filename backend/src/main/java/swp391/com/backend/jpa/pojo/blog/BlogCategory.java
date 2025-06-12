@@ -1,4 +1,20 @@
 package swp391.com.backend.jpa.pojo.blog;
 
+// 15
 public enum BlogCategory {
+    HEALTH,
+    LIFESTYLE,
+    NUTRITION,
+    FITNESS,
+    MENTAL_HEALTH,
+    PARENTING,
+    RELATIONSHIPS,
+    WELLNESS,
+    PERSONAL_DEVELOPMENT,
+    TECHNOLOGY,
+    TRAVEL,
+    FOOD_AND_DRINK,
+    BEAUTY_AND_FASHION,
+    HOME_AND_GARDEN,
+    FINANCE_AND_BUSINESS
 }

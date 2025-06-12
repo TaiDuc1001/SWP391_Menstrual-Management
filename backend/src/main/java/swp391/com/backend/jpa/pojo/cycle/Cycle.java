@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.jpa.pojo.roles.Customer;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "cycles")
@@ -19,10 +20,8 @@ public class Cycle{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "id")
-    private CycleSymptomByDate cycleSymptomByDate;
+    @OneToMany(mappedBy = "cycle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CycleSymptomByDate> cycleSymptomByDate;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -45,8 +44,5 @@ public class Cycle{
 
     @Column(name = "fertility_window_end")
     private LocalDate fertilityWindowEnd;
-
-    @Column(name = "contraceptive_reminder")
-    private String contraceptiveReminder;
 }
 

@@ -2,7 +2,6 @@ package swp391.com.backend.jpa.pojo.examination;
 
 import jakarta.persistence.*;
 import lombok.*;
-import swp391.com.backend.jpa.pojo.appointments.AppointmentStatus;
 import swp391.com.backend.jpa.pojo.roles.Customer;
 import swp391.com.backend.jpa.pojo.roles.Staff;
 import swp391.com.backend.jpa.pojo.schedule.Slot;
@@ -24,7 +23,6 @@ public class Examination {
 
     private PaymentMethod paymentMethod;
     private Slot slot;
-    private AppointmentStatus status;
     private LocalDate date;
 
     @ManyToOne

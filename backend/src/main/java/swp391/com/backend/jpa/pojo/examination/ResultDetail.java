@@ -21,7 +21,7 @@ public class ResultDetail {
     @Column(name = "test_type_id")
     private Long testTypeId;
 
-    private Integer testIndex;
+    private String testIndex;
     private String notes;
 
     @Column(name = "diagnosis", columnDefinition = "TINYINT(1)")

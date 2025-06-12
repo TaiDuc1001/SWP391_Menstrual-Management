@@ -14,6 +14,5 @@ import java.time.LocalDate;
 public class SimpleExaminationDTO {
     LocalDate date;
     Slot slot;
-    String name;
     ExaminationStatus examinationStatus;
 }
