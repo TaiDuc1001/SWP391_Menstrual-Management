@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import swp391.com.backend.jpa.pojo.schedule.Slot;
-import swp391.com.backend.jpa.pojo.test.Panel;
 
 import java.time.LocalDate;
 
@@ -16,17 +15,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderCreateRequest {
-
-    @NotNull(message = "Gói xét nghiệm không được để trống")
-    Panel aPanel;
-
+public class ExaminationCreateRequest {
     @NotBlank(message = "Ngày không được để trống")
     LocalDate date;
 
     @NotNull(message = "Khung giờ không được để trống")
     Slot slot;
-
-    String note;
-
 }

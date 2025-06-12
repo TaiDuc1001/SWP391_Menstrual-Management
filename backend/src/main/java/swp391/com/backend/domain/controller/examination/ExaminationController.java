@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.domain.dto.dto.ExaminationDTO;
 import swp391.com.backend.domain.dto.dto.TestResultListDTO;
 import swp391.com.backend.domain.dto.simpledto.SimpleExaminationDTO;
-import swp391.com.backend.domain.dto.request.OrderCreateRequest;
+import swp391.com.backend.domain.dto.request.ExaminationCreateRequest;
 import swp391.com.backend.domain.mapper.ExaminationMapper;
 import swp391.com.backend.domain.mapper.TestResultMapper;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 import swp391.com.backend.jpa.pojo.examination.ResultDetail;
+import swp391.com.backend.jpa.pojo.test.Panel;
 import swp391.com.backend.jpa.pojo.test.TestType;
 import swp391.com.backend.service.examination.ExaminationService;
+import swp391.com.backend.service.test.PanelService;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class ExaminationController {
     private final ExaminationService examinationService;
     private final ExaminationMapper examinationMapper;
     private final TestResultMapper testResultMapper;
+    private final PanelService panelService;
 
     @GetMapping
     public ResponseEntity<List<SimpleExaminationDTO>> getAllOrders() {
@@ -34,23 +37,8 @@ public class ExaminationController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping
-    public ResponseEntity<ExaminationDTO> createOrder(@RequestBody OrderCreateRequest request) {
-
-        Examination examination = Examination.builder()
-                .panel(request.getAPanel())
-                .date(request.getDate())
-                .slot(request.getSlot())
-                .build();
-
-        Examination createdExamination = examinationService.createOrder(examination);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(examinationMapper.toDTO(createdExamination));
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<ExaminationDTO> getOrderInfo(@PathVariable Long id) {
+    public ResponseEntity<ExaminationDTO> getExaminationInfo(@PathVariable Long id) {
         Examination examination = examinationService.findExaminationById(id);
         if (examination == null) {
             return ResponseEntity.notFound().build();
