@@ -61,6 +61,7 @@ const STITests: React.FC = () => {
   const [hideRows, setHideRows] = useState<number[]>([]);
   const [showResultPopup, setShowResultPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentExaminationId, setCurrentExaminationId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -220,7 +221,14 @@ const STITests: React.FC = () => {
           setHideRows(prev => [...prev, ...ids]);
           setSelected([]);
         }}
-        onViewRows={() => setShowResultPopup(true)}
+        onViewRows={(ids) => {
+          // ids: array of selected ids, or you can pass the id of the row being viewed
+          // For single view, use the first id
+          if (ids && ids.length > 0) {
+            setCurrentExaminationId(ids[0]);
+            setShowResultPopup(true);
+          }
+        }}
         currentPage={currentPage}
         testsPerPage={TESTS_PER_PAGE}
       />
@@ -252,8 +260,8 @@ const STITests: React.FC = () => {
           </button>
         </div>
       )}
-      {showResultPopup && (
-        <TestResultPopup onClose={() => setShowResultPopup(false)} />
+      {showResultPopup && currentExaminationId !== null && (
+        <TestResultPopup onClose={() => { setShowResultPopup(false); setCurrentExaminationId(null); }} examinationId={currentExaminationId} />
       )}
     </div>
   );

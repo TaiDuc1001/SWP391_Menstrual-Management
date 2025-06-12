@@ -125,7 +125,7 @@ const STIPackages: React.FC = () => {
                 <ActionButton
                   variant="primary"
                   actionType="book"
-                  onClick={() => navigate('/sti-tests/book')}
+                  onClick={() => navigate('/sti-tests/book', { state: { panelId: pkg.id } })}
                 >
                   Book
                 </ActionButton>
