@@ -1,13 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Popup from './Popup';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axios';
 
 interface TestResultPopupProps {
   onClose: () => void;
+  examinationId?: number;
 }
 
-const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose }) => {
+const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationId }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState<any>(null);
+
+  useEffect(() => {
+    console.log('TestResultPopup: examinationId =', examinationId);
+    if (!examinationId) {
+      console.log('TestResultPopup: No examinationId provided, skipping fetch.');
+      return;
+    }
+    setLoading(true);
+    api.get(`/examinations/${examinationId}`)
+      .then(res => {
+        console.log('TestResultPopup: API response =', res);
+        console.log('TestResultPopup: result =', res.data);
+        setResult(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('TestResultPopup: API error', err);
+        setError('Could not fetch test result.');
+        setLoading(false);
+      });
+  }, [examinationId]);
+
+  if (loading) return <Popup open={true} onClose={onClose}><div className="p-8 text-center">Loading...</div></Popup>;
+  if (!result) return <Popup open={true} onClose={onClose}><div className="p-8 text-center">{'No result found.'}</div></Popup>;
+
+  // Map API response to UI fields
+  const code = result.id;
+  const testDate = result.date ? new Date(result.date).toLocaleDateString('en-GB') : '-';
+  const testTime = result.slot || '-';
+  const staffName = result.customerName || '-';
+  const panels = result.testResults && result.testResults.length > 0 ? result.testResults.map((tr: any) => tr.name).join(', ') : '-';
+  const testResults = result.testResults || [];
+
   return (
     <Popup open={true} onClose={onClose} className="w-full max-w-6xl p-8 relative">
       <button
@@ -24,14 +62,14 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose }) => {
           </div>
           <div>
             <div className="text-lg font-semibold text-gray-700 mb-1">DETAILED TEST RESULT</div>
-            <div className="text-sm text-gray-500">Code: <span className="bg-blue-100 text-blue-600 rounded px-2 py-0.5">STXN-20250522-001</span></div>
+            <div className="text-sm text-gray-500">Code: <span className="bg-blue-100 text-blue-600 rounded px-2 py-0.5">{code}</span></div>
           </div>
         </div>
         <div className="mb-2 text-sm text-gray-600 flex gap-8">
-          <div>Test date: <span className="font-medium text-gray-800">22/05/2025</span></div>
-          <div>Test time: <span className="font-medium text-gray-800">09:00 - 11:00</span></div>
-          <div>Staff: <span className="font-medium text-gray-800">Staff XYZ</span></div>
-          <div>Type: <span className="font-medium text-gray-800">HIV, Gonorrhea, Syphilis</span></div>
+          <div>Test date: <span className="font-medium text-gray-800">{testDate}</span></div>
+          <div>Test time: <span className="font-medium text-gray-800">{testTime}</span></div>
+          <div>Staff: <span className="font-medium text-gray-800">{staffName}</span></div>
+          <div>Type: <span className="font-medium text-gray-800">{panels}</span></div>
         </div>
         <div className="mt-4">
           <div className="font-semibold text-gray-700 mb-2">Detailed result table</div>
@@ -42,47 +80,32 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose }) => {
                 <th className="p-2 font-medium">Result</th>
                 <th className="p-2 font-medium">Normal range</th>
                 <th className="p-2 font-medium">Test index</th>
-                <th className="p-2 font-medium">Normal range</th>
                 <th className="p-2 font-medium">Note</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-2">HIV Ag/Ab Combo</td>
-                <td className="p-2">Negative</td>
-                <td className="p-2">Negative</td>
-                <td className="p-2">S/CO = 0.38</td>
-                <td className="p-2">S/CO {'<'} 1.0</td>
-                <td className="p-2"></td>
-              </tr>
-              <tr>
-                <td className="p-2">Syphilis (TPHA)</td>
-                <td className="p-2">Negative</td>
-                <td className="p-2">Negative</td>
-                <td className="p-2">Not detected</td>
-                <td className="p-2">Negative</td>
-                <td className="p-2"></td>
-              </tr>
-              <tr className="bg-red-50">
-                <td className="p-2">Gonorrhea</td>
-                <td className="p-2 text-red-600 font-semibold">
-                  <div className="flex items-center h-full min-h-[32px]">{/* min-h to help vertical align */}
-                    <span>Positive</span>
-                    <span className="text-xl flex items-center ml-1">⚠️</span>
-                  </div>
-                </td>
-                <td className="p-2">Negative</td>
-                <td className="p-2">A450 = 1.12 (PCR)</td>
-                <td className="p-2">A450 {'≤'} 0.2</td>
-                <td className="p-2 text-red-500 font-semibold">Need consultation & treatment</td>
-              </tr>
+              {testResults.length > 0 ? (
+                testResults.map((tr: any, idx: number) => (
+                  <tr key={idx}>
+                    <td className="p-2">{tr.name}</td>
+                    <td className="p-2">{tr.diagnosis === true ? 'Positive' : tr.diagnosis === false ? 'Negative' : '-'}</td>
+                    <td className="p-2">{tr.normalRange || '-'}</td>
+                    <td className="p-2">{tr.testIndex || '-'}</td>
+                    <td className="p-2">{tr.note || ''}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan={5} className="p-2 text-center text-gray-400">No test results available.</td></tr>
+              )}
             </tbody>
           </table>
-          <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded mb-4 flex items-center gap-3">
-            <span className="text-orange-500 text-xl">⚠️</span>
-            <span className="text-orange-700 font-medium">You have a positive result for Gonorrhea</span>
-            <span className="text-gray-600">Please schedule a consultation soon for timely treatment support.</span>
-          </div>
+          {/* Optionally, show a warning if any result is positive */}
+          {testResults.some((tr: any) => tr.diagnosis === true) && (
+            <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded mb-4 flex items-center gap-3">
+              <span className="text-orange-500 text-xl">⚠️</span>
+              <span className="text-orange-700 font-medium">You have a positive result. Please schedule a consultation soon for timely treatment support.</span>
+            </div>
+          )}
           <div className="flex gap-3 mt-4 justify-end">
             <button className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600">Download PDF</button>
             <button className="bg-green-500 text-white px-4 py-2 rounded font-semibold hover:bg-green-600" onClick={() => navigate('/appointments/book')}>Book consultation</button>
