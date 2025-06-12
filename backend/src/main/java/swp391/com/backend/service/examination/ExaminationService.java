@@ -21,7 +21,7 @@ public class ExaminationService {
         return examinationRepository.findAll();
     }
 
-    public Examination createOrder(Examination examination) {
+    public Examination createExamination(Examination examination) {
         return examinationRepository.save(examination);
     }
 
