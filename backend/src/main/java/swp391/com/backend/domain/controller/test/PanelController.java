@@ -12,6 +12,7 @@ import swp391.com.backend.domain.dto.simpledto.SimplePanelDTO;
 import swp391.com.backend.domain.mapper.ExaminationMapper;
 import swp391.com.backend.domain.mapper.PanelMapper;
 import swp391.com.backend.jpa.pojo.examination.Examination;
+import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
 import swp391.com.backend.jpa.pojo.test.Panel;
 import swp391.com.backend.service.examination.ExaminationService;
 import swp391.com.backend.service.test.PanelService;
@@ -61,9 +62,11 @@ public class PanelController {
     public ResponseEntity<ExaminationCreateResponse> createExamination(@PathVariable Long id, @RequestBody ExaminationCreateRequest request) {
         Panel panel = panelService.findPanelById(id);
         Examination examination = Examination.builder()
+                .id(null)
                 .panel(panel)
                 .date(request.getDate())
                 .slot(request.getSlot())
+                .examinationStatus(ExaminationStatus.PENDING)
                 .build();
 
         Examination createdExamination = examinationService.createExamination(examination);
