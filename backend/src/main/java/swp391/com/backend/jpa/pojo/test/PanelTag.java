@@ -6,4 +6,5 @@ public enum PanelTag {
     BUDGET_FRIENDLY,
     POPULAR,
     EXPRESS,
+    NEW
 }
