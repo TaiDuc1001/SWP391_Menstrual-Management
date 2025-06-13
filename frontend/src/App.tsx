@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import AdminLayout from './layouts/AdminLayout';
 import StaffLayout from './layouts/StaffLayout';
+import DoctorLayout from './layouts/DoctorLayout';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -43,7 +44,7 @@ function App() {
       ) : role === 'staff' && isAuthenticated ? (
         <StaffLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
       ) : role === 'doctor' && isAuthenticated ? (
-        <div>Doctor Layout here</div>
+        <DoctorLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
       ) : (
         <AppLayout
           isAuthenticated={isAuthenticated}
