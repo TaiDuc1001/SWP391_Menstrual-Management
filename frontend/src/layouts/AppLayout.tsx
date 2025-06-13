@@ -26,6 +26,7 @@ import EnterOTP from '../pages/Public/EnterOTP';
 import ChangePassword from '../pages/Public/ChangePassword';
 import Contact from '../pages/Public/Contact';
 import Services from '../pages/Public/Services';
+import PublicLayout from '../layouts/PublicLayout';
 
 interface AppLayoutProps {
   isAuthenticated: boolean;
@@ -50,10 +51,33 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
-      <Header isAuthenticated={isAuthenticated} onAuthToggle={onAuthToggle} />
-      <div className="flex flex-1 min-h-0">
-        {showSidebar && <Sidebar />}
-        <main className={`flex-1 bg-white min-w-0 rounded-2xl shadow-md transition-all duration-300 m-5 ${showSidebar ? 'ml-[280px]' : ''}`}>
+      {/* Only show main Header/Sidebar for protected routes, otherwise use PublicLayout */}
+      {isProtectedRoute ? (
+        <>
+          <Header isAuthenticated={isAuthenticated} onAuthToggle={onAuthToggle} />
+          <div className="flex flex-1 min-h-0">
+            {showSidebar && <Sidebar />}
+            <main className={`flex-1 bg-white min-w-0 rounded-2xl shadow-md transition-all duration-300 m-5 ${showSidebar ? 'ml-[280px]' : ''}`}>
+              <Routes>
+                {/* Protected routes */}
+                <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <RequireLogin />} />
+                <Route path="/menstrual-cycles" element={isAuthenticated ? <MenstrualCycles /> : <RequireLogin />} />
+                <Route path="/menstrual-cycles/all" element={<MenstrualCyclesAll />} />
+                <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <RequireLogin />} />
+                <Route path="/sti-tests" element={isAuthenticated ? <STITests /> : <RequireLogin />} />
+                <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
+                <Route path="/sti-tests/packages" element={<STIPackages />} />
+                <Route path="/sti-tests/packages/:id" element={<STIPackageDetail />} />
+                <Route path="/sti-tests/book" element={<BookTestPage />} />
+                <Route path="/appointments/book" element={<BookAppointmentPage />} />
+                <Route path="/doctors/:id" element={<DoctorDetailPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+          </div>
+        </>
+      ) : (
+        <PublicLayout>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about-us" element={<AboutUs />} />
@@ -65,23 +89,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/services" element={<Services />} />
-            {/* Protected routes */}
-            <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <RequireLogin />} />
-            <Route path="/menstrual-cycles" element={isAuthenticated ? <MenstrualCycles /> : <RequireLogin />} />
-            <Route path="/menstrual-cycles/all" element={<MenstrualCyclesAll />} />
-            <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <RequireLogin />} />
-            <Route path="/sti-tests" element={isAuthenticated ? <STITests /> : <RequireLogin />} />
-            <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
-            <Route path="/sti-tests/packages" element={<STIPackages />} />
-            <Route path="/sti-tests/packages/:id" element={<STIPackageDetail />} />
-            <Route path="/sti-tests/book" element={<BookTestPage />} />
-            <Route path="/appointments/book" element={<BookAppointmentPage />} />
-            <Route path="/doctors/:id" element={<DoctorDetailPage />} />
-            {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </main>
-      </div>
+        </PublicLayout>
+      )}
       <Footer />
     </div>
   );
