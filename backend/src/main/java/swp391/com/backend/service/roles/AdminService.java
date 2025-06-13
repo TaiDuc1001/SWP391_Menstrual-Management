@@ -1,5 +1,6 @@
 package swp391.com.backend.service.roles;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.roles.Admin;
@@ -12,7 +13,7 @@ public class AdminService {
 
     public Admin findAdminById(Long id) {
         return adminRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Admin not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found with id: " + id));
     }
 
     public Admin createAdmin(Admin admin) {
