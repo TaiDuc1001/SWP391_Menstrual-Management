@@ -8,7 +8,7 @@ import facebookIcon from '../../assets/icons/facebook.svg';
 import api from '../../api/axios';
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (role: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -23,9 +23,28 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     try {
-      await api.post('/accounts/login', { email, password, role });
-      onLogin();
-      navigate('/dashboard');
+    const response = await api.post('/accounts/login', { email, password, role });
+
+    const returnedRole = response.data.role?.toLowerCase();
+    onLogin(returnedRole);
+
+    switch (returnedRole) {
+      case 'admin':
+        navigate('/admin/dashboard');
+        break;
+      case 'staff':
+        navigate('/staff/dashboard');
+        break;
+      case 'customer':
+        navigate('/dashboard');
+        break;
+      case 'doctor':
+        navigate('/doctor/dashboard');
+        break;
+      default:
+        navigate('/');
+        break;
+    }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     }
@@ -33,7 +52,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   return (
     <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-2xl shadow-2xl flex flex-col items-center">
       <div className="bg-pink-100 rounded-full p-3 mb-2 mt-2">
-        <svg width="40" height="40" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#ec4899"/><rect x="6" y="14" width="12" height="6" rx="3" fill="#ec4899"/></svg>
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#ec4899" /><rect x="6" y="14" width="12" height="6" rx="3" fill="#ec4899" /></svg>
       </div>
       <h2 className="text-2xl font-bold mb-1 text-center text-gray-800">Log in to your account</h2>
       <p className="text-gray-400 text-center mb-6 text-sm">Please fill out all fields to continue</p>

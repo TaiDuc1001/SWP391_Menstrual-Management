@@ -1,35 +1,57 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
-import AdminLayout from "./layouts/AdminLayout";
+import AdminLayout from './layouts/AdminLayout';
 import StaffLayout from './layouts/StaffLayout';
-import './index.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const handleAuthToggle = () => setIsAuthenticated((prev) => !prev);
-  const handleLogin = () => setIsAuthenticated(true);
-  const handleSignUp = () => setIsAuthenticated(true);
+  const [role, setRole] = React.useState<string | null>(null);
+
+  
+  useEffect(() => {
+    const savedRole = localStorage.getItem('role');
+    if (savedRole) {
+      setIsAuthenticated(true);
+      setRole(savedRole.toLowerCase());
+    }
+  }, []);
+
+  const handleLogin = (userRole: string) => {
+    const lowerRole = userRole.toLowerCase();
+    setIsAuthenticated(true);
+    setRole(lowerRole);
+    localStorage.setItem('role', lowerRole);
+  };
+
+  const handleAuthToggle = () => {
+    setIsAuthenticated(false);
+    setRole(null);
+    localStorage.removeItem('role');
+  };
+
+  const handleSignUp = () => {
+    setIsAuthenticated(true);
+    setRole('customer');
+    localStorage.setItem('role', 'customer');
+  };
 
   return (
     <Router>
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        onAuthToggle={handleAuthToggle}
-        handleLogin={handleLogin}
-        handleSignUp={handleSignUp}
-      />
-
-        {/*chưa chia role*/}
-
-      {/* <AdminLayout
-        isAuthenticated={isAuthenticated}
-        onAuthToggle={handleAuthToggle}
-      /> */}
-      {/* <StaffLayout
-        isAuthenticated={isAuthenticated}
-        onAuthToggle={handleAuthToggle}
-      /> */}
+      {role === 'admin' && isAuthenticated ? (
+        <AdminLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
+      ) : role === 'staff' && isAuthenticated ? (
+        <StaffLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
+      ) : role === 'doctor' && isAuthenticated ? (
+        <div>Doctor Layout here</div>
+      ) : (
+        <AppLayout
+          isAuthenticated={isAuthenticated}
+          onAuthToggle={handleAuthToggle}
+          handleLogin={handleLogin}
+          handleSignUp={handleSignUp}
+        />
+      )}
     </Router>
   );
 }
