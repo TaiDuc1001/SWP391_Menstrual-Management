@@ -69,7 +69,10 @@ const AdminHeader: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) =
                     <span className="ml-2 font-poppins font-semibold text-gray-700 group-hover:text-blue-500 transition-colors duration-200">{userName}</span>
                 </span>
                 <button
-                    onClick={onAuthToggle}
+                    onClick={() => {
+                        onAuthToggle();
+                        window.location.href = 'http://localhost:3000/';
+                    }}
                     className="flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-600 font-poppins px-4 py-1.5 rounded-full transition-all duration-200 shadow hover:shadow-blue-200 text-sm"
                 >
                     <img src={logoutIcon} alt="Log out" className="w-4 h-4" />

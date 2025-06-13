@@ -31,9 +31,10 @@ import PublicLayout from '../layouts/PublicLayout';
 interface AppLayoutProps {
   isAuthenticated: boolean;
   onAuthToggle: () => void;
-  handleLogin: () => void;
+  handleLogin: (role: string) => void;
   handleSignUp: () => void;
 }
+
 
 const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, handleLogin, handleSignUp }) => {
   const location = useLocation();
