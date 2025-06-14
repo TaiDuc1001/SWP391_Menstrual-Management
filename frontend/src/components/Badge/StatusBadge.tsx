@@ -41,6 +41,18 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
       border = 'border border-yellow-200';
       shadow = 'shadow-yellow-100';
       break;
+    case 'Sampled':
+      badgeClass = 'bg-blue-50 text-blue-700';
+      textColor = '#1D4ED8';
+      border = 'border border-blue-200';
+      shadow = 'shadow-blue-100';
+      break;
+    case 'Examined':
+      badgeClass = 'bg-purple-50 text-purple-700';
+      textColor = '#6B21A8';
+      border = 'border border-purple-200';
+      shadow = 'shadow-purple-100';
+      break;
     case 'Upcoming':
       badgeClass = 'bg-blue-50 text-blue-700';
       icon = upcomingIcon;

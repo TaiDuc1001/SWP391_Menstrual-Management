@@ -1,54 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StatusBadge from '../../components/Badge/StatusBadge';
 import refreshIcon from '../../assets/icons/refresh.svg';
 import searchIcon from '../../assets/icons/search.svg';
 import FormUpdateTestResult from './FormUpdateTestResult';
+import axios from 'axios';
 
-const mockData = [
-  {
-    id: 'STXN-001',
-    customer: 'Nguyễn Văn A',
-    service: 'Xét nghiệm HIV',
-    dueDate: '25/05/2025',
-    status: 'pending',
-  },
-  {
-    id: 'STXN-002',
-    customer: 'Trần Thị B',
-    service: 'HPV DNA',
-    dueDate: '27/05/2025',
-    status: 'processing',
-  },
-  {
-    id: 'STXN-003',
-    customer: 'Lê Minh C',
-    service: 'Xét nghiệm máu tổng quát',
-    dueDate: '28/05/2025',
-    status: 'done',
-  },
-];
+interface Examination {
+  id: number;
+  date: string;
+  timeRange: string;
+  examinationStatus: string;
+  panelName: string;
+  customerName: string;
+}
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  pending: { label: 'Chờ cập nhật', color: 'bg-yellow-100 text-yellow-700' },
-  processing: { label: 'Đang xử lý', color: 'bg-blue-100 text-blue-700' },
-  done: { label: 'Đã hoàn tất', color: 'bg-green-100 text-green-700' },
+const getStatusLabel = (status: string): string => {
+  switch (status) {
+    case 'SAMPLED':
+      return 'Sampled';
+    case 'IN_PROGRESS':
+      return 'In Progress';
+    case 'EXAMINED':
+      return 'Examined';
+    case 'CANCELLED':
+      return 'Cancelled';
+    case 'COMPLETED':
+      return 'Completed';
+    default:
+      return status;
+  }
 };
 
 const UpdateTestResult: React.FC = () => {
+  const [data, setData] = useState<Examination[]>([]);
   const [search, setSearch] = useState('');
-  const [role, setRole] = useState('');
   const [status, setStatus] = useState('');
-  const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [selectedRequest, setSelectedRequest] = useState<Examination | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  const handleOpenModal = (row: any) => {
+  const fetchData = async () => {
+    try {
+      const res = await axios.get<Examination[]>('http://localhost:8080/api/examinations');
+      setData(res.data);
+    } catch (error) {
+      console.error('Lỗi khi gọi API:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleOpenModal = (row: Examination) => {
     setSelectedRequest(row);
     setModalOpen(true);
   };
+
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedRequest(null);
+  };
+
+  const handleSampled = async (id: number) => {
+    try {
+      await axios.put(`http://localhost:8080/api/examinations/sampled/${id}`);
+      fetchData();
+    } catch (error) {
+      console.error('Lỗi khi cập nhật trạng thái:', error);
+    }
+  };
+
+  const filteredData = data.filter(item =>
+    item.examinationStatus !== 'CANCELLED' &&
+    item.examinationStatus !== 'COMPLETED' &&
+    (!status || item.examinationStatus.toLowerCase() === status.toLowerCase()) &&
+    (item.customerName.toLowerCase().includes(search.toLowerCase()) ||
+      item.panelName.toLowerCase().includes(search.toLowerCase()) ||
+      String(item.id).toLowerCase().includes(search.toLowerCase()))
+  );
+
+  // Tính toán dữ liệu cho trang hiện tại
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  // Xử lý chuyển trang
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -56,12 +97,12 @@ const UpdateTestResult: React.FC = () => {
       <div className="flex-1 flex flex-col items-center px-6 py-8">
         <div className="w-full max-w-6xl">
           <div className="bg-white rounded-2xl shadow p-8">
-            <h2 className="text-lg font-bold mb-6">List of requests pending result updates</h2>
+            <h2 className="text-lg font-bold mb-6">Danh sách yêu cầu cần cập nhật kết quả</h2>
             <div className="flex items-center gap-3 mb-4">
               <div className="relative w-[400px]">
                 <input
                   type="text"
-                  placeholder="Search by request ID, customer name,..."
+                  placeholder="Tìm theo mã, tên khách hàng, dịch vụ..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="w-full px-4 py-2 border rounded"
@@ -75,12 +116,16 @@ const UpdateTestResult: React.FC = () => {
                 value={status}
                 onChange={e => setStatus(e.target.value)}
               >
-                <option value="">All statuses</option>
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="done">Done</option>
-              </select>
-              <button className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold px-5 h-10 rounded-lg transition shadow min-w-[120px]">
+                <option value="">All status</option>
+                <option value="SAMPLED">Sampled</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="EXAMINED">Examined</option>
+                {/* <option value="CANCELLED">Cancelled</option> */}
+              </select>              
+              <button
+                onClick={fetchData} // Refresh data from api
+                className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold px-5 h-10 rounded-lg transition shadow min-w-[120px]"
+              >
                 <img src={refreshIcon} alt="refresh" className="w-5 h-5" />
                 <span className="text-base">Refresh</span>
               </button>
@@ -90,51 +135,101 @@ const UpdateTestResult: React.FC = () => {
                 <thead>
                   <tr className="bg-gray-50 text-gray-700">
                     <th className="p-3 text-left font-semibold">Request ID</th>
-                    <th className="p-3 text-left font-semibold">Customer Name</th>
-                    <th className="p-3 text-left font-semibold">Test Service</th>
-                    <th className="p-3 text-left font-semibold">Due Date</th>
+                    <th className="p-3 text-left font-semibold">Customer</th>
+                    <th className="p-3 text-left font-semibold">Test Package</th>
+                    <th className="p-3 text-left font-semibold">Appointment Date</th>
+                    <th className="p-3 text-left font-semibold">Time</th>
                     <th className="p-3 text-left font-semibold">Status</th>
-                    <th className="p-3 text-left font-semibold">Actions</th>
+                    <th className="p-3 text-left font-semibold">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {mockData.map((row, idx) => (
+                  {currentItems.map(row => (
                     <tr key={row.id} className="border-b last:border-b-0 hover:bg-blue-50/30 transition">
-                      <td className="p-3 font-medium">{row.id}</td>
-                      <td className="p-3">{row.customer}</td>
-                      <td className="p-3">{row.service}</td>
-                      <td className="p-3">{row.dueDate}</td>
+                      <td className="p-3 font-medium">EXM-{row.id.toString().padStart(4, '0')}</td>
+                      <td className="p-3">{row.customerName}</td>
+                      <td className="p-3">{row.panelName}</td>
+                      <td className="p-3">{row.date}</td>
+                      <td className="p-3">{row.timeRange}</td>
                       <td className="p-3">
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${statusMap[row.status].color}`}>{statusMap[row.status].label}</span>
+                        <StatusBadge status={getStatusLabel(row.examinationStatus)} />
                       </td>
                       <td className="p-3">
-                        <button
-                          className={`px-4 py-1.5 rounded-lg text-xs font-semibold shadow transition
-                            ${row.status === 'done' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-                          disabled={row.status === 'done'}
-                          onClick={() => handleOpenModal(row)}
-                        >
-                          Cập nhật
-                        </button>
+                        {row.examinationStatus === 'IN_PROGRESS' ? (
+                          <button
+                            className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-blue-500 text-white hover:bg-blue-600 transition"
+                            onClick={() => handleSampled(row.id)}
+                          >
+                            Sampled
+                          </button>
+                        ) : row.examinationStatus === 'SAMPLED' ? (
+                          <button
+                            className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-green-500 text-white hover:bg-green-600 transition"
+                            onClick={() => handleOpenModal(row)}
+                          >
+                            Update
+                          </button>
+                        ) : (
+                          <span className="text-gray-400 text-xs">Unavailable</span>
+                        )}
                       </td>
                     </tr>
                   ))}
+                  {currentItems.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="text-center p-6 text-gray-400">
+                        Không có dữ liệu phù hợp.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
-            </div>
-            <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
-              <span>Hiển thị 1-10 trên 1,245 yêu cầu</span>
-              <div className="flex gap-1">
-                <button className="px-2 py-1 rounded bg-gray-100 text-blue-700 font-bold">1</button>
-                <button className="px-2 py-1 rounded hover:bg-gray-100">2</button>
-                <button className="px-2 py-1 rounded hover:bg-gray-100">3</button>
-                <span className="px-2">...</span>
-              </div>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 p-4 border-t">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index + 1}
+                      onClick={() => handlePageChange(index + 1)}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === index + 1
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-      {modalOpen && (
+
+      {modalOpen && selectedRequest && (
         <FormUpdateTestResult
           open={modalOpen}
           onClose={handleCloseModal}
