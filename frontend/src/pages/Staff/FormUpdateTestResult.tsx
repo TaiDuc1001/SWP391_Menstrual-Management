@@ -136,7 +136,6 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
                   <th className="p-3 font-semibold">Chỉ số xét nghiệm</th>
                   <th className="p-3 font-semibold whitespace-nowrap">Mức bình thường chỉ số</th>
                   <th className="p-3 font-semibold">Ghi chú</th>
-                  <th className="p-3 font-semibold whitespace-nowrap">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -190,30 +189,14 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
                         placeholder="Ghi chú"
                       />
                     </td>
-                    <td className="p-2 text-center">
-                      <button
-                        className="p-1 hover:bg-red-100 rounded"
-                        onClick={() => handleRemoveRow(idx)}
-                        title="Xóa hàng"
-                      >
-                        <img src={require('../../assets/icons/trash-bin.svg').default} alt="delete" className="w-5 h-5" />
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <button
-            className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold text-sm"
-            onClick={handleAddRow}
-          >
-            <img src={require('../../assets/icons/plus-white.svg').default} alt="plus" className="w-4 h-4" />
-            Thêm hạng mục mới
-          </button>
         </div>
         {/* File upload */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="font-semibold mb-2 flex items-center gap-2">
             <span className="inline-block w-2 h-2 bg-yellow-400 rounded-full"></span>
             Upload file kết quả (tùy chọn)
@@ -230,7 +213,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
               <div className="mt-2 text-xs text-gray-700">{file.name} ({(file.size/1024/1024).toFixed(2)} MB)</div>
             )}
           </div>
-        </div>
+        </div> */}
         {/* Note */}
         <div className="mb-6">
           <div className="font-semibold mb-2 flex items-center gap-2">
@@ -255,10 +238,10 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
               Hủy bỏ
             </span>
           </button>
-          <button className="px-6 py-2 rounded-lg bg-yellow-400 text-white font-semibold hover:bg-yellow-500 flex items-center gap-2">
+          {/* <button className="px-6 py-2 rounded-lg bg-yellow-400 text-white font-semibold hover:bg-yellow-500 flex items-center gap-2">
             <img src={require('../../assets/icons/draft.svg').default} alt="draft" className="w-4 h-4" />
             Lưu nháp
-          </button>
+          </button> */}
           <button className="px-6 py-2 rounded-lg bg-green-400 text-white font-semibold hover:bg-green-500 flex items-center gap-2">
             <img src={require('../../assets/icons/green-check.svg').default} alt="update" className="w-4 h-4" />
             Cập nhật kết quả
