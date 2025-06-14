@@ -48,6 +48,7 @@ const MenstrualCyclesAll: React.FC = () => {
     const dateMatch =
       formattedStart.toLowerCase().includes(searchLower) ||
       formattedEnd.toLowerCase().includes(searchLower);
+    // Fix: filter by fromDate (startDate) and toDate (endDate)
     const start = fromDate ? parseDate(row.startDate) >= fromDate : true;
     const end = toDate ? parseDate(row.endDate) <= toDate : true;
     return (searchMatch || dateMatch) && start && end;
@@ -154,12 +155,27 @@ const MenstrualCyclesAll: React.FC = () => {
         onSave={(data) => {
           setShowCyclePopup(false);
           setEditRow(null);
+          // Calculate endDate from startDate and duration
+          const parseDMY = (str: string) => {
+            const [day, month, year] = str.split('/').map(Number);
+            return new Date(year, month - 1, day);
+          };
+          const formatDMY = (date: Date) => {
+            const d = date.getDate().toString().padStart(2, '0');
+            const m = (date.getMonth() + 1).toString().padStart(2, '0');
+            const y = date.getFullYear();
+            return `${d}/${m}/${y}`;
+          };
+          const start = parseDMY(data.startDate);
+          const end = new Date(start);
+          end.setDate(start.getDate() + data.duration - 1);
+          const endDate = formatDMY(end);
           // If editing, update; else, add new
           if (editRow && editRow.id) {
             setCycles(prev => prev.map(row => row.id === editRow.id ? {
               ...row,
               startDate: data.startDate,
-              endDate: '', // You may want to update this logic
+              endDate: endDate,
               duration: data.duration,
               cycle: data.cycleLength
             } : row));
@@ -169,7 +185,7 @@ const MenstrualCyclesAll: React.FC = () => {
               {
                 id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
                 startDate: data.startDate,
-                endDate: '', // You may want to update this logic
+                endDate: endDate,
                 duration: data.duration,
                 cycle: data.cycleLength
               }

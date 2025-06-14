@@ -42,15 +42,6 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) => {
         <div className="h-10 w-px bg-pink-100 mx-2 hidden md:block" />
         <nav className="navbar">
           <ul className="flex gap-3 md:gap-6">
-            <li>
-              <Link to="/" className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">Home</Link>
-            </li>
-            <li>
-              <Link to="/about-us" className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">About us</Link>
-            </li>
-            <li>
-              <Link to="/blogs" className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">Blogs</Link>
-            </li>
             {isAuthenticated && (
               <li>
                 <Link to="/dashboard" className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">Dashboard</Link>

@@ -35,12 +35,12 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Convert yyyy-mm-dd to dd/mm/yyyy for storage
-    let formattedDate = startDate;
+    let formattedStartDate = startDate;
     if (startDate && startDate.includes('-')) {
       const [year, month, day] = startDate.split('-');
-      formattedDate = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+      formattedStartDate = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
     }
-    if (onSave) onSave({ startDate: formattedDate, duration, cycleLength });
+    if (onSave) onSave({ startDate: formattedStartDate, duration, cycleLength });
     onClose();
   };
   return (
