@@ -4,7 +4,7 @@ package swp391.com.backend.service.examination;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.examination.Examination;
-import swp391.com.backend.jpa.pojo.examination.Result;
+import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
 import swp391.com.backend.jpa.pojo.examination.ResultDetail;
 import swp391.com.backend.jpa.pojo.test.TestType;
 import swp391.com.backend.jpa.repository.examination.ExaminationRepository;
@@ -40,5 +40,15 @@ public class ExaminationService {
 
     public List<TestType> getTestTypesById(Long id) {
         return resultService.findTestTypesByExaminationId(id);
+    }
+
+    public Examination updateExaminationStatus(Long id, ExaminationStatus status) {
+        Examination existingExamination = examinationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Examination not found with id: " + id));
+
+        existingExamination.setExaminationStatus(status);
+
+        Examination updatedExamination = examinationRepository.save(existingExamination);
+        return updatedExamination;
     }
 }

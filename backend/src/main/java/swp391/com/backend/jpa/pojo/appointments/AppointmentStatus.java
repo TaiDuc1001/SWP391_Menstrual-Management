@@ -1,10 +1,8 @@
 package swp391.com.backend.jpa.pojo.appointments;
 
 public enum AppointmentStatus {
-    COMPLETED,
-    PENDING,
+    BOOKED,
     IN_PROGRESS,
-    UPCOMING,
+    FINISHED,
     CANCELLED,
-    CONFIRMED
 }

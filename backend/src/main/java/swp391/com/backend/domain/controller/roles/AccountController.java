@@ -19,6 +19,7 @@ import java.util.Map;
 public class AccountController {
     private final RoleService roleService;
     private final AccountMapper accountMapper;
+    private final AccountService accountService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -49,5 +50,6 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
+
 
 }

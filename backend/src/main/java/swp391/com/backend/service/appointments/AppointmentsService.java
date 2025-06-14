@@ -18,13 +18,28 @@ public class AppointmentsService {
         return appointmentsRepository.findAll();
     }
 
-    public void deleteAppointment(Integer id) {
-        Appointment appointment = appointmentsRepository.findById(id.longValue())
+    public void deleteAppointment(Long id) {
+        Appointment appointment = appointmentsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
         appointmentsRepository.delete(appointment);
     }
 
     public Appointment createAppointment(Appointment appointment) {
         return appointmentsRepository.save(appointment);
+    }
+
+    public Appointment updateAppointment(Long id, Appointment appointment) {
+        Appointment existingAppointment = appointmentsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        existingAppointment.setDate(appointment.getDate());
+        existingAppointment.setSlot(appointment.getSlot());
+        existingAppointment.setDoctor(doctorService.findDoctorById(appointment.getDoctor().getId()));
+        return appointmentsRepository.save(existingAppointment);
+    }
+
+    public Appointment findAppointmentById(Long id) {
+        return appointmentsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found with id: " + id));
     }
 }

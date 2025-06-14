@@ -3,10 +3,7 @@ package swp391.com.backend.domain.controller.appointments;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.domain.dto.dto.AppointmentDTO;
 import swp391.com.backend.domain.dto.simpledto.SimpleAppointmentDTO;
 import swp391.com.backend.domain.dto.request.AppointmentCreateRequest;
@@ -48,10 +45,54 @@ public class AppointmentsController {
                 .slot(request.getSlot())
                 .doctor(doctor)
                 .customer(customer)
-                .appointmentStatus(AppointmentStatus.PENDING)
+                .appointmentStatus(AppointmentStatus.IN_PROGRESS)
                 .customerNote(request.getCustomerNote())
                 .build();
         Appointment result = appointmentsService.createAppointment(appointment);
         return ResponseEntity.ok(appointmentMapper.toDTO(result));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id,@RequestBody AppointmentDTO appointmentDTO) {
+        Appointment appointment = appointmentMapper.toEntity(appointmentDTO);
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id ,appointment);
+        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+    }
+
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<AppointmentDTO> startAppointment(@PathVariable Long id) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        if (appointment.getAppointmentStatus() != AppointmentStatus.BOOKED) {
+            return ResponseEntity.badRequest().build();
+        }
+        appointment.setAppointmentStatus(AppointmentStatus.IN_PROGRESS);
+
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+    }
+
+    @PutMapping("/{id}/finish")
+    public ResponseEntity<AppointmentDTO> finishAppointment(@PathVariable Long id) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        if (appointment.getAppointmentStatus() != AppointmentStatus.IN_PROGRESS) {
+            return ResponseEntity.badRequest().build();
+        }
+        appointment.setAppointmentStatus(AppointmentStatus.FINISHED);
+
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<AppointmentDTO> cancelAppointment(@PathVariable Long id) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        if (appointment.getAppointmentStatus() == AppointmentStatus.CANCELLED ||
+            appointment.getAppointmentStatus() == AppointmentStatus.FINISHED) {
+            return ResponseEntity.badRequest().build();
+        }
+        appointment.setAppointmentStatus(AppointmentStatus.CANCELLED);
+
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 }

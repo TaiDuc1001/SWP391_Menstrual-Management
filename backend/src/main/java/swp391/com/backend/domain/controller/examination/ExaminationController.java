@@ -1,18 +1,16 @@
 package swp391.com.backend.domain.controller.examination;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.domain.dto.dto.ExaminationDTO;
 import swp391.com.backend.domain.dto.dto.TestResultListDTO;
 import swp391.com.backend.domain.dto.simpledto.SimpleExaminationDTO;
-import swp391.com.backend.domain.dto.request.ExaminationCreateRequest;
 import swp391.com.backend.domain.mapper.ExaminationMapper;
 import swp391.com.backend.domain.mapper.TestResultMapper;
 import swp391.com.backend.jpa.pojo.examination.Examination;
+import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
 import swp391.com.backend.jpa.pojo.examination.ResultDetail;
-import swp391.com.backend.jpa.pojo.test.Panel;
 import swp391.com.backend.jpa.pojo.test.TestType;
 import swp391.com.backend.service.examination.ExaminationService;
 import swp391.com.backend.service.test.PanelService;
@@ -54,8 +52,32 @@ public class ExaminationController {
         return ResponseEntity.ok(examinationDTO);
     }
 
+    @PutMapping("/{id}/sampled")
+    public ResponseEntity<ExaminationDTO> sampleExamination(@PathVariable Long id) {
+        Examination updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.SAMPLED);
+        if (updatedExamination == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(examinationMapper.toDTO(updatedExamination));
+    }
 
+    @PutMapping("/{id}/completed")
+    public ResponseEntity<ExaminationDTO> completeExamination(@PathVariable Long id) {
+        Examination updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.COMPLETED);
+        if (updatedExamination == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(examinationMapper.toDTO(updatedExamination));
+    }
 
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<ExaminationDTO> cancelExamination(@PathVariable Long id) {
+        Examination updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.CANCELLED);
+        if (updatedExamination == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(examinationMapper.toDTO(updatedExamination));
+    }
 
     @DeleteMapping("/api/orders/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {

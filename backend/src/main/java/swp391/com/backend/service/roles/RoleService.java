@@ -1,8 +1,7 @@
 package swp391.com.backend.service.roles;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.roles.*;
 
@@ -63,17 +62,21 @@ public class RoleService {
                 Doctor doctor = Doctor.builder()
                         .account(account)
                         .build();
+                doctorService.createDoctor(doctor);
                 break;
             case "STAFF":
                 Staff staff = Staff.builder()
                         .account(account)
                         .build();
+                staffService.createStaff(staff);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid role type: " + roleType);
         }
         return account;
     }
+
+//    public Account update();
 }
 
 
