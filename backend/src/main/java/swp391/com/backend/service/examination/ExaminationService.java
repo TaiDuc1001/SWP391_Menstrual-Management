@@ -51,4 +51,10 @@ public class ExaminationService {
         Examination updatedExamination = examinationRepository.save(existingExamination);
         return updatedExamination;
     }
+
+    public Examination updateExaminationTestResults(Long id, List<ResultDetail> testResults) {
+        Examination existingExamination = findExaminationById(id);
+        existingExamination.getResult().setResultDetails(testResults);
+        return examinationRepository.save(existingExamination);
+    }
 }

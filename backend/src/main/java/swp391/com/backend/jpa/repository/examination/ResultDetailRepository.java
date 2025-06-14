@@ -11,4 +11,6 @@ public interface ResultDetailRepository extends JpaRepository<ResultDetail, Long
     ResultDetail findByResultId(Long resultId);
 
     List<ResultDetail> findAllByResultId(Long resultId);
+
+    ResultDetail findByResultIdAndTestTypeId(Long resultId, Long testTypeId);
 }

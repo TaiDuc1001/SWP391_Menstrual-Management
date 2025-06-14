@@ -23,4 +23,18 @@ public class ResultDetailsService {
     public TestType findTestTypeById(Long testTypeId) {
         return testTypeService.findTestById(testTypeId);
     }
+
+    public ResultDetail saveResultDetail(ResultDetail resultDetail) {
+        return resultDetailRepository.save(resultDetail);
+    }
+
+    public ResultDetail updateResultDetail(ResultDetail resultDetail) {
+        ResultDetail existingResultDetail = resultDetailRepository.findByResultIdAndTestTypeId(resultDetail.getResultId(), resultDetail.getTestTypeId());
+
+        existingResultDetail.setTestIndex(resultDetail.getTestIndex());
+        existingResultDetail.setNotes(resultDetail.getNotes());
+        existingResultDetail.setDiagnosis(resultDetail.getDiagnosis());
+
+        return resultDetailRepository.save(existingResultDetail);
+    }
 }

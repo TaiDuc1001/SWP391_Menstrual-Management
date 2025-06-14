@@ -9,6 +9,8 @@ import java.io.Serializable;
 @Entity
 @Table(name = "result_details")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @IdClass(ResultDetailId.class)
 public class ResultDetail {

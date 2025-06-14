@@ -28,9 +28,9 @@ public interface ExaminationMapper {
     @Mapping(source = "customer.name", target = "customerName")
     SimpleExaminationDTO toSimpleDTO(Examination entity);
 
-    Examination toEntity(ExaminedExaminationDTO dto);
-
     @Mapping(source = "slot.timeRange", target = "timeRange")
     ExaminationCreateResponse toCreateResponse(Examination entity);
+
+    Examination toEntity(ExaminedExaminationDTO dto);
 }
 

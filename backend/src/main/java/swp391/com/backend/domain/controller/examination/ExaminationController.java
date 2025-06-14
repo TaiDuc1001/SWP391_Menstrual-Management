@@ -7,15 +7,18 @@ import swp391.com.backend.domain.dto.dto.ExaminedExaminationDTO;
 import swp391.com.backend.domain.dto.dto.SampledExaminationDTO;
 import swp391.com.backend.domain.dto.dto.TestResultListDTO;
 import swp391.com.backend.domain.dto.dto.TestTypeDTO;
+import swp391.com.backend.domain.dto.request.ExaminationUpdateRequest;
 import swp391.com.backend.domain.dto.simpledto.SimpleExaminationDTO;
 import swp391.com.backend.domain.mapper.ExaminationMapper;
 import swp391.com.backend.domain.mapper.TestResultMapper;
 import swp391.com.backend.domain.mapper.TestTypeMapper;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
+import swp391.com.backend.jpa.pojo.examination.Result;
 import swp391.com.backend.jpa.pojo.examination.ResultDetail;
 import swp391.com.backend.jpa.pojo.test.TestType;
 import swp391.com.backend.service.examination.ExaminationService;
+import swp391.com.backend.service.examination.ResultDetailsService;
 import swp391.com.backend.service.test.PanelService;
 
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.List;
 @RequestMapping("/api/examinations")
 @RequiredArgsConstructor
 public class ExaminationController {
+    private final ResultDetailsService resultDetailsService;
     private final ExaminationService examinationService;
     private final TestTypeMapper testTypeMapper;
     private final ExaminationMapper examinationMapper;
@@ -82,6 +86,28 @@ public class ExaminationController {
         if (updatedExamination == null) {
             return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(examinationMapper.toSimpleDTO(updatedExamination));
+    }
+
+    @PutMapping("/examined/{id}")
+    public ResponseEntity<SimpleExaminationDTO> examineExamination(@PathVariable Long id, @RequestBody ExaminationUpdateRequest request) {
+        Examination updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.EXAMINED);
+
+        if (updatedExamination == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Result result = updatedExamination.getResult();
+        System.out.println(result.getId());
+        List<ResultDetail> testResults = testResultMapper.splitDtoList(request.getTestResults()).getRight()
+                .stream()
+                .map(resultDetail -> {
+                    resultDetail.setResultId(result.getId());
+                    resultDetail.setResult(result);
+                    System.out.println(resultDetail.getResultId() + " " + resultDetail.getTestTypeId());
+                    return resultDetailsService.updateResultDetail(resultDetail);
+                })
+                .toList();
+
         return ResponseEntity.ok(examinationMapper.toSimpleDTO(updatedExamination));
     }
 
