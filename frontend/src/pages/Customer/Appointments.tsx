@@ -36,19 +36,6 @@ const slotOptions = [
   { value: 'EIGHT', label: '16:00 - 17:00' },
 ];
 
-
-// Add slot code to time range mapping
-const slotCodeTimeMap: Record<string, string> = {
-  ONE: '08:00 - 09:00',
-  TWO: '09:00 - 10:00',
-  THREE: '10:00 - 11:00',
-  FOUR: '11:00 - 12:00',
-  FIVE: '13:00 - 14:00',
-  SIX: '14:00 - 15:00',
-  SEVEN: '15:00 - 16:00',
-  EIGHT: '16:00 - 17:00',
-};
-
 const APPOINTMENTS_PER_PAGE = 5;
 
 const AppointmentHistory: React.FC = () => {
@@ -82,10 +69,10 @@ const AppointmentHistory: React.FC = () => {
           id: item.id,
           name: item.doctorName,
           date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
-          time: slotCodeTimeMap[item.slot] || '',
+          time: item.timeRange || '', // Lấy trực tiếp từ API
           status: item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase(),
           code: '',
-          slot: item.slot ? String(item.slot).toUpperCase() : '', // Ensure slot is always uppercase string
+          slot: item.slot ? String(item.slot).toUpperCase() : '',
           slotCode: item.slot,
         }));
         setAppointments(mapped);
