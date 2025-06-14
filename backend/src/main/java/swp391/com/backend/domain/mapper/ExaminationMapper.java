@@ -14,11 +14,13 @@ public interface ExaminationMapper {
     @Mapping(target = "testResults", ignore = true)
     @Mapping(source = "customer.name", target = "customerName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
+    @Mapping(source = "staff.name", target = "staffName")
     ExaminedExaminationDTO toExaminedDTO(Examination entity);
 
     @Mapping(target = "testTypes", ignore = true)
     @Mapping(source = "customer.name", target = "customerName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
+    @Mapping(source = "staff.name", target = "staffName")
     SampledExaminationDTO toSampledDTO(Examination entity);
 
     @Mapping(source = "panel.panelName", target = "panelName")

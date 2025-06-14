@@ -14,5 +14,6 @@ public class ExaminedExaminationDTO {
     private LocalDate date;
     private String timeRange;
     private String customerName;
+    private String staffName;
     private ExaminationStatus examinationStatus;
 }
