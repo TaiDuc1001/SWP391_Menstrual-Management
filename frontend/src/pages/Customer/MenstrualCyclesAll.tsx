@@ -48,6 +48,7 @@ const MenstrualCyclesAll: React.FC = () => {
     const dateMatch =
       formattedStart.toLowerCase().includes(searchLower) ||
       formattedEnd.toLowerCase().includes(searchLower);
+    // Fix: filter by fromDate (startDate) and toDate (endDate)
     const start = fromDate ? parseDate(row.startDate) >= fromDate : true;
     const end = toDate ? parseDate(row.endDate) <= toDate : true;
     return (searchMatch || dateMatch) && start && end;
