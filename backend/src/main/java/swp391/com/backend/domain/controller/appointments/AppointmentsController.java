@@ -18,7 +18,7 @@ import swp391.com.backend.service.roles.DoctorService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/appointments")
 public class AppointmentsController {
