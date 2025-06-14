@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
-import swp391.com.backend.jpa.pojo.schedule.Slot;
 
 import java.time.LocalDate;
 
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 public class SimpleExaminationDTO {
     Long id;
     LocalDate date;
-    Slot slot;
+    String timeRange;
     ExaminationStatus examinationStatus;
     String panelName;
 }

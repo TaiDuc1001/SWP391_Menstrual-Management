@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import swp391.com.backend.jpa.pojo.appointments.AppointmentStatus;
-import swp391.com.backend.jpa.pojo.schedule.Slot;
+
 
 import java.time.LocalDate;
 
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class SimpleAppointmentDTO {
     Long id;
     LocalDate date;
-    Slot slot;
+    String timeRange;
     String doctorName;
     AppointmentStatus appointmentStatus;
 }

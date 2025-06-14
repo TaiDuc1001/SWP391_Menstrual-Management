@@ -9,10 +9,13 @@ import swp391.com.backend.jpa.pojo.appointments.Appointment;
 @Mapper(componentModel = "spring")
 public interface AppointmentMapper {
     @Mapping(source = "doctor.name", target = "doctorName")
-//    @Mapping(source = "appointment.status", target = "status")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
     SimpleAppointmentDTO toSimpleDTO(Appointment appointment);
+
     Appointment toEntity(AppointmentDTO dto);
+
     @Mapping(source = "customer.id", target = "customerId")
     @Mapping(source = "doctor.id", target = "doctorId")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
     AppointmentDTO toDTO(Appointment entity);
 }

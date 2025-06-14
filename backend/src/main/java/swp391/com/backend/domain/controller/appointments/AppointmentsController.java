@@ -32,14 +32,10 @@ public class AppointmentsController {
 
     @GetMapping
     public ResponseEntity<List<SimpleAppointmentDTO>> getAllAppointments() {
-        // Logic to get all appointments
-//        List<Appointment> results_ = appointmentsService.getAllAppointments();
-//        results_.forEach(appointments -> System.out.println(appointments.getAppointmentStatus()));
         List<SimpleAppointmentDTO> results = appointmentsService.getAllAppointments()
                 .stream()
                 .map(appointmentMapper::toSimpleDTO)
                 .toList();
-//        results.forEach(appointments -> System.out.println(appointments.getStatus()));
         return ResponseEntity.ok(results);
     }
 

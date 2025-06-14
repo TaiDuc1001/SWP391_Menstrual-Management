@@ -12,10 +12,16 @@ import swp391.com.backend.jpa.pojo.examination.Examination;
 public interface ExaminationMapper {
     @Mapping(target = "testResults", ignore = true)
     @Mapping(source = "customer.name", target = "customerName")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
     ExaminationDTO toDTO(Examination entity);
+
     @Mapping(source = "panel.panelName", target = "panelName")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
     SimpleExaminationDTO toSimpleDTO(Examination entity);
+
     Examination toEntity(ExaminationDTO dto);
+
+    @Mapping(source = "slot.timeRange", target = "timeRange")
     ExaminationCreateResponse toCreateResponse(Examination entity);
 }
 
