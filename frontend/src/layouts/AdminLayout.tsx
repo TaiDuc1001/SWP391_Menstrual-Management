@@ -7,6 +7,7 @@ import AdminDashboard from '../pages/Admin/AdminDashboard';
 import UserManagement from '../pages/Admin/UserManagement';
 import ServiceManagement from '../pages/Admin/ServiceManagement';
 import ContentManagement from '../pages/Admin/ContentManagement';
+import ApproveResult from '../pages/Admin/ApproveResult';
 import NotFound from '../pages/Public/NotFound';
 
 interface AdminLayoutProps {
@@ -17,6 +18,7 @@ interface AdminLayoutProps {
 const adminSidebarRoutes = [
     '/admin/dashboard',
     '/admin/users-management',
+    '/admin/approve-results',
     '/admin/services-management',
     '/admin/content-management',
     '/admin/reports',
@@ -42,6 +44,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ isAuthenticated, onAuthToggle
                         <Route path="/admin/services-management" element={<ServiceManagement />} />
                         <Route path="/admin/content-management" element={<ContentManagement />} />
                         <Route path="/admin/reports" element={<ContentManagement />} />
+                        <Route path="/admin/approve-results" element={<ApproveResult />} />
 
                         <Route path="*" element={<NotFound />} />
                     </Routes>
