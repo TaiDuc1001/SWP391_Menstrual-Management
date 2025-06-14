@@ -28,7 +28,7 @@ public class ExaminationController {
 
     @GetMapping
     public ResponseEntity<List<SimpleExaminationDTO>> getAllOrders() {
-        List<SimpleExaminationDTO> result = examinationService.getAllOrders()
+        List<SimpleExaminationDTO> result = examinationService.getAllExaminations()
                 .stream()
                 .map(examinationMapper::toSimpleDTO)
                 .toList();
@@ -36,19 +36,22 @@ public class ExaminationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExaminationDTO> getExaminationInfo(@PathVariable Long id) {
+    public ResponseEntity<?> getExaminationInfo(@PathVariable Long id) {
         Examination examination = examinationService.findExaminationById(id);
-        if (examination == null) {
-            return ResponseEntity.notFound().build();
+
+        if(examination.getExaminationStatus() != ExaminationStatus.COMPLETED) {
+            return ResponseEntity.badRequest().body("Incomplete examination");
         }
+
+        ExaminationDTO examinationDTO = examinationMapper.toDTO(examination);
         List<ResultDetail> resultDetails = examinationService.getResultDetailById(id);
         List<TestType> testTypes = examinationService.getTestTypesById(id);
 
         List<TestResultListDTO> testResultList = testResultMapper.toTestResultDtoList(testTypes, resultDetails);
-
-        ExaminationDTO examinationDTO = examinationMapper.toDTO(examination);
         examinationDTO.setTestResults(testResultList);
 
+
+        examinationDTO.setExaminationStatus(examination.getExaminationStatus());
         return ResponseEntity.ok(examinationDTO);
     }
 

@@ -95,4 +95,6 @@ public class AppointmentsController {
         Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
+
+
 }

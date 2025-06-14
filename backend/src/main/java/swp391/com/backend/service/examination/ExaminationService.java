@@ -17,7 +17,7 @@ public class ExaminationService {
     private final ExaminationRepository examinationRepository;
     private final ResultService resultService;
 
-    public List<Examination> getAllOrders() {
+    public List<Examination> getAllExaminations() {
         return examinationRepository.findAll();
     }
 
@@ -26,12 +26,12 @@ public class ExaminationService {
     }
 
     public void deleteOrder(Long id){
-        Examination examination = examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        Examination examination = examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Examination not found"));
         examinationRepository.delete(examination);
     }
 
     public Examination findExaminationById(Long id) {
-        return examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        return examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Examination not found"));
     }
 
     public List<ResultDetail> getResultDetailById(Long id){

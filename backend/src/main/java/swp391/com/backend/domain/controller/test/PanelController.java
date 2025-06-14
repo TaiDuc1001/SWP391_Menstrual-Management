@@ -66,7 +66,7 @@ public class PanelController {
                 .panel(panel)
                 .date(request.getDate())
                 .slot(request.getSlot())
-                .examinationStatus(ExaminationStatus.PENDING)
+                .examinationStatus(ExaminationStatus.IN_PROGRESS)
                 .build();
 
         Examination createdExamination = examinationService.createExamination(examination);
