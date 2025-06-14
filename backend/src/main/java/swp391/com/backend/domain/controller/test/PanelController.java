@@ -15,6 +15,7 @@ import swp391.com.backend.jpa.pojo.examination.Examination;
 import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
 import swp391.com.backend.jpa.pojo.test.Panel;
 import swp391.com.backend.service.examination.ExaminationService;
+import swp391.com.backend.service.roles.CustomerService;
 import swp391.com.backend.service.test.PanelService;
 import swp391.com.backend.service.test.PanelTestTypeService;
 
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PanelController {
     private final PanelService panelService;
+    private final CustomerService customerService;
     private final PanelTestTypeService panelTestTypeService;
     private final PanelMapper panelMapper;
     private final ExaminationService examinationService;
@@ -66,6 +68,7 @@ public class PanelController {
                 .panel(panel)
                 .date(request.getDate())
                 .slot(request.getSlot())
+                .customer(customerService.findCustomerById(3L))
                 .examinationStatus(ExaminationStatus.IN_PROGRESS)
                 .build();
 

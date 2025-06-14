@@ -15,4 +15,5 @@ public class SimpleExaminationDTO {
     String timeRange;
     ExaminationStatus examinationStatus;
     String panelName;
+    String customerName;
 }
