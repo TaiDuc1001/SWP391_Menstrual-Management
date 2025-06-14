@@ -1,4 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+interface TestType {
+  id: number;
+  name: string;
+  normalRange: string;
+}
+
+interface SampledData {
+  id: number;
+  testTypes: TestType[];
+  date: string;
+  timeRange: string;
+  customerName: string;
+  staffName: string;
+  examinationStatus: string;
+}
 
 interface TestDetail {
   id: string;
@@ -13,52 +30,98 @@ interface TestDetail {
 interface FormUpdateTestResultProps {
   open: boolean;
   onClose: () => void;
-  requestInfo?: {
-    date: string;
-    staff: string;
-    type: string;
-    code: string;
-  };
+  request: any;
+  onUpdateSuccess?: () => void; // Thêm prop để refresh
 }
 
-const initialDetails: TestDetail[] = [
-  {
-    id: '1',
-    name: 'HIV Ag/Ab Combo',
-    result: '',
-    normal: 'Âm tính',
-    value: '',
-    normalValue: 'S/CO < 1.0',
-    note: '',
-  },
-  {
-    id: '2',
-    name: 'TPHA (Giang mai)',
-    result: '',
-    normal: 'Âm tính',
-    value: '',
-    normalValue: 'Không phát hiện',
-    note: '',
-  },
-  {
-    id: '3',
-    name: 'Lậu cầu PCR',
-    result: '',
-    normal: 'Âm tính',
-    value: '',
-    normalValue: 'A450 ≤ 0.2',
-    note: '',
-  },
-];
-
-const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any }> = ({ open, onClose, requestInfo, request }) => {
-  const [details, setDetails] = useState<TestDetail[]>(initialDetails);
+const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClose, request, onUpdateSuccess }) => {
+  const [details, setDetails] = useState<TestDetail[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [note, setNote] = useState('');
+  const [sampledData, setSampledData] = useState<SampledData | null>(null);
+  const [error, setError] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
+
+  useEffect(() => {
+    const fetchSampledData = async () => {
+      try {
+        const response = await axios.get<SampledData>(`http://localhost:8080/api/examinations/sampled/${request.id}`);
+        setSampledData(response.data);
+        // Cập nhật details với tên hạng mục từ API
+        const newDetails = response.data.testTypes.map(type => ({
+          id: type.id.toString(),
+          name: type.name,
+          result: '',
+          normal: type.normalRange,
+          value: '',
+          normalValue: type.normalRange,
+          note: '',
+        }));
+        setDetails(newDetails);
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu hạng mục:', error);
+      }
+    };
+
+    if (request?.id) {
+      fetchSampledData();
+    }
+  }, [request?.id]);
+
+  const validateForm = (): boolean => {
+    const emptyFields = details.filter(detail => !detail.result || !detail.value);
+    if (emptyFields.length > 0) {
+      setError('Vui lòng điền đầy đủ kết quả và chỉ số xét nghiệm cho tất cả các hạng mục.');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const testResults = details.map(detail => ({
+        testTypeId: parseInt(detail.id),
+        name: detail.name,
+        diagnosis: detail.result === 'Positive', // Dương tính = true, Âm tính = false
+        testIndex: detail.value,
+        normalRange: detail.normalValue,
+        note: detail.note
+      }));
+
+      const payload = {
+        id: sampledData?.id,
+        date: sampledData?.date,
+        timeRange: sampledData?.timeRange,
+        testResults: testResults,
+        customerName: sampledData?.customerName,
+        staffName: sampledData?.staffName,
+        examinationStatus: sampledData?.examinationStatus
+      };
+
+      const response = await axios.put(`http://localhost:8080/api/examinations/examined/${request.id}`, payload);
+      if (response.status === 200) {
+        setSuccessMessage('Cập nhật kết quả xét nghiệm thành công!');
+        // Đóng form và refresh sau 1.5 giây
+        setTimeout(() => {
+          setSuccessMessage('');
+          onClose();
+          if (onUpdateSuccess) {
+            onUpdateSuccess(); // Gọi hàm refresh từ component cha
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Lỗi khi cập nhật kết quả:', error);
+      setError('Có lỗi xảy ra khi cập nhật kết quả. Vui lòng thử lại.');
+    }
+  };
 
   if (!open) return null;
-
-  const info = requestInfo || request;
 
   const handleDetailChange = (idx: number, key: keyof TestDetail, value: string) => {
     setDetails(prev => prev.map((d, i) => i === idx ? { ...d, [key]: value } : d));
@@ -96,6 +159,17 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
       <div className="bg-white rounded-2xl shadow-xl w-[1000px] max-w-full p-8 relative max-h-screen overflow-y-auto">
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        {successMessage && (
+          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded flex items-center justify-center">
+            <img src={require('../../assets/icons/green-check.svg').default} alt="success" className="w-5 h-5 mr-2" />
+            {successMessage}
+          </div>
+        )}
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
@@ -105,19 +179,19 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
           <div className="grid grid-cols-4 gap-4 mt-2">
             <div>
               <div className="text-xs text-gray-500 mb-1">Ngày xét nghiệm:</div>
-              <div className="font-semibold">{info?.date || '22/06/2025'}</div>
+              <div className="font-semibold">{sampledData?.date || '22/06/2025'}</div>
             </div>
             <div>
               <div className="text-xs text-gray-500 mb-1">Người kiểm:</div>
-              <div className="font-semibold">{info?.staff || 'Nhân viên XYZ'}</div>
+              <div className="font-semibold">{sampledData?.staffName || 'Nhân viên XYZ'}</div>
             </div>
             <div>
               <div className="text-xs text-gray-500 mb-1">Loại:</div>
-              <div className="font-semibold">{info?.type || 'HIV, Lậu, Giang mai'}</div>
+              <div className="font-semibold">{request?.panelName || 'Gói xét nghiệm chưa rõ'}</div>
             </div>
             <div>
               <div className="text-xs text-gray-500 mb-1">Mã:</div>
-              <div className="font-semibold">{info?.code || 'STXN-20250522-001'}</div>
+              <div className="font-semibold">{sampledData?.id || 'STXN-20250522-001'}</div>
             </div>
           </div>
         </div>
@@ -127,63 +201,59 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
             Bảng cập nhật kết quả chi tiết
           </div>
           <div className="overflow-x-auto rounded-xl border border-gray-100">
-            <table className="min-w-full text-sm">
+            <table className="min-w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-700">
-                  <th className="p-3 font-semibold">Hạng mục</th>
-                  <th className="p-3 font-semibold">Kết quả</th>
-                  <th className="p-3 font-semibold whitespace-nowrap">Mức bình thường</th>
-                  <th className="p-3 font-semibold">Chỉ số xét nghiệm</th>
-                  <th className="p-3 font-semibold whitespace-nowrap">Mức bình thường chỉ số</th>
-                  <th className="p-3 font-semibold">Ghi chú</th>
+                  <th className="p-3 font-semibold border">Hạng mục</th>
+                  <th className="p-3 font-semibold border">Kết quả</th>
+                  <th className="p-3 font-semibold border">Chỉ số xét nghiệm</th>
+                  <th className="p-3 font-semibold border whitespace-nowrap">Mức bình thường chỉ số</th>
+                  <th className="p-3 font-semibold border">Ghi chú</th>
                 </tr>
               </thead>
               <tbody>
                 {details.map((row, idx) => (
                   <tr key={row.id}>
-                    <td className="p-2">
+                    <td className="p-2 border">
                       <input
-                        className="border rounded px-2 py-1 w-36"
+                        className="bg-gray-100 border rounded px-2 py-1 w-full text-gray-700 cursor-not-allowed"
                         value={row.name}
-                        onChange={e => handleDetailChange(idx, 'name', e.target.value)}
+                        readOnly
+                        disabled
                         placeholder="Hạng mục"
                       />
                     </td>
-                    <td className="p-2">
-                      <input
-                        className={`border rounded px-2 py-1 w-24 ${row.result === '' ? 'border-red-300 bg-red-50' : ''}`}
+                    <td className="p-2 border">
+                      <select
+                        className={`border rounded px-2 py-1 w-full ${row.result === '' ? 'border-red-300 bg-red-50' : ''}`}
                         value={row.result}
                         onChange={e => handleDetailChange(idx, 'result', e.target.value)}
-                        placeholder="Kết quả"
-                      />
+                      >
+                        <option value="">Chọn kết quả</option>
+                        <option value="Positive">Dương tính</option>
+                        <option value="Negative">Âm tính</option>
+                      </select>
                     </td>
-                    <td className="p-2">
+                    <td className="p-2 border">
                       <input
-                        className="border rounded px-2 py-1 w-24"
-                        value={row.normal}
-                        onChange={e => handleDetailChange(idx, 'normal', e.target.value)}
-                        placeholder="Mức bình thường"
-                      />
-                    </td>
-                    <td className="p-2">
-                      <input
-                        className={`border rounded px-2 py-1 w-24 ${row.value === '' ? 'border-red-300 bg-red-50' : ''}`}
+                        className={`border rounded px-2 py-1 w-full ${row.value === '' ? 'border-red-300 bg-red-50' : ''}`}
                         value={row.value}
                         onChange={e => handleDetailChange(idx, 'value', e.target.value)}
                         placeholder="Chỉ số"
                       />
                     </td>
-                    <td className="p-2">
+                    <td className="p-2 border">
                       <input
-                        className="border rounded px-2 py-1 w-28"
+                        className="bg-gray-100 border rounded px-2 py-1 w-full text-gray-700 cursor-not-allowed"
                         value={row.normalValue}
-                        onChange={e => handleDetailChange(idx, 'normalValue', e.target.value)}
+                        readOnly
+                        disabled
                         placeholder="Mức bình thường chỉ số"
                       />
                     </td>
-                    <td className="p-2">
+                    <td className="p-2 border">
                       <input
-                        className="border rounded px-2 py-1 w-32"
+                        className="border rounded px-2 py-1 w-full"
                         value={row.note}
                         onChange={e => handleDetailChange(idx, 'note', e.target.value)}
                         placeholder="Ghi chú"
@@ -238,11 +308,10 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps & { request?: any
               Hủy bỏ
             </span>
           </button>
-          {/* <button className="px-6 py-2 rounded-lg bg-yellow-400 text-white font-semibold hover:bg-yellow-500 flex items-center gap-2">
-            <img src={require('../../assets/icons/draft.svg').default} alt="draft" className="w-4 h-4" />
-            Lưu nháp
-          </button> */}
-          <button className="px-6 py-2 rounded-lg bg-green-400 text-white font-semibold hover:bg-green-500 flex items-center gap-2">
+          <button 
+            className="px-6 py-2 rounded-lg bg-green-400 text-white font-semibold hover:bg-green-500 flex items-center gap-2"
+            onClick={handleSubmit}
+          >
             <img src={require('../../assets/icons/green-check.svg').default} alt="update" className="w-4 h-4" />
             Cập nhật kết quả
           </button>
