@@ -234,6 +234,7 @@ const UpdateTestResult: React.FC = () => {
           open={modalOpen}
           onClose={handleCloseModal}
           request={selectedRequest}
+          onUpdateSuccess={fetchData} // Thêm prop để refresh data
         />
       )}
     </div>
