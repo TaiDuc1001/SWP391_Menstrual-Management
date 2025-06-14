@@ -1,5 +1,6 @@
 package swp391.com.backend.service.roles;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.roles.Staff;
@@ -12,7 +13,7 @@ public class StaffService {
 
     public Staff findStaffById(Long id) {
         return staffRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Staff not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Staff not found with id: " + id));
     }
 
     public Staff createStaff(Staff staff) {

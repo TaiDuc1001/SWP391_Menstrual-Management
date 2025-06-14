@@ -1,5 +1,6 @@
 package swp391.com.backend.service.roles;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.roles.Doctor;
@@ -18,7 +19,7 @@ public class DoctorService {
 
     public Doctor findDoctorById(Long id) {
         return doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Doctor not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found with id: " + id));
     }
 
     public Doctor createDoctor(Doctor doctor) {
