@@ -4,16 +4,17 @@ import homeIcon from '../../assets/icons/home.svg';
 import tubeIcon from '../../assets/icons/tube.svg';
 import userIcon from '../../assets/icons/multi-user.svg';
 import contentIcon from '../../assets/icons/content.svg';
-import reportIcon from '../../assets/icons/bar-chart.svg'
+import reportIcon from '../../assets/icons/bar-chart.svg';
 
 interface SidebarProps {}
 
 const AdminSidebar: React.FC<SidebarProps> = () => {
-    const options = [        { icon: homeIcon, label: 'Dashboard', path: '/admin/dashboard' },
-        { icon: userIcon, label: 'User management', path: '/admin/users-management' },
-        { icon: tubeIcon, label: 'Service management', path: '/admin/services-management' },
-        { icon: contentIcon, label: 'Content management', path: '/admin/content-management' },
-        { icon: reportIcon, label: 'Reports', path: '/admin/reports' },
+    const options = [
+        { icon: homeIcon, label: 'Dashboard', path: '/admin/dashboard' },
+        { icon: userIcon, label: 'User Managerment', path: '/admin/users-management' },
+        { icon: tubeIcon, label: 'Service Managerment', path: '/admin/services-management' },
+        { icon: contentIcon, label: 'Content Managerment', path: '/admin/content-management' },
+        { icon: reportIcon, label: 'Reports and Statistics', path: '/admin/reports' },
     ];
 
     return (
