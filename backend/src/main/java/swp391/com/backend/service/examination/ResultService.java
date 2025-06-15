@@ -34,4 +34,8 @@ public class ResultService {
                 .toList();
         return testTypes;
     }
+
+    public Result saveResult(Result result) {
+        return resultRepository.save(result);
+    }
 }
