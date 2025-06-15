@@ -51,11 +51,12 @@ public interface TestResultMapper {
             testTypes.add(testType);
 
             // Build ResultDetail
-            ResultDetail resultDetail = new ResultDetail();
-            resultDetail.setTestTypeId(dto.getTestTypeId());
-            resultDetail.setDiagnosis(dto.getDiagnosis());
-            resultDetail.setTestIndex(dto.getTestIndex());
-            resultDetail.setNotes(dto.getNote());
+            ResultDetail resultDetail = ResultDetail.builder()
+                    .testTypeId(dto.getTestTypeId())
+                    .diagnosis(dto.getDiagnosis())
+                    .testIndex(dto.getTestIndex())
+                    .notes(dto.getNote())
+                    .build();
             resultDetails.add(resultDetail);
         }
 

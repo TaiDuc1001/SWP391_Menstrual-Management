@@ -30,7 +30,7 @@ public class ResultDetailsService {
 
     public ResultDetail updateResultDetail(ResultDetail resultDetail) {
         ResultDetail existingResultDetail = resultDetailRepository.findByResultIdAndTestTypeId(resultDetail.getResultId(), resultDetail.getTestTypeId());
-
+        System.out.println("Updating ResultDetail: " + existingResultDetail.getResultId());
         existingResultDetail.setTestIndex(resultDetail.getTestIndex());
         existingResultDetail.setNotes(resultDetail.getNotes());
         existingResultDetail.setDiagnosis(resultDetail.getDiagnosis());
