@@ -59,7 +59,7 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 
-    @PutMapping("/{id}/confirm")
+    @PutMapping("/confirm/{id}")
     public ResponseEntity<AppointmentDTO> startAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != AppointmentStatus.BOOKED) {
@@ -71,7 +71,7 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 
-    @PutMapping("/{id}/finish")
+    @PutMapping("/finish/{id}")
     public ResponseEntity<AppointmentDTO> finishAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != AppointmentStatus.IN_PROGRESS) {
@@ -83,7 +83,7 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 
-    @PutMapping("/{id}/cancel")
+    @PutMapping("/cancel/{id}")
     public ResponseEntity<AppointmentDTO> cancelAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() == AppointmentStatus.CANCELLED ||
