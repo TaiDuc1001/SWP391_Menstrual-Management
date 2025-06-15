@@ -21,6 +21,13 @@ public class ResultService {
     public List<ResultDetail> findResultDetailsByExaminationId(Long examinationId) {
         Examination examination = examinationRepository.findExaminationById(examinationId);
         Result result = resultRepository.findResultByExamination(examination);
+        if (result == null) {
+            result = new Result();
+            result.setExamination(examination);
+            result = resultRepository.save(result);
+            examination.setResult(result);
+            examinationRepository.save(examination);
+        }
         List<ResultDetail> resultDetail = resultDetailsService.findAllByResultId(result.getId());
         return resultDetail;
     }
@@ -28,6 +35,13 @@ public class ResultService {
     public List<TestType> findTestTypesByExaminationId(Long examinationId) {
         Examination examination = examinationRepository.findExaminationById(examinationId);
         Result result = resultRepository.findResultByExamination(examination);
+        if (result == null) {
+            result = new Result();
+            result.setExamination(examination);
+            result = resultRepository.save(result);
+            examination.setResult(result);
+            examinationRepository.save(examination);
+        }
         List<ResultDetail> resultDetails = resultDetailsService.findAllByResultId(result.getId());
         List<TestType> testTypes = resultDetails.stream()
                 .map(ResultDetail::getTestType)

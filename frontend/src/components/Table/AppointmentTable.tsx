@@ -13,6 +13,8 @@ interface AppointmentRecord {
   name?: string;
   status: string;
   code?: string;
+  slot?: string; // Add slot for filtering
+  slotTime?: string; // Add slotTime for display
 }
 
 interface AppointmentTableProps {

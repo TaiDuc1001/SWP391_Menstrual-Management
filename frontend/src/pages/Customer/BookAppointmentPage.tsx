@@ -7,13 +7,6 @@ import SearchInput from '../../components/Filter/SearchInput';
 import BookingSuccessPopup from '../../components/Popup/BookingSuccessPopup';
 import api from '../../api/axios';
 
-const timeSlots = [
-  '09:00-09:30',
-  '10:00-10:30',
-  '11:00-11:30',
-  '14:00-14:30',
-];
-
 const reviewOptions = [
   { value: '', label: 'Reviews' },
   { value: 'high', label: 'Highest Rated' },
@@ -31,16 +24,29 @@ const BookAppointmentPage: React.FC = () => {
   const [specializationFilter, setSpecializationFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([]);
+  const [slotLabelMap, setSlotLabelMap] = useState<{ [key: string]: string }>({});
+  const [showSlotError, setShowSlotError] = useState(false);
   const navigate = useNavigate();
 
-  const customerId = 3; // TODO: Replace with real customer id from auth context if available
+  const customerId = 3;
 
-  const slotMap: Record<string, string> = {
-    '09:00-09:30': 'ONE',
-    '10:00-10:30': 'TWO',
-    '11:00-11:30': 'THREE',
-    '14:00-14:30': 'FOUR',
-  };
+  useEffect(() => {
+    api.get('/enumerators/slots')
+      .then(res => {
+        const options: { value: string; label: string }[] = [];
+        const labelMap: { [key: string]: string } = {};
+        (res.data as { timeRange: string }[]).forEach((slot) => {
+          if (slot.timeRange !== 'Filler slot, not used') {
+            options.push({ value: slot.timeRange, label: slot.timeRange });
+            labelMap[slot.timeRange] = slot.timeRange;
+          }
+        });
+        setSlotOptions(options);
+        setSlotLabelMap(labelMap);
+      })
+      .catch(() => {});
+  }, [selectedDate]);
 
   useEffect(() => {
     api.get('/doctors')
@@ -59,8 +65,7 @@ const BookAppointmentPage: React.FC = () => {
           }))
         );
       })
-      .catch(err => {
-        // Optionally handle error
+      .catch(() => {
         setAdvisors([]);
       });
   }, []);
@@ -72,29 +77,32 @@ const BookAppointmentPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedAdvisor || !selectedDate || !selectedTime) return;
+    if (!selectedAdvisor || !selectedDate || !selectedTime) {
+      setShowSlotError(!selectedTime);
+      return;
+    }
+    setShowSlotError(false);
     setLoading(true);
     try {
-      const response = await api.post('/appointments', {
+      await api.post('/appointments', {
         doctorId: selectedAdvisor,
         customerId,
         date: selectedDate,
-        slot: slotMap[selectedTime],
+        slot: selectedTime,
         customerNote: problem,
       });
-      console.log('Appointment booked:', response.data);
       setShowSuccess(true);
       setTimeout(() => {
         navigate('/appointments');
       }, 10000);
     } catch (err) {
-      // Optionally show error
     } finally {
       setLoading(false);
     }
   };
 
   const advisor = advisors.find(a => a.id === selectedAdvisor);
+  const displayTime = selectedTime && slotLabelMap[selectedTime] ? slotLabelMap[selectedTime] : 'Unknown time';
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
@@ -106,7 +114,6 @@ const BookAppointmentPage: React.FC = () => {
         />
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white rounded-xl shadow-md p-8 mt-4 flex flex-col md:flex-row gap-8">
-            {/* Left: Advisor, Time, Problem */}
             <div className="flex-1 min-w-[320px]">
               <div className="mb-6">
                 <div className="font-semibold text-gray-700 mb-2">Find your advisor</div>
@@ -127,7 +134,6 @@ const BookAppointmentPage: React.FC = () => {
                     options={specializationOptions}
                   />
                 </div>
-                {/* Advisor List - allow dropdown selection */}
                 <div className="bg-gray-50 rounded-xl p-4 cursor-pointer border border-pink-200 max-h-64 overflow-y-auto">
                   <div className="flex flex-col gap-2">
                     {advisors
@@ -149,7 +155,6 @@ const BookAppointmentPage: React.FC = () => {
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-2xl">
-                              {/* Avatar placeholder */}
                             </div>
                             <div>
                               <div className="font-semibold text-gray-800">{a.name}</div>
@@ -180,7 +185,10 @@ const BookAppointmentPage: React.FC = () => {
                   type="date"
                   className="border rounded px-4 py-2 text-lg"
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
+                  onChange={e => {
+                    setSelectedDate(e.target.value)
+                    setSelectedTime('')
+                  }}
                   min={new Date().toISOString().split('T')[0]}
                   required
                   style={{ width: 220 }}
@@ -189,21 +197,27 @@ const BookAppointmentPage: React.FC = () => {
               <div className="mb-6">
                 <div className="font-semibold text-gray-700 mb-2">Choose your time</div>
                 <div className="grid grid-cols-2 gap-3">
-                  {timeSlots.map(slot => (
-                    <label key={slot} className="flex items-center gap-2 cursor-pointer border rounded-lg px-3 py-2 hover:border-pink-400 transition-all">
-                      <input
-                        type="radio"
-                        name="timeSlot"
-                        value={slot}
-                        checked={selectedTime === slot}
-                        onChange={() => setSelectedTime(slot)}
-                        className="accent-pink-400"
-                        required
-                      />
-                      <span>{slot}</span>
-                    </label>
-                  ))}
+                  {slotOptions.map(opt => {
+                    const isSelected = selectedTime === String(opt.value);
+                    return (
+                      <label
+                        key={String(opt.value)}
+                        className={["flex items-center gap-2 cursor-pointer border rounded-lg px-3 py-2 hover:border-pink-400 transition-all", isSelected ? "border-pink-400 bg-pink-50" : ""].join(" ")}
+                      >
+                        <input
+                          type="radio"
+                          name="timeSlot"
+                          value={String(opt.value)}
+                          checked={selectedTime === String(opt.value)}
+                          onChange={e => setSelectedTime(String(e.target.value))}
+                          className="accent-pink-400"
+                        />
+                        <span>{opt.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
+                {showSlotError && !selectedTime && <div className="text-xs text-red-500 mt-1">Please select a time slot.</div>}
               </div>
               <div className="mb-6">
                 <div className="font-semibold text-gray-700 mb-2">Describe your problem</div>
@@ -233,7 +247,7 @@ const BookAppointmentPage: React.FC = () => {
             onClose={() => setShowSuccess(false)}
             doctor={advisor?.name || ''}
             date={selectedDate ? new Date(selectedDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
-            time={selectedTime}
+            time={displayTime}
             note={problem || '[Nội dung bạn đã nhập trong mô tả]'}
             onGoHome={() => navigate('/')}
             onViewHistory={() => navigate('/appointments')}

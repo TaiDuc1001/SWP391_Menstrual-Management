@@ -41,10 +41,10 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationI
   // Map API response to UI fields
   const code = result.id;
   const testDate = result.date ? new Date(result.date).toLocaleDateString('en-GB') : '-';
-  const testTime = result.slot || '-';
-  const staffName = result.customerName || '-';
-  const panels = result.testResults && result.testResults.length > 0 ? result.testResults.map((tr: any) => tr.name).join(', ') : '-';
-  const testResults = result.testResults || [];
+  const testTime = result.timeRange || result.slot || '-';
+  const staffName = result.staffName || '-';
+  const panels = result.panelName || '-';
+  const testResults = Array.isArray(result.testResults) ? result.testResults : [];
 
   return (
     <Popup open={true} onClose={onClose} className="w-full max-w-6xl p-8 relative">
