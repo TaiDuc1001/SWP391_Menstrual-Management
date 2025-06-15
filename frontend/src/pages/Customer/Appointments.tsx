@@ -24,18 +24,6 @@ const statusOptions = [
   { value: 'Pending', label: 'Pending' },
 ];
 
-const slotOptions = [
-  { value: '', label: 'All slots' },
-  { value: 'ONE', label: '08:00 - 09:00' },
-  { value: 'TWO', label: '09:00 - 10:00' },
-  { value: 'THREE', label: '10:00 - 11:00' },
-  { value: 'FOUR', label: '11:00 - 12:00' },
-  { value: 'FIVE', label: '13:00 - 14:00' },
-  { value: 'SIX', label: '14:00 - 15:00' },
-  { value: 'SEVEN', label: '15:00 - 16:00' },
-  { value: 'EIGHT', label: '16:00 - 17:00' },
-];
-
 const APPOINTMENTS_PER_PAGE = 5;
 
 const AppointmentHistory: React.FC = () => {
@@ -53,6 +41,8 @@ const AppointmentHistory: React.FC = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [showResultPopup, setShowResultPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All slots' }]);
+  const [slotMap, setSlotMap] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
 
   const parseDate = (str: string) => {
@@ -60,21 +50,51 @@ const AppointmentHistory: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
+  // Fetch slot options from backend
   useEffect(() => {
+    api.get('/enumerators/slots')
+      .then(res => {
+        const options = [{ value: '', label: 'All slots' }];
+        const map: { [key: string]: string } = {};
+        res.data.forEach((slot: any) => {
+          if (slot.timeRange !== 'Filler slot, not used') { // Exclude filler slot
+            options.push({ value: slot.timeRange, label: slot.timeRange });
+          }
+          map[slot.timeRange] = slot.timeRange;
+        });
+        setSlotOptions(options);
+        setSlotMap(map);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Reset selectedSlot if not in options (but only if not empty)
+  useEffect(() => {
+    if (selectedSlot && !slotOptions.some(opt => opt.value === selectedSlot)) {
+      setSelectedSlot('');
+    }
+  }, [slotOptions, selectedSlot]);
+
+  // Fetch appointments only after slotMap is set (not empty)
+  useEffect(() => {
+    if (Object.keys(slotMap).length === 0) return;
     setLoading(true);
     api.get('/appointments')
       .then(res => {
-        // Map API data to table format
-        const mapped = res.data.map((item: any) => ({
-          id: item.id,
-          name: item.doctorName,
-          date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
-          time: item.timeRange || '', // Lấy trực tiếp từ API
-          status: item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase(),
-          code: '',
-          slot: item.slot ? String(item.slot).toUpperCase() : '',
-          slotCode: item.slot,
-        }));
+        const mapped = res.data.map((item: any) => {
+          const slotTime = item.timeRange || (item.slot ? slotMap[item.timeRange] || item.timeRange : '');
+          return {
+            id: item.id,
+            name: item.doctorName,
+            date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
+            time: slotTime,
+            status: item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase(),
+            code: '',
+            slot: slotTime,
+            slotCode: item.slot,
+            slotTime: slotTime,
+          };
+        });
         setAppointments(mapped);
         setLoading(false);
       })
@@ -82,7 +102,7 @@ const AppointmentHistory: React.FC = () => {
         setError('Failed to load appointments');
         setLoading(false);
       });
-  }, []);
+  }, [slotMap]);
 
   const filteredRecords = appointments.filter((record) => {
     if (hideRows.includes(record.id)) return false;
@@ -93,8 +113,8 @@ const AppointmentHistory: React.FC = () => {
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    // Compare slot as uppercase string for robust filtering
-    const slotMatch = selectedSlot ? String(record.slot).toUpperCase() === selectedSlot : true;
+    // Compare slot as timeRange string
+    const slotMatch = selectedSlot ? record.slotTime === selectedSlot : true;
     return searchMatch && statusMatch && fromMatch && toMatch && slotMatch;
   });
 
@@ -178,7 +198,7 @@ const AppointmentHistory: React.FC = () => {
         />
       </AppointmentUtilityBar>      
       <AppointmentTable
-        records={filteredRecords.map(r => ({ ...r, slotTime: r.time }))}
+        records={filteredRecords.map(r => ({ ...r, slotTime: r.time, slot: r.slot }))}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}

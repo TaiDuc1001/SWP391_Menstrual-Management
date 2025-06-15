@@ -9,14 +9,14 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Slot {
     ZERO("Filler slot, not used"),
-    ONE("9:00 AM - 9:45 AM"),
-    TWO("10:00 AM - 10:45 AM"),
-    THREE("11:00 AM - 11:45 AM"),
-    FOUR("1:00 PM - 1:45 PM"),
-    FIVE("2:00 PM - 2:45 PM"),
-    SIX("3:00 PM - 3:45 PM"),
-    SEVEN("4:00 PM - 4:45 PM"),
-    EIGHT("5:00 PM - 5:45 PM");
+    ONE("7:00 AM - 8:00 AM"),
+    TWO("8:15 AM - 9:15 AM"),
+    THREE("9:30 AM - 10:30 AM"),
+    FOUR("10:45 PM - 11:45 PM"),
+    FIVE("1:00 PM - 2:00 PM"),
+    SIX("2:15 PM - 3:15 PM"),
+    SEVEN("3:30 PM - 4:30 PM"),
+    EIGHT("4:45 PM - 5:45 PM");
 
     private final String timeRange;
 }
