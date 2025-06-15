@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swp391.com.backend.jpa.pojo.schedule.Slot;
+import swp391.com.backend.jpa.pojo.appointments.AppointmentStatus;
 
 @RestController
 @RequestMapping("/api/enumerators")
@@ -16,5 +17,8 @@ public class EnumeratorController {
         return ResponseEntity.ok(Slot.values());
     }
 
-
+    @GetMapping("/appointment-status")
+    public ResponseEntity<AppointmentStatus[]> getAllAppointmentStatus() {
+        return ResponseEntity.ok(AppointmentStatus.values());
+    }
 }

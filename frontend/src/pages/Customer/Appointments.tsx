@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
-
 import api from '../../api/axios';
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 import AppointmentTitleBar from '../../components/TitleBar/AppointmentTitleBar';
@@ -12,17 +11,9 @@ import DropdownSelect from '../../components/Filter/DropdownSelect';
 import DatePickerInput from '../../components/Filter/DatePickerInput';
 import AppointmentDetailPopup from '../../components/Popup/AppointmentDetailPopup';
 import TestResultPopup from '../../components/Popup/TestResultPopup';
+import StatusBadge from '../../components/Badge/StatusBadge';
 
 const plusIcon = plusWhiteIcon;
-
-const statusOptions = [
-  { value: '', label: 'All status' },
-  { value: 'Completed', label: 'Completed' },
-  { value: 'Upcoming', label: 'Upcoming' },
-  { value: 'Cancelled', label: 'Cancelled' },
-  { value: 'Confirmed', label: 'Confirmed' },
-  { value: 'Pending', label: 'Pending' },
-];
 
 const APPOINTMENTS_PER_PAGE = 5;
 
@@ -32,6 +23,7 @@ const AppointmentHistory: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusOptions, setStatusOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All status' }]);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
@@ -50,14 +42,13 @@ const AppointmentHistory: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
-  // Fetch slot options from backend
   useEffect(() => {
     api.get('/enumerators/slots')
       .then(res => {
         const options = [{ value: '', label: 'All slots' }];
         const map: { [key: string]: string } = {};
         res.data.forEach((slot: any) => {
-          if (slot.timeRange !== 'Filler slot, not used') { // Exclude filler slot
+          if (slot.timeRange !== 'Filler slot, not used') {
             options.push({ value: slot.timeRange, label: slot.timeRange });
           }
           map[slot.timeRange] = slot.timeRange;
@@ -66,16 +57,24 @@ const AppointmentHistory: React.FC = () => {
         setSlotMap(map);
       })
       .catch(() => {});
+
+    api.get('/enumerators/appointment-status')
+      .then(res => {
+        const options = [{ value: '', label: 'All status' }];
+        res.data.forEach((status: string) => {
+          options.push({ value: status, label: status.charAt(0) + status.slice(1).toLowerCase() });
+        });
+        setStatusOptions(options);
+      })
+      .catch(() => {});
   }, []);
 
-  // Reset selectedSlot if not in options (but only if not empty)
   useEffect(() => {
     if (selectedSlot && !slotOptions.some(opt => opt.value === selectedSlot)) {
       setSelectedSlot('');
     }
   }, [slotOptions, selectedSlot]);
 
-  // Fetch appointments only after slotMap is set (not empty)
   useEffect(() => {
     if (Object.keys(slotMap).length === 0) return;
     setLoading(true);
@@ -83,12 +82,14 @@ const AppointmentHistory: React.FC = () => {
       .then(res => {
         const mapped = res.data.map((item: any) => {
           const slotTime = item.timeRange || (item.slot ? slotMap[item.timeRange] || item.timeRange : '');
+          let status = item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase().replace('_', ' ');
           return {
             id: item.id,
             name: item.doctorName,
             date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
             time: slotTime,
-            status: item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase(),
+            status,
+            appointmentStatus: item.appointmentStatus,
             code: '',
             slot: slotTime,
             slotCode: item.slot,
@@ -109,11 +110,10 @@ const AppointmentHistory: React.FC = () => {
     const searchMatch =
       (record.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.code?.toLowerCase().includes(searchTerm.toLowerCase()));
-    const statusMatch = selectedStatus ? record.status === selectedStatus : true;
+    const statusMatch = selectedStatus ? record.appointmentStatus === selectedStatus : true;
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    // Compare slot as timeRange string
     const slotMatch = selectedSlot ? record.slotTime === selectedSlot : true;
     return searchMatch && statusMatch && fromMatch && toMatch && slotMatch;
   });
@@ -121,9 +121,7 @@ const AppointmentHistory: React.FC = () => {
   const totalPages = Math.ceil(filteredRecords.length / APPOINTMENTS_PER_PAGE);
   const startIdx = (currentPage - 1) * APPOINTMENTS_PER_PAGE;
   const endIdx = startIdx + APPOINTMENTS_PER_PAGE;
-  const pagedRecords = filteredRecords.slice(startIdx, endIdx);
 
-  // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedStatus, selectedSlot, selectedDateFrom, selectedDateTo]);
@@ -198,7 +196,12 @@ const AppointmentHistory: React.FC = () => {
         />
       </AppointmentUtilityBar>      
       <AppointmentTable
-        records={filteredRecords.map(r => ({ ...r, slotTime: r.time, slot: r.slot }))}
+        records={filteredRecords.map(r => ({
+          ...r,
+          slotTime: r.time,
+          slot: r.slot,
+          status: r.status
+        }))}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
@@ -227,7 +230,6 @@ const AppointmentHistory: React.FC = () => {
           }
         }}
       />
-      {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8">
           <button
