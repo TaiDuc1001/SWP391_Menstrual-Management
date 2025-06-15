@@ -1,5 +1,6 @@
 package swp391.com.backend.jpa.pojo.schedule;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,14 @@ public enum Slot {
     EIGHT("4:45 PM - 5:45 PM");
 
     private final String timeRange;
+
+    @JsonCreator
+    public static Slot fromString(String value) {
+        for (Slot slot : Slot.values()) {
+            if (slot.name().equalsIgnoreCase(value) || slot.timeRange.equalsIgnoreCase(value)) {
+                return slot;
+            }
+        }
+        throw new IllegalArgumentException("Unknown slot: " + value);
+    }
 }
