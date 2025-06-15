@@ -111,13 +111,11 @@ public class ExaminationController {
             return ResponseEntity.notFound().build();
         }
         Result result = updatedExamination.getResult();
-        System.out.println(result.getId());
         List<ResultDetail> testResults = testResultMapper.splitDtoList(request.getTestResults()).getRight()
                 .stream()
                 .map(resultDetail -> {
                     resultDetail.setResultId(result.getId());
                     resultDetail.setResult(result);
-                    System.out.println(resultDetail.getResultId() + " " + resultDetail.getTestTypeId());
                     return resultDetailsService.updateResultDetail(resultDetail);
                 })
                 .toList();

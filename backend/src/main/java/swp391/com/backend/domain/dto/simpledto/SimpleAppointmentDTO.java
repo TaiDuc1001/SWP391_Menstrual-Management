@@ -13,8 +13,12 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SimpleAppointmentDTO {
     Long id;
+    String customerName;
+    String doctorName;
     LocalDate date;
     String timeRange;
-    String doctorName;
     AppointmentStatus appointmentStatus;
+    String phoneNumber;
+    String customerNote;
+    String url;
 }
