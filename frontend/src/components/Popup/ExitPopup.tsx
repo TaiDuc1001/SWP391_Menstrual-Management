@@ -6,7 +6,7 @@ interface PopupProps {
   children: React.ReactNode;
   className?: string;
 }
-
+//exit
 const Popup: React.FC<PopupProps> = ({ open, onClose, children, className = '' }) => {
   if (!open) return null;
   return (
