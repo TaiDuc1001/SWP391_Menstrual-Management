@@ -156,7 +156,7 @@ const MenstrualCycles: React.FC = () => {
                                         <tr className="text-gray-600">
                                             <th className="py-1 font-medium">Bắt đầu</th>
                                             <th className="py-1 font-medium">Kết thúc</th>
-                                            <th className="py-1 font-medium">Số ngày</th>
+                                            <th className="py-1 font-medium">Số ngày hành kinh</th>
                                             <th className="py-1 font-medium">Chu kỳ (ngày)</th>
                                         </tr>
                                     </thead>
