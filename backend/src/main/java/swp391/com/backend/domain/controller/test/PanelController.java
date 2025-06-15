@@ -42,9 +42,7 @@ public class PanelController {
     @GetMapping("/{id}")
     public ResponseEntity<PanelDTO> getPanelById(@PathVariable Long id) {
         Panel panel = panelService.findPanelById(id);
-        System.out.println("Panel name: " + panel.getPanelName());
         PanelDTO result = panelMapper.toDTO(panel);
-        System.out.println("Panel price:" + result.getPrice());
         List<String> testTypesDescriptions = panelTestTypeService.getTestTypesByPanelId(id)
                 .stream()
                 .map(testType -> testType.getDescription())
@@ -54,8 +52,13 @@ public class PanelController {
                 .stream()
                 .map(testType -> testType.getName())
                 .toList();
+        List<Long> testTypesIds = panelTestTypeService.getTestTypesByPanelId(id)
+                .stream()
+                .map(testType -> testType.getId())
+                .toList();
         result.setTestTypesDescriptions(testTypesDescriptions);
         result.setTestTypesNames(testTypesNames);
+        result.setTestTypesIds(testTypesIds);
         return ResponseEntity.ok(result);
     }
 

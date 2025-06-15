@@ -9,12 +9,12 @@ import swp391.com.backend.domain.dto.simpledto.SimpleExaminationDTO;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 
 @Mapper(componentModel = "spring")
-
 public interface ExaminationMapper {
     @Mapping(target = "testResults", ignore = true)
     @Mapping(source = "customer.name", target = "customerName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
     @Mapping(source = "staff.name", target = "staffName")
+    @Mapping(source = "panel.id", target = "panelId")
     ExaminedExaminationDTO toExaminedDTO(Examination entity);
 
     @Mapping(target = "testTypes", ignore = true)

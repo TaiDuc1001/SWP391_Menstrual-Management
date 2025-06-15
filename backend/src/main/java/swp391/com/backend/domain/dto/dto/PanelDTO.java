@@ -21,4 +21,5 @@ public class PanelDTO {
     PanelTag panelTag;
     List<String> testTypesNames;
     List<String> testTypesDescriptions;
+    List<Long> testTypesIds;
 }
