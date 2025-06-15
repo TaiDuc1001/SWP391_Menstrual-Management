@@ -4,20 +4,33 @@ import api from '../../api/axios';
 import { Button } from '../../components/Button';
 import { Badge } from '../../components/Badge';
 
+
+const mapAPIStatusToUI = (status: string): Appointment['status'] => {
+  switch (status) {
+    case 'BOOKED':
+      return 'Đang chờ';
+    case 'IN_PROGRESS':
+      return 'Đang tư vấn';
+    case 'FINISHED':
+      return 'Hoàn thành';
+    case 'CANCELLED':
+      return 'Đã hủy';
+    default:
+      return 'Đang chờ';
+  }
+}; 
+
 interface Appointment {
   id: number;
   patientName: string;
   date: string;
   time: string;
-  type: string;
+  type?: string;
   status: 'Đang chờ' | 'Đang tư vấn' | 'Hoàn thành' | 'Đã hủy';
   patientPhone: string;
-  patientEmail?: string;
-  symptoms?: string[];
   notes?: string;
   meetingUrl?: string;
   bookingDate?: string; // Ngày đặt lịch
-  lastUpdated?: string; // Thời gian cập nhật cuối
   doctor?: {
     id: number;
     name: string;
@@ -47,9 +60,6 @@ const ListView: React.FC<ListViewProps> = ({
               Bệnh nhân
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Loại tư vấn
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Trạng thái
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -73,9 +83,6 @@ const ListView: React.FC<ListViewProps> = ({
                 <div className="text-sm text-gray-500">
                   {appointment.patientPhone}
                 </div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="text-sm text-gray-900">{appointment.type}</div>
               </td>
               <td className="px-6 py-4">
                 <Badge
@@ -191,9 +198,16 @@ const WeekView: React.FC<WeekViewProps> = ({
 }) => {
   const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const daysOfWeek = Array.from({ length: 7 }, (_, i) => addDays(startOfWeekDate, i));
+  
+  // Tạo mảng khung giờ từ 7:00 đến 17:00
+  const timeSlots = Array.from({ length: 11 }, (_, i) => ({
+    hour: i + 7,
+    label: `${(i + 7).toString().padStart(2, '0')}:00`
+  }));
 
   return (
     <div className="bg-white rounded-lg shadow">
+      {/* Header với các ngày trong tuần */}
       <div className="grid grid-cols-8 border-b">
         <div className="p-4 border-r"></div>
         {daysOfWeek.map(date => (
@@ -210,51 +224,73 @@ const WeekView: React.FC<WeekViewProps> = ({
           </div>
         ))}
       </div>
+
+      {/* Grid chứa các khung giờ và lịch hẹn */}
       <div className="grid grid-cols-8">
+        {/* Cột khung giờ */}
         <div className="border-r">
-          {Array.from({ length: 9 }, (_, i) => {
-            const hour = i + 9;
-            return (
-              <div key={hour} className="h-16 border-b p-2 text-sm text-gray-600">
-                {`${hour}:00`}
-              </div>
-            );
-          })}
+          {timeSlots.map(({ hour, label }) => (
+            <div key={hour} className="h-16 border-b p-2 text-sm text-gray-600">
+              {label}
+            </div>
+          ))}
         </div>
+
+        {/* Các cột ngày trong tuần */}
         {daysOfWeek.map(date => {
           const dayAppointments = appointments.filter(
             app => app.date === format(date, 'yyyy-MM-dd')
           );
 
           return (
-            <div key={date.toString()} className="relative border-r">
-              {/* Phần lưới giờ */}
-              {Array.from({ length: 9 }, (_, i) => (
-                <div key={i} className="h-16 border-b"></div>
+            <div key={date.toString()} className="relative border-r h-[704px]">
+              {/* Background grid */}
+              {timeSlots.map(({ hour }) => (
+                <div key={hour} className="h-16 border-b"></div>
               ))}
 
-              {/* Các cuộc hẹn */}
+              {/* Appointments */}
               {dayAppointments.map(appointment => {
                 const [startTime] = appointment.time.split(' - ');
-                const [hours] = startTime.split(':');
-                const top = (parseInt(hours) - 9) * 64;
+                const [hours, minutes] = startTime.split(':').map(Number);
+                const top = (hours - 7) * 64 + (minutes / 60) * 64;
+
+                let bgColor;
+                switch (appointment.status) {
+                  case 'Đang chờ':
+                    bgColor = 'rgba(254, 243, 199, 0.9)';
+                    break;
+                  case 'Đang tư vấn':
+                    bgColor = 'rgba(219, 234, 254, 0.9)';
+                    break;
+                  case 'Hoàn thành':
+                    bgColor = 'rgba(209, 250, 229, 0.9)';
+                    break;
+                  case 'Đã hủy':
+                    bgColor = 'rgba(254, 226, 226, 0.9)';
+                    break;
+                  default:
+                    bgColor = 'rgba(229, 231, 235, 0.9)';
+                }
 
                 return (
                   <div
                     key={appointment.id}
-                    className="absolute left-0 right-1 p-2 mx-1 rounded-lg shadow"
+                    className="absolute left-0 right-1 p-2 mx-1 rounded-lg shadow cursor-pointer hover:opacity-90 transition-opacity"
                     style={{
                       top: `${top}px`,
-                      backgroundColor: appointment.status === 'Đang chờ' ? '#FEF3C7' :
-                        appointment.status === 'Đang tư vấn' ? '#DBEAFE' :
-                        appointment.status === 'Hoàn thành' ? '#D1FAE5' : '#FEE2E2',
-                      height: '56px'
+                      backgroundColor: bgColor,
+                      height: '56px',
+                      zIndex: 10
                     }}
+                    onClick={() => onSelectAppointment(appointment)}
                   >
                     <div className="font-medium text-sm truncate">
                       {appointment.patientName}
                     </div>
-                    <div className="text-xs text-gray-600">{appointment.time}</div>
+                    <div className="text-xs text-gray-600 truncate">
+                      {appointment.time}
+                    </div>
                   </div>
                 );
               })}
@@ -310,169 +346,38 @@ const ConsultationSchedule: React.FC = () => {
   };
 
   // Fetch appointments from API
-  const fetchAppointments = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get('/appointments/doctor');
-      setAppointments(response.data);
-      updateStats(response.data);
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchAppointments = async () => {
+  setLoading(true);
+  try {
+    const response = await api.get('/appointments');
+    const data = response.data;
 
-  useEffect(() => {
-    setLoading(true);
-    // Simulating API call
-    setTimeout(() => {
-      const mockAppointments: Appointment[] = [
-        {
-          id: 1,
-          patientName: "Nguyễn Thị Hoa",
-          date: format(new Date(), 'yyyy-MM-dd'),
-          time: "09:00 - 09:30",
-          type: "Tư vấn định kỳ",
-          status: "Đang chờ" as const,
-          patientPhone: "0912345678",
-          patientEmail: "hoa@example.com",
-          symptoms: ["Đau bụng kinh", "Chu kỳ không đều"],
-          notes: "Lần khám đầu tiên",
-          bookingDate: "2025-06-10",
-          lastUpdated: "2025-06-10 15:30:00"
-        },
-        {
-          id: 2,
-          patientName: "Trần Thị Mai",
-          date: format(new Date(), 'yyyy-MM-dd'),
-          time: "10:00 - 10:30",
-          type: "Theo dõi",
-          status: "Đang tư vấn" as const,
-          patientPhone: "0923456789",
-          patientEmail: "mai@example.com",
-          symptoms: ["Ra máu bất thường", "Đau vùng chậu"],
-          meetingUrl: "https://meet.google.com/abc-defg-hij",
-          bookingDate: "2025-06-11",
-          lastUpdated: "2025-06-15 10:00:00"
-        },
-        {
-          id: 3,
-          patientName: "Lê Thị Lan",
-          date: format(new Date(), 'yyyy-MM-dd'),
-          time: "11:00 - 11:30",
-          type: "Tái khám",
-          status: "Hoàn thành" as const,
-          patientPhone: "0934567890",
-          patientEmail: "lan@example.com",
-          symptoms: ["Kinh nguyệt không đều"],
-          notes: "Đã điều trị 2 tháng, tình trạng cải thiện",
-          bookingDate: "2025-06-01",
-          lastUpdated: "2025-06-15 11:30:00"
-        },
-        {
-          id: 4,
-          patientName: "Phạm Thị Hương",
-          date: format(new Date(), 'yyyy-MM-dd'),
-          time: "13:30 - 14:00",
-          type: "Tư vấn lần đầu",
-          status: "Đang chờ" as const,
-          patientPhone: "0945678901",
-          patientEmail: "huong@example.com",
-          symptoms: ["Đau bụng dữ dội", "Nôn mửa"],
-          bookingDate: "2025-06-13",
-          lastUpdated: "2025-06-13 09:00:00"
-        },
-        {
-          id: 5,
-          patientName: "Vũ Thị Ánh",
-          date: format(new Date(), 'yyyy-MM-dd'),
-          time: "14:30 - 15:00",
-          type: "Tư vấn định kỳ",
-          status: "Đang chờ" as const,
-          patientPhone: "0956789012",
-          patientEmail: "anh@example.com",
-          symptoms: ["Rối loạn nội tiết tố"],
-          notes: "Đang theo dõi hormone",
-          bookingDate: "2025-06-12",
-          lastUpdated: "2025-06-12 14:00:00"
-        },
-        {
-          id: 6,
-          patientName: "Đặng Thị Thanh",
-          date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
-          time: "09:00 - 09:30",
-          type: "Tái khám",
-          status: "Đang chờ" as const,
-          patientPhone: "0967890123",
-          patientEmail: "thanh@example.com",
-          symptoms: ["U xơ tử cung"],
-          notes: "Theo dõi sau điều trị 3 tháng",
-          bookingDate: "2025-06-10",
-          lastUpdated: "2025-06-10 10:00:00"
-        },
-        {
-          id: 7,
-          patientName: "Hoàng Thị Ngọc",
-          date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
-          time: "10:00 - 10:30",
-          type: "Tư vấn định kỳ",
-          status: "Đang chờ" as const,
-          patientPhone: "0978901234",
-          patientEmail: "ngoc@example.com",
-          symptoms: ["Tiền mãn kinh", "Bốc hỏa"],
-          bookingDate: "2025-06-11",
-          lastUpdated: "2025-06-11 15:00:00"
-        },
-        {
-          id: 8,
-          patientName: "Trương Thị Tuyết",
-          date: format(addDays(new Date(), -1), 'yyyy-MM-dd'),
-          time: "15:00 - 15:30",
-          type: "Tư vấn khẩn cấp",
-          status: "Hoàn thành" as const,
-          patientPhone: "0989012345",
-          patientEmail: "tuyet@example.com",
-          symptoms: ["Xuất huyết bất thường", "Đau bụng dữ dội"],
-          notes: "Đã chuyển bệnh viện để theo dõi",
-          bookingDate: "2025-06-14",
-          lastUpdated: "2025-06-14 15:30:00"
-        },
-        {
-          id: 9,
-          patientName: "Phan Thị Mỹ Linh",
-          date: format(addDays(new Date(), -1), 'yyyy-MM-dd'),
-          time: "16:00 - 16:30",
-          type: "Tư vấn định kỳ",
-          status: "Đã hủy" as const,
-          patientPhone: "0990123456",
-          patientEmail: "linh@example.com",
-          symptoms: ["Rối loạn kinh nguyệt"],
-          notes: "Bệnh nhân hủy hẹn vì lý do cá nhân",
-          bookingDate: "2025-06-13",
-          lastUpdated: "2025-06-14 09:00:00"
-        },
-        {
-          id: 10,
-          patientName: "Bùi Thị Kim Anh",
-          date: format(addDays(new Date(), 2), 'yyyy-MM-dd'),
-          time: "09:30 - 10:00",
-          type: "Tư vấn online",
-          status: "Đang chờ" as const,
-          patientPhone: "0901234567",
-          patientEmail: "kimanh@example.com",
-          symptoms: ["Tư vấn về kế hoạch hóa gia đình"],
-          bookingDate: "2025-06-15",
-          lastUpdated: "2025-06-15 08:00:00",
-          meetingUrl: "https://meet.google.com/xyz-abcd-efg"
-        }
-      ];
-      
-      setAppointments(mockAppointments);
-      updateStats(mockAppointments);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const mappedAppointments: Appointment[] = data.map((item: any) => ({
+      id: item.id,
+      patientName: item.customerName,
+      date: item.date,
+      time: item.timeRange,
+      status: mapAPIStatusToUI(item.appointmentStatus),
+      patientPhone: item.phoneNumber,
+      notes: item.customerNote,
+      meetingUrl: item.url,
+      bookingDate: item.date
+    }));
+
+    setAppointments(mappedAppointments);
+    updateStats(mappedAppointments);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+useEffect(() => {
+  fetchAppointments();
+}, []);
+
 
   const updateStats = (appointments: Appointment[]) => {
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -702,14 +607,6 @@ const ConsultationSchedule: React.FC = () => {
                 <span>{appointment.time}</span>
                 <span>•</span>
                 <span>{appointment.type}</span>
-                {appointment.lastUpdated && (
-                  <>
-                    <span>•</span>
-                    <span title={`Cập nhật: ${format(new Date(appointment.lastUpdated), 'HH:mm dd/MM/yyyy')}`}>
-                      {format(new Date(appointment.lastUpdated), 'HH:mm')}
-                    </span>
-                  </>
-                )}
               </div>
             </div>
           </div>
@@ -765,16 +662,10 @@ const ConsultationSchedule: React.FC = () => {
               <p className="font-medium text-gray-800">{appointment.patientPhone}</p>
             </div>
             <div>
-              <label className="text-sm text-gray-500">Email</label>
-              <p className="font-medium text-gray-800">{appointment.patientEmail || 'N/A'}</p>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Thời gian</label>
-              <p className="font-medium text-gray-800">{appointment.time}</p>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Loại tư vấn</label>
-              <p className="font-medium text-gray-800">{appointment.type}</p>
+              <label className="text-sm text-gray-500">Thời gian đặt lịch</label>
+              <p className="font-medium text-gray-800">
+                {format(new Date(appointment.bookingDate || ''), 'HH:mm dd/MM/yyyy')}
+              </p>
             </div>
             <div>
               <label className="text-sm text-gray-500">Trạng thái</label>
@@ -782,39 +673,7 @@ const ConsultationSchedule: React.FC = () => {
                 {appointment.status}
               </span>
             </div>
-            {appointment.bookingDate && (
-              <div>
-                <label className="text-sm text-gray-500">Ngày đặt lịch</label>
-                <p className="font-medium text-gray-800">
-                  {format(new Date(appointment.bookingDate), 'dd/MM/yyyy')}
-                </p>
-              </div>
-            )}
-            {appointment.lastUpdated && (
-              <div>
-                <label className="text-sm text-gray-500">Cập nhật lần cuối</label>
-                <p className="font-medium text-gray-800">
-                  {format(new Date(appointment.lastUpdated), 'HH:mm dd/MM/yyyy')}
-                </p>
-              </div>
-            )}
           </div>
-
-          {appointment.symptoms && (
-            <div className="mb-4">
-              <label className="text-sm text-gray-500">Triệu chứng</label>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {appointment.symptoms.map((symptom, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-                  >
-                    {symptom}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Hiển thị thông tin meeting */}
           {(appointment.status === 'Đang tư vấn' || appointment.meetingUrl) && (
@@ -1104,80 +963,54 @@ const ConsultationSchedule: React.FC = () => {
             
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <h3 className="font-medium">Thông tin bệnh nhân</h3>
-                <p>Tên: {selectedAppointment.patientName}</p>
-                <p>SĐT: {selectedAppointment.patientPhone}</p>
-                {selectedAppointment.patientEmail && (
-                  <p>Email: {selectedAppointment.patientEmail}</p>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Thông tin bệnh nhân
+                </h3>
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-500">Số điện thoại</h4>
+                  <p className="font-medium text-gray-800">{selectedAppointment.patientPhone}</p>
+                </div>
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-500">Thời gian đặt lịch</h4>
+                  <p className="font-medium text-gray-800">
+                    {format(new Date(selectedAppointment.bookingDate || ''), 'HH:mm dd/MM/yyyy')}
+                  </p>
+                </div>
+                {selectedAppointment.notes && (
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium text-gray-500">Ghi chú</h4>
+                    <p className="font-medium text-gray-800">{selectedAppointment.notes}</p>
+                  </div>
                 )}
               </div>
               <div>
-                <h3 className="font-medium">Thông tin cuộc hẹn</h3>
-                <p>Ngày: {format(new Date(selectedAppointment.date), 'dd/MM/yyyy')}</p>
-                <p>Giờ: {selectedAppointment.time}</p>
-                <p>Loại: {selectedAppointment.type}</p>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Thông tin cuộc hẹn
+                </h3>
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-500">Thời gian</h4>
+                  <p className="font-medium text-gray-800">{selectedAppointment.time}</p>
+                </div>
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-500">Trạng thái</h4>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm ${getStatusColor(selectedAppointment.status)}`}>
+                    {selectedAppointment.status}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {selectedAppointment.symptoms && (
-              <div className="mb-4">
-                <h3 className="font-medium mb-2">Triệu chứng</h3>
-                <div className="flex gap-2 flex-wrap">
-                  {selectedAppointment.symptoms.map((symptom, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-100 px-3 py-1 rounded-full text-sm"
-                    >
-                      {symptom}
-                    </span>
-                  ))}
-                </div>
+            {selectedAppointment && (
+              <div className="space-y-4">
+                <p>SĐT: {selectedAppointment.patientPhone}</p>
+                <p>Thời gian: {selectedAppointment.time}</p>
+                {selectedAppointment.notes && (
+                  <p>Ghi chú: {selectedAppointment.notes}</p>
+                )}
               </div>
             )}
 
-            <div className="mb-4">
-              <h3 className="font-medium mb-2">Ghi chú</h3>
-              {isEditingNotes ? (
-                <div>
-                  <textarea
-                    className="w-full p-2 border rounded-lg mb-2"
-                    value={notesInput}
-                    onChange={(e) => setNotesInput(e.target.value)}
-                    rows={4}
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleSaveNotes}
-                      variant="primary"
-                      disabled={isSavingNotes}
-                    >
-                      {isSavingNotes ? 'Đang lưu...' : 'Lưu'}
-                    </Button>
-                    <Button
-                      onClick={() => setIsEditingNotes(false)}
-                      variant="secondary"
-                    >
-                      Hủy
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p className="mb-2">{selectedAppointment.notes || 'Chưa có ghi chú'}</p>
-                  <Button
-                    onClick={() => {
-                      setNotesInput(selectedAppointment.notes || '');
-                      setIsEditingNotes(true);
-                    }}
-                    variant="secondary"
-                  >
-                    Chỉnh sửa
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-2 justify-end mt-4">
               {selectedAppointment.status === 'Đang chờ' && (
                 <Button
                   onClick={() => handleStatusChange(selectedAppointment.id, 'Đang tư vấn')}
