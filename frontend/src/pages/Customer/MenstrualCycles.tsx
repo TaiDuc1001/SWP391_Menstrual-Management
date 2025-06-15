@@ -18,10 +18,6 @@ const MenstrualCycles: React.FC = () => {
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number|null>(null);
-    const [dayNotes, setDayNotes] = useState<{ [key: string]: { symptom: string; period: string; flow: string } }>(() => {
-      const saved = localStorage.getItem('dayNotes');
-      return saved ? JSON.parse(saved) : {};
-    });
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const location = useLocation();
     const navigate = useNavigate();
@@ -33,10 +29,6 @@ const MenstrualCycles: React.FC = () => {
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location, navigate]);
-
-    useEffect(() => {
-      localStorage.setItem('dayNotes', JSON.stringify(dayNotes));
-    }, [dayNotes]);
 
     const getDaysInMonth = (month: number, year: number) => {
         const firstDay = new Date(year, month, 1);
@@ -55,31 +47,18 @@ const MenstrualCycles: React.FC = () => {
         if ([1, 2, 3].includes(day)) return 'period';
         if ([7, 8, 9].includes(day)) return 'fertile';
         if ([5, 6].includes(day)) return 'ovulation';
+        if ([4, 10].includes(day)) return 'symptom';
         return 'normal';
     };
-    const getDayStyle = (day: number | null, type: string, hasSymptom: boolean) => {
+    const getDayStyle = (day: number | null, type: string) => {
         const baseStyle = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md";
-        let style = '';
         switch (type) {
-            case 'period':
-                style = `${baseStyle} bg-gradient-to-br from-red-600 via-red-500 to-pink-500 text-white transform hover:rotate-3`;
-                break;
-            case 'fertile':
-                style = `${baseStyle} bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 text-white transform hover:rotate-3`;
-                break;
-            case 'ovulation':
-                style = `${baseStyle} bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 text-gray-900 transform hover:rotate-3`;
-                break;
-            case 'symptom':
-                style = `${baseStyle} bg-white border-2 border-indigo-300 text-indigo-700 shadow-inner transform hover:rotate-3`;
-                break;
-            default:
-                style = `${baseStyle} bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800`;
+            case 'period': return `${baseStyle} bg-gradient-to-br from-red-600 via-red-500 to-pink-500 text-white transform hover:rotate-3`;
+            case 'fertile': return `${baseStyle} bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 text-white transform hover:rotate-3`;
+            case 'ovulation': return `${baseStyle} bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 text-gray-900 transform hover:rotate-3`;
+            case 'symptom': return `${baseStyle} bg-white border-2 border-indigo-300 text-indigo-700 shadow-inner transform hover:rotate-3`;
+            default: return `${baseStyle} bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800`;
         }
-        if (hasSymptom && type !== 'symptom') {
-            style += ' border-2 border-indigo-300';
-        }
-        return style;
     };
 
     const historyData = cycles;
@@ -116,24 +95,21 @@ const MenstrualCycles: React.FC = () => {
                                 ))}
                                 {days.map((day, idx) => {
                                     const type = getDayType(day);
-                                    const note = day ? dayNotes[`${currentYear}-${currentMonth + 1}-${day}`] : undefined;
-                                    // Chỉ có border khi thực sự nhập triệu chứng (note.symptom và note.symptom !== 'Không có')
-                                    const hasSymptom = note && note.symptom && note.symptom !== 'Không có';
-                                    const dayStyle = getDayStyle(day, type, !!hasSymptom);
+                                    const isPast = day && new Date(currentYear, currentMonth, day) < new Date();
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
-                                                <button
-                                                    type="button"
-                                                    className={dayStyle + ' relative'}
+                                                <div
+                                                    className={getDayStyle(day, type) + (isPast ? ' cursor-pointer' : '')}
                                                     onClick={() => {
-                                                        setSelectedDay(day);
-                                                        setShowDayNote(true);
+                                                        if (isPast) {
+                                                            setSelectedDay(day);
+                                                            setShowDayNote(true);
+                                                        }
                                                     }}
-                                                    aria-label={`Ghi chú ngày ${day}`}
                                                 >
                                                     {day}
-                                                </button>
+                                                </div>
                                             ) : <div className="w-10 h-10"></div>}
                                         </div>
                                     );
@@ -180,7 +156,7 @@ const MenstrualCycles: React.FC = () => {
                                         <tr className="text-gray-600">
                                             <th className="py-1 font-medium">Bắt đầu</th>
                                             <th className="py-1 font-medium">Kết thúc</th>
-                                            <th className="py-1 font-medium">Số ngày hành kinh</th>
+                                            <th className="py-1 font-medium">Số ngày</th>
                                             <th className="py-1 font-medium">Chu kỳ (ngày)</th>
                                         </tr>
                                     </thead>
@@ -241,20 +217,11 @@ const MenstrualCycles: React.FC = () => {
                     <DayNotePopup 
                       open={showDayNote} 
                       onClose={() => setShowDayNote(false)}
-                      onSave={(data) => {
-                        if (selectedDay) {
-                          setDayNotes(prev => ({
-                            ...prev,
-                            [`${currentYear}-${currentMonth + 1}-${selectedDay}`]: data
-                          }));
-                        }
+                      onSave={() => {
                         setShowDayNote(false);
                         setShowSuccess(true);
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
-                      {...(selectedDay && dayNotes[`${currentYear}-${currentMonth + 1}-${selectedDay}`] ? { 
-                        defaultValue: dayNotes[`${currentYear}-${currentMonth + 1}-${selectedDay}`]
-                      } : {})}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
                 </main>
