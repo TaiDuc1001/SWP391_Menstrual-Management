@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Popup from './Popup';
+import Popup from './ExitPopup';
 
 interface ReminderSettingsPopupProps {
   open: boolean;
