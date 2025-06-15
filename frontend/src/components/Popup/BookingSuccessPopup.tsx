@@ -1,5 +1,5 @@
 import React from 'react';
-import Popup from './Popup';
+import Popup from './ExitPopup';
 import greenCheckIcon from '../../assets/icons/green-check.svg';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import userIcon from '../../assets/icons/home.svg'; 

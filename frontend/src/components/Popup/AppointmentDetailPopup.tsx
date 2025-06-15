@@ -1,5 +1,5 @@
 import React from 'react';
-import Popup from './Popup';
+import Popup from './ExitPopup';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import cameraIcon from '../../assets/icons/camera.svg';
 import meetingIcon from '../../assets/icons/meeting.svg';

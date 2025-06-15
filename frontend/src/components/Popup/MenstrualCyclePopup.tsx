@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Popup from '../Popup/Popup';
+import Popup from './ExitPopup';
 import Woman from '../../assets/images/Woman.svg';
 import pen from '../../assets/icons/pen.svg';
 
