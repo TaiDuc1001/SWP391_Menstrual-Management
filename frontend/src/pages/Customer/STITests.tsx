@@ -38,6 +38,11 @@ const STITests: React.FC = () => {
   const [showResultPopup, setShowResultPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentExaminationId, setCurrentExaminationId] = useState<number | null>(null);
+  const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All slots' }]);
+  const [slotMap, setSlotMap] = useState<{ [key: string]: string }>({});
+  const [statusOptions, setStatusOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All status' }]);
+  const [panelOptions, setPanelOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All panels' }]);
+  const [selectedPanel, setSelectedPanel] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,6 +61,7 @@ const STITests: React.FC = () => {
         slot: order.slot ?? '',
         time: order.timeRange || '', // Lấy trực tiếp từ API
         panels: order.panelName || 'No info',
+        statusRaw: order.examinationStatus || '',
         status: order.examinationStatus
           ? order.examinationStatus.toLowerCase() === 'completed' ? 'Completed'
             : order.examinationStatus.toLowerCase() === 'pending' ? 'Pending'
@@ -63,6 +69,41 @@ const STITests: React.FC = () => {
             : order.examinationStatus.charAt(0).toUpperCase() + order.examinationStatus.slice(1).toLowerCase()
           : '',
       })));
+    });
+  }, []);
+
+  useEffect(() => {
+    api.get('/enumerators/slots').then(res => {
+      const options = [{ value: '', label: 'All slots' }];
+      const map: { [key: string]: string } = {};
+      (res.data as { name: string; timeRange: string }[]).forEach(slot => {
+        if (slot.timeRange !== 'Filler slot, not used') {
+          options.push({ value: slot.timeRange, label: slot.timeRange });
+          map[slot.timeRange] = slot.timeRange;
+        }
+      });
+      setSlotOptions(options);
+      setSlotMap(map);
+    });
+  }, []);
+
+  useEffect(() => {
+    api.get('/enumerators/examination-status').then(res => {
+      const options = [{ value: '', label: 'All status' }];
+      (res.data as string[]).forEach(status => {
+        options.push({ value: status, label: status.charAt(0) + status.slice(1).toLowerCase().replace('_', ' ') });
+      });
+      setStatusOptions(options);
+    });
+  }, []);
+
+  useEffect(() => {
+    api.get('/panels').then(res => {
+      const options = [{ value: '', label: 'All panels' }];
+      (res.data as { panelName: string }[]).forEach(panel => {
+        options.push({ value: panel.panelName, label: panel.panelName });
+      });
+      setPanelOptions(options);
     });
   }, []);
 
@@ -87,12 +128,6 @@ const STITests: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
-  // Get all unique slot ids from data for filter dropdown
-  const slotOptions = React.useMemo(() => {
-    const slots = Array.from(new Set(testRecords.map(r => r.slot).filter(Boolean)));
-    return [{ value: '', label: 'All slots' }, ...slots.map(slot => ({ value: slot, label: `Slot ${slot}` }))];
-  }, [testRecords]);
-
   const filteredRecords = testRecords.filter((record) => {
     if (hideRows.includes(record.id)) {
       return false;
@@ -101,14 +136,15 @@ const STITests: React.FC = () => {
       record.date.includes(searchTerm) ||
       record.slot.includes(searchTerm) ||
       record.panels.toLowerCase().includes(searchTerm.toLowerCase());
-    const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
+    const slotMatch = selectedSlot ? record.time === selectedSlot : true;
+    const statusMatch = selectedStatus ? record.statusRaw === selectedStatus : true;
+    const panelMatch = selectedPanel ? record.panels === selectedPanel : true;
     const recordPanelList = record.panels.split(',').map((p: string) => p.trim());
     const typeMatch = selectedTypes.length === 0 ? true : selectedTypes.some(type => recordPanelList.includes(type));
-    const statusMatch = selectedStatus ? record.status === selectedStatus : true;
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    return searchMatch && slotMatch && typeMatch && statusMatch && fromMatch && toMatch;
+    return searchMatch && slotMatch && typeMatch && statusMatch && panelMatch && fromMatch && toMatch;
   });
 
   // Paging should use filteredRecords
@@ -153,22 +189,15 @@ const STITests: React.FC = () => {
           onChange={setSelectedSlot}
           options={slotOptions}
         />
-        <MultiSelectDropdown
-          selected={selectedTypes}
-          setSelected={setSelectedTypes}
-          options={availableTypes}
-          showDropdown={showTypeDropdown}
-          setShowDropdown={setShowTypeDropdown}
+        <DropdownSelect
+          value={selectedPanel}
+          onChange={setSelectedPanel}
+          options={panelOptions}
         />
         <DropdownSelect
           value={selectedStatus}
           onChange={setSelectedStatus}
-          options={[
-            { value: '', label: 'All status' },
-            { value: 'Completed', label: 'Completed' },
-            { value: 'Pending', label: 'Pending' },
-            { value: 'In progress', label: 'In progress' },
-          ]}
+          options={statusOptions}
         />
         <DatePickerInput
           selected={selectedDateFrom}
@@ -185,7 +214,7 @@ const STITests: React.FC = () => {
       </TestingUtilityBar>      
       <TestTable
         filteredRecords={filteredRecords}
-        slotTimeMap={{}} // Truyền object rỗng, không cần mapping nữa
+        slotTimeMap={slotMap}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
