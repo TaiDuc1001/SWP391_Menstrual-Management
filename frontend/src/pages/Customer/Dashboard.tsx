@@ -1,41 +1,137 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import plusIcon from '../../assets/icons/plus-white.svg';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import notificationIcon from '../../assets/icons/notification.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
 import pdfIcon from '../../assets/icons/pdf.svg';
-import donutIcon from '../../assets/icons/donut.svg';
 import bloodIcon from '../../assets/icons/blood.svg';
 import strawberyyIcon from '../../assets/icons/strawberyy.svg';
 import angryIcon from '../../assets/icons/angry.svg';
 import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
 import SuccessPopup from '../../components/Popup/SuccessPopup';
+import api from '../../api/axios';
+import { Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip
+} from 'chart.js';
+ChartJS.register(ArcElement, Tooltip);
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  
-  const userName = 'Thiên An';
-  const cycleStart = '10/05/2025';
-  const ovulationDate = '18/05';
-  const daysToOvulation = 3;
-  const cycleStatus = 'Girlie cramps';
-  const cycleEmojis = [strawberyyIcon, bloodIcon, angryIcon];
-  const appointments = [
-    { id: 1, name: 'Dr. Jack97', date: '21/05/2025', time: '15:00', avatar: '', rating: 5 },
-    { id: 2, name: 'Dr. Thịnh Thất Bồng Lai', date: '21/05/2025', time: '15:00', avatar: '', rating: 4.5 },
-    { id: 3, name: 'Dr. PewPew', date: '18/05/2025', time: '15:00', avatar: '', rating: 4 },
+  const [userName, setUserName] = useState('');
+  const [cycleStart, setCycleStart] = useState('');
+  const [ovulationDate, setOvulationDate] = useState('');
+  const [daysToOvulation, setDaysToOvulation] = useState(0);
+  const [cycleStatus, setCycleStatus] = useState('');
+  const [cycleEmojis, setCycleEmojis] = useState([strawberyyIcon, bloodIcon, angryIcon]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [screenings, setScreenings] = useState<any[]>([]);
+  const [examinations, setExaminations] = useState<any[]>([]);
+  const [cycles, setCycles] = useState<any[]>([]);
+  const [showReminderPopup, setShowReminderPopup] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [prediction, setPrediction] = useState<any>(null);
+
+  useEffect(() => {
+    setUserName('Thiên An');
+    api.get('/cycles/closest').then(res => {
+      const cycle = res.data;
+      setCycleStart(cycle.cycleStartDate || '');
+      setCycleStatus(cycle.status || '');
+      setOvulationDate(cycle.ovulationDate || '');
+      setDaysToOvulation(cycle.daysToOvulation || 0);
+      setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
+    });
+    api.get('/appointments').then(res => {
+      setAppointments(res.data.slice(0, 3).map((a: any) => ({
+        id: a.id,
+        name: a.doctorName,
+        date: a.date,
+        time: a.timeRange || a.slot || '',
+        avatar: '',
+        rating: 4.5
+      })));
+    });
+    api.get('/examinations').then(res => {
+      setExaminations(res.data.slice(0, 3).map((e: any) => ({
+        name: e.panelName || e.name,
+        date: e.date,
+        time: e.time,
+        place: e.place || '',
+        status: e.status || ''
+      })));
+    });
+    api.get('/examinations').then(res => {
+      setScreenings(res.data.filter((e: any) => e.result).slice(0, 1).map((e: any) => ({
+        name: e.panelName || e.name,
+        result: e.result,
+        pdf: true
+      })));
+    });
+    api.get('/cycles').then(res => {
+      setCycles(res.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (cycles.length > 0) {
+      const sorted = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
+      const last = sorted[sorted.length - 1];
+      const avgCycle = Math.round(sorted.reduce((acc, c) => acc + (c.cycleLength || 28), 0) / sorted.length);
+      const avgPeriod = Math.round(sorted.reduce((acc, c) => acc + (c.periodDuration || 5), 0) / sorted.length);
+      const lastStart = new Date(last.cycleStartDate);
+      const nextPeriod = new Date(lastStart);
+      nextPeriod.setDate(lastStart.getDate() + avgCycle);
+      const ovulation = new Date(lastStart);
+      ovulation.setDate(lastStart.getDate() + avgCycle - 14);
+      const fertileStart = new Date(ovulation);
+      fertileStart.setDate(ovulation.getDate() - 4);
+      const fertileEnd = new Date(ovulation);
+      fertileEnd.setDate(ovulation.getDate() + 1);
+      setPrediction({
+        nextPeriod: nextPeriod.toLocaleDateString('en-GB'),
+        ovulation: ovulation.toLocaleDateString('en-GB'),
+        fertileWindow: `${fertileStart.toLocaleDateString('en-GB')} - ${fertileEnd.toLocaleDateString('en-GB')}`,
+        avgCycle,
+        avgPeriod
+      });
+    }
+  }, [cycles]);
+
+  const chartData = cycles.length > 0 && prediction ? {
+    labels: ['Period', 'Fertile', 'Other'],
+    datasets: [
+      {
+        data: [prediction.avgPeriod, 6, prediction.avgCycle - prediction.avgPeriod - 6],
+        backgroundColor: ['#f472b6', '#34d399', '#fbbf24'],
+        borderWidth: 1
+      }
+    ]
+  } : {
+    labels: ['Period', 'Fertile', 'Other'],
+    datasets: [
+      {
+        data: [5, 6, 17],
+        backgroundColor: ['#f472b6', '#34d399', '#fbbf24'],
+        borderWidth: 1
+      }
+    ]
+  };
+
+  const chartOptions = {
+    plugins: {
+      legend: { display: false }
+    }
+  };
+
+  const chartLegends = [
+    { color: '#f472b6', label: 'Period' },
+    { color: '#34d399', label: 'Fertile' },
+    { color: '#fbbf24', label: 'Other' }
   ];
-  const screenings = [
-    { name: 'HPV', result: 'Negative', pdf: true },
-  ];
-  const examinations = [
-    { name: 'HIV, Giang mai', date: '26/05/2024', time: '10:00 - 12:00', place: 'Viện Pasteur', status: 'Sắp diễn ra' },
-    { name: 'Gói tổng quát STIs', date: '05/06/2024', time: '15:30', place: 'Viện Pasteur', status: 'Chưa xác nhận' },
-    { name: 'Khám Thai', date: '05/11/2024', time: '15:30', place: 'Viện Pasteur', status: 'Chưa xác nhận' },
-  ];
-  const [showReminderPopup, setShowReminderPopup] = React.useState(false);
-  const [showSuccess, setShowSuccess] = React.useState(false);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -79,10 +175,28 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center justify-center">
-          <img src={donutIcon} alt="Donut chart" width={120} height={120} />
-          <div className="text-center mt-2">
-            <div className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></div>
-            <button className="text-pink-500 hover:underline text-sm">View cycle</button>
+          <div className="flex flex-col items-center w-full">
+            <div className="flex flex-row items-center justify-center w-full gap-8">
+              <div className="w-32 h-32 flex items-center justify-center">
+                <Doughnut data={chartData} options={chartOptions} />
+              </div>
+              <div className="flex flex-col gap-2 justify-center">
+                {chartLegends.map(l => (
+                  <div key={l.label} className="flex items-center gap-2">
+                    <span className="inline-block w-4 h-4 rounded-full" style={{ background: l.color }}></span>
+                    <span className="text-gray-700 text-sm font-medium">{l.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {prediction && (
+              <div className="mt-4 text-center w-full">
+                <div className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{prediction.ovulation}</span></div>
+                <div className="text-gray-500 text-sm">Next period: <span className="text-pink-600 font-bold">{prediction.nextPeriod}</span></div>
+                <div className="text-gray-500 text-sm">Fertile window: <span className="text-pink-600 font-bold">{prediction.fertileWindow}</span></div>
+              </div>
+            )}
+            <button className="text-pink-500 hover:underline text-sm mt-2">View cycle</button>
           </div>
         </div>
         <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
@@ -101,9 +215,9 @@ const Dashboard: React.FC = () => {
             <img src={hospitalIcon} alt="Doctor" className="w-5 h-5" /> Upcoming appointments
           </div>
           <div className="flex flex-col gap-2">
-            {appointments.slice(0, 3).map((a) => (
+            {appointments.map((a) => (
               <div key={a.id} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-pink-500">{a.name.split(' ')[1]?.[0] || 'D'}</div>
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-pink-500">{a.name?.split(' ')[1]?.[0] || 'D'}</div>
                 <div>
                   <div className="font-semibold text-gray-700">{a.name} <span className="text-yellow-400">{'★'.repeat(Math.round(a.rating))}</span></div>
                   <div className="text-xs text-gray-500">{a.date}, {a.time}</div>
@@ -111,9 +225,7 @@ const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments/book')}>
-            Xem chi tiết
-          </button>
+          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments')}>Xem chi tiết</button>
         </div>
         <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-pink-500 font-semibold">
@@ -146,6 +258,17 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {prediction && (
+        <div className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl shadow p-6 flex flex-col gap-3 mt-6">
+          <h3 className="font-semibold text-lg text-pink-600 mb-2">Dự đoán & Phân tích</h3>
+          <div className="flex flex-col gap-2 text-sm">
+            <div className="flex items-center gap-2"><span className="w-4 h-4 bg-yellow-400 rounded-full inline-block"></span> Ngày rụng trứng tiếp theo <span className="ml-auto font-semibold text-gray-700">{prediction.ovulation}</span></div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 bg-green-500 rounded-full inline-block"></span> Khả năng thụ thai cao <span className="ml-auto font-semibold text-gray-700">{prediction.fertileWindow}</span></div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 bg-red-500 rounded-full inline-block"></span> Kỳ kinh tiếp theo dự kiến <span className="ml-auto font-semibold text-gray-700">{prediction.nextPeriod}</span></div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 bg-blue-400 rounded-full inline-block"></span> Cảnh báo chu kỳ <span className="ml-auto font-semibold text-gray-700">Bình thường</span></div>
+          </div>
+        </div>
+      )}
       <ReminderSettingsPopup 
         open={showReminderPopup} 
         onClose={() => setShowReminderPopup(false)}
