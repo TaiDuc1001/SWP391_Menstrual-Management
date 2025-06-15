@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Popup from './ExitPopup';
-import React, { useState } from 'react';
-import Popup from './Popup';
 
 interface DayNotePopupProps {
   open: boolean;
