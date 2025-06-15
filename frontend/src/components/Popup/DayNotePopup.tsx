@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Popup from './Popup';
 
 interface DayNotePopupProps {
   open: boolean;
   onClose: () => void;
   onSave?: (data: { symptom: string; period: string; flow: string }) => void;
+  defaultValue?: { symptom: string; period: string; flow: string };
 }
 
 const symptomOptions = [
@@ -25,10 +26,16 @@ const flowOptions = [
   'Nhiều'
 ];
 
-const DayNotePopup: React.FC<DayNotePopupProps> = ({ open, onClose, onSave }) => {
-  const [symptom, setSymptom] = useState('');
-  const [period, setPeriod] = useState('');
-  const [flow, setFlow] = useState('');
+const DayNotePopup: React.FC<DayNotePopupProps> = ({ open, onClose, onSave, defaultValue }) => {
+  const [symptom, setSymptom] = useState(defaultValue?.symptom || '');
+  const [period, setPeriod] = useState(defaultValue?.period || '');
+  const [flow, setFlow] = useState(defaultValue?.flow || '');
+
+  useEffect(() => {
+    setSymptom(defaultValue?.symptom || '');
+    setPeriod(defaultValue?.period || '');
+    setFlow(defaultValue?.flow || '');
+  }, [defaultValue, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

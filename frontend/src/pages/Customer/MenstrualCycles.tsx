@@ -18,6 +18,10 @@ const MenstrualCycles: React.FC = () => {
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number|null>(null);
+    const [dayNotes, setDayNotes] = useState<{ [key: string]: { symptom: string; period: string; flow: string } }>(() => {
+      const saved = localStorage.getItem('dayNotes');
+      return saved ? JSON.parse(saved) : {};
+    });
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const location = useLocation();
     const navigate = useNavigate();
@@ -29,6 +33,10 @@ const MenstrualCycles: React.FC = () => {
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location, navigate]);
+
+    useEffect(() => {
+      localStorage.setItem('dayNotes', JSON.stringify(dayNotes));
+    }, [dayNotes]);
 
     const getDaysInMonth = (month: number, year: number) => {
         const firstDay = new Date(year, month, 1);
@@ -96,20 +104,27 @@ const MenstrualCycles: React.FC = () => {
                                 {days.map((day, idx) => {
                                     const type = getDayType(day);
                                     const isPast = day && new Date(currentYear, currentMonth, day) < new Date();
+                                    const note = day ? dayNotes[`${currentYear}-${currentMonth + 1}-${day}`] : undefined;
+                                    // Nếu có note triệu chứng thì tô viền như ngày 'symptom'
+                                    const hasSymptom = note && note.symptom && note.symptom !== 'Không có';
+                                    const dayStyle = hasSymptom
+                                        ? getDayStyle(day, 'symptom')
+                                        : getDayStyle(day, type);
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
-                                                <div
-                                                    className={getDayStyle(day, type) + (isPast ? ' cursor-pointer' : '')}
+                                                <button
+                                                    type="button"
+                                                    className={dayStyle + ' relative'}
                                                     onClick={() => {
-                                                        if (isPast) {
-                                                            setSelectedDay(day);
-                                                            setShowDayNote(true);
-                                                        }
+                                                        setSelectedDay(day);
+                                                        setShowDayNote(true);
                                                     }}
+                                                    aria-label={`Ghi chú ngày ${day}`}
                                                 >
                                                     {day}
-                                                </div>
+                                                    {/* Đã bỏ chấm hồng */}
+                                                </button>
                                             ) : <div className="w-10 h-10"></div>}
                                         </div>
                                     );
@@ -217,11 +232,20 @@ const MenstrualCycles: React.FC = () => {
                     <DayNotePopup 
                       open={showDayNote} 
                       onClose={() => setShowDayNote(false)}
-                      onSave={() => {
+                      onSave={(data) => {
+                        if (selectedDay) {
+                          setDayNotes(prev => ({
+                            ...prev,
+                            [`${currentYear}-${currentMonth + 1}-${selectedDay}`]: data
+                          }));
+                        }
                         setShowDayNote(false);
                         setShowSuccess(true);
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
+                      {...(selectedDay && dayNotes[`${currentYear}-${currentMonth + 1}-${selectedDay}`] ? { 
+                        defaultValue: dayNotes[`${currentYear}-${currentMonth + 1}-${selectedDay}`]
+                      } : {})}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
                 </main>
