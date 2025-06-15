@@ -34,7 +34,6 @@ const Services: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen pb-16">
-      {/* Header */}
       <div className="w-full flex flex-col items-center pt-8">
         <div className="flex items-center justify-center gap-4 mb-2">
           <span className="inline-block text-pink-400 animate-bounce">
@@ -45,8 +44,6 @@ const Services: React.FC = () => {
           <h1 className="text-4xl font-extrabold text-pink-500 drop-shadow-md">Services</h1>
         </div>
       </div>
-
-      {/* Banner */}
       <div className="max-w-5xl mx-auto rounded-3xl overflow-hidden mb-10 shadow-2xl mt-8 relative z-10 border-8 border-white bg-gradient-to-br from-blue-200 via-purple-100 to-pink-100 animate-fadeIn">
         <div className="aspect-[21/9] relative">
           <img 
@@ -67,8 +64,6 @@ const Services: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Introduction */}
       <div className="max-w-3xl mx-auto bg-white/90 rounded-2xl flex flex-col md:flex-row items-center gap-8 p-8 mt-4 mb-12 shadow-xl border-2 border-pink-100 animate-fadeIn">
         <img src={doctorImg} alt="doctor" className="w-32 h-32 object-cover rounded-2xl shadow-lg border-4 border-blue-100" />
         <div className="flex-1">
@@ -79,8 +74,6 @@ const Services: React.FC = () => {
           <img src={familyImg} alt="family" className="w-24 h-14 object-contain rounded-xl" />
         </div>
       </div>
-
-      {/* Service Cards */}
       <div className="max-w-6xl mx-auto flex flex-col items-center mb-16 animate-fadeIn">
         <h3 className="text-center text-2xl font-semibold mb-2 text-purple-600 tracking-wide">Featured Services</h3>
         <div className="flex w-full justify-center gap-8 mb-4 flex-wrap">
@@ -105,8 +98,6 @@ const Services: React.FC = () => {
           ))}
         </div>
       </div>
-
-      {/* Consultation section */}
       <div className="max-w-3xl mx-auto bg-gradient-to-r from-purple-100 via-pink-50 to-blue-100 rounded-2xl flex items-center gap-8 p-10 mt-8 shadow-xl border-2 border-purple-100 animate-fadeIn">
         <img src={chatIcon} alt="Consultation" className="w-28 h-28 object-contain drop-shadow-md" />
         <div>

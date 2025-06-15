@@ -14,7 +14,6 @@ const ChangePassword: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!agree || password !== rePassword) return;
-    // handle change password logic here
     navigate('/login');
   };
 

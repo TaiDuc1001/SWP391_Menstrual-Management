@@ -12,7 +12,6 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!agree) return;
-    // handle OTP logic here
     navigate('/enter-otp');
   };
 

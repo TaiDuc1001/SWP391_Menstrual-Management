@@ -10,7 +10,6 @@ const EnterOTP: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // handle OTP verification logic here
     navigate('/change-password');
   };
 

@@ -81,13 +81,11 @@ const UpdateTestResult: React.FC = () => {
       String(item.id).toLowerCase().includes(search.toLowerCase()))
   );
 
-  // Tính toán dữ liệu cho trang hiện tại
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  // Xử lý chuyển trang
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
@@ -120,10 +118,9 @@ const UpdateTestResult: React.FC = () => {
                 <option value="SAMPLED">Sampled</option>
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="EXAMINED">Examined</option>
-                {/* <option value="CANCELLED">Cancelled</option> */}
               </select>              
               <button
-                onClick={fetchData} // Refresh data from api
+                onClick={fetchData}
                 className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold px-5 h-10 rounded-lg transition shadow min-w-[120px]"
               >
                 <img src={refreshIcon} alt="refresh" className="w-5 h-5" />
@@ -184,7 +181,6 @@ const UpdateTestResult: React.FC = () => {
                   )}
                 </tbody>
               </table>
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 p-4 border-t">
                   <button
@@ -234,7 +230,7 @@ const UpdateTestResult: React.FC = () => {
           open={modalOpen}
           onClose={handleCloseModal}
           request={selectedRequest}
-          onUpdateSuccess={fetchData} // Thêm prop để refresh data
+          onUpdateSuccess={fetchData}
         />
       )}
     </div>

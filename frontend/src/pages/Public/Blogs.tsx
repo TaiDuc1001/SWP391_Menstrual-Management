@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom';
 const Blogs: React.FC = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('All');
-
-    // Blog posts data matching your design
     const blogPosts = [
         {
             id: 1,
@@ -68,19 +66,14 @@ const Blogs: React.FC = () => {
             featured: false
         }
     ];
-
     const categories = ['All', 'Health Tips', 'Medical Guide', 'Nutrition'];
-
     const filteredPosts = selectedCategory === 'All'
         ? blogPosts
         : blogPosts.filter(post => post.category === selectedCategory);
-
     const featuredPost = blogPosts.find(post => post.featured);
     const regularPosts = blogPosts.filter(post => !post.featured);
-
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header Section */}
             <section className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-16">
                 <div className="container mx-auto px-6">
                     <div className="text-center">
@@ -90,8 +83,6 @@ const Blogs: React.FC = () => {
                         <p className="text-xl text-gray-600 mb-8">
                             Stay updated with the latest health and medical information
                         </p>
-
-                        {/* Category Filter */}
                         <div className="flex justify-center gap-4 mb-8">
                             {categories.map((category) => (
                                 <button
@@ -110,8 +101,6 @@ const Blogs: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Featured Article */}
             {featuredPost && selectedCategory === 'All' && (
                 <section className="py-12 bg-white">
                     <div className="container mx-auto px-6">
@@ -141,83 +130,39 @@ const Blogs: React.FC = () => {
                     </div>
                 </section>
             )}
-
-            {/* Blog Posts Grid */}
             <section className="py-16 bg-gray-50">
                 <div className="container mx-auto px-6">
                     <h2 className="text-3xl font-bold text-pink-500 mb-12">
                         {selectedCategory === 'All' ? 'Latest articles by topic' : `Articles about ${selectedCategory}`}
                     </h2>
-
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredPosts.map((post) => (
                             <article
                                 key={post.id}
                                 className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
-                                onClick={() => {/* Navigate to individual blog post */}}
+                                onClick={() => {}}
                             >
                                 <div className="h-48 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                     <span className="text-6xl">{post.image}</span>
                                 </div>
                                 <div className="p-6">
-                                    <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-pink-500 font-medium bg-pink-50 px-3 py-1 rounded-full">
-                      {post.category}
-                    </span>
-                                        <span className="text-xs text-gray-500">{post.readTime}</span>
+                                    <div className="text-sm text-pink-500 font-medium mb-2 bg-pink-50 px-3 py-1 rounded-full inline-block">
+                                        {post.category}
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
-                                        {post.title}
-                                    </h3>
-                                    <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
-                                        {post.description}
-                                    </p>
-                                    <div className="flex items-center justify-between">
+                                    <h3 className="text-xl font-bold text-gray-800 mb-4">{post.title}</h3>
+                                    <p className="text-gray-600 mb-4 leading-relaxed">{post.description}</p>
+                                    <div className="flex items-center gap-4 mb-2">
                                         <span className="text-sm text-gray-500">{post.date}</span>
-                                        <button className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300">
-                                            Read more →
-                                        </button>
+                                        <span className="text-sm text-gray-500">•</span>
+                                        <span className="text-sm text-gray-500">{post.readTime}</span>
                                     </div>
+                                    <button className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300">
+                                        Read more →
+                                    </button>
                                 </div>
                             </article>
                         ))}
                     </div>
-                </div>
-            </section>
-
-            {/* Newsletter Signup */}
-            <section className="py-16 bg-white">
-                <div className="container mx-auto px-6">
-                    <div className="bg-gradient-to-r from-blue-400 to-pink-400 rounded-3xl p-12 text-center text-white">
-                        <h2 className="text-3xl font-bold mb-4">
-                            Subscribe to our health newsletter
-                        </h2>
-                        <p className="text-xl mb-8 text-white/90">
-                            Get the latest health articles and news delivered to your inbox
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="flex-1 px-6 py-4 rounded-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/30"
-                            />
-                            <button className="px-8 py-4 bg-white text-pink-500 hover:bg-gray-100 font-semibold rounded-full transition-all duration-300 transform hover:scale-105">
-                                Subscribe
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Back to Home */}
-            <section className="py-8 bg-gray-50">
-                <div className="container mx-auto px-6 text-center">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105"
-                    >
-                        ← Back to Home
-                    </button>
                 </div>
             </section>
         </div>

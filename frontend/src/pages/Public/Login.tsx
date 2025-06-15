@@ -24,10 +24,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setError('');
     try {
     const response = await api.post('/accounts/login', { email, password, role });
-
     const returnedRole = response.data.role?.toLowerCase();
     onLogin(returnedRole);
-
     switch (returnedRole) {
       case 'admin':
         navigate('/admin/dashboard');
@@ -77,7 +75,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <div className="relative">
             <select
               className="w-full h-10 p-2 pl-4 pr-8 rounded border border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-pink-200 bg-blue-50 appearance-none text-gray-700 font-medium"
-              style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill=\'gray\' height=\'20\' viewBox=\'0 0 20 20\' width=\'20\'><path d=\'M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z\'/></svg>')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1.5em 1.5em' }}
+              style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 20 20' width='20'><path d='M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z'/></svg>')`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1.5em 1.5em' }}
               required
               value={role}
               onChange={e => setRole(e.target.value)}

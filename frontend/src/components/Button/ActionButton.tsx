@@ -6,7 +6,7 @@ interface ActionButtonProps extends React.ComponentProps<typeof SquaredButton> {
   label?: string;
   variant?: 'primary' | 'secondary';
   outlined?: boolean;
-  actionType?: 'learn-more' | 'book'; // renamed from 'type' to 'actionType'
+  actionType?: 'learn-more' | 'book';
 }
 
 const ICONS: Record<string, string> = {
@@ -34,7 +34,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     variantClass = 'bg-pink-100 text-pink-600 hover:bg-pink-200 px-6 py-2 font-semibold flex items-center gap-2';
   }
 
-  // Icon logic
   let icon = null;
   if (actionType && ICONS[actionType]) {
     icon = <img src={ICONS[actionType]} alt={actionType} className="w-5 h-5" />;

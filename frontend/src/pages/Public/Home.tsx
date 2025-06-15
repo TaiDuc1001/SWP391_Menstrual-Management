@@ -4,14 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const Home: React.FC = () => {
     const navigate = useNavigate();
 
-    // Mock data for statistics
     const stats = [
         { number: '10,000+', label: 'Trusted Users' },
         { number: '5,000+', label: 'Successful Appointments' },
         { number: '50+', label: 'Expert Doctors' }
     ];
 
-    // Mock data for popular screenings
     const screenings = [
         {
             title: 'HIV Examination',
@@ -33,7 +31,6 @@ const Home: React.FC = () => {
         }
     ];
 
-    // Mock data for blog posts
     const blogPosts = [
         {
             title: 'Effective menstrual tracking methods for women',
@@ -55,7 +52,6 @@ const Home: React.FC = () => {
         }
     ];
 
-    // Mock data for team members
     const teamMembers = [
         {
             name: 'Dr. Sarah Johnson',
@@ -77,7 +73,6 @@ const Home: React.FC = () => {
         }
     ];
 
-    // Mock testimonials
     const testimonials = [
         {
             text: "This service has been life-changing. The convenience and privacy make all the difference.",
@@ -95,7 +90,6 @@ const Home: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 text-white">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-pink-500/20"></div>
                 <div className="relative container mx-auto px-6 py-20">
@@ -151,8 +145,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Mission & Vision Section */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col lg:flex-row items-center gap-16">
@@ -197,8 +189,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Most Booked Screenings */}
             <section className="py-20 bg-gray-50">
                 <div className="container mx-auto px-6">
                     <div className="flex justify-between items-center mb-12">
@@ -223,8 +213,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Blogs Section */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-6">
                     <div className="flex justify-between items-center mb-12">
@@ -267,8 +255,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Meet Our Crew */}
             <section className="py-20 bg-gray-50">
                 <div className="container mx-auto px-6">
                     <h2 className="text-4xl font-bold text-pink-500 mb-12 text-center">Meet our crew</h2>
@@ -293,8 +279,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Customer Testimonials */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-6">
                     <h2 className="text-4xl font-bold text-pink-500 mb-12 text-center">What our customers say</h2>
@@ -309,8 +293,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* CTA Section */}
             <section className="py-20 bg-gradient-to-r from-blue-400 to-pink-400 text-white text-center">
                 <div className="container mx-auto px-6">
                     <h2 className="text-4xl font-bold mb-6">Ready to look after your self the right way?</h2>
