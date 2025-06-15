@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
-
 import api from '../../api/axios';
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 import AppointmentTitleBar from '../../components/TitleBar/AppointmentTitleBar';
@@ -12,29 +11,9 @@ import DropdownSelect from '../../components/Filter/DropdownSelect';
 import DatePickerInput from '../../components/Filter/DatePickerInput';
 import AppointmentDetailPopup from '../../components/Popup/AppointmentDetailPopup';
 import TestResultPopup from '../../components/Popup/TestResultPopup';
+import StatusBadge from '../../components/Badge/StatusBadge';
 
 const plusIcon = plusWhiteIcon;
-
-const statusOptions = [
-  { value: '', label: 'All status' },
-  { value: 'Completed', label: 'Completed' },
-  { value: 'Upcoming', label: 'Upcoming' },
-  { value: 'Cancelled', label: 'Cancelled' },
-  { value: 'Confirmed', label: 'Confirmed' },
-  { value: 'Pending', label: 'Pending' },
-];
-
-const slotOptions = [
-  { value: '', label: 'All slots' },
-  { value: 'ONE', label: '08:00 - 09:00' },
-  { value: 'TWO', label: '09:00 - 10:00' },
-  { value: 'THREE', label: '10:00 - 11:00' },
-  { value: 'FOUR', label: '11:00 - 12:00' },
-  { value: 'FIVE', label: '13:00 - 14:00' },
-  { value: 'SIX', label: '14:00 - 15:00' },
-  { value: 'SEVEN', label: '15:00 - 16:00' },
-  { value: 'EIGHT', label: '16:00 - 17:00' },
-];
 
 const APPOINTMENTS_PER_PAGE = 5;
 
@@ -44,6 +23,7 @@ const AppointmentHistory: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusOptions, setStatusOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All status' }]);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
@@ -53,6 +33,8 @@ const AppointmentHistory: React.FC = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [showResultPopup, setShowResultPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All slots' }]);
+  const [slotMap, setSlotMap] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
 
   const parseDate = (str: string) => {
@@ -61,20 +43,59 @@ const AppointmentHistory: React.FC = () => {
   };
 
   useEffect(() => {
+    api.get('/enumerators/slots')
+      .then(res => {
+        const options = [{ value: '', label: 'All slots' }];
+        const map: { [key: string]: string } = {};
+        res.data.forEach((slot: any) => {
+          if (slot.timeRange !== 'Filler slot, not used') {
+            options.push({ value: slot.timeRange, label: slot.timeRange });
+          }
+          map[slot.timeRange] = slot.timeRange;
+        });
+        setSlotOptions(options);
+        setSlotMap(map);
+      })
+      .catch(() => {});
+
+    api.get('/enumerators/appointment-status')
+      .then(res => {
+        const options = [{ value: '', label: 'All status' }];
+        res.data.forEach((status: string) => {
+          options.push({ value: status, label: status.charAt(0) + status.slice(1).toLowerCase() });
+        });
+        setStatusOptions(options);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (selectedSlot && !slotOptions.some(opt => opt.value === selectedSlot)) {
+      setSelectedSlot('');
+    }
+  }, [slotOptions, selectedSlot]);
+
+  useEffect(() => {
+    if (Object.keys(slotMap).length === 0) return;
     setLoading(true);
     api.get('/appointments')
       .then(res => {
-        // Map API data to table format
-        const mapped = res.data.map((item: any) => ({
-          id: item.id,
-          name: item.doctorName,
-          date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
-          time: item.timeRange || '', // Lấy trực tiếp từ API
-          status: item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase(),
-          code: '',
-          slot: item.slot ? String(item.slot).toUpperCase() : '',
-          slotCode: item.slot,
-        }));
+        const mapped = res.data.map((item: any) => {
+          const slotTime = item.timeRange || (item.slot ? slotMap[item.timeRange] || item.timeRange : '');
+          let status = item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase().replace('_', ' ');
+          return {
+            id: item.id,
+            name: item.doctorName,
+            date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
+            time: slotTime,
+            status,
+            appointmentStatus: item.appointmentStatus,
+            code: '',
+            slot: slotTime,
+            slotCode: item.slot,
+            slotTime: slotTime,
+          };
+        });
         setAppointments(mapped);
         setLoading(false);
       })
@@ -82,28 +103,25 @@ const AppointmentHistory: React.FC = () => {
         setError('Failed to load appointments');
         setLoading(false);
       });
-  }, []);
+  }, [slotMap]);
 
   const filteredRecords = appointments.filter((record) => {
     if (hideRows.includes(record.id)) return false;
     const searchMatch =
       (record.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.code?.toLowerCase().includes(searchTerm.toLowerCase()));
-    const statusMatch = selectedStatus ? record.status === selectedStatus : true;
+    const statusMatch = selectedStatus ? record.appointmentStatus === selectedStatus : true;
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    // Compare slot as uppercase string for robust filtering
-    const slotMatch = selectedSlot ? String(record.slot).toUpperCase() === selectedSlot : true;
+    const slotMatch = selectedSlot ? record.slotTime === selectedSlot : true;
     return searchMatch && statusMatch && fromMatch && toMatch && slotMatch;
   });
 
   const totalPages = Math.ceil(filteredRecords.length / APPOINTMENTS_PER_PAGE);
   const startIdx = (currentPage - 1) * APPOINTMENTS_PER_PAGE;
   const endIdx = startIdx + APPOINTMENTS_PER_PAGE;
-  const pagedRecords = filteredRecords.slice(startIdx, endIdx);
 
-  // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedStatus, selectedSlot, selectedDateFrom, selectedDateTo]);
@@ -178,7 +196,12 @@ const AppointmentHistory: React.FC = () => {
         />
       </AppointmentUtilityBar>      
       <AppointmentTable
-        records={filteredRecords.map(r => ({ ...r, slotTime: r.time }))}
+        records={filteredRecords.map(r => ({
+          ...r,
+          slotTime: r.time,
+          slot: r.slot,
+          status: r.status
+        }))}
         selected={selected}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
@@ -207,7 +230,6 @@ const AppointmentHistory: React.FC = () => {
           }
         }}
       />
-      {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8">
           <button

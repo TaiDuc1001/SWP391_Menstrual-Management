@@ -80,6 +80,20 @@ public class ExaminationController {
         return ResponseEntity.ok(examinedExaminationDTO);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ExaminedExaminationDTO> getExaminationById(@PathVariable Long id) {
+        Examination examination = examinationService.findExaminationById(id);
+        if (examination == null) {
+            return ResponseEntity.notFound().build();
+        }
+        ExaminedExaminationDTO dto = examinationMapper.toExaminedDTO(examination);
+        List<ResultDetail> resultDetails = examinationService.getResultDetailById(id);
+        List<TestType> testTypes = examinationService.getTestTypesById(id);
+        List<TestResultListDTO> testResultList = testResultMapper.toTestResultDtoList(testTypes, resultDetails);
+        dto.setTestResults(testResultList);
+        return ResponseEntity.ok(dto);
+    }
+
     @PutMapping("/sampled/{id}")
     public ResponseEntity<SimpleExaminationDTO> sampleExamination(@PathVariable Long id) {
         Examination updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.SAMPLED);

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.jpa.pojo.examination.Examination;
 import swp391.com.backend.jpa.pojo.examination.ExaminationStatus;
+import swp391.com.backend.jpa.pojo.examination.Result;
 import swp391.com.backend.jpa.pojo.examination.ResultDetail;
 import swp391.com.backend.jpa.pojo.test.TestType;
 import swp391.com.backend.jpa.repository.examination.ExaminationRepository;
@@ -45,6 +46,18 @@ public class ExaminationService {
     public Examination updateExaminationStatus(Long id, ExaminationStatus status) {
         Examination existingExamination = examinationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Examination not found with id: " + id));
+
+        // Check for transition from SAMPLED to EXAMINED
+        if (existingExamination.getExaminationStatus() == ExaminationStatus.SAMPLED && status == ExaminationStatus.EXAMINED) {
+            if (existingExamination.getResult() == null) {
+                // Create and associate a new Result
+                Result result = new Result();
+                result.setExamination(existingExamination);
+                // Optionally set other fields like code, etc.
+                Result savedResult = resultService.saveResult(result);
+                existingExamination.setResult(savedResult);
+            }
+        }
 
         existingExamination.setExaminationStatus(status);
 

@@ -30,11 +30,11 @@ public class ResultDetail {
     private Boolean diagnosis;
 
     @ManyToOne
-    @JoinColumn(name = "result_id")
+    @JoinColumn(name = "result_id", insertable = false, updatable = false)
     private Result result;
 
     @ManyToOne
-    @JoinColumn(name = "test_type_id")
+    @JoinColumn(name = "test_type_id", insertable = false, updatable = false)
     private TestType testType;
 }
 

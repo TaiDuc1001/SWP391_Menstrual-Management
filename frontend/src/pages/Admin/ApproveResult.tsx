@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import StatusBadge from '../../components/Badge/StatusBadge';
 import refreshIcon from '../../assets/icons/refresh.svg';
 import searchIcon from '../../assets/icons/search.svg';
-import FormUpdateTestResult from './FormUpdateTestResult';
+import NotificationPopup from '../../components/Popup/NotificationPopup';
 import axios from 'axios';
 
 interface Examination {
@@ -31,13 +31,12 @@ const getStatusLabel = (status: string): string => {
   }
 };
 
-const UpdateTestResult: React.FC = () => {
+const ApproveResult: React.FC = () => {
   const [data, setData] = useState<Examination[]>([]);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<Examination | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [notification, setNotification] = useState({ message: '', type: 'success' as 'success' | 'error', isOpen: false });
   const itemsPerPage = 10;
 
   const fetchData = async () => {
@@ -46,6 +45,11 @@ const UpdateTestResult: React.FC = () => {
       setData(res.data);
     } catch (error) {
       console.error('Lỗi khi gọi API:', error);
+      setNotification({
+        message: 'Có lỗi xảy ra khi tải dữ liệu',
+        type: 'error',
+        isOpen: true
+      });
     }
   };
 
@@ -53,28 +57,31 @@ const UpdateTestResult: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleOpenModal = (row: Examination) => {
-    setSelectedRequest(row);
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setSelectedRequest(null);
-  };
-
-  const handleSampled = async (id: number) => {
+  const handleApprove = async (id: number) => {
     try {
-      await axios.put(`http://localhost:8080/api/examinations/sampled/${id}`);
+      await axios.put(`http://localhost:8080/api/examinations/completed/${id}`);
+      setNotification({
+        message: 'Cập nhật trạng thái thành công',
+        type: 'success',
+        isOpen: true
+      });
       fetchData();
     } catch (error) {
       console.error('Lỗi khi cập nhật trạng thái:', error);
+      setNotification({
+        message: 'Có lỗi xảy ra khi cập nhật trạng thái',
+        type: 'error',
+        isOpen: true
+      });
     }
   };
 
+  const handleCloseNotification = () => {
+    setNotification(prev => ({ ...prev, isOpen: false }));
+  };
+
   const filteredData = data.filter(item =>
-    item.examinationStatus !== 'CANCELLED' &&
-    item.examinationStatus !== 'COMPLETED' &&
+    item.examinationStatus === 'EXAMINED' &&
     (!status || item.examinationStatus.toLowerCase() === status.toLowerCase()) &&
     (item.customerName.toLowerCase().includes(search.toLowerCase()) ||
       item.panelName.toLowerCase().includes(search.toLowerCase()) ||
@@ -94,6 +101,12 @@ const UpdateTestResult: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <NotificationPopup
+        message={notification.message}
+        type={notification.type}
+        isOpen={notification.isOpen}
+        onClose={handleCloseNotification}
+      />
       <div className="flex-1 flex flex-col items-center px-6 py-8">
         <div className="w-full max-w-6xl">
           <div className="bg-white rounded-2xl shadow p-8">
@@ -110,20 +123,9 @@ const UpdateTestResult: React.FC = () => {
                 <span className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                   <img src={searchIcon} alt="Search" className="w-5 h-5 text-gray-400" />
                 </span>
-              </div>
-              <select
-                className="border border-gray-200 rounded-lg px-4 py-2 min-w-[160px] focus:outline-none focus:ring-2 focus:ring-blue-200"
-                value={status}
-                onChange={e => setStatus(e.target.value)}
-              >
-                <option value="">All status</option>
-                <option value="SAMPLED">Sampled</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="EXAMINED">Examined</option>
-                {/* <option value="CANCELLED">Cancelled</option> */}
-              </select>              
+              </div>             
               <button
-                onClick={fetchData} // Refresh data from api
+                onClick={fetchData}
                 className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold px-5 h-10 rounded-lg transition shadow min-w-[120px]"
               >
                 <img src={refreshIcon} alt="refresh" className="w-5 h-5" />
@@ -155,17 +157,10 @@ const UpdateTestResult: React.FC = () => {
                         <StatusBadge status={getStatusLabel(row.examinationStatus)} />
                       </td>
                       <td className="p-3">
-                        {row.examinationStatus === 'IN_PROGRESS' ? (
-                          <button
-                            className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-blue-500 text-white hover:bg-blue-600 transition"
-                            onClick={() => handleSampled(row.id)}
-                          >
-                            Sampled
-                          </button>
-                        ) : row.examinationStatus === 'SAMPLED' ? (
+                        {row.examinationStatus === 'EXAMINED' ? (
                           <button
                             className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-green-500 text-white hover:bg-green-600 transition"
-                            onClick={() => handleOpenModal(row)}
+                            onClick={() => handleApprove(row.id)}
                           >
                             Update
                           </button>
@@ -228,17 +223,8 @@ const UpdateTestResult: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {modalOpen && selectedRequest && (
-        <FormUpdateTestResult
-          open={modalOpen}
-          onClose={handleCloseModal}
-          request={selectedRequest}
-          onUpdateSuccess={fetchData} // Thêm prop để refresh data
-        />
-      )}
     </div>
   );
 };
 
-export default UpdateTestResult;
+export default ApproveResult;
