@@ -114,7 +114,7 @@ const MenstrualCyclesAll: React.FC = () => {
                 <th className="py-2 w-8"></th>
                 <th className="py-2 font-medium"><span className="inline-flex items-center gap-1"><i className="fa fa-calendar text-pink-400"></i> Bắt đầu</span></th>
                 <th className="py-2 font-medium"><span className="inline-flex items-center gap-1"><i className="fa fa-calendar text-pink-400"></i> Kết thúc</span></th>
-                <th className="py-2 font-medium">Số ngày hành kinh</th>
+                <th className="py-2 font-medium">Số ngày</th>
                 <th className="py-2 font-medium">Chu kỳ ( ngày )</th>
                 <th className="py-2 w-24"></th>
               </tr>
