@@ -4,7 +4,7 @@ import homeIcon from '../../assets/icons/home.svg';
 import tubeIcon from '../../assets/icons/tube.svg';
 import userIcon from '../../assets/icons/multi-user.svg';
 import contentIcon from '../../assets/icons/content.svg';
-import reportIcon from '../../assets/icons/bar-chart.svg'
+import reportIcon from '../../assets/icons/bar-chart.svg';
 
 interface SidebarProps { }
 

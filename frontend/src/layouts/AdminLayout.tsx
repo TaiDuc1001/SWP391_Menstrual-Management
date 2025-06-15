@@ -7,6 +7,7 @@ import AdminDashboard from '../pages/Admin/AdminDashboard';
 import UserManagement from '../pages/Admin/UserManagement';
 import ServiceManagement from '../pages/Admin/ServiceManagement';
 import ContentManagement from '../pages/Admin/ContentManagement';
+import Reports from '../pages/Admin/Reports';
 import ApproveResult from '../pages/Admin/ApproveResult';
 import NotFound from '../pages/Public/NotFound';
 
@@ -43,7 +44,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ isAuthenticated, onAuthToggle
                         <Route path="/admin/users-management" element={<UserManagement />} />
                         <Route path="/admin/services-management" element={<ServiceManagement />} />
                         <Route path="/admin/content-management" element={<ContentManagement />} />
-                        <Route path="/admin/reports" element={<ContentManagement />} />
+                        <Route path="/admin/reports" element={<Reports />} />
                         <Route path="/admin/approve-results" element={<ApproveResult />} />
 
                         <Route path="*" element={<NotFound />} />

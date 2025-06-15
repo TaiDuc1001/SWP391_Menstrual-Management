@@ -1,253 +1,319 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import api from '../../api/axios';
+import { Button } from '../../components/Button';
+import { Badge } from '../../components/Badge';
+import videoCallIcon from '../../assets/icons/video_call.svg';
+import clockIcon from '../../assets/icons/clock.svg';
+import calendarIcon from '../../assets/icons/calendar.svg';
 
-interface Appointment {
+interface Patient {
   id: number;
-  date: string;
-  timeRange: string;
-  doctorName: string;
-  appointmentStatus: string;
+  name: string;
+  age: number;
+  avatar?: string;
+  symptoms: string[];
+  appointmentTime: string;
+  status: 'waiting' | 'in-consultation' | 'completed' | 'cancelled';
+  notes?: string;
+  medicalHistory?: {
+    date: string;
+    diagnosis: string;
+    treatment: string;
+  }[];
 }
 
-type ViewType = 'day' | 'week' | 'month';
-
 const OnlineConsultation: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [viewType, setViewType] = useState<ViewType>('day');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentPatient, setCurrentPatient] = useState<Patient | null>(null);
+  const [waitingPatients, setWaitingPatients] = useState<Patient[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const MEETING_INFO = {
+    meetingUrl: 'https://meet.google.com/rzw-jwjr-udw',
+    phoneNumber: '+1 575-567-3711',
+    pin: '435 953 990#'
+  };
 
   useEffect(() => {
-    fetchAppointments();
+    // Mock data - replace with actual API call
+    const mockPatients: Patient[] = [
+      {
+        id: 1,
+        name: "Nguyễn Thị Hoa",
+        age: 28,
+        symptoms: ["Đau bụng kinh", "Chu kỳ không đều"],
+        appointmentTime: "09:00 - 09:30",
+        status: "waiting",
+        notes: "Lần khám đầu tiên",
+        medicalHistory: [
+          {
+            date: "2025-05-15",
+            diagnosis: "Rối loạn kinh nguyệt",
+            treatment: "Kê đơn thuốc điều hòa nội tiết"
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: "Trần Thị Mai",
+        age: 32,
+        symptoms: ["Ra máu bất thường", "Đau vùng chậu"],
+        appointmentTime: "09:30 - 10:00",
+        status: "waiting"
+      }
+    ];
+    setWaitingPatients(mockPatients);
   }, []);
 
-  const fetchAppointments = async () => {
+  const handleStartConsultation = async (patient: Patient) => {
+    if (!window.confirm('Bạn có chắc chắn muốn bắt đầu cuộc tư vấn này?')) {
+      return;
+    }
+
     try {
-      const response = await api.get('/appointments');
-      const filteredAppointments = response.data.filter(
-        (apt: Appointment) =>
-          apt.doctorName === 'Doctor Test Account' &&
-          (apt.appointmentStatus === 'BOOKED' || apt.appointmentStatus === 'IN_PROGRESS')
-      );
-      setAppointments(filteredAppointments);
+      setLoading(true);
+      // Mock API call - replace with actual implementation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setCurrentPatient(patient);
+      setWaitingPatients(prev => prev.filter(p => p.id !== patient.id));
+      window.open(MEETING_INFO.meetingUrl, '_blank');
     } catch (error) {
-      console.error('Error fetching appointments:', error);
+      console.error('Error starting consultation:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const filterAppointmentsByDate = (date: Date) => {
-    return appointments.filter(apt => {
-      const aptDate = new Date(apt.date);
-      switch (viewType) {
-        case 'day':
-          return aptDate.toDateString() === date.toDateString();
-        case 'week':
-          const startOfWeek = new Date(date);
-          startOfWeek.setDate(date.getDate() - date.getDay());
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          return aptDate >= startOfWeek && aptDate <= endOfWeek;
-        case 'month':
-          return (
-            aptDate.getMonth() === date.getMonth() &&
-            aptDate.getFullYear() === date.getFullYear()
-          );
-        default:
-          return false;
-      }
-    });
-  };
-  const handleDateChange = (days: number) => {
-    const newDate = new Date(selectedDate);
-    switch (viewType) {
-      case 'day':
-        newDate.setDate(selectedDate.getDate() + days);
-        break;
-      case 'week':
-        newDate.setDate(selectedDate.getDate() + (days * 7));
-        break;
-      case 'month':
-        newDate.setMonth(selectedDate.getMonth() + days);
-        break;
+  const handleEndConsultation = async () => {
+    if (!currentPatient || !window.confirm('Bạn có chắc chắn muốn kết thúc cuộc tư vấn này?')) {
+      return;
     }
-    setSelectedDate(newDate);
-  };
 
-  const handleStartMeeting = async (appointmentId: number) => {
     try {
-      // Gọi API để cập nhật trạng thái thành IN_PROGRESS
-      await api.put(`/appointments/${appointmentId}/start`);
-      // Refresh lại danh sách cuộc hẹn
-      await fetchAppointments();
+      setLoading(true);
+      // Mock API call - replace with actual implementation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setCurrentPatient(null);
+      setNotes('');
     } catch (error) {
-      console.error('Error starting meeting:', error);
+      console.error('Error ending consultation:', error);
+    } finally {
+      setLoading(false);
     }
-  };  const handleEndMeeting = async (appointmentId: number) => {
+  };
+
+  const handleSaveNotes = async () => {
+    if (!currentPatient) return;
+
     try {
-      const response = await api.put(`/appointments/finish/${appointmentId}`);
-      if (response.status === 200) {
-        alert('Kết thúc cuộc họp thành công!');
-        // Refresh lại danh sách cuộc hẹn
-        await fetchAppointments();
-      }
+      setLoading(true);
+      // Mock API call - replace with actual implementation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update current patient notes
+      setCurrentPatient(prev => prev ? { ...prev, notes } : null);
     } catch (error) {
-      console.error('Error ending meeting:', error);
-      alert('Có lỗi xảy ra khi kết thúc cuộc họp!');
+      console.error('Error saving notes:', error);
+    } finally {
+      setLoading(false);
     }
   };
-  const handleCancelAppointment = async (appointmentId: number) => {
-    if (window.confirm('Bạn có chắc chắn muốn hủy cuộc hẹn này không?')) {
-      try {
-        // Gọi API để hủy cuộc hẹn
-        const response = await api.put(`http://localhost:8080/api/appointments/cancel/${appointmentId}`);
-        
-        if (response.status === 200) {
-          alert('Hủy cuộc hẹn thành công!');
-          // Refresh lại danh sách cuộc hẹn để cập nhật UI
-          await fetchAppointments();
-        } else {
-          alert('Không thể hủy cuộc hẹn. Vui lòng thử lại sau!');
-        }
-      } catch (error) {
-        console.error('Error canceling appointment:', error);
-        alert('Có lỗi xảy ra khi hủy cuộc hẹn!');
-      }
+  const getStatusBadgeColor = (status: Patient['status']): 'warning' | 'info' | 'success' | 'error' | 'primary' => {
+    switch (status) {
+      case 'waiting':
+        return 'warning';
+      case 'in-consultation':
+        return 'info';
+      case 'completed':
+        return 'success';
+      case 'cancelled':
+        return 'error';
+      default:
+        return 'primary';
     }
   };
-
-  const formatDateRange = () => {
-    switch (viewType) {
-      case 'day':
-        return selectedDate.toLocaleDateString();
-      case 'week': {
-        const startOfWeek = new Date(selectedDate);
-        startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        return `${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`;
-      }
-      case 'month':
-        return selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    }
-  };
-
-  if (loading) {
-    return <div className="p-4">Loading...</div>;
-  }
 
   return (
-    <div className="p-4">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Online Consultation</h1>
-        <div className="flex items-center space-x-4 mt-4">
-          <select
-            className="border rounded p-2"
-            value={viewType}
-            onChange={(e) => setViewType(e.target.value as ViewType)}
-          >
-            <option value="day">Day View</option>
-            <option value="week">Week View</option>
-            <option value="month">Month View</option>
-          </select>
-          <button
-            className="px-4 py-2 bg-gray-200 rounded"
-            onClick={() => handleDateChange(-1)}
-          >
-            Previous
-          </button>
-          <span className="font-semibold">{formatDateRange()}</span>
-          <button
-            className="px-4 py-2 bg-gray-200 rounded"
-            onClick={() => handleDateChange(1)}
-          >
-            Next
-          </button>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Tư vấn trực tuyến</h1>
+          <p className="text-gray-600">Quản lý và thực hiện các cuộc tư vấn trực tuyến</p>
         </div>
-      </div>
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="min-w-full table-fixed">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="w-1/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                ID
-              </th>
-              <th className="w-2/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Ngày
-              </th>
-              <th className="w-2/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Thời gian
-              </th>
-              <th className="w-2/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Trạng thái
-              </th>
-              <th className="w-5/12 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Thao tác
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filterAppointmentsByDate(selectedDate).map((appointment) => (
-              <tr key={appointment.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-sm font-medium text-gray-900">#{appointment.id}</span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">{new Date(appointment.date).toLocaleDateString()}</span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">{appointment.timeRange}</span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    appointment.appointmentStatus === 'BOOKED'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {appointment.appointmentStatus}
-                  </span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex space-x-2">
-                    {appointment.appointmentStatus === 'BOOKED' && (
-                      <>
-                        <button
-                          onClick={() => handleStartMeeting(appointment.id)}
-                          className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-colors"
-                        >
-                          Bắt đầu cuộc họp
-                        </button>
-                        <button
-                          onClick={() => handleCancelAppointment(appointment.id)}
-                          className="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm transition-colors"
-                        >
-                          Hủy cuộc hẹn
-                        </button>
-                      </>
-                    )}
-                    {appointment.appointmentStatus === 'IN_PROGRESS' && (
-                      <button
-                        onClick={() => handleEndMeeting(appointment.id)}
-                        className="text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition-colors"
-                      >
-                        Kết thúc cuộc họp
-                      </button>
-                    )}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left column - Current consultation */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                {currentPatient ? 'Cuộc tư vấn hiện tại' : 'Chưa có cuộc tư vấn nào đang diễn ra'}
+              </h2>
+
+              {currentPatient && (
+                <div>
+                  {/* Patient info */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label className="text-sm text-gray-500">Bệnh nhân</label>
+                      <p className="font-medium">{currentPatient.name}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-500">Thời gian</label>
+                      <p className="font-medium">{currentPatient.appointmentTime}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-500">Tuổi</label>
+                      <p className="font-medium">{currentPatient.age} tuổi</p>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-500">Trạng thái</label>
+                      <Badge variant={getStatusBadgeColor(currentPatient.status)}>
+                        {currentPatient.status === 'in-consultation' ? 'Đang tư vấn' : 'Đang chờ'}
+                      </Badge>
+                    </div>
                   </div>
-                </td>
-              </tr>
-            ))}
-            {filterAppointmentsByDate(selectedDate).length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-3 text-center text-gray-500">
-                  Không có cuộc hẹn nào trong khoảng thời gian này
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+
+                  {/* Symptoms */}
+                  <div className="mb-6">
+                    <label className="text-sm text-gray-500 block mb-2">Triệu chứng</label>
+                    <div className="flex flex-wrap gap-2">
+                      {currentPatient.symptoms.map((symptom, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-sm"
+                        >
+                          {symptom}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Medical history */}
+                  {currentPatient.medicalHistory && (
+                    <div className="mb-6">
+                      <label className="text-sm text-gray-500 block mb-2">Lịch sử khám</label>
+                      <div className="space-y-3">
+                        {currentPatient.medicalHistory.map((record, index) => (
+                          <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                            <div className="text-sm text-gray-600">{format(new Date(record.date), 'dd/MM/yyyy')}</div>
+                            <div className="font-medium">Chẩn đoán: {record.diagnosis}</div>
+                            <div className="text-sm">Điều trị: {record.treatment}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Notes */}
+                  <div className="mb-6">
+                    <label className="text-sm text-gray-500 block mb-2">Ghi chú</label>
+                    <textarea
+                      className="w-full p-3 border rounded-lg min-h-[100px] mb-2"
+                      placeholder="Nhập ghi chú về cuộc tư vấn..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                    <Button
+                      variant="primary"
+                      onClick={handleSaveNotes}
+                      disabled={loading}
+                    >
+                      {loading ? 'Đang lưu...' : 'Lưu ghi chú'}
+                    </Button>
+                  </div>
+
+                  {/* Meeting controls */}
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="secondary"
+                      onClick={() => window.open(MEETING_INFO.meetingUrl, '_blank')}
+                      className="flex items-center gap-2"
+                    >
+                      <img src={videoCallIcon} alt="video" className="w-5 h-5" />
+                      Vào lại phòng tư vấn
+                    </Button>
+                    <Button
+                      variant="error"
+                      onClick={handleEndConsultation}
+                      disabled={loading}
+                    >
+                      {loading ? 'Đang kết thúc...' : 'Kết thúc tư vấn'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right column - Waiting list */}
+          <div>
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                Danh sách chờ ({waitingPatients.length})
+              </h2>
+
+              {/* Search */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm bệnh nhân..."
+                  className="w-full px-4 py-2 border rounded-lg"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              {/* Waiting list */}
+              <div className="space-y-3">
+                {waitingPatients
+                  .filter(patient => 
+                    patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
+                  .map(patient => (
+                    <div
+                      key={patient.id}
+                      className="p-4 border rounded-lg hover:border-pink-400 transition cursor-pointer"
+                      onClick={() => !loading && !currentPatient && handleStartConsultation(patient)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-medium">{patient.name}</h3>
+                          <p className="text-sm text-gray-500">{patient.age} tuổi</p>
+                        </div>
+                        <Badge variant={getStatusBadgeColor(patient.status)}>
+                          {patient.status === 'waiting' ? 'Đang chờ' : 'Đang tư vấn'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <img src={clockIcon} alt="time" className="w-4 h-4" />
+                        <span>{patient.appointmentTime}</span>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {patient.symptoms.slice(0, 2).map((symptom, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"
+                          >
+                            {symptom}
+                          </span>
+                        ))}
+                        {patient.symptoms.length > 2 && (
+                          <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
+                            +{patient.symptoms.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
