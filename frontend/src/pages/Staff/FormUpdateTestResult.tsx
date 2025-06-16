@@ -50,7 +50,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
           }
         }
       } catch (error) {
-        setError('Không thể lấy dữ liệu mẫu xét nghiệm.');
+        setError('Unable to fetch test sample data.');
       }
     };
     fetchSampledData();
@@ -79,7 +79,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
           })));
         }
       } catch (error) {
-        setError('Không thể lấy danh sách hạng mục xét nghiệm từ gói.');
+        setError('Unable to fetch test items from the package.');
       }
     };
     fetchPanelTestTypes();
@@ -89,7 +89,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
   const validateForm = (): boolean => {
     const emptyFields = details.filter(detail => !detail.result || !detail.value);
     if (emptyFields.length > 0) {
-      setError('Vui lòng điền đầy đủ kết quả và chỉ số xét nghiệm cho tất cả các hạng mục.');
+      setError('Please fill in all test results and values for each item.');
       return false;
     }
     setError('');
@@ -118,7 +118,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
       };
       const response = await api.put(`/examinations/examined/${request.id}`, payload);
       if (response.status === 200) {
-        setSuccessMessage('Cập nhật kết quả xét nghiệm thành công!');
+        setSuccessMessage('Test results updated successfully!');
         setTimeout(() => {
           setSuccessMessage('');
           onClose();
@@ -126,7 +126,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
         }, 1500);
       }
     } catch (error) {
-      setError('Có lỗi xảy ra khi cập nhật kết quả. Vui lòng thử lại.');
+      setError('An error occurred while updating the results. Please try again.');
     }
   };
 
@@ -153,43 +153,43 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
             <img src={require('../../assets/icons/testing.svg').default} alt="icon" className="w-6 h-6" />
-            <span className="text-lg font-bold">Cập nhật kết quả xét nghiệm</span>
+            <span className="text-lg font-bold">Update Test Results</span>
           </div>
           <div className="grid grid-cols-4 gap-4 mt-2">
             <div>
-              <div className="text-xs text-gray-500 mb-1">Ngày xét nghiệm:</div>
+              <div className="text-xs text-gray-500 mb-1">Test Date:</div>
               <div className="font-semibold">{sampledData?.date || '22/06/2025'}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-500 mb-1">Người kiểm:</div>
-              <div className="font-semibold">{sampledData?.staffName || 'Nhân viên XYZ'}</div>
+              <div className="text-xs text-gray-500 mb-1">Staff:</div>
+              <div className="font-semibold">{sampledData?.staffName || 'Staff XYZ'}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-500 mb-1">Loại:</div>
-              <div className="font-semibold">{request?.panelName || 'Gói xét nghiệm chưa rõ'}</div>
+              <div className="text-xs text-gray-500 mb-1">Type:</div>
+              <div className="font-semibold">{request?.panelName || 'Unknown test package'}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-500 mb-1">Mã:</div>
+              <div className="text-xs text-gray-500 mb-1">Code:</div>
               <div className="font-semibold">{sampledData?.id || 'STXN-20250522-001'}</div>
             </div>
           </div>
         </div>
         <div className="mb-6">
-          <div className="font-semibold mb-2 flex items-center gap-2">Bảng cập nhật kết quả chi tiết</div>
+          <div className="font-semibold mb-2 flex items-center gap-2">Detailed Test Results Table</div>
           <div className="overflow-x-auto rounded-xl border border-gray-100">
             <table className="min-w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-700">
-                  <th className="p-3 font-semibold border">Hạng mục</th>
-                  <th className="p-3 font-semibold border">Kết quả</th>
-                  <th className="p-3 font-semibold border">Chỉ số xét nghiệm</th>
-                  <th className="p-3 font-semibold border whitespace-nowrap">Mức bình thường chỉ số</th>
-                  <th className="p-3 font-semibold border">Ghi chú</th>
+                  <th className="p-3 font-semibold border">Item</th>
+                  <th className="p-3 font-semibold border">Result</th>
+                  <th className="p-3 font-semibold border">Test Index</th>
+                  <th className="p-3 font-semibold border whitespace-nowrap">Normal Range</th>
+                  <th className="p-3 font-semibold border">Note</th>
                 </tr>
               </thead>
               <tbody>
                 {details.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center p-4">Không có hạng mục xét nghiệm</td></tr>
+                  <tr><td colSpan={5} className="text-center p-4">No test items available</td></tr>
                 ) : (
                   details.map((row, idx) => (
                     <tr key={row.id}>
@@ -199,7 +199,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
                           value={row.name}
                           readOnly
                           disabled
-                          placeholder="Hạng mục"
+                          placeholder="Item"
                         />
                       </td>
                       <td className="p-2 border">
@@ -208,9 +208,9 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
                           value={row.result}
                           onChange={e => handleDetailChange(idx, 'result', e.target.value)}
                         >
-                          <option value="">Chọn kết quả</option>
-                          <option value="Positive">Dương tính</option>
-                          <option value="Negative">Âm tính</option>
+                          <option value="">Select Result</option>
+                          <option value="Positive">Positive</option>
+                          <option value="Negative">Negative</option>
                         </select>
                       </td>
                       <td className="p-2 border">
@@ -218,7 +218,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
                           className={`border rounded px-2 py-1 w-full ${row.value === '' ? 'border-red-300 bg-red-50' : ''}`}
                           value={row.value}
                           onChange={e => handleDetailChange(idx, 'value', e.target.value)}
-                          placeholder="Chỉ số"
+                          placeholder="Index"
                         />
                       </td>
                       <td className="p-2 border">
@@ -227,7 +227,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
                           value={row.normalValue}
                           readOnly
                           disabled
-                          placeholder="Mức bình thường chỉ số"
+                          placeholder="Normal Range"
                         />
                       </td>
                       <td className="p-2 border">
@@ -235,7 +235,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
                           className="border rounded px-2 py-1 w-full"
                           value={row.note}
                           onChange={e => handleDetailChange(idx, 'note', e.target.value)}
-                          placeholder="Ghi chú"
+                          placeholder="Note"
                         />
                       </td>
                     </tr>
@@ -248,11 +248,11 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
         <div className="mb-6">
           <div className="font-semibold mb-2 flex items-center gap-2">
             <span className="inline-block w-2 h-2 bg-gray-400 rounded-full"></span>
-            Ghi chú cho khách hàng
+            Notes for Customer
           </div>
           <textarea
             className="w-full border rounded-xl p-3 min-h-[60px] text-sm"
-            placeholder="Miêu tả chi tiết về kết quả xét nghiệm, hướng dẫn tiếp theo hoặc lưu ý quan trọng cho khách hàng."
+            placeholder="Describe the test results, next instructions, or important notes for the customer."
             value={note}
             onChange={e => setNote(e.target.value)}
           />
@@ -264,7 +264,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
           >
             <span className="flex items-center gap-2">
               <img src={require('../../assets/icons/cancel.svg').default} alt="cancel" className="w-4 h-4" />
-              Hủy bỏ
+              Cancel
             </span>
           </button>
           <button 
@@ -272,7 +272,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
             onClick={handleSubmit}
           >
             <img src={require('../../assets/icons/green-check.svg').default} alt="update" className="w-4 h-4" />
-            Cập nhật kết quả
+            Update Results
           </button>
         </div>
       </div>

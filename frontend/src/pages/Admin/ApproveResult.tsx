@@ -110,12 +110,12 @@ const ApproveResult: React.FC = () => {
       <div className="flex-1 flex flex-col items-center px-6 py-8">
         <div className="w-full max-w-6xl">
           <div className="bg-white rounded-2xl shadow p-8">
-            <h2 className="text-lg font-bold mb-6">Danh sách yêu cầu cần cập nhật kết quả</h2>
+            <h2 className="text-lg font-bold mb-6">List of requests to update results</h2>
             <div className="flex items-center gap-3 mb-4">
               <div className="relative w-[400px]">
                 <input
                   type="text"
-                  placeholder="Tìm theo mã, tên khách hàng, dịch vụ..."
+                  placeholder="Search by code, customer name, service..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="w-full px-4 py-2 border rounded"

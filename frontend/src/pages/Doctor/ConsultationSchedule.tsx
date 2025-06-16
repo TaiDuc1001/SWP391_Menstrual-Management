@@ -8,15 +8,15 @@ import { Badge } from '../../components/Badge';
 const mapAPIStatusToUI = (status: string): Appointment['status'] => {
   switch (status) {
     case 'BOOKED':
-      return 'Đang chờ';
+      return 'Pending';
     case 'IN_PROGRESS':
-      return 'Đang tư vấn';
+      return 'In Progress';
     case 'FINISHED':
-      return 'Hoàn thành';
+      return 'Completed';
     case 'CANCELLED':
-      return 'Đã hủy';
+      return 'Cancelled';
     default:
-      return 'Đang chờ';
+      return 'Pending';
   }
 }; 
 
@@ -26,11 +26,11 @@ interface Appointment {
   date: string;
   time: string;
   type?: string;
-  status: 'Đang chờ' | 'Đang tư vấn' | 'Hoàn thành' | 'Đã hủy';
+  status: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
   patientPhone: string;
   notes?: string;
   meetingUrl?: string;
-  bookingDate?: string; // Ngày đặt lịch
+  bookingDate?: string;
   doctor?: {
     id: number;
     name: string;
@@ -87,9 +87,9 @@ const ListView: React.FC<ListViewProps> = ({
               <td className="px-6 py-4">
                 <Badge
                   variant={
-                    appointment.status === 'Đang chờ' ? 'warning' :
-                    appointment.status === 'Đang tư vấn' ? 'info' :
-                    appointment.status === 'Hoàn thành' ? 'success' : 'error'
+                    appointment.status === 'Pending' ? 'warning' :
+                    appointment.status === 'In Progress' ? 'info' :
+                    appointment.status === 'Completed' ? 'success' : 'error'
                   }
                 >
                   {appointment.status}
@@ -97,7 +97,7 @@ const ListView: React.FC<ListViewProps> = ({
               </td>
               <td className="px-6 py-4">
                 <div className="flex gap-2">
-                  {appointment.meetingUrl && appointment.status === 'Đang tư vấn' && (
+                  {appointment.meetingUrl && appointment.status === 'In Progress' && (
                     <Button
                       onClick={() => onJoinMeeting(appointment.meetingUrl!)}
                       variant="primary"
@@ -166,9 +166,9 @@ const DayView: React.FC<DayViewProps> = ({
                 className="absolute left-0 right-4 p-2 m-2 rounded-lg shadow"
                 style={{
                   top: `${top}px`,
-                  backgroundColor: appointment.status === 'Đang chờ' ? '#FEF3C7' :
-                    appointment.status === 'Đang tư vấn' ? '#DBEAFE' :
-                    appointment.status === 'Hoàn thành' ? '#D1FAE5' : '#FEE2E2',
+                  backgroundColor: appointment.status === 'Pending' ? '#FEF3C7' :
+                    appointment.status === 'In Progress' ? '#DBEAFE' :
+                    appointment.status === 'Completed' ? '#D1FAE5' : '#FEE2E2',
                   height: '56px'
                 }}
               >
@@ -257,16 +257,16 @@ const WeekView: React.FC<WeekViewProps> = ({
 
                 let bgColor;
                 switch (appointment.status) {
-                  case 'Đang chờ':
+                  case 'Pending':
                     bgColor = 'rgba(254, 243, 199, 0.9)';
                     break;
-                  case 'Đang tư vấn':
+                  case 'In Progress':
                     bgColor = 'rgba(219, 234, 254, 0.9)';
                     break;
-                  case 'Hoàn thành':
+                  case 'Completed':
                     bgColor = 'rgba(209, 250, 229, 0.9)';
                     break;
-                  case 'Đã hủy':
+                  case 'Cancelled':
                     bgColor = 'rgba(254, 226, 226, 0.9)';
                     break;
                   default:
@@ -339,9 +339,9 @@ const ConsultationSchedule: React.FC = () => {
   const groupAppointmentsByStatus = (appointments: Appointment[]) => {
     const today = format(new Date(), 'yyyy-MM-dd');
     return {
-      pending: appointments.filter(app => app.status === 'Đang chờ' && app.date === today),
-      inProgress: appointments.filter(app => app.status === 'Đang tư vấn'),
-      history: appointments.filter(app => ['Hoàn thành', 'Đã hủy'].includes(app.status))
+      pending: appointments.filter(app => app.status === 'Pending' && app.date === today),
+      inProgress: appointments.filter(app => app.status === 'In Progress'),
+      history: appointments.filter(app => ['Completed', 'Cancelled'].includes(app.status))
     };
   };
 
@@ -383,9 +383,9 @@ useEffect(() => {
     const today = format(new Date(), 'yyyy-MM-dd');
     setStats({
       totalToday: appointments.filter(app => app.date === today).length,
-      completed: appointments.filter(app => app.status === 'Hoàn thành').length,
-      pending: appointments.filter(app => app.status === 'Đang chờ').length,
-      cancelled: appointments.filter(app => app.status === 'Đã hủy').length
+      completed: appointments.filter(app => app.status === 'Completed').length,
+      pending: appointments.filter(app => app.status === 'Pending').length,
+      cancelled: appointments.filter(app => app.status === 'Cancelled').length
     });
   };
 
@@ -420,7 +420,7 @@ useEffect(() => {
       setAppointments(updatedAppointments);
     } catch (error) {
       console.error('Error adding notes:', error);
-      alert('Có lỗi xảy ra khi thêm ghi chú');
+      alert('An error occurred while adding notes');
     } finally {
       setLoading(false);
     }
@@ -443,10 +443,10 @@ useEffect(() => {
 
   const getStatusColor = (status: Appointment['status']) => {
     const colors = {
-      'Đang chờ': 'bg-yellow-100 text-yellow-800',
-      'Đang tư vấn': 'bg-blue-100 text-blue-800',
-      'Hoàn thành': 'bg-green-100 text-green-800',
-      'Đã hủy': 'bg-red-100 text-red-800'
+      'Pending': 'bg-yellow-100 text-yellow-800',
+      'In Progress': 'bg-blue-100 text-blue-800',
+      'Completed': 'bg-green-100 text-green-800',
+      'Cancelled': 'bg-red-100 text-red-800'
     };
     return colors[status];
   };
@@ -458,7 +458,7 @@ useEffect(() => {
   };
 
   const handleStartMeeting = async (appointment: Appointment) => {
-    if (!window.confirm('Bạn có chắc chắn muốn bắt đầu cuộc tư vấn này?')) {
+    if (!window.confirm('Are you sure you want to start this consultation?')) {
       return;
     }
 
@@ -466,7 +466,7 @@ useEffect(() => {
       setLoading(true);
 
       // Kiểm tra nếu có cuộc tư vấn nào đang diễn ra
-      const ongoingAppointment = appointments.find(a => a.status === 'Đang tư vấn');
+      const ongoingAppointment = appointments.find(a => a.status === 'In Progress');
       if (ongoingAppointment) {
         if (!window.confirm('Hiện đang có một cuộc tư vấn khác. Bạn có muốn tiếp tục?')) {
           return;
@@ -485,7 +485,7 @@ useEffect(() => {
         app.id === appointment.id 
           ? { 
               ...app, 
-              status: 'Đang tư vấn' as const,
+              status: 'In Progress' as Appointment['status'],
               meetingUrl: MEETING_INFO.meetingUrl,
               lastUpdated: new Date().toISOString()
             } 
@@ -500,14 +500,14 @@ useEffect(() => {
       setSelectedAppointment(null);
     } catch (error) {
       console.error('Error starting meeting:', error);
-      alert('Có lỗi xảy ra khi bắt đầu cuộc tư vấn');
+      alert('An error occurred while starting the consultation');
     } finally {
       setLoading(false);
     }
   };
 
   const handleFinishMeeting = async (appointment: Appointment) => {
-    if (!window.confirm('Bạn có chắc chắn muốn kết thúc cuộc tư vấn này?')) {
+    if (!window.confirm('Are you sure you want to finish this consultation?')) {
       return;
     }
 
@@ -515,7 +515,7 @@ useEffect(() => {
       setLoading(true);
 
       // Kiểm tra nếu có ghi chú trước khi kết thúc
-      if (!appointment.notes && !window.confirm('Bạn chưa thêm ghi chú. Vẫn muốn kết thúc?')) {
+      if (!appointment.notes && !window.confirm('You have not added any notes. Do you still want to finish?')) {
         return;
       }
 
@@ -530,7 +530,7 @@ useEffect(() => {
         app.id === appointment.id 
           ? { 
               ...app, 
-              status: 'Hoàn thành' as const,
+              status: 'Completed' as Appointment['status'],
               lastUpdated: new Date().toISOString()
             } 
           : app
@@ -541,7 +541,7 @@ useEffect(() => {
       setSelectedAppointment(null);
     } catch (error) {
       console.error('Error finishing meeting:', error);
-      alert('Có lỗi xảy ra khi kết thúc cuộc tư vấn');
+      alert('An error occurred while finishing the consultation');
     } finally {
       setLoading(false);
     }
@@ -549,7 +549,7 @@ useEffect(() => {
 
   const handleCancelAppointment = async (appointment: Appointment) => {
     // Xác nhận trước khi hủy
-    if (!window.confirm('Bạn có chắc chắn muốn hủy cuộc hẹn này không?')) {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) {
       return;
     }
 
@@ -566,7 +566,7 @@ useEffect(() => {
         app.id === appointment.id 
           ? { 
               ...app, 
-              status: 'Đã hủy' as const,
+              status: 'Cancelled' as Appointment['status'],
               lastUpdated: new Date().toISOString()
             } 
           : app
@@ -577,7 +577,7 @@ useEffect(() => {
       setSelectedAppointment(null);
     } catch (error) {
       console.error('Error canceling appointment:', error);
-      alert('Có lỗi xảy ra khi hủy cuộc hẹn');
+      alert('An error occurred while cancelling the appointment');
     } finally {
       setLoading(false);
     }
@@ -614,7 +614,7 @@ useEffect(() => {
             <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(appointment.status)}`}>
               {appointment.status}
             </span>
-            {appointment.status === 'Đang chờ' && (
+            {appointment.status === 'Pending' && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -632,7 +632,7 @@ useEffect(() => {
   };
 
   const renderAppointmentModal = (appointment: Appointment) => {
-    const isEditable = ['Đang chờ', 'Đang tư vấn'].includes(appointment.status);
+    const isEditable = ['Pending', 'In Progress'].includes(appointment.status);
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -676,7 +676,7 @@ useEffect(() => {
           </div>
 
           {/* Hiển thị thông tin meeting */}
-          {(appointment.status === 'Đang tư vấn' || appointment.meetingUrl) && (
+          {(appointment.status === 'In Progress' || appointment.meetingUrl) && (
             <div className="col-span-2 bg-blue-50 p-4 rounded-lg">
               <div className="flex justify-between items-center mb-3">
                 <label className="text-sm font-medium text-blue-800">Thông tin phòng tư vấn</label>
@@ -779,7 +779,7 @@ useEffect(() => {
 
           {/* Action buttons */}
           <div className="flex justify-end gap-3">
-            {appointment.status === 'Đang chờ' && (
+            {appointment.status === 'Pending' && (
               <>
                 <button
                   onClick={() => handleCancelAppointment(appointment)}
@@ -801,7 +801,7 @@ useEffect(() => {
                 </button>
               </>
             )}
-            {appointment.status === 'Đang tư vấn' && (
+            {appointment.status === 'In Progress' && (
               <>
                 <button
                   onClick={() => window.open(appointment.meetingUrl, '_blank')}
@@ -1011,25 +1011,25 @@ useEffect(() => {
             )}
 
             <div className="flex gap-2 justify-end mt-4">
-              {selectedAppointment.status === 'Đang chờ' && (
+              {selectedAppointment.status === 'Pending' && (
                 <Button
-                  onClick={() => handleStatusChange(selectedAppointment.id, 'Đang tư vấn')}
+                  onClick={() => handleStatusChange(selectedAppointment.id, 'In Progress')}
                   variant="primary"
                 >
                   Bắt đầu tư vấn
                 </Button>
               )}
-              {selectedAppointment.status === 'Đang tư vấn' && (
+              {selectedAppointment.status === 'In Progress' && (
                 <Button
-                  onClick={() => handleStatusChange(selectedAppointment.id, 'Hoàn thành')}
+                  onClick={() => handleStatusChange(selectedAppointment.id, 'Completed')}
                   variant="success"
                 >
                   Hoàn thành
                 </Button>
               )}
-              {['Đang chờ', 'Đang tư vấn'].includes(selectedAppointment.status) && (
+              {['Pending', 'In Progress'].includes(selectedAppointment.status) && (
                 <Button
-                  onClick={() => handleStatusChange(selectedAppointment.id, 'Đã hủy')}
+                  onClick={() => handleStatusChange(selectedAppointment.id, 'Cancelled')}
                   variant="error"
                 >
                   Hủy cuộc hẹn

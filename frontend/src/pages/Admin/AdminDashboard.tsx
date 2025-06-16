@@ -6,51 +6,51 @@ import {
 } from 'recharts';
 
 const stats = [
-  { icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Người dùng', value: 1200 },
-  { icon: FaStethoscope, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Bác sĩ', value: 35 },
-  { icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Lịch hẹn', value: 210 },
-  { icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Dịch vụ xét nghiệm', value: 18 },
-  { icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Doanh thu tháng', value: '120M' },
-  { icon: FaChartLine, color: 'text-indigo-500', bgColor: 'bg-indigo-100', label: 'Tăng trưởng', value: '+15%' },
+  { icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: 1200 },
+  { icon: FaStethoscope, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Doctors', value: 35 },
+  { icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Appointments', value: 210 },
+  { icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Test Services', value: 18 },
+  { icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Monthly Revenue', value: '120M' },
+  { icon: FaChartLine, color: 'text-indigo-500', bgColor: 'bg-indigo-100', label: 'Growth', value: '+15%' },
 ];
 
 const revenueData = [
-  { month: 'T1', revenue: 65 },
-  { month: 'T2', revenue: 72 },
-  { month: 'T3', revenue: 80 },
-  { month: 'T4', revenue: 95 },
-  { month: 'T5', revenue: 88 },
-  { month: 'T6', revenue: 120 },
+  { month: 'Jan', revenue: 65 },
+  { month: 'Feb', revenue: 72 },
+  { month: 'Mar', revenue: 80 },
+  { month: 'Apr', revenue: 95 },
+  { month: 'May', revenue: 88 },
+  { month: 'Jun', revenue: 120 },
 ];
 
 const serviceData = [
-  { name: 'Xét nghiệm HPV', value: 35 },
-  { name: 'Tư vấn sức khỏe', value: 25 },
-  { name: 'Khám phụ khoa', value: 20 },
-  { name: 'Siêu âm', value: 15 },
-  { name: 'Dịch vụ khác', value: 5 },
+  { name: 'HPV Test', value: 35 },
+  { name: 'Health Consultation', value: 25 },
+  { name: 'Gynecological Exam', value: 20 },
+  { name: 'Ultrasound', value: 15 },
+  { name: 'Other Services', value: 5 },
 ];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 const recentActivities = [
-  { time: '10:30', action: 'Lịch hẹn mới từ Nguyễn Văn A', type: 'appointment' },
-  { time: '09:15', action: 'Bác sĩ Trần B đã hoàn thành ca khám', type: 'exam' },
-  { time: '08:45', action: 'Cập nhật thông tin dịch vụ xét nghiệm', type: 'service' },
-  { time: '08:00', action: 'Báo cáo doanh thu ngày đã được tạo', type: 'report' },
+  { time: '10:30', action: 'New appointment from Nguyen Van A', type: 'appointment' },
+  { time: '09:15', action: 'Dr. Tran B completed an examination', type: 'exam' },
+  { time: '08:45', action: 'Updated test service information', type: 'service' },
+  { time: '08:00', action: 'Daily revenue report created', type: 'report' },
 ];
 
 const AdminDashboard: React.FC = () => {
   return (
     <div className="p-6 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Tổng quan hệ thống</h1>
+        <h1 className="text-3xl font-bold text-gray-800">System Overview</h1>
         <div className="flex space-x-4">
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Tạo báo cáo
+            Create Report
           </button>
           <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-            Xuất dữ liệu
+            Export Data
           </button>
         </div>
       </div>
@@ -69,7 +69,7 @@ const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue Chart */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">Biểu đồ doanh thu</h2>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800">Revenue Chart</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueData}>
@@ -85,7 +85,7 @@ const AdminDashboard: React.FC = () => {
 
         {/* Service Distribution */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">Phân bố dịch vụ</h2>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800">Service Distribution</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -115,7 +115,7 @@ const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activities */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">Hoạt động gần đây</h2>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800">Recent Activities</h2>
           <div className="space-y-4">
             {recentActivities.map((activity, idx) => (
               <div key={idx} className="flex items-start p-3 hover:bg-gray-50 rounded-lg transition-colors">
@@ -127,22 +127,22 @@ const AdminDashboard: React.FC = () => {
             ))}
           </div>
           <button className="mt-4 w-full py-2 text-blue-600 hover:text-blue-700 text-center">
-            Xem tất cả hoạt động
+            View all activities
           </button>
         </div>
 
         {/* Notifications */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">Thông báo hệ thống</h2>
+          <h2 className="text-xl font-semibold mb-6 text-gray-800">System Notifications</h2>
           <div className="space-y-4">
             <div className="p-4 bg-yellow-50 border border-yellow-100 rounded-lg">
-              <p className="text-yellow-800">Có 3 tài khoản chờ duyệt</p>
+              <p className="text-yellow-800">There are 3 accounts pending approval</p>
             </div>
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg">
-              <p className="text-blue-800">2 dịch vụ sắp hết hạn khuyến mãi</p>
+              <p className="text-blue-800">2 services are about to expire promotions</p>
             </div>
             <div className="p-4 bg-red-50 border border-red-100 rounded-lg">
-              <p className="text-red-800">Hệ thống sẽ bảo trì vào 23:00 hôm nay</p>
+              <p className="text-red-800">The system will be maintained at 23:00 today</p>
             </div>
           </div>
         </div>

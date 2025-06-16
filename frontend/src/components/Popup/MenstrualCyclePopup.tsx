@@ -58,10 +58,10 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
             <span className="inline-block w-7 h-7 bg-pink-100 rounded-full flex items-center justify-center">
               <img src={pen} alt="Pen" className="w-4 h-4" />
             </span>
-            Khai Báo Chu Kỳ Kinh
+            Menstrual Cycle Declaration
           </div>
           <div className="mb-5">
-            <label className="block text-gray-700 mb-2 font-medium">Ngày bắt đầu kỳ kinh</label>
+            <label className="block text-gray-700 mb-2 font-medium">Start date of period</label>
             <input
               type="date"
               className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400"
@@ -73,7 +73,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
             />
           </div>
           <div className="mb-5">
-            <label className="block text-gray-700 mb-2 font-medium">Số ngày hành kinh</label>
+            <label className="block text-gray-700 mb-2 font-medium">Number of period days</label>
             <input
               type="number"
               min={1}
@@ -85,7 +85,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
             />
           </div>
           <div className="mb-8">
-            <label className="block text-gray-700 mb-2 font-medium">Độ dài chu kỳ kinh nguyệt</label>
+            <label className="block text-gray-700 mb-2 font-medium">Cycle length</label>
             <input
               type="number"
               min={20}
@@ -97,7 +97,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({ open, onClose
             />
           </div>
           <div className="flex justify-end">
-            <button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-8 py-2 transition-all text-base shadow" style={{minWidth: 140}}>Lưu chu kỳ</button>
+            <button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-8 py-2 transition-all text-base shadow" style={{minWidth: 140}}>Save cycle</button>
           </div>
         </form>
         <div className="hidden md:flex flex-1 items-center justify-center">

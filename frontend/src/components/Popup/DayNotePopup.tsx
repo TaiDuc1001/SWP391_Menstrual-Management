@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Popup from './ExitPopup';
 
@@ -9,21 +8,21 @@ interface DayNotePopupProps {
 }
 
 const symptomOptions = [
-  'Đau bụng',
-  'Đau lưng',
-  'Đau đầu',
-  'Buồn nôn',
-  'Không có'
+  'Abdominal pain',
+  'Back pain',
+  'Headache',
+  'Nausea',
+  'None'
 ];
 const periodOptions = [
-  'Có kinh',
-  'Không có kinh',
-  'Sắp có kinh'
+  'Menstruating',
+  'Not menstruating',
+  'About to menstruate'
 ];
 const flowOptions = [
-  'Ít',
-  'Trung bình',
-  'Nhiều'
+  'Light',
+  'Medium',
+  'Heavy'
 ];
 
 const DayNotePopup: React.FC<DayNotePopupProps> = ({ open, onClose, onSave }) => {
@@ -50,30 +49,30 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({ open, onClose, onSave }) =>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="text-pink-600 font-bold text-lg mb-2 flex items-center gap-2">
           <span className="inline-block w-5 h-5 bg-pink-400 rounded-full"></span>
-          Thử ngày tháng
+          Day Note
         </div>
         <div>
-          <label className="block text-gray-700 mb-1">Triệu chứng</label>
+          <label className="block text-gray-700 mb-1">Symptom</label>
           <select className="w-full border rounded px-3 py-2 focus:outline-pink-400" value={symptom} onChange={e => setSymptom(e.target.value)} required>
             <option value="">Select</option>
             {symptomOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-gray-700 mb-1">Kỳ kinh nguyệt</label>
+          <label className="block text-gray-700 mb-1">Menstrual period</label>
           <select className="w-full border rounded px-3 py-2 focus:outline-pink-400" value={period} onChange={e => setPeriod(e.target.value)} required>
             <option value="">Select</option>
             {periodOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-gray-700 mb-1">Lượng kinh nguyệt</label>
+          <label className="block text-gray-700 mb-1">Menstrual flow</label>
           <select className="w-full border rounded px-3 py-2 focus:outline-pink-400" value={flow} onChange={e => setFlow(e.target.value)} required>
             <option value="">Select</option>
             {flowOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
           </select>
         </div>
-        <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded font-semibold hover:bg-pink-600 transition mt-2">Lưu</button>
+        <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded font-semibold hover:bg-pink-600 transition mt-2">Save</button>
       </form>
     </Popup>
   );

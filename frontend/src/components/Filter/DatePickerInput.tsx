@@ -22,8 +22,8 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
       calendarClassName="z-50"
       minDate={minDate}
       maxDate={maxDate}
-      dateFormat="dd/MM/yyyy"
-      locale="vi"
+      dateFormat="MM/dd/yyyy"
+      locale="en"
     />
     <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
       <img src={calendarIcon} alt="Calendar" className="w-5 h-5 text-gray-400" />
