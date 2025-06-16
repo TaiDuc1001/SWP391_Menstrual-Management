@@ -1,0 +1,79 @@
+package swp391.com.backend.feature.panel.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import swp391.com.backend.feature.examination.dto.ExaminationCreateResponse;
+import swp391.com.backend.feature.panel.dto.PanelDTO;
+import swp391.com.backend.feature.examination.dto.ExaminationCreateRequest;
+import swp391.com.backend.feature.panel.dto.SimplePanelDTO;
+import swp391.com.backend.feature.examination.mapper.ExaminationMapper;
+import swp391.com.backend.feature.panel.mapper.PanelMapper;
+import swp391.com.backend.feature.examination.data.Examination;
+import swp391.com.backend.feature.examination.data.ExaminationStatus;
+import swp391.com.backend.feature.panel.data.Panel;
+import swp391.com.backend.feature.examination.service.ExaminationService;
+import swp391.com.backend.feature.customer.service.CustomerService;
+import swp391.com.backend.feature.panel.service.PanelService;
+import swp391.com.backend.feature.panelTestType.service.PanelTestTypeService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("api/panels")
+@RequiredArgsConstructor
+public class PanelController {
+    private final PanelService panelService;
+    private final CustomerService customerService;
+    private final PanelTestTypeService panelTestTypeService;
+    private final PanelMapper panelMapper;
+    private final ExaminationService examinationService;
+    private final ExaminationMapper examinationMapper;
+
+    @GetMapping
+    public ResponseEntity<List<SimplePanelDTO>> getAllPanels(){
+        List<SimplePanelDTO> result =  panelService.getAllPanels().stream()
+                .map(panelMapper::toSimpleDTO)
+                .toList();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PanelDTO> getPanelById(@PathVariable Long id) {
+        Panel panel = panelService.findPanelById(id);
+        System.out.println("Panel name: " + panel.getPanelName());
+        PanelDTO result = panelMapper.toDTO(panel);
+        System.out.println("Panel price:" + result.getPrice());
+        List<String> testTypesDescriptions = panelTestTypeService.getTestTypesByPanelId(id)
+                .stream()
+                .map(testType -> testType.getDescription())
+                .toList();
+
+        List<String> testTypesNames = panelTestTypeService.getTestTypesByPanelId(id)
+                .stream()
+                .map(testType -> testType.getName())
+                .toList();
+        result.setTestTypesDescriptions(testTypesDescriptions);
+        result.setTestTypesNames(testTypesNames);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<ExaminationCreateResponse> createExamination(@PathVariable Long id, @RequestBody ExaminationCreateRequest request) {
+        Panel panel = panelService.findPanelById(id);
+        Examination examination = Examination.builder()
+                .id(null)
+                .panel(panel)
+                .date(request.getDate())
+                .slot(request.getSlot())
+                .customer(customerService.findCustomerById(3L))
+                .examinationStatus(ExaminationStatus.IN_PROGRESS)
+                .build();
+
+        Examination createdExamination = examinationService.createExamination(examination);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(examinationMapper.toCreateResponse(createdExamination));
+    }
+}
