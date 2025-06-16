@@ -21,7 +21,16 @@ const MenstrualCycles: React.FC = () => {
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const location = useLocation();
     const navigate = useNavigate();
-    const { cycles, setCycles } = useMenstrualCycles();
+    // Hardcode mẫu chu kỳ: bắt đầu ngày 1 tháng hiện tại, 7 ngày hành kinh, chu kỳ 28 ngày
+    const [cycles, setCycles] = useState([
+      {
+        id: 1,
+        startDate: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`,
+        endDate: '',
+        duration: 7,
+        cycle: 28
+      }
+    ]);
 
     useEffect(() => {
         if (location.state && location.state.openCyclePopup) {
@@ -42,24 +51,72 @@ const MenstrualCycles: React.FC = () => {
     };
     const days = getDaysInMonth(currentMonth, currentYear);
 
-    const getDayType = (day: number | null) => {
-        if (!day) return '';
-        if ([1, 2, 3].includes(day)) return 'period';
-        if ([7, 8, 9].includes(day)) return 'fertile';
-        if ([5, 6].includes(day)) return 'ovulation';
-        if ([4, 10].includes(day)) return 'symptom';
-        return 'normal';
-    };
-    const getDayStyle = (day: number | null, type: string) => {
-        const baseStyle = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md";
-        switch (type) {
-            case 'period': return `${baseStyle} bg-gradient-to-br from-red-600 via-red-500 to-pink-500 text-white transform hover:rotate-3`;
-            case 'fertile': return `${baseStyle} bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 text-white transform hover:rotate-3`;
-            case 'ovulation': return `${baseStyle} bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 text-gray-900 transform hover:rotate-3`;
-            case 'symptom': return `${baseStyle} bg-white border-2 border-indigo-300 text-indigo-700 shadow-inner transform hover:rotate-3`;
-            default: return `${baseStyle} bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800`;
+    // Helper: get predicted cycles for 3 months
+    const getPredictedCycles = () => {
+        if (!cycles || cycles.length === 0) return [];
+        const lastCycle = cycles[cycles.length - 1];
+        const startDate = new Date(lastCycle.startDate);
+        const cycleLength = lastCycle.cycle || 28;
+        const duration = lastCycle.duration || 7;
+        const predictions = [];
+        for (let i = 0; i < 3; i++) {
+            const cycleStart = new Date(startDate);
+            cycleStart.setMonth(startDate.getMonth() + i);
+            predictions.push({
+                start: new Date(cycleStart),
+                end: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + duration - 1),
+                fertileStart: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 10),
+                fertileEnd: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 15),
+                ovulation: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 13),
+                duration,
+                cycleLength
+            });
         }
+        return predictions;
     };
+
+    // Helper: get day type for current month/year
+    const getDayTypeForCalendar = (day: number | null) => {
+        if (!day) return '';
+        if (!cycles || cycles.length === 0) return '';
+        const predictions = getPredictedCycles();
+        // Find prediction for current month/year
+        const pred = predictions.find(p => p.start.getMonth() === currentMonth && p.start.getFullYear() === currentYear);
+        if (!pred) return '';
+        const d = new Date(currentYear, currentMonth, day);
+        // Period: from start to start+duration-1
+        if (d >= pred.start && d <= pred.end) return 'period';
+        // Fertile window: day 11-16 from start
+        if (d >= pred.fertileStart && d <= pred.fertileEnd) {
+            // Ovulation: day 14 from start
+            if (d.getTime() === pred.ovulation.getTime()) return 'ovulation';
+            return 'fertile';
+        }
+        return '';
+    };
+
+    // Giả lập dữ liệu triệu chứng cho ví dụ (bạn nên thay bằng dữ liệu thực tế từ backend hoặc context)
+    // symptoms: { [key: string]: boolean } với key là 'YYYY-MM-DD'
+    const [symptoms, setSymptoms] = useState<{ [key: string]: boolean }>({
+        // ví dụ: ngày 3, 5, 14 có triệu chứng
+        [`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-03`]: true,
+        [`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-05`]: true,
+        [`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-14`]: true,
+    });
+
+    // Lưu triệu chứng vào localStorage mỗi khi symptoms thay đổi
+    useEffect(() => {
+        localStorage.setItem('menstrual_symptoms', JSON.stringify(symptoms));
+    }, [symptoms]);
+
+    // Khi mở lại page, lấy dữ liệu từ localStorage (chỉ thực hiện 1 lần khi mount)
+    useEffect(() => {
+        const savedSymptoms = localStorage.getItem('menstrual_symptoms');
+        if (savedSymptoms) {
+            setSymptoms(JSON.parse(savedSymptoms));
+        }
+        // eslint-disable-next-line
+    }, []);
 
     const historyData = cycles;
 
@@ -94,15 +151,30 @@ const MenstrualCycles: React.FC = () => {
                                     <div key={idx} className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
                                 ))}
                                 {days.map((day, idx) => {
-                                    const type = getDayType(day);
-                                    const isPast = day && new Date(currentYear, currentMonth, day) < new Date();
+                                    let type = '';
+                                    if (cycles && cycles.length > 0) {
+                                        type = getDayTypeForCalendar(day);
+                                    }
+                                    // Kiểm tra triệu chứng
+                                    let hasSymptom = false;
+                                    let dayKey = '';
+                                    if (day) {
+                                        dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                        hasSymptom = !!symptoms[dayKey];
+                                    }
+                                    let style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800";
+                                    if (type === 'period') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-red-600 text-white hover:scale-105 hover:shadow-md";
+                                    if (type === 'fertile') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-teal-400 text-white hover:scale-105 hover:shadow-md";
+                                    if (type === 'ovulation') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-yellow-400 text-gray-900 hover:scale-105 hover:shadow-md";
+                                    // Nếu có triệu chứng thì thêm viền ngoài màu indigo-400
+                                    if (hasSymptom) style += ' border-2 border-indigo-400';
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
                                                 <div
-                                                    className={getDayStyle(day, type) + (isPast ? ' cursor-pointer' : '')}
+                                                    className={style}
                                                     onClick={() => {
-                                                        if (isPast) {
+                                                        if (day && new Date(currentYear, currentMonth, day) < new Date()) {
                                                             setSelectedDay(day);
                                                             setShowDayNote(true);
                                                         }
@@ -115,11 +187,11 @@ const MenstrualCycles: React.FC = () => {
                                     );
                                 })}
                             </div>
-                            <div className="flex gap-2 mt-2 text-xs">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Ngày có kinh</div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 rounded-full inline-block"></span> Ngày rụng trứng</div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 rounded-full inline-block"></span> Dễ thụ thai</div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-300 rounded-full inline-block"></span> Có triệu chứng</div>
+                            <div className="flex gap-4 mt-2 text-xs items-center">
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-red-600 rounded-full inline-block"></span> Ngày có kinh</div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded-full inline-block"></span> Ngày rụng trứng</div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-teal-400 rounded-full inline-block"></span> Dễ thụ thai</div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Có triệu chứng</div>
                             </div>
                         </div>
                         <div className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
@@ -220,6 +292,10 @@ const MenstrualCycles: React.FC = () => {
                       onSave={() => {
                         setShowDayNote(false);
                         setShowSuccess(true);
+                        if (selectedDay) {
+                          const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                          setSymptoms(prev => ({ ...prev, [key]: true }));
+                        }
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
                     />
