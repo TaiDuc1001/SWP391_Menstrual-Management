@@ -96,12 +96,10 @@ const MenstrualCycles: React.FC = () => {
     };
 
     // Giả lập dữ liệu triệu chứng cho ví dụ (bạn nên thay bằng dữ liệu thực tế từ backend hoặc context)
-    // symptoms: { [key: string]: boolean } với key là 'YYYY-MM-DD'
-    const [symptoms, setSymptoms] = useState<{ [key: string]: boolean }>({
-        // ví dụ: ngày 3, 5, 14 có triệu chứng
-        [`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-03`]: true,
-        [`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-05`]: true,
-        [`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-14`]: true,
+    // symptoms: { [key: string]: { symptom: string; period: string; flow: string } }
+    const [symptoms, setSymptoms] = useState<{ [key: string]: { symptom: string; period: string; flow: string } }>(() => {
+        const saved = localStorage.getItem('menstrual_symptoms');
+        return saved ? JSON.parse(saved) : {};
     });
 
     // Lưu triệu chứng vào localStorage mỗi khi symptoms thay đổi
@@ -113,7 +111,11 @@ const MenstrualCycles: React.FC = () => {
     useEffect(() => {
         const savedSymptoms = localStorage.getItem('menstrual_symptoms');
         if (savedSymptoms) {
-            setSymptoms(JSON.parse(savedSymptoms));
+            try {
+                setSymptoms(JSON.parse(savedSymptoms));
+            } catch (e) {
+                setSymptoms({});
+            }
         }
         // eslint-disable-next-line
     }, []);
@@ -154,13 +156,13 @@ const MenstrualCycles: React.FC = () => {
                                     let type = '';
                                     if (cycles && cycles.length > 0) {
                                         type = getDayTypeForCalendar(day);
-                                    }
-                                    // Kiểm tra triệu chứng
-                                    let hasSymptom = false;
+                                    }                                    let hasSymptom = false;
                                     let dayKey = '';
                                     if (day) {
                                         dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                                        hasSymptom = !!symptoms[dayKey];
+                                        // Chỉ tô viền nếu ngày đó có triệu chứng và triệu chứng khác "Không có"
+                                        const symptomData = symptoms[dayKey];
+                                        hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'Không có');
                                     }
                                     let style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800";
                                     if (type === 'period') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-red-600 text-white hover:scale-105 hover:shadow-md";
@@ -288,16 +290,32 @@ const MenstrualCycles: React.FC = () => {
                     />
                     <DayNotePopup 
                       open={showDayNote} 
-                      onClose={() => setShowDayNote(false)}
-                      onSave={() => {
+                      onClose={() => setShowDayNote(false)}                      onSave={data => {
                         setShowDayNote(false);
                         setShowSuccess(true);
                         if (selectedDay) {
                           const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                          setSymptoms(prev => ({ ...prev, [key]: true }));
+                          // Nếu triệu chứng là "Không có", xóa triệu chứng khỏi object để không hiện viền
+                          if (data.symptom === 'Không có') {
+                            setSymptoms(prev => {
+                              const newState = {...prev};
+                              delete newState[key];
+                              return newState;
+                            });
+                          } else {
+                            // Ngược lại thì lưu triệu chứng cho ngày đó
+                            setSymptoms(prev => ({ ...prev, [key]: data }));
+                          }
                         }
                         setTimeout(() => setShowSuccess(false), 1200);
                       }}
+                      {...(selectedDay && symptoms[
+                        `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
+                      ] ? {
+                        defaultValue: symptoms[
+                          `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
+                        ]
+                      } : {})}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
                 </main>
