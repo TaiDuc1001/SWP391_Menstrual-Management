@@ -1,5 +1,6 @@
 package swp391.com.backend.feature.testType.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.feature.testType.data.TestType;
 import swp391.com.backend.feature.testType.data.TestTypeRepository;
@@ -7,12 +8,9 @@ import swp391.com.backend.feature.testType.data.TestTypeRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TestTypeService {
      private final TestTypeRepository testTypeRepository;
-
-    public TestTypeService(TestTypeRepository testTypeRepository) {
-        this.testTypeRepository = testTypeRepository;
-    }
 
     public List<TestType> getAllTests() {
         return testTypeRepository.findAll();

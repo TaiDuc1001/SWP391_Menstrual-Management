@@ -20,6 +20,7 @@ public interface TestResultMapper {
     @Mapping(source = "resultDetail.testIndex", target = "testIndex")
     @Mapping(source = "resultDetail.notes", target = "note")
     @Mapping(source = "testType.id", target = "testTypeId")
+    @Mapping(source = "testType.unit" , target = "unit")
     TestResultListDTO toDTO(TestType testType, ResultDetail resultDetail);
 
     // Method to combine two lists

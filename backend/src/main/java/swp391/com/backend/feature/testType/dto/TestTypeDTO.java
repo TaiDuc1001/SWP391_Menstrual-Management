@@ -9,5 +9,6 @@ import lombok.experimental.FieldDefaults;
 public class TestTypeDTO {
     Long id;
     String name;
+    String unit;
     String normalRange;
 }

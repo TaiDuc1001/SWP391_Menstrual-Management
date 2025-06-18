@@ -11,6 +11,7 @@ public class TestResultListDTO {
     String name;
     Boolean diagnosis;
     String testIndex;
+    String unit;
     String normalRange;
     String note;
 }

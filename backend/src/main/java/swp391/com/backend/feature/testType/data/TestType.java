@@ -21,6 +21,8 @@ public class TestType {
 
     private String normalRange;
 
+    private String unit;
+
     @Lob
     private String description;
 

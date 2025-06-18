@@ -7,7 +7,6 @@ import swp391.com.backend.feature.testType.data.TestType;
 
 @Mapper(componentModel = "spring")
 public interface TestTypeMapper {
-    @Mapping(source = "id", target = "id")
     TestTypeDTO toDTO(TestType entity);
     TestType toEntity(TestTypeDTO dto);
 }
