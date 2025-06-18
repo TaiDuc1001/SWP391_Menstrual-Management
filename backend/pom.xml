@@ -112,6 +112,27 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>concat-sql</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>cmd</executable>
+                            <arguments>
+                                <argument>/c</argument>
+                                <argument>type src\main\resources\sql\accounts.sql src\main\resources\sql\schedules.sql src\main\resources\sql\appointments.sql src\main\resources\sql\panels.sql src\main\resources\sql\examinations.sql src\main\resources\sql\cycles.sql src\main\resources\sql\blogs.sql &gt; src\main\resources\import.sql</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
