@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.feature.examination.data.Examination;
 import swp391.com.backend.feature.examination.data.ExaminationStatus;
+import swp391.com.backend.feature.result.data.Result;
 import swp391.com.backend.feature.resultDetail.data.ResultDetail;
 import swp391.com.backend.feature.testType.data.TestType;
 import swp391.com.backend.feature.examination.data.ExaminationRepository;
