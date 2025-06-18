@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.feature.account.data.Account;
+import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.examination.data.Examination;
 import swp391.com.backend.feature.account.data.Role;
 
@@ -17,7 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Staff implements Role {
+public class Staff implements Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

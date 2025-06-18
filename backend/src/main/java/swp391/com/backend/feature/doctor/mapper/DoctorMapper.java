@@ -8,5 +8,6 @@ import swp391.com.backend.feature.doctor.data.Doctor;
 @Mapper(componentModel = "spring")
 public interface DoctorMapper {
     SimpleDoctorDTO toSimpleDTO(Doctor entity);
+    DoctorDTO toDTO(Doctor entity);
     Doctor toEntity(DoctorDTO dto);
 }

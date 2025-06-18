@@ -25,4 +25,7 @@ public class Account {
 
     @Column(unique = true)
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
