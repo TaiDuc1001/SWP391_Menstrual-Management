@@ -56,6 +56,7 @@ INSERT INTO schedules (date, slot, doctor_id) VALUES ('2025-06-11', '5', 9);
 INSERT INTO schedules (date, slot, doctor_id) VALUES ('2025-06-11', '6', 10);
 INSERT INTO schedules (date, slot, doctor_id) VALUES ('2025-06-12', '1', 1);
 INSERT INTO schedules (date, slot, doctor_id) VALUES ('2025-06-12', '2', 6);
+INSERT INTO schedules (date, slot, doctor_id) VALUES ('2025-06-10', '2', 8);
 
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (1, 3, 1, '2025-06-01', 1, 'https://zoom.us/j/100', 'Experiencing irregular periods ', 'Recommend tracking ', 'The doctor was', 5, 0);
 INSERT INTO appointments (id, customer_id, doctor_id, date, slot, url, customer_note, doctor_note, feedback, score, appointment_status) VALUES (2, 3, 6, '2025-06-02', 2, 'https://zoom.us/j/101', 'Lower abdominal pain and occasional nausea.', 'Advised rest, hydration, and prescribed mild pain relief.', 'I appreciate the doctor taking time to listen to my concerns and providing practical advice. The session was very helpful.', 5, 0);
