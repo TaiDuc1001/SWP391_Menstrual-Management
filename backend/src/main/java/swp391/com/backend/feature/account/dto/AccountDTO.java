@@ -3,6 +3,7 @@ package swp391.com.backend.feature.account.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import swp391.com.backend.feature.account.data.Role;
 
 @Data
 @AllArgsConstructor
@@ -10,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class AccountDTO {
     private Integer id;
     private String email;
-    private String role;
+    private Role role;
+    private ActorDTO actor;
 }

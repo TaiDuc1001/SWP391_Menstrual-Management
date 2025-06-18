@@ -1,9 +1,10 @@
 package swp391.com.backend.feature.doctor.dto;
 
 import lombok.Data;
+import swp391.com.backend.feature.account.dto.ActorDTO;
 
 @Data
-public class DoctorDTO {
+public class DoctorDTO implements ActorDTO {
     private Long id;
     private String name;
     private String specialization;

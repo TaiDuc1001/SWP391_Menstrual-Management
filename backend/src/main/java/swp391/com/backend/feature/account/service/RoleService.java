@@ -24,27 +24,6 @@ public class RoleService {
     private final AccountService accountService;
 
 
-    public Role findRoleByAccountIdAndType(Long accountId, String roleType) {
-        return switch (roleType.toUpperCase()) {
-            case "ADMIN" -> adminService.findAdminById(accountId);
-            case "CUSTOMER" -> customerService.findCustomerById(accountId);
-            case "DOCTOR" -> doctorService.findDoctorById(accountId);
-            case "STAFF" -> staffService.findStaffById(accountId);
-            default -> null;
-        };
-    }
-
-    public Account login(String email, String password, String roleType) {
-        Account account = accountService.login(email, password);
-        if( account == null) {
-            return null; // Account not found or invalid credentials
-        }
-        Role role = findRoleByAccountIdAndType(account.getId(), roleType);
-        if (role == null) {
-            return null; // Role not found
-        }
-        return account;
-    }
 
     public Account register(String email, String password, String roleType) {
         Account account = Account.builder()
