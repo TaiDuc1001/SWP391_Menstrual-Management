@@ -1,3 +1,4 @@
+
 INSERT INTO accounts (id, email, password, status) VALUES (1, 'doctor@doctor', '123', 1);
 INSERT INTO accounts (id, email, password, status) VALUES (2, 'staff@staff', '123', 1);
 INSERT INTO accounts (id, email, password, status) VALUES (3, 'cus@cus', '123', 1);
