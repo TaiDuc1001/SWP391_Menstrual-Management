@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Customer implements Actor {

@@ -20,4 +20,19 @@ public class CustomerService {
     public Customer createCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
+
+    public Customer updateCustomer(Long id, Customer customerDetails) {
+        Customer customer = findCustomerById(id).toBuilder()
+                .id(id) // Ensure the ID is set to the one being updated
+                .name(customerDetails.getName())
+                .address(customerDetails.getAddress())
+                .gender(customerDetails.getGender())
+                .dateOfBirth(customerDetails.getDateOfBirth())
+                .phoneNumber(customerDetails.getPhoneNumber())
+                .cccd(customerDetails.getCccd())
+                .build();
+
+        // Update other fields as necessary
+        return customerRepository.save(customer);
+    }
 }

@@ -7,9 +7,8 @@ import java.time.LocalDate;
 
 @Data
 public class CustomerDTO implements ActorDTO {
-    private Integer id;
+    private Long id;
     private String name;
-    private String email;
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private boolean gender;

@@ -15,12 +15,14 @@ import swp391.com.backend.feature.account.service.RoleService;
 import swp391.com.backend.feature.customer.data.Customer;
 import swp391.com.backend.feature.customer.dto.CustomerDTO;
 import swp391.com.backend.feature.customer.mapper.CustomerMapper;
+import swp391.com.backend.feature.customer.service.CustomerService;
 import swp391.com.backend.feature.doctor.data.Doctor;
 import swp391.com.backend.feature.doctor.dto.DoctorDTO;
 import swp391.com.backend.feature.doctor.mapper.DoctorMapper;
 import swp391.com.backend.feature.admin.data.Admin;
 import swp391.com.backend.feature.admin.dto.AdminDTO;
 import swp391.com.backend.feature.admin.mapper.AdminMapper;
+import swp391.com.backend.feature.doctor.service.DoctorService;
 import swp391.com.backend.feature.staff.data.Staff;
 import swp391.com.backend.feature.staff.dto.StaffDTO;
 import swp391.com.backend.feature.staff.mapper.StaffMapper;
@@ -39,6 +41,8 @@ public class AccountController {
     private final CustomerMapper customerMapper;
     private final AdminMapper adminMapper;
     private final StaffMapper staffMapper;
+    private final CustomerService customerService;
+    private final DoctorService doctorService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -80,17 +84,28 @@ public class AccountController {
 
 
 
-//    @PostMapping("/register")
-//    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountCreateRequest request) {
-//
-//        // Create account entity from request
-//        Account account = roleService.register(request.getEmail(), request.getPassword(), request.getRole());
-//
-//        AccountDTO dto = accountMapper.toDTO(account);
-//        dto.setRole(request.getRole());
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
-//    }
+    @PostMapping("/register")
+    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountCreateRequest request) {
+        Account newAccount = accountMapper.toEntity(request);
+        Account account = accountService.createAccount(newAccount);
+
+        switch(request.getRole()){
+            case CUSTOMER:
+                Customer newCustomer = new Customer();
+                newCustomer.setAccount(account);
+                Customer customer = customerService.createCustomer(newCustomer);
+                break;
+            case DOCTOR:
+                Doctor newDoctor = new Doctor();
+                newDoctor.setAccount(account);
+                Doctor doctor = doctorService.createDoctor(newDoctor);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid role for registration: " + request.getRole());
+        }
+        AccountDTO dto = accountMapper.toDTO(account);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
 
 
 }

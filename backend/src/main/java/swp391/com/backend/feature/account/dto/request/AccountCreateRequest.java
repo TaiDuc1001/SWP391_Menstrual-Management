@@ -3,6 +3,7 @@ package swp391.com.backend.feature.account.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import swp391.com.backend.feature.account.data.Role;
 
 @Data
 @Builder
@@ -18,5 +19,5 @@ public class AccountCreateRequest {
     String password;
 
     @NotBlank(message = "Vai trò không được để trống")
-    String role;
+    Role role;
 }
