@@ -1,0 +1,24 @@
+.profile-menu-dropdown {
+  @apply absolute top-full right-0 mt-2 min-w-[200px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg z-50 flex flex-col p-0;
+}
+
+.profile-menu-dropdown-item {
+  @apply px-6 py-4 text-left text-base text-[var(--color-content)] bg-transparent border-0 cursor-pointer w-full transition hover:bg-[var(--color-muted)] hover:text-[var(--color-brand)] focus:outline-none;
+}
+
+.profile-menu-dropdown-item:not(:last-child) {
+  @apply border-b border-[var(--color-border)];
+}
+
+.profile-menu-chevron {
+  @apply ml-1 text-base transition-transform duration-200;
+}
+
+.profile-menu-chevron.open {
+  @apply rotate-180;
+}
+
+.profile-menu-trigger {
+  @apply text-lg pr-6 bg-transparent border-0 cursor-pointer select-none flex items-center gap-1 focus:outline-none;
+  color: var(--color-content);
+}

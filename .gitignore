@@ -2,5 +2,4 @@
 .vscode/
 .github/
 node_modules/
-new-*/
 backend/src/main/resources/import.sql

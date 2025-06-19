@@ -1,0 +1,76 @@
+.solar-datepicker-modal-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50;
+}
+
+.solar-datepicker-popup {
+  @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 rounded-2xl shadow-2xl p-8 relative w-[420px] max-w-full border-2 border-blue-400;
+  padding-top: 56px;
+}
+
+.solar-datepicker-header {
+  @apply text-2xl font-bold text-blue-300 mb-2 text-center tracking-wide;
+}
+
+.solar-datepicker-date {
+  @apply text-lg font-semibold text-white mb-1 text-center;
+}
+
+.solar-datepicker-desc {
+  @apply text-sm text-blue-200 mb-4 text-center;
+}
+
+.solar-datepicker-modal {
+  @apply relative rounded-[20px] overflow-hidden;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 32px;
+  padding-top: 0;
+}
+
+.solar-datepicker-close {
+  @apply absolute top-3 right-3 px-4 py-1 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow transition-all duration-150;
+  z-index: 20;
+}
+
+.solar-datepicker-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
+.solar-datepicker-title {
+  text-align: center;
+  margin-top: 0;
+}
+
+.solar-datepicker-canvas-container {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 32px auto 0 auto;
+  box-sizing: border-box;
+  max-width: 90%;
+  max-height: 350px;
+  pointer-events: auto;
+}
+
+.solar-datepicker-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 16px;
+  background: transparent;
+  pointer-events: auto;
+  cursor: grab;
+  max-width: 400px;
+  max-height: 350px;
+}
+
+.solar-datepicker-canvas:active {
+  cursor: grabbing;
+}

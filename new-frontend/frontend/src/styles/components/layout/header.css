@@ -1,0 +1,79 @@
+/*
+  Updated to use CSS variables for colors defined in tailwind.config.js :root
+*/
+.private-header {
+  @apply w-full h-24 flex items-center justify-between px-8 relative;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.private-header-logo {
+  @apply flex items-center;
+}
+
+.private-logo-img {
+  @apply h-64 w-64 mr-4 drop-shadow-lg;
+}
+
+.private-header-user {
+  @apply flex items-center gap-3;
+}
+
+.private-user-avatar {
+  @apply h-12 w-12 rounded-full object-cover shadow ml-2 mr-4;
+  border: 2px solid var(--color-border);
+}
+
+.private-user-name {
+  @apply text-lg pr-6;
+  color: var(--color-content);
+}
+
+
+.public-header {
+  @apply w-full h-24 flex items-center justify-between px-8 relative;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.public-header-logo {
+  @apply flex items-center;
+}
+
+.public-logo-img {
+  @apply h-64 w-64 mr-4 drop-shadow-lg;
+}
+
+.public-navbar {
+  @apply flex gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+}
+
+.public-navbar-link {
+  @apply text-lg font-medium px-3 py-2 rounded-lg;
+  color: var(--color-content);
+  transition: color 0.2s, background 0.2s;
+}
+
+.public-navbar-link:hover {
+  background-color: var(--color-muted);
+  color: var(--color-brand);
+}
+
+.public-navbar-link.active {
+  background-color: var(--color-muted);
+  color: var(--color-brand);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.private-header-dropdown {
+  @apply absolute top-full right-0 mt-2 min-w-[200px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg z-50 flex flex-col p-0;
+}
+
+.private-header-dropdown-item {
+  @apply px-6 py-4 text-left text-base text-[var(--color-content)] bg-transparent border-0 cursor-pointer w-full transition hover:bg-[var(--color-muted)] hover:text-[var(--color-brand)] focus:outline-none;
+}
+
+.private-header-dropdown-item:not(:last-child) {
+  @apply border-b border-[var(--color-border)];
+}

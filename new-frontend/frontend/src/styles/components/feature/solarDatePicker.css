@@ -1,0 +1,109 @@
+.solar-datepicker-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.solar-datepicker-popup {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  border-radius: 16px;
+  padding: 32px 32px 24px 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  color: white;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.solar-datepicker-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  margin-top: 8px;
+}
+
+.solar-datepicker-date {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #e3f2fd;
+}
+
+.solar-datepicker-desc {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #bbdefb;
+  line-height: 1.4;
+}
+
+.solar-datepicker-canvas-container {
+  margin: 0 0 18px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  height: 300px;
+  background: transparent;
+}
+
+.solar-datepicker-canvas {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at center, #0d1b2a 0%, #1b263b 70%, #2c3e50 100%);
+  touch-action: none;
+  user-select: none;
+  margin: 0 auto;
+  display: block;
+}
+
+.solar-datepicker-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #4fc3f7;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.solar-datepicker-close:hover {
+  background: #29b6f6;
+}
+
+.solar-datepicker-earth {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1E90FF;
+  border: 2px solid #4682B4;
+  box-shadow: 0 0 8px #1E90FF;
+  z-index: 2;
+  cursor: grab;
+  transition: left 0.1s, top 0.1s;
+}
+.solar-datepicker-earth.dragging {
+  cursor: grabbing;
+  transition: none;
+}

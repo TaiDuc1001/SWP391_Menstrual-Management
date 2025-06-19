@@ -1,0 +1,43 @@
+.login-form {
+  @apply max-w-md mx-auto mt-16 bg-white shadow-lg rounded-lg p-8 flex flex-col gap-4;
+}
+.login-title {
+  @apply text-xl font-semibold text-center mb-2;
+  color: var(--color-brand);
+}
+.login-title-desc {
+  @apply text-sm font-normal;
+}
+.login-accounts-list {
+  @apply mb-2 text-sm text-gray-500 list-disc list-inside;
+}
+.login-account-item {
+  @apply mb-1;
+}
+.login-account-email {
+  @apply font-mono;
+  color: var(--color-brand-dark);
+}
+.login-account-role {
+  @apply text-xs;
+  color: var(--color-brand-light);
+}
+.login-input {
+  @apply border rounded px-3 py-2 focus:outline-none focus:ring-2;
+  border-color: var(--color-brand);
+}
+.login-input:focus {
+  --tw-ring-color: var(--color-brand);
+}
+.login-btn {
+  @apply py-2 rounded font-semibold transition-colors;
+  background-color: var(--color-brand);
+  color: #fff;
+}
+.login-btn:hover {
+  background-color: var(--color-brand-dark);
+}
+.login-error {
+  @apply text-sm text-center;
+  color: var(--color-brand-dark);
+}

@@ -1,0 +1,30 @@
+.btn-base {
+  @apply px-5 py-2 rounded font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+.btn-primary {
+  background-color: var(--color-brand);
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: var(--color-brand-dark);
+}
+.btn-primary:focus {
+  --tw-ring-color: var(--color-brand);
+}
+.btn-outline {
+  border: 1px solid var(--color-brand);
+  color: var(--color-brand);
+  background-color: #fff;
+}
+.btn-outline:hover {
+  background-color: var(--color-brand-light);
+}
+.btn-outline:focus {
+  --tw-ring-color: var(--color-brand);
+}
+.public-login-btn {
+  @apply mr-2;
+}
+.public-register-btn {
+  @apply ml-2;
+}
