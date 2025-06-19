@@ -86,10 +86,14 @@ public class AccountController {
 
     @PostMapping("/register")
     public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountCreateRequest request) {
+        request.setRole(request.getRole().toUpperCase());
+        Role role = Role.valueOf(request.getRole());
         Account newAccount = accountMapper.toEntity(request);
+        newAccount.setRole(role);
+        newAccount.setStatus(true);
         Account account = accountService.createAccount(newAccount);
 
-        switch(request.getRole()){
+        switch(role){
             case CUSTOMER:
                 Customer newCustomer = new Customer();
                 newCustomer.setAccount(account);
@@ -106,6 +110,4 @@ public class AccountController {
         AccountDTO dto = accountMapper.toDTO(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
-
-
 }

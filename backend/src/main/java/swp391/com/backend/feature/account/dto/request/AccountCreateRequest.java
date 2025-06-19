@@ -19,5 +19,5 @@ public class AccountCreateRequest {
     String password;
 
     @NotBlank(message = "Vai trò không được để trống")
-    Role role;
+    String role;
 }
