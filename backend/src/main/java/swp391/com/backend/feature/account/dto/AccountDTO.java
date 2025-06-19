@@ -12,5 +12,5 @@ public class AccountDTO {
     private Integer id;
     private String email;
     private Role role;
-    private ActorDTO actor;
+    private ActorDTO profile;
 }

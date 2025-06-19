@@ -7,7 +7,7 @@ import swp391.com.backend.feature.account.data.Account;
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
-    @Mapping(target = "actor", ignore = true)
+    @Mapping(target = "profile", ignore = true)
     AccountDTO toDTO(Account entity);
     Account toEntity(AccountDTO dto);
 }

@@ -18,6 +18,13 @@ import swp391.com.backend.feature.customer.mapper.CustomerMapper;
 import swp391.com.backend.feature.doctor.data.Doctor;
 import swp391.com.backend.feature.doctor.dto.DoctorDTO;
 import swp391.com.backend.feature.doctor.mapper.DoctorMapper;
+import swp391.com.backend.feature.admin.data.Admin;
+import swp391.com.backend.feature.admin.dto.AdminDTO;
+import swp391.com.backend.feature.admin.mapper.AdminMapper;
+import swp391.com.backend.feature.staff.data.Staff;
+import swp391.com.backend.feature.staff.dto.StaffDTO;
+import swp391.com.backend.feature.staff.mapper.StaffMapper;
+import swp391.com.backend.feature.account.data.Role;
 
 import java.util.Map;
 
@@ -30,6 +37,8 @@ public class AccountController {
     private final AccountService accountService;
     private final DoctorMapper doctorMapper;
     private final CustomerMapper customerMapper;
+    private final AdminMapper adminMapper;
+    private final StaffMapper staffMapper;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -48,14 +57,22 @@ public class AccountController {
         switch(account.getRole().toString()) {
             case "DOCTOR" :
                 DoctorDTO doctorDTO = doctorMapper.toDTO((Doctor) actor);
-                dto.setActor(doctorDTO);
+                dto.setProfile(doctorDTO);
                 break;
             case "CUSTOMER" :
                 CustomerDTO customerDTO = customerMapper.toDTO((Customer) actor);
-                dto.setActor(customerDTO);
+                dto.setProfile(customerDTO);
+                break;
+            case "ADMIN" :
+                AdminDTO adminDTO = adminMapper.toDTO((Admin) actor);
+                dto.setProfile(adminDTO);
+                break;
+            case "STAFF" :
+                StaffDTO staffDTO = staffMapper.toDTO((Staff) actor);
+                dto.setProfile(staffDTO);
                 break;
             default:
-                dto.setActor(null);
+                dto.setProfile(null);
                 break;
         }
         return ResponseEntity.ok(dto);
