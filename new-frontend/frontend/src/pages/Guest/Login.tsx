@@ -31,7 +31,7 @@ const Login: React.FC = () => {
           if (role === 'admin') {
             navigate(`/${role}`);
           } else {
-            navigate(`/${role}/my-profile`);
+            navigate(`/${role} `);
           }
         },
         onError: (err: any) => {
