@@ -26,11 +26,12 @@ public class DoctorService {
         return doctorRepository.save(doctor);
     }
 
-    public Doctor updateDoctor(Doctor doctorDetails) {
-        Doctor existingDoctor = findDoctorById(doctorDetails.getId());
-        existingDoctor.setName(doctorDetails.getName());
-        existingDoctor.setSpecialization(doctorDetails.getSpecialization());
-        existingDoctor.setPrice(doctorDetails.getPrice());
-        return doctorRepository.save(existingDoctor);
+    public Doctor updateDoctor(Long id, Doctor doctorDetails) {
+        Doctor doctor = findDoctorById(id).toBuilder()
+                .name(doctorDetails.getName())
+                .specialization(doctorDetails.getSpecialization())
+                .price(doctorDetails.getPrice())
+                .build();
+        return doctorRepository.save(doctor);
     }
 }

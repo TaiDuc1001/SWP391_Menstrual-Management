@@ -2,10 +2,7 @@ package swp391.com.backend.feature.doctor.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.feature.doctor.data.Doctor;
 import swp391.com.backend.feature.doctor.dto.DoctorDTO;
 import swp391.com.backend.feature.doctor.dto.SimpleDoctorDTO;
@@ -30,11 +27,11 @@ public class DoctorController {
         return ResponseEntity.ok(doctors);
     }
 
-    @PutMapping
-    public ResponseEntity<DoctorDTO> updateDoctor(DoctorDTO doctorDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<DoctorDTO> updateDoctor(@PathVariable Long id,@RequestBody DoctorDTO doctorDTO) {
         // Convert DTO to entity
         Doctor doctorDetails = doctorMapper.toEntity(doctorDTO);
-        Doctor updatedDoctor = doctorService.updateDoctor(doctorDetails);
+        Doctor updatedDoctor = doctorService.updateDoctor(id ,doctorDetails);
         // Convert entity back to DTO
         DoctorDTO updatedDoctorDTO = doctorMapper.toDTO(updatedDoctor);
         return ResponseEntity.ok(updatedDoctorDTO);
