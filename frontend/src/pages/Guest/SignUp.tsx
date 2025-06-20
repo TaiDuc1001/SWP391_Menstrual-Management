@@ -36,9 +36,8 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
         headers: {
           'Content-Type': 'application/json'
         }
-      });
-      onSignUp();
-      navigate('/dashboard');
+      });      onSignUp();
+      navigate('/customer/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
     }

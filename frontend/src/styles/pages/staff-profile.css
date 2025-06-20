@@ -1,0 +1,43 @@
+.staff-profile {
+  @apply p-6 max-w-4xl mx-auto;
+}
+
+.staff-profile__header {
+  @apply flex justify-between items-center mb-6 pb-4 border-b border-gray-200;
+}
+
+.staff-profile__header h1 {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.staff-profile__content {
+  @apply space-y-6;
+}
+
+.staff-profile__section {
+  @apply bg-white p-6 rounded-lg shadow-sm border border-gray-200;
+}
+
+.staff-profile__section h2 {
+  @apply text-xl font-semibold text-gray-800 mb-4;
+}
+
+.staff-profile__field {
+  @apply mb-4;
+}
+
+.staff-profile__field label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.staff-profile__field span {
+  @apply block text-gray-900;
+}
+
+.staff-profile__input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+.staff-profile__actions {
+  @apply flex gap-3 pt-4;
+}

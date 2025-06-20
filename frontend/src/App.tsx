@@ -1,9 +1,6 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter as Router} from 'react-router-dom';
-import AppLayout from './components/layout/Layouts/AppLayout';
-import AdminLayout from './components/layout/Layouts/AdminLayout';
-import StaffLayout from './components/layout/Layouts/StaffLayout';
-import DoctorLayout from './components/layout/Layouts/DoctorLayout';
+import AppRouter from './AppRouter';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -36,23 +33,15 @@ function App() {
     setRole('customer');
     localStorage.setItem('role', 'customer');
   };
-
   return (
     <Router>
-      {role === 'admin' && isAuthenticated ? (
-        <AdminLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
-      ) : role === 'staff' && isAuthenticated ? (
-        <StaffLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
-      ) : role === 'doctor' && isAuthenticated ? (
-        <DoctorLayout isAuthenticated={isAuthenticated} onAuthToggle={handleAuthToggle} />
-      ) : (
-        <AppLayout
-          isAuthenticated={isAuthenticated}
-          onAuthToggle={handleAuthToggle}
-          handleLogin={handleLogin}
-          handleSignUp={handleSignUp}
-        />
-      )}
+      <AppRouter
+        isAuthenticated={isAuthenticated}
+        onAuthToggle={handleAuthToggle}
+        handleLogin={handleLogin}
+        handleSignUp={handleSignUp}
+        role={role}
+      />
     </Router>
   );
 }

@@ -31,9 +31,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           break;
         case 'staff':
           navigate('/staff/dashboard');
-          break;
-        case 'customer':
-          navigate('/dashboard');
+          break;        case 'customer':
+          navigate('/customer/dashboard');
           break;
         case 'doctor':
           navigate('/doctor/dashboard');

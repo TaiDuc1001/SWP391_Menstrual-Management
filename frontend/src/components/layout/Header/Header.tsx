@@ -16,6 +16,21 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) => {
   const profileRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  const getDashboardPath = () => {
+    const role = localStorage.getItem('role')?.toLowerCase();
+    switch (role) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'doctor':
+        return '/doctor/dashboard';
+      case 'staff':
+        return '/staff/dashboard';
+      case 'customer':
+      default:
+        return '/customer/dashboard';
+    }
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -41,10 +56,9 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) => {
         <img src={logo} alt="Logo" className="h-12 w-auto mr-10 drop-shadow-lg hover:scale-105 transition-transform duration-200" />
         <div className="h-10 w-px bg-pink-100 mx-2 hidden md:block" />
         <nav className="navbar">
-          <ul className="flex gap-3 md:gap-6">
-            {isAuthenticated && (
+          <ul className="flex gap-3 md:gap-6">            {isAuthenticated && (
               <li>
-                <Link to="/dashboard" className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">Dashboard</Link>
+                <Link to={getDashboardPath()} className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">Dashboard</Link>
               </li>
             )}
           </ul>
