@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import SearchInput from '../../../components/feature/Filter/SearchInput';
+import { SearchInput } from '../../../components';
 import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
 import MenstrualCyclePopup from '../../../components/feature/Popup/MenstrualCyclePopup';
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
 import {useNavigate} from 'react-router-dom';
 import api from '../../../api/axios';
 import {useTableState} from '../../../api/hooks';
@@ -7,20 +6,14 @@ import {useTableState} from '../../../api/hooks';
 import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 
 import TestingTitleBar from '../../../components/feature/TitleBar/TestingTitleBar';
-import TestingUtilityBar from '../../../components/feature/UtilityBar/TestingUtilityBar';
+import { UtilityBar } from '../../../components';
 import ExaminationsTable from '../../../components/feature/Table/Customer/Examinations';
-import SearchInput from '../../../components/feature/Filter/SearchInput';
+import { SearchInput } from '../../../components';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
 import TestResultPopup from '../../../components/feature/Popup/TestResultPopup';
 
-const plusIcon = plusWhiteIcon; 
-
-const availableTypes = [
-  'HIV',
-  'Gonorrhea',
-  'Syphilis',
-];
+const plusIcon = plusWhiteIcon;
 
 const TESTS_PER_PAGE = 5;
 
@@ -31,8 +24,7 @@ const Examinations: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+
   const [hideRows, setHideRows] = useState<number[]>([]);
   const [showResultPopup, setShowResultPopup] = useState(false);
   const [currentExaminationId, setCurrentExaminationId] = useState<number | null>(null);
@@ -54,12 +46,10 @@ const Examinations: React.FC = () => {
     const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
     const statusMatch = selectedStatus ? record.status === selectedStatus : true;
     const panelMatch = selectedPanel ? record.panels === selectedPanel : true;
-    const recordPanelList = record.panels.split(',').map((p: string) => p.trim());
-    const typeMatch = selectedTypes.length === 0 ? true : selectedTypes.some(type => recordPanelList.includes(type));
     const recordDate = parseDate(record.date);
     const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
     const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    return searchMatch && slotMatch && typeMatch && statusMatch && panelMatch && fromMatch && toMatch;
+    return searchMatch && slotMatch && statusMatch && panelMatch && fromMatch && toMatch;
   }).filter(record => !hideRows.includes(record.id));
 
   // Use table state hook for pagination, sorting, and selection
@@ -152,7 +142,7 @@ const Examinations: React.FC = () => {
         title="Testing history"
         onNewOrder={() => { navigate('/customer/sti-tests/packages'); }}
         newOrderIcon={<img src={plusIcon} alt="Plus" className="w-5 h-5" />} />
-      <TestingUtilityBar>
+      <UtilityBar>
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}
@@ -185,7 +175,7 @@ const Examinations: React.FC = () => {
           placeholder="To date"
           minDate={selectedDateFrom || undefined}
         />      
-        </TestingUtilityBar>        
+        </UtilityBar>        
       <ExaminationsTable
         filteredRecords={paginatedData}
         slotTimeMap={slotMap}

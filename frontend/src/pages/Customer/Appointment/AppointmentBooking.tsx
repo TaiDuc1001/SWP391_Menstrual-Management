@@ -3,7 +3,7 @@ import TitleBar from '../../../components/feature/TitleBar/TitleBar';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import {useNavigate} from 'react-router-dom';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
-import SearchInput from '../../../components/feature/Filter/SearchInput';
+import { SearchInput } from '../../../components';
 import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
 import api from '../../../api/axios';
 

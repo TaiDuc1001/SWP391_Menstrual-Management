@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../api/axios';
-import StatusBadge from '../../../components/common/Badge/StatusBadge';
+import { StatusBadge, Card, Button, LoadingSpinner } from '../../../components';
+import { formatDateTime, formatName, cardClasses, textClasses } from '../../../utils';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import clockIcon from '../../../assets/icons/clock.svg';
 import userIcon from '../../../assets/icons/profile.svg';
-import '../../../styles/pages/appointment-detail.css';
 
 interface AppointmentDetailData {
   id: number;
@@ -59,13 +59,14 @@ const AppointmentDetail: React.FC = () => {
       day: 'numeric'
     });
   };
-
   if (loading) {
     return (
-      <div className="appointment-detail-container">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading appointment details...</p>
+      <div className="page-container">
+        <div className="page-content">
+          <div className="text-center">
+            <LoadingSpinner size="large" />
+            <p className="mt-4 text-gray-600">Loading appointment details...</p>
+          </div>
         </div>
       </div>
     );
@@ -73,17 +74,16 @@ const AppointmentDetail: React.FC = () => {
 
   if (error || !appointment) {
     return (
-      <div className="appointment-detail-container">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h2>
-          <p className="text-gray-600 mb-4">{error || 'Appointment not found'}</p>
-          <button
-            onClick={() => navigate('/customer/appointments')}
-            className="appointment-detail-btn-pink"
-          >
-            Back to Appointments
-          </button>
+      <div className="page-container">
+        <div className="page-content">
+          <div className="text-center">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h2>
+            <p className="text-gray-600 mb-4">{error || 'Appointment not found'}</p>
+            <Button variant="primary" onClick={() => navigate('/customer/appointments')}>
+              Back to Appointments
+            </Button>
+          </div>
         </div>
       </div>
     );

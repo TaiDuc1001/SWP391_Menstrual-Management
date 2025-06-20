@@ -1,92 +1,178 @@
-@layer components {
-  .status-badge-base {
-    @apply px-3 py-1 rounded-full text-xs font-medium;
-  }
-  
-  .status-badge-active {
-    @apply bg-green-100 text-green-600;
-  }
-  
-  .status-badge-pending {
-    @apply bg-yellow-100 text-yellow-600;
-  }
-  
-  .status-badge-cancelled {
-    @apply bg-red-100 text-red-600;
-  }
-  
-  .status-badge-confirmed {
-    @apply bg-blue-100 text-blue-600;
-  }
-  
-  .status-badge-default {
-    @apply bg-gray-100 text-gray-600;
-  }
-  
-  .table-action-icon {
-    @apply p-1 hover:bg-gray-100 rounded transition-colors;
-  }
-  
-  .table-action-view {
-    @apply text-blue-600;
-  }
-  
-  .table-action-edit {
-    @apply text-blue-600;
-  }
-  
-  .table-action-delete {
-    @apply text-red-600;
-  }
-  
-  .table-column-id {
-    @apply w-24;
-  }
-  
-  .table-column-date {
-    @apply w-32;
-  }
-    .table-column-status {
-    @apply w-32 text-center;
-  }
-  
-  .table-column-name {
-    @apply w-48;
-  }
-    .table-column-select {
-    @apply w-12;
-  }
-  .table-column-action-primary {
-    @apply w-32;
-  }
+.status-badge-base {
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
 
-  .table-column-action-secondary {
-    @apply w-24;
-  }  .table-action-button-primary {
-    @apply text-xs px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed border;
-  }
+.status-badge-active {
+  background-color: #dcfce7;
+  color: #059669;
+}
 
-  .table-action-button-secondary {
-    @apply text-xs px-2 py-1 rounded font-medium transition-all duration-200 hover:underline disabled:opacity-50 disabled:cursor-not-allowed;
-  }
+.status-badge-pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
 
-  .table-action-checkout {
-    @apply bg-blue-500 text-white hover:bg-blue-600 border-blue-500 hover:border-blue-600;
-  }
+.status-badge-cancelled {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
 
-  .table-action-view {
-    @apply bg-green-500 text-white hover:bg-green-600 border-green-500 hover:border-green-600;
-  }
+.status-badge-confirmed {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
 
-  .table-action-confirm {
-    @apply bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500 hover:border-emerald-600;
-  }
+.status-badge-default {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
 
-  .table-action-join {
-    @apply bg-purple-500 text-white hover:bg-purple-600 border-purple-500 hover:border-purple-600;
-  }
+.table-action-icon {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
 
-  .table-action-cancel {
-    @apply text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded font-medium transition-all duration-200;
-  }
+.table-action-icon:hover {
+  background-color: #f3f4f6;
+}
+
+.table-action-view {
+  color: #2563eb;
+}
+
+.table-action-edit {
+  color: #2563eb;
+}
+
+.table-action-delete {
+  color: #dc2626;
+}
+
+.table-column-id {
+  width: 6rem;
+}
+
+.table-column-date {
+  width: 8rem;
+}
+
+.table-column-status {
+  width: 8rem;
+  text-align: center;
+}
+
+.table-column-name {
+  width: 12rem;
+}
+
+.table-column-select {
+  width: 3rem;
+}
+
+.table-column-action-primary {
+  width: 8rem;
+}
+
+.table-column-action-secondary {
+  width: 6rem;
+}
+
+.table-action-button-primary {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid;
+  cursor: pointer;
+}
+
+.table-action-button-primary:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.table-action-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-action-button-secondary {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.table-action-button-secondary:hover {
+  text-decoration: underline;
+}
+
+.table-action-button-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-action-checkout {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.table-action-checkout:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.table-action-view {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.table-action-view:hover {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.table-action-confirm {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.table-action-confirm:hover {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.table-action-join {
+  background-color: #8b5cf6;
+  color: white;
+  border-color: #8b5cf6;
+}
+
+.table-action-join:hover {
+  background-color: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.table-action-cancel {
+  color: #dc2626;
+  background-color: #fef2f2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.table-action-cancel:hover {
+  color: #991b1b;
+  background-color: #fee2e2;
 }

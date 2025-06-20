@@ -42,50 +42,7 @@ export const formatDate = (date: string | Date, format: 'short' | 'long' = 'shor
   return dateObj.toLocaleDateString('en-GB');
 };
 
-// Common column generators
-export const createSelectColumn = <T extends Record<string, any>>(): TableColumn<T> => ({
-  key: 'select',
-  label: '',
-  width: 'table-column-select',
-  render: () => null
-});
-
-export const createIdColumn = <T extends Record<string, any>>(keyName = 'id', label = 'ID'): TableColumn<T> => ({
-  key: keyName,
-  label,
-  sortable: true,
-  width: 'table-column-id'
-});
-
-export const createDateColumn = <T extends Record<string, any>>(keyName = 'date', label = 'Date'): TableColumn<T> => ({
-  key: keyName,
-  label,
-  sortable: true,
-  width: 'table-column-date',
-  render: (row) => formatDate(row[keyName])
-});
-
-export const createStatusColumn = <T extends Record<string, any>>(keyName = 'status', label = 'Status'): TableColumn<T> => ({
-  key: keyName,
-  label,
-  sortable: true,
-  width: 'table-column-status',
-  align: 'center',
-  render: (row) => (
-    <span className={getStatusBadgeClass(row[keyName])}>
-      {row[keyName]}
-    </span>
-  )
-});
-
-export const createNameColumn = <T extends Record<string, any>>(keyName = 'name', label = 'Name'): TableColumn<T> => ({
-  key: keyName,
-  label,
-  sortable: true,
-  width: 'table-column-name'
-});
-
-// Common action generators
+// Common action generators (these are actually used)
 export const createViewAction = <T extends Record<string, any>>(onClick: (row: T) => void): TableAction<T> => ({
   icon: <i className="fas fa-eye table-action-view"></i>,
   label: 'View',
@@ -105,22 +62,7 @@ export const createDeleteAction = <T extends Record<string, any>>(onClick: (row:
   variant: 'danger'
 });
 
-// BaseTable configuration presets
-export const customerTableConfig = {
-  variant: 'customer' as const,
-  hoverable: true,
-  striped: false,
-  compact: false
-};
-
-export const adminTableConfig = {
-  variant: 'admin' as const,
-  hoverable: true,
-  striped: false,
-  compact: false
-};
-
-// Bulk action utilities
+// Bulk action utilities (keep if used)
 export const createBulkActions = <T extends Record<string, any>>(actions: {
   onDelete?: (ids: number[]) => void;
   onExport?: (ids: number[]) => void;

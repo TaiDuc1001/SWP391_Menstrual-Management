@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doctorService, Doctor } from '../../../api/services';
-import TitleBar from '../../../components/feature/TitleBar/TitleBar';
-import '../../../styles/pages/doctor-detail.css';
+import { TitleBar, Card, Button, LoadingSpinner } from '../../../components';
+import { formatName, cardClasses } from '../../../utils';
 
 const DoctorDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();

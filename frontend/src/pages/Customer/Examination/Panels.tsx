@@ -1,27 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import TypeBadge from '../../../components/common/Badge/TypeBadge';
-import TagBadge from '../../../components/common/Badge/TagBadge';
+import {
+  TypeBadge,
+  TagBadge,
+  Card,
+  SearchInput,
+  DropdownSelect,
+  MultiSelectDropdown,
+  TitleBar,
+  Pagination
+} from '../../../components';
 import ActionButton from '../../../components/common/Button/ActionButton';
-import searchIcon from '../../../assets/icons/search.svg';
-import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
-import MultiSelectDropdown from '../../../components/feature/Filter/MultiSelectDropdown';
-import TitleBar from '../../../components/feature/TitleBar/TitleBar';
-import api from '../../../api/axios';
-
-const TYPE_BADGE_STYLES: Record<string, string> = {
-  COMPREHENSIVE: 'bg-blue-100 text-blue-600',
-  SPECIALIZED: 'bg-orange-100 text-orange-600',
-  PREVENTIVE: 'bg-yellow-100 text-yellow-600',
-};
-const TAG_BADGE_STYLES: Record<string, string> = {
-  RECOMMENDED: 'bg-green-100 text-green-600',
-  BEST_VALUE: 'bg-green-100 text-green-600',
-  BUDGET_FRIENDLY: 'bg-green-100 text-green-600',
-  POPULAR: 'bg-pink-100 text-pink-600',
-  EXPRESS: 'bg-green-100 text-green-600',
-  NEW: 'bg-blue-100 text-blue-600',
-};
+import { api } from '../../../api';
+import { cn, cardClasses } from '../../../utils';
+import { TYPE_BADGE_STYLES, TAG_BADGE_STYLES, createTypeOptions, createPackageFilter, applyPagination } from '../../../utils';
 
 const Panels: React.FC = () => {
   const navigate = useNavigate();
@@ -36,28 +28,19 @@ const Panels: React.FC = () => {
       .then(res => setPanels(res.data))
       .catch(() => setPanels([]));
   }, []);
-
-  const typeOptions = [
-    { value: '', label: 'All types' },
-    ...Array.from(new Set(panels.map(pkg => pkg.panelType))).map(t => ({ value: t, label: t?.charAt(0) + t?.slice(1).toLowerCase() }))
-  ];
+  const typeOptions = createTypeOptions(
+    Array.from(new Set(panels.map(pkg => pkg.panelType)))
+  );
   const tagOptions = Array.from(new Set(panels.map(pkg => pkg.panelTag))).filter(Boolean);
 
-  const filteredPackages = panels.filter(pkg => {
-    const matchesSearch =
-      search === '' ||
-      pkg.panelName.toLowerCase().includes(search.toLowerCase()) ||
-      pkg.description.toLowerCase().includes(search.toLowerCase());
-    const matchesType = !type || pkg.panelType === type;
-    const matchesTag = tag.length === 0 || tag.includes(pkg.panelTag);
-    return matchesSearch && matchesType && matchesTag;
-  });
+  const filteredPackages = panels.filter(createPackageFilter(search, type, tag));
 
   const PACKAGES_PER_PAGE = 4;
-  const totalPages = Math.ceil(filteredPackages.length / PACKAGES_PER_PAGE);
-  const startIdx = (currentPage - 1) * PACKAGES_PER_PAGE;
-  const endIdx = startIdx + PACKAGES_PER_PAGE;
-  const pagedPackages = filteredPackages.slice(startIdx, endIdx);
+  const paginationResult = applyPagination(filteredPackages, {
+    currentPage,
+    itemsPerPage: PACKAGES_PER_PAGE
+  });
+  const { items: pagedPackages, totalPages } = paginationResult;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -71,19 +54,14 @@ const Panels: React.FC = () => {
           buttonLabel={<><span style={{fontSize: '1.2em'}}>&larr;</span> Back</>}
           onButtonClick={() => navigate(-1)}
         />
-      </div>
-      {/* Utility Bar */}
+      </div>      {/* Utility Bar */}
       <div className="mb-4 flex space-x-4 w-4/5 mx-auto" style={{ maxWidth: '100%' }}>
-        <div className="flex items-center flex-1 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm">
-          <img src={searchIcon} alt="search" className="w-5 h-5 mr-2 opacity-40" />
-          <input
-            type="text"
-            placeholder="Search by disease name, package name, symptoms..."
-            className="flex-1 outline-none bg-transparent text-gray-500 placeholder-gray-400"
-            value={search}
-            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-          />
-        </div>
+        <SearchInput
+          value={search}
+          onChange={(value) => { setSearch(value); setCurrentPage(1); }}
+          placeholder="Search by disease name, package name, symptoms..."
+          className="flex-1"
+        />
         <DropdownSelect
           value={type}
           onChange={(v: string) => { setType(v); setCurrentPage(1); }}

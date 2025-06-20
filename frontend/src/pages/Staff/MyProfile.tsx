@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
-import { Button } from '../../components/common/Button';
-import '../../styles/components/staff-profile.css';
-
-interface StaffProfile {
-  id: number;
-  name: string;
-  avatar?: string;
-  email: string;
-  phone: string;
-  position: string;
-  department: string;
-  joinDate: string;
-}
+import { Button, Card } from '../../components';
+import { formatDate } from '../../utils';
+import { StaffProfile } from '../../types';
 
 const MyProfile: React.FC = () => {
   const [profile, setProfile] = useState<StaffProfile>({

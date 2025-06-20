@@ -3,11 +3,12 @@ import 'react-datepicker/dist/react-datepicker.css';
 import {useNavigate} from 'react-router-dom';
 import api from '../../../api/axios';
 import {useTableState} from '../../../api/hooks';
+import {useSlotOptions, useStatusOptions} from '../../../utils';
 import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 import AppointmentTitleBar from '../../../components/feature/TitleBar/AppointmentTitleBar';
 import AppointmentUtilityBar from '../../../components/feature/UtilityBar/AppointmentUtilityBar';
 import Appointments from '../../../components/feature/Table/Customer/Appointments';
-import SearchInput from '../../../components/feature/Filter/SearchInput';
+import { SearchInput } from '../../../components';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
 import AppointmentDetailPopup from '../../../components/feature/Popup/AppointmentDetailPopup';
@@ -20,7 +21,6 @@ const AppointmentHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusOptions, setStatusOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All status' }]);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
@@ -29,9 +29,10 @@ const AppointmentHistory: React.FC = () => {
   const [showDetailPopup, setShowDetailPopup] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [showResultPopup, setShowResultPopup] = useState(false);
-  const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All slots' }]);
-  const [slotMap, setSlotMap] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
+
+  const { slotOptions, slotMap } = useSlotOptions();
+  const statusOptions = useStatusOptions('/enumerators/appointment-status');
 
   const parseDate = (str: string) => {
     const [day, month, year] = str.split('/').map(Number);
@@ -70,40 +71,12 @@ const AppointmentHistory: React.FC = () => {
     totalPages,
     selected,
     handlePageChange,
-    handleSelectChange,
-    handleSelectAll,
+    handleSelectChange,    handleSelectAll,
     handleSort,
     sortConfig
   } = useTableState(filteredRecords, {
     initialPageSize: 5
-  });useEffect(() => {
-    api.get('/enumerators/slots')
-      .then(res => {
-        const options = [{ value: '', label: 'All slots' }];
-        const map: { [key: string]: string } = {};
-        res.data.forEach((slot: any) => {
-          if (slot.timeRange !== 'Filler slot, not used') {
-            options.push({ value: slot.timeRange, label: slot.timeRange });
-          }
-          map[slot.timeRange] = slot.timeRange;
-        });
-        setSlotOptions(options);
-        setSlotMap(map);
-      })
-      .catch((error) => {
-        console.error('Error loading slots:', error);
-      });
-
-    api.get('/enumerators/appointment-status')
-      .then(res => {
-        const options = [{ value: '', label: 'All status' }];
-        res.data.forEach((status: string) => {
-          options.push({ value: status, label: status.charAt(0) + status.slice(1).toLowerCase() });
-        });
-        setStatusOptions(options);
-      })
-      .catch(() => {});
-  }, []);
+  });
 
   useEffect(() => {
     if (selectedSlot && !slotOptions.some(opt => opt.value === selectedSlot)) {
