@@ -62,7 +62,8 @@ const HealthTipsCarousel: React.FC = () => {
 
     return (
         <div className="relative max-w-5xl mx-auto">
-            <div className={`bg-gradient-to-br ${healthTips[currentTip].color} rounded-3xl p-12 shadow-2xl transform transition-all duration-700 hover:scale-105`}>
+            <div
+                className={`bg-gradient-to-br ${healthTips[currentTip].color} rounded-3xl p-12 shadow-2xl transform transition-all duration-700 hover:scale-105`}>
                 <div className="text-center text-white">
                     <div className="mb-8 transform transition-transform duration-500 hover:scale-110">
                         <span className="text-8xl drop-shadow-lg">{healthTips[currentTip].icon}</span>
@@ -80,7 +81,7 @@ const HealthTipsCarousel: React.FC = () => {
                 aria-label="Previous tip"
             >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
 
@@ -90,7 +91,7 @@ const HealthTipsCarousel: React.FC = () => {
                 aria-label="Next tip"
             >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/>
                 </svg>
             </button>
 
@@ -193,9 +194,11 @@ const AboutUs: React.FC = () => {
                 <div className="container mx-auto px-6">
                     <h1 className="text-5xl font-bold text-pink-500 mb-8 text-center">About Us</h1>
                     <p className="text-xl text-gray-700 mb-12 text-center max-w-3xl mx-auto">
-                        GenHealth is dedicated to empowering women with the knowledge and tools to take control of their reproductive health. Our mission is to provide accessible, reliable, and personalized healthcare solutions for every stage of life.
+                        GenHealth is dedicated to empowering women with the knowledge and tools to take control of their
+                        reproductive health. Our mission is to provide accessible, reliable, and personalized healthcare
+                        solutions for every stage of life.
                     </p>
-                    <HealthTipsCarousel />
+                    <HealthTipsCarousel/>
                 </div>
             </section>
             <section className="py-20 bg-white">
@@ -203,7 +206,8 @@ const AboutUs: React.FC = () => {
                     <h2 className="text-4xl font-bold text-pink-500 mb-12 text-center">Our Team</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {teamMembers.map((member, index) => (
-                            <div key={index} className={`bg-gradient-to-br ${member.gradient} rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300`}>
+                            <div key={index}
+                                 className={`bg-gradient-to-br ${member.gradient} rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300`}>
                                 <div className="mb-6">
                                     <img
                                         src={member.image}
@@ -224,8 +228,10 @@ const AboutUs: React.FC = () => {
                     <h2 className="text-4xl font-bold text-pink-500 mb-12 text-center">Our Services</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {services.map((service, index) => (
-                            <div key={index} className={`rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 ${service.color}`}>
-                                <div className={`mb-6 w-20 h-20 mx-auto flex items-center justify-center rounded-full ${service.iconBg} text-4xl text-white shadow-lg`}>
+                            <div key={index}
+                                 className={`rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 ${service.color}`}>
+                                <div
+                                    className={`mb-6 w-20 h-20 mx-auto flex items-center justify-center rounded-full ${service.iconBg} text-4xl text-white shadow-lg`}>
                                     {service.icon}
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
@@ -240,8 +246,13 @@ const AboutUs: React.FC = () => {
                     <h2 className="text-4xl font-bold text-pink-500 mb-12 text-center">Contact Us</h2>
                     <div className="max-w-2xl mx-auto bg-pink-50 rounded-2xl p-8 shadow-lg">
                         <h3 className="text-2xl font-bold text-pink-500 mb-4">Get in touch</h3>
-                        <p className="text-gray-700 mb-6">For inquiries, support, or feedback, please email us at <a href="mailto:contact@genhealth.com" className="text-blue-500 underline">contact@genhealth.com</a> or call <span className="text-blue-500">1800-123-456</span>.</p>
-                        <button className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105" onClick={() => navigate('/contact')}>
+                        <p className="text-gray-700 mb-6">For inquiries, support, or feedback, please email us at <a
+                            href="mailto:contact@genhealth.com"
+                            className="text-blue-500 underline">contact@genhealth.com</a> or call <span
+                            className="text-blue-500">1800-123-456</span>.</p>
+                        <button
+                            className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105"
+                            onClick={() => navigate('/contact')}>
                             Contact Form
                         </button>
                     </div>

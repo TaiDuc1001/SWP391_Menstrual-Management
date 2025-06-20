@@ -5,9 +5,9 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
 
     const stats = [
-        { number: '10,000+', label: 'Trusted Users' },
-        { number: '5,000+', label: 'Successful Appointments' },
-        { number: '50+', label: 'Expert Doctors' }
+        {number: '10,000+', label: 'Trusted Users'},
+        {number: '5,000+', label: 'Successful Appointments'},
+        {number: '50+', label: 'Expert Doctors'}
     ];
 
     const screenings = [
@@ -90,7 +90,8 @@ const Home: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <section className="relative overflow-hidden bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 text-white">
+            <section
+                className="relative overflow-hidden bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 text-white">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-pink-500/20"></div>
                 <div className="relative container mx-auto px-6 py-20">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -98,9 +99,9 @@ const Home: React.FC = () => {
                             <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
                                 The companion to protect{' '}
                                 <span className="text-pink-200">your sexual</span>
-                                <br />
+                                <br/>
                                 <span className="text-pink-200">& reproductive</span>
-                                <br />
+                                <br/>
                                 <span className="text-pink-200">health</span>
                             </h1>
                             <p className="text-xl mb-8 text-white/90">
@@ -124,19 +125,24 @@ const Home: React.FC = () => {
                         <div className="flex-1 max-w-md">
                             <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
                                 <div className="flex justify-center items-end gap-4 mb-4">
-                                    <div className="w-12 h-16 bg-yellow-400 rounded-lg flex items-end justify-center pb-2">
+                                    <div
+                                        className="w-12 h-16 bg-yellow-400 rounded-lg flex items-end justify-center pb-2">
                                         <span className="text-2xl">👩</span>
                                     </div>
-                                    <div className="w-12 h-20 bg-orange-400 rounded-lg flex items-end justify-center pb-2">
+                                    <div
+                                        className="w-12 h-20 bg-orange-400 rounded-lg flex items-end justify-center pb-2">
                                         <span className="text-2xl">👨</span>
                                     </div>
-                                    <div className="w-12 h-24 bg-white rounded-lg flex items-end justify-center pb-2 border-2 border-gray-200">
+                                    <div
+                                        className="w-12 h-24 bg-white rounded-lg flex items-end justify-center pb-2 border-2 border-gray-200">
                                         <span className="text-2xl">👩‍⚕️</span>
                                     </div>
-                                    <div className="w-12 h-18 bg-teal-400 rounded-lg flex items-end justify-center pb-2">
+                                    <div
+                                        className="w-12 h-18 bg-teal-400 rounded-lg flex items-end justify-center pb-2">
                                         <span className="text-2xl">👩‍🔬</span>
                                     </div>
-                                    <div className="w-12 h-16 bg-blue-400 rounded-lg flex items-end justify-center pb-2">
+                                    <div
+                                        className="w-12 h-16 bg-blue-400 rounded-lg flex items-end justify-center pb-2">
                                         <span className="text-2xl">👩‍⚕️</span>
                                     </div>
                                 </div>
@@ -169,17 +175,20 @@ const Home: React.FC = () => {
                             <div className="bg-pink-50 rounded-3xl p-8 shadow-lg">
                                 <div className="flex items-center justify-center mb-4">
                                     <div className="relative">
-                                        <div className="w-20 h-20 bg-pink-200 rounded-full flex items-center justify-center">
+                                        <div
+                                            className="w-20 h-20 bg-pink-200 rounded-full flex items-center justify-center">
                                             <span className="text-3xl">👩‍⚕️</span>
                                         </div>
                                         <div className="absolute -right-4 -top-2">
-                                            <div className="w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center">
+                                            <div
+                                                className="w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center">
                                                 <span className="text-xl">💕</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="ml-8">
-                                        <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
+                                        <div
+                                            className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
                                             <span className="text-2xl">👨‍⚕️</span>
                                         </div>
                                     </div>
@@ -199,12 +208,14 @@ const Home: React.FC = () => {
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
                         {screenings.map((screening, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                            <div key={index}
+                                 className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                                 <div className="text-6xl mb-6 text-center">{screening.icon}</div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">{screening.title}</h3>
                                 <p className="text-gray-600 mb-6 text-center leading-relaxed">{screening.description}</p>
                                 <div className="text-center">
-                                    <button className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300">
+                                    <button
+                                        className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300">
                                         {screening.buttonText}
                                     </button>
                                 </div>
@@ -231,11 +242,13 @@ const Home: React.FC = () => {
                                 className="bg-gray-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
                                 onClick={() => navigate('/blogs')}
                             >
-                                <div className="h-48 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+                                <div
+                                    className="h-48 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                     <span className="text-6xl">{post.image}</span>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-sm text-pink-500 font-medium mb-2 bg-pink-50 px-3 py-1 rounded-full inline-block">
+                                    <div
+                                        className="text-sm text-pink-500 font-medium mb-2 bg-pink-50 px-3 py-1 rounded-full inline-block">
                                         {post.category}
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-800 mb-4">{post.title}</h3>
@@ -260,7 +273,8 @@ const Home: React.FC = () => {
                     <h2 className="text-4xl font-bold text-pink-500 mb-12 text-center">Meet our crew</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {teamMembers.map((member, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div key={index}
+                                 className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300">
                                 <div className="mb-6">
                                     <img
                                         src={member.image}
@@ -271,7 +285,8 @@ const Home: React.FC = () => {
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">{member.name}</h3>
                                 <p className="text-pink-500 font-medium mb-4">{member.role}</p>
                                 <p className="text-gray-600 mb-6 leading-relaxed">{member.description}</p>
-                                <button className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300">
+                                <button
+                                    className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300">
                                     Contact
                                 </button>
                             </div>

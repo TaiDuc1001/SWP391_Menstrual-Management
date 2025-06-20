@@ -3,85 +3,88 @@
 @tailwind utilities;
 
 @layer components {
-  .sidebar-base {
-    @apply fixed top-24 bg-white/95 backdrop-blur-lg border px-6 py-6 flex flex-col gap-4 min-w-[200px] max-w-[240px] rounded-3xl shadow-md z-30 transition-all duration-300;
-  }
-  
-  .sidebar-blue {
-    @apply border-blue-100 hover:shadow-blue-100;
-  }
-    .sidebar-pink {
-    @apply border-pink-100 hover:shadow-pink-100;
-  }
-  .sidebar-nav-link-base {
-    @apply flex items-center w-full px-4 py-3 rounded-xl font-poppins text-sm gap-1 transition-all duration-200 relative whitespace-nowrap active:font-bold focus:font-bold;
-  }
-  
-  .sidebar-nav-link-blue-active {
-    @apply bg-blue-100 text-blue-500 font-bold shadow-sm;
-  }
-  
-  .sidebar-nav-link-blue-inactive {
-    @apply text-gray-700 hover:bg-blue-50 hover:text-blue-500 font-normal;
-  }
-  
-  .sidebar-nav-link-pink-active {
-    @apply bg-pink-100 text-pink-500 font-bold shadow-sm;
-  }
-  
-  .sidebar-nav-link-pink-inactive {
-    @apply text-gray-700 hover:bg-pink-50 hover:text-pink-500 font-normal;
-  }
+    .sidebar-base {
+        @apply fixed top-24 bg-white/95 backdrop-blur-lg border px-6 py-6 flex flex-col gap-4 min-w-[200px] max-w-[240px] rounded-3xl shadow-md z-30 transition-all duration-300;
+    }
 
-  .utility-bar {
-    @apply mb-4 flex space-x-4 w-full;
-    max-width: 100%;
-  }
-  
-  .search-input-container {
-    @apply relative flex-1;
-  }
-  
-  .search-input {
-    @apply w-full px-4 py-2 pl-10 border rounded outline-none bg-transparent text-gray-500 placeholder-gray-400;
-  }
-  
-  .search-icon {
-    @apply absolute inset-y-0 left-3 flex items-center pointer-events-none w-4 h-4 text-gray-400;
-  }
-  
-  .filter-dropdown {
-    @apply border rounded p-2 pr-8 appearance-none w-full flex items-center justify-between bg-white;
-  }
-  
-  .package-card {
-    @apply border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50 hover:shadow w-full;
-  }
-  
-  .package-info {
-    @apply flex-1;
-  }
-  
-  .package-badges {
-    @apply flex items-center gap-2 mb-1;
-  }
-  
-  .package-title {
-    @apply font-bold text-lg mb-1;
-  }
-  
-  .package-description {
-    @apply text-gray-600 text-sm mb-1;
-  }
-  
-  .package-meta {
-    @apply text-gray-400 text-xs;
-  }
-  
-  .package-actions {
-    @apply flex-shrink-0 flex flex-col gap-2 mt-4 md:mt-0 md:ml-4;
-  }
+    .sidebar-blue {
+        @apply border-blue-100 hover:shadow-blue-100;
+    }
+
+    .sidebar-pink {
+        @apply border-pink-100 hover:shadow-pink-100;
+    }
+
+    .sidebar-nav-link-base {
+        @apply flex items-center w-full px-4 py-3 rounded-xl font-poppins text-sm gap-1 transition-all duration-200 relative whitespace-nowrap active:font-bold focus:font-bold;
+    }
+
+    .sidebar-nav-link-blue-active {
+        @apply bg-blue-100 text-blue-500 font-bold shadow-sm;
+    }
+
+    .sidebar-nav-link-blue-inactive {
+        @apply text-gray-700 hover:bg-blue-50 hover:text-blue-500 font-normal;
+    }
+
+    .sidebar-nav-link-pink-active {
+        @apply bg-pink-100 text-pink-500 font-bold shadow-sm;
+    }
+
+    .sidebar-nav-link-pink-inactive {
+        @apply text-gray-700 hover:bg-pink-50 hover:text-pink-500 font-normal;
+    }
+
+    .utility-bar {
+        @apply mb-4 flex space-x-4 w-full;
+        max-width: 100%;
+    }
+
+    .search-input-container {
+        @apply relative flex-1;
+    }
+
+    .search-input {
+        @apply w-full px-4 py-2 pl-10 border rounded outline-none bg-transparent text-gray-500 placeholder-gray-400;
+    }
+
+    .search-icon {
+        @apply absolute inset-y-0 left-3 flex items-center pointer-events-none w-4 h-4 text-gray-400;
+    }
+
+    .filter-dropdown {
+        @apply border rounded p-2 pr-8 appearance-none w-full flex items-center justify-between bg-white;
+    }
+
+    .package-card {
+        @apply border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50 hover:shadow w-full;
+    }
+
+    .package-info {
+        @apply flex-1;
+    }
+
+    .package-badges {
+        @apply flex items-center gap-2 mb-1;
+    }
+
+    .package-title {
+        @apply font-bold text-lg mb-1;
+    }
+
+    .package-description {
+        @apply text-gray-600 text-sm mb-1;
+    }
+
+    .package-meta {
+        @apply text-gray-400 text-xs;
+    }
+
+    .package-actions {
+        @apply flex-shrink-0 flex flex-col gap-2 mt-4 md:mt-0 md:ml-4;
+    }
 }
+
 @import './components/table-actions.css';
 @import './components/staff-profile.css';
 @import './pages/appointment-detail.css';
@@ -91,112 +94,112 @@
 @import './table.css';
 
 .btn-primary {
-  background-color: #ec4899;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background-color: #ec4899;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
-  background-color: #db2777;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background-color: #db2777;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
-  background-color: #e5e7eb;
-  color: #374151;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.2s;
+    background-color: #e5e7eb;
+    color: #374151;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-  background-color: #d1d5db;
+    background-color: #d1d5db;
 }
 
 .card-base {
-  background-color: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
 }
 
 .card-hover {
-  background-color: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  transition: box-shadow 0.2s;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: box-shadow 0.2s;
 }
 
 .card-hover:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .form-input {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  transition: all 0.2s;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
 }
 
 .form-input:focus {
-  outline: none;
-  border-color: #ec4899;
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+    outline: none;
+    border-color: #ec4899;
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
 }
 
 .page-container {
-  min-height: 100vh;
-  background-color: #f9fafb;
+    min-height: 100vh;
+    background-color: #f9fafb;
 }
 
 .page-content {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 1rem;
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1rem;
 }
 
 .nav-link {
-  padding: 0.5rem 1.25rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  color: #374151;
-  transition: all 0.2s;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.2s;
 }
 
 .nav-link:hover {
-  color: white;
-  background-color: #ec4899;
+    color: white;
+    background-color: #ec4899;
 }
 
 .nav-link-active {
-  padding: 0.5rem 1.25rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  background-color: #ec4899;
-  color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    background-color: #ec4899;
+    color: white;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('../assets/fonts/Poppins-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Poppins';
+    src: url('../assets/fonts/Poppins-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f9fafb;
-  color: #111827;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9fafb;
+    color: #111827;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

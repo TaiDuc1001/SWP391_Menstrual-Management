@@ -1,5 +1,5 @@
-import { RouteConfig } from '../types/routes';
-import { Navigate } from 'react-router-dom';
+import {RouteConfig} from '../types/routes';
+import {Navigate} from 'react-router-dom';
 
 import Dashboard from '../pages/Customer/Dashboard';
 
@@ -21,28 +21,46 @@ import PanelDetail from '../pages/Customer/Examination/PanelDetail';
 import MyProfile from '../pages/Customer/MyProfile';
 
 export const customerPaths: RouteConfig[] = [
-  { 
-    path: '/customer', 
-    element: <Navigate to="/customer/dashboard" replace />,
-    showInSidebar: false 
-  },
+    {
+        path: '/customer',
+        element: <Navigate to="/customer/dashboard" replace/>,
+        showInSidebar: false
+    },
 
-  { path: '/customer/dashboard', element: <Dashboard />, label: 'Dashboard', iconName: 'FaHome', showInSidebar: true },
-  
-  { path: '/customer/menstrual-cycles', element: <MenstrualCycles />, label: 'Menstrual Cycles', iconName: 'FaCalendarAlt', showInSidebar: true },
-  { path: '/customer/menstrual-cycles/all', element: <MenstrualCyclesAll /> },
-  
-  { path: '/customer/appointments', element: <Appointments />, label: 'Appointments', iconName: 'FaUserMd', showInSidebar: true },
-  { path: '/customer/appointments/:id', element: <AppointmentDetail /> },
-  { path: '/customer/appointments/book', element: <AppointmentBooking /> },
-  { path: '/customer/checkout/:appointmentId', element: <Checkout /> },
-  { path: '/customer/doctors/:id', element: <DoctorDetail /> },
-  
-  { path: '/customer/sti-tests', element: <Examinations />, label: 'STI Tests', iconName: 'FaFlask', showInSidebar: true },
-  { path: '/customer/sti-tests/:id', element: <ExaminationDetail /> },
-  { path: '/customer/sti-tests/packages', element: <Panels /> },
-  { path: '/customer/sti-tests/packages/:id', element: <PanelDetail /> },
-  { path: '/customer/sti-tests/book', element: <ExaminationBooking /> },
-  
-  { path: '/customer/profile', element: <MyProfile /> },
+    {path: '/customer/dashboard', element: <Dashboard/>, label: 'Dashboard', iconName: 'FaHome', showInSidebar: true},
+
+    {
+        path: '/customer/menstrual-cycles',
+        element: <MenstrualCycles/>,
+        label: 'Menstrual Cycles',
+        iconName: 'FaCalendarAlt',
+        showInSidebar: true
+    },
+    {path: '/customer/menstrual-cycles/all', element: <MenstrualCyclesAll/>},
+
+    {
+        path: '/customer/appointments',
+        element: <Appointments/>,
+        label: 'Appointments',
+        iconName: 'FaUserMd',
+        showInSidebar: true
+    },
+    {path: '/customer/appointments/:id', element: <AppointmentDetail/>},
+    {path: '/customer/appointments/book', element: <AppointmentBooking/>},
+    {path: '/customer/checkout/:appointmentId', element: <Checkout/>},
+    {path: '/customer/doctors/:id', element: <DoctorDetail/>},
+
+    {
+        path: '/customer/sti-tests',
+        element: <Examinations/>,
+        label: 'STI Tests',
+        iconName: 'FaFlask',
+        showInSidebar: true
+    },
+    {path: '/customer/sti-tests/:id', element: <ExaminationDetail/>},
+    {path: '/customer/sti-tests/packages', element: <Panels/>},
+    {path: '/customer/sti-tests/packages/:id', element: <PanelDetail/>},
+    {path: '/customer/sti-tests/book', element: <ExaminationBooking/>},
+
+    {path: '/customer/profile', element: <MyProfile/>},
 ];

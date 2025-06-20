@@ -14,25 +14,25 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
-    const [selectedDay, setSelectedDay] = useState<number|null>(null);
+    const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const location = useLocation();
     const navigate = useNavigate();
     // Hardcode mẫu chu kỳ: bắt đầu ngày 1 tháng hiện tại, 7 ngày hành kinh, chu kỳ 28 ngày
     const [cycles, setCycles] = useState([
-      {
-        id: 1,
-        startDate: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`,
-        endDate: '',
-        duration: 7,
-        cycle: 28
-      }
+        {
+            id: 1,
+            startDate: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`,
+            endDate: '',
+            duration: 7,
+            cycle: 28
+        }
     ]);
 
     useEffect(() => {
         if (location.state && location.state.openCyclePopup) {
             setShowCyclePopup(true);
-            navigate(location.pathname, { replace: true, state: {} });
+            navigate(location.pathname, {replace: true, state: {}});
         }
     }, [location, navigate]);
 
@@ -94,7 +94,9 @@ const MenstrualCycleDashboard: React.FC = () => {
 
     // Giả lập dữ liệu triệu chứng cho ví dụ (bạn nên thay bằng dữ liệu thực tế từ backend hoặc context)
     // symptoms: { [key: string]: { symptom: string; period: string; flow: string } }
-    const [symptoms, setSymptoms] = useState<{ [key: string]: { symptom: string; period: string; flow: string } }>(() => {
+    const [symptoms, setSymptoms] = useState<{
+        [key: string]: { symptom: string; period: string; flow: string }
+    }>(() => {
         const saved = localStorage.getItem('menstrual_symptoms');
         return saved ? JSON.parse(saved) : {};
     });
@@ -125,35 +127,48 @@ const MenstrualCycleDashboard: React.FC = () => {
                 <main className="flex-1 w-full">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-extrabold text-purple-700 flex items-center gap-2">
-                            <span className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
+                            <span
+                                className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                             Chu Kỳ Của Tôi
                         </h2>
                         <div className="flex gap-2">
-                            <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105" onClick={() => setShowCyclePopup(true)}>Khai Báo Chu Kỳ</button>
-                            <button className="bg-white border border-purple-400 text-purple-600 px-3 py-2 rounded-lg font-semibold shadow hover:bg-purple-50 transition-all duration-200 transform hover:scale-105" onClick={() => setShowReminderPopup(true)}>Cài đặt</button>
+                            <button
+                                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                                onClick={() => setShowCyclePopup(true)}>Khai Báo Chu Kỳ
+                            </button>
+                            <button
+                                className="bg-white border border-purple-400 text-purple-600 px-3 py-2 rounded-lg font-semibold shadow hover:bg-purple-50 transition-all duration-200 transform hover:scale-105"
+                                onClick={() => setShowReminderPopup(true)}>Cài đặt
+                            </button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div className="col-span-2 bg-white rounded-2xl shadow p-4 flex flex-col border border-gray-100">
+                        <div
+                            className="col-span-2 bg-white rounded-2xl shadow p-4 flex flex-col border border-gray-100">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
-                                    <span className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
+                                    <span
+                                        className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                     Lịch chu kỳ tháng {currentMonth + 1}/{currentYear}
                                 </h3>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setCurrentMonth(m => m === 0 ? 11 : m - 1)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'<'}</button>
-                                    <button onClick={() => setCurrentMonth(m => m === 11 ? 0 : m + 1)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
+                                    <button onClick={() => setCurrentMonth(m => m === 0 ? 11 : m - 1)}
+                                            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'<'}</button>
+                                    <button onClick={() => setCurrentMonth(m => m === 11 ? 0 : m + 1)}
+                                            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
                             <div className="grid grid-cols-7 gap-1 mb-3">
                                 {weekDays.map((wd, idx) => (
-                                    <div key={idx} className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
+                                    <div key={idx}
+                                         className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
                                 ))}
                                 {days.map((day, idx) => {
                                     let type = '';
                                     if (cycles && cycles.length > 0) {
                                         type = getDayTypeForCalendar(day);
-                                    }                                    let hasSymptom = false;
+                                    }
+                                    let hasSymptom = false;
                                     let dayKey = '';
                                     if (day) {
                                         dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -187,19 +202,40 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 })}
                             </div>
                             <div className="flex gap-4 mt-2 text-xs items-center">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-red-600 rounded-full inline-block"></span> Ngày có kinh</div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded-full inline-block"></span> Ngày rụng trứng</div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-teal-400 rounded-full inline-block"></span> Dễ thụ thai</div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Có triệu chứng</div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-red-600 rounded-full inline-block"></span> Ngày có kinh
+                                </div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-yellow-400 rounded-full inline-block"></span> Ngày rụng trứng
+                                </div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-teal-400 rounded-full inline-block"></span> Dễ thụ thai
+                                </div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Có
+                                    triệu chứng
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
+                        <div
+                            className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
                             <h3 className="font-semibold text-lg text-purple-800 mb-2">Dự đoán & Phân tích</h3>
                             <div className="flex flex-col gap-1 text-xs">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 rounded-full inline-block"></span> Ngày rụng trứng tiếp theo <span className="ml-auto font-semibold text-gray-800">18/05/2024</span></div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 rounded-full inline-block"></span> Khả năng thụ thai cao <span className="ml-auto font-semibold text-gray-800">15/05 - 19/05</span></div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Kỳ kinh tiếp theo dự kiến <span className="ml-auto font-semibold text-gray-800">12/06/2024</span></div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-400 rounded-full inline-block"></span> Cảnh báo chu kỳ <span className="ml-auto font-semibold text-gray-800">Bình thường</span></div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 rounded-full inline-block"></span> Ngày
+                                    rụng trứng tiếp theo <span
+                                        className="ml-auto font-semibold text-gray-800">18/05/2024</span></div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 rounded-full inline-block"></span> Khả
+                                    năng thụ thai cao <span className="ml-auto font-semibold text-gray-800">15/05 - 19/05</span>
+                                </div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Kỳ
+                                    kinh tiếp theo dự kiến <span
+                                        className="ml-auto font-semibold text-gray-800">12/06/2024</span></div>
+                                <div className="flex items-center gap-1"><span
+                                    className="w-3 h-3 bg-blue-400 rounded-full inline-block"></span> Cảnh báo chu
+                                    kỳ <span className="ml-auto font-semibold text-gray-800">Bình thường</span></div>
                             </div>
                         </div>
                     </div>
@@ -207,7 +243,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                         <div className="bg-white rounded-2xl shadow p-4 col-span-1">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
-                                    <span className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
+                                    <span
+                                        className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                     Lịch sử chu kỳ
                                 </h3>
                                 <a
@@ -221,100 +258,116 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     Xem tất cả
                                 </a>
                             </div>
-                            <div className={historyData.length > 3 ? "overflow-y-auto max-h-32 transition-all" : ""} id="cycle-history-body">
+                            <div className={historyData.length > 3 ? "overflow-y-auto max-h-32 transition-all" : ""}
+                                 id="cycle-history-body">
                                 <table className="w-full text-xs mt-2">
                                     <thead>
-                                        <tr className="text-gray-600">
-                                            <th className="py-1 font-medium">Bắt đầu</th>
-                                            <th className="py-1 font-medium">Kết thúc</th>
-                                            <th className="py-1 font-medium">Số ngày hành kinh</th>
-                                            <th className="py-1 font-medium">Chu kỳ (ngày)</th>
-                                        </tr>
+                                    <tr className="text-gray-600">
+                                        <th className="py-1 font-medium">Bắt đầu</th>
+                                        <th className="py-1 font-medium">Kết thúc</th>
+                                        <th className="py-1 font-medium">Số ngày hành kinh</th>
+                                        <th className="py-1 font-medium">Chu kỳ (ngày)</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        {historyData.map((row, idx) => (
-                                            <tr key={idx} className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
-                                                <td className="py-1">{row.startDate}</td>
-                                                <td className="py-1">{row.endDate}</td>
-                                                <td className="py-1">{row.duration}</td>
-                                                <td className="py-1">{row.cycle}</td>
-                                            </tr>
-                                        ))}
+                                    {historyData.map((row, idx) => (
+                                        <tr key={idx}
+                                            className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
+                                            <td className="py-1">{row.startDate}</td>
+                                            <td className="py-1">{row.endDate}</td>
+                                            <td className="py-1">{row.duration}</td>
+                                            <td className="py-1">{row.cycle}</td>
+                                        </tr>
+                                    ))}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 col-span-2 flex flex-col gap-2">
+                        <div
+                            className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 col-span-2 flex flex-col gap-2">
                             <h3 className="font-semibold text-lg text-purple-800 mb-2 flex items-center gap-2">
-                                <span className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
+                                <span
+                                    className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                 Đề xuất từ AI
                             </h3>
                             <ul className="list-disc pl-4 text-xs text-gray-800 flex flex-col gap-1">
-                                <li><span className="font-semibold text-pink-600">Xu hướng chu kỳ:</span> Đều đặn, ổn định. <span className="font-semibold text-pink-600">Gợi ý:</span> Hãy tiếp tục duy trì thói quen sinh hoạt lành mạnh!</li>
-                                <li><span className="font-semibold text-yellow-600">Nhắc nhở:</span> Nếu phát hiện kỳ kinh bất thường, hãy cân nhắc <span className="underline">khám phụ khoa định kỳ</span>.</li>
-                                <li><span className="font-semibold text-red-500">Lưu ý:</span> Nếu căng thẳng kéo dài, hãy thử dành thời gian thư giãn và nghỉ ngơi nhiều hơn.</li>
-                                <li><span className="font-semibold text-green-600">Gợi ý thực phẩm & tập luyện:</span> Ăn nhiều trái cây, rau xanh và tập yoga nhẹ nhàng trong giai đoạn hành kinh để giảm mệt mỏi.</li>
+                                <li><span className="font-semibold text-pink-600">Xu hướng chu kỳ:</span> Đều đặn, ổn
+                                    định. <span className="font-semibold text-pink-600">Gợi ý:</span> Hãy tiếp tục duy
+                                    trì thói quen sinh hoạt lành mạnh!
+                                </li>
+                                <li><span className="font-semibold text-yellow-600">Nhắc nhở:</span> Nếu phát hiện kỳ
+                                    kinh bất thường, hãy cân nhắc <span
+                                        className="underline">khám phụ khoa định kỳ</span>.
+                                </li>
+                                <li><span className="font-semibold text-red-500">Lưu ý:</span> Nếu căng thẳng kéo dài,
+                                    hãy thử dành thời gian thư giãn và nghỉ ngơi nhiều hơn.
+                                </li>
+                                <li><span
+                                    className="font-semibold text-green-600">Gợi ý thực phẩm & tập luyện:</span> Ăn
+                                    nhiều trái cây, rau xanh và tập yoga nhẹ nhàng trong giai đoạn hành kinh để giảm mệt
+                                    mỏi.
+                                </li>
                             </ul>
                         </div>
                     </div>
-                    <MenstrualCyclePopup 
-                      open={showCyclePopup} 
-                      onClose={() => setShowCyclePopup(false)}
-                      onSave={(data) => {
-                        setShowCyclePopup(false);
-                        setShowSuccess(true);
-                        setCycles(prev => [
-                          ...prev,
-                          {
-                            id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
-                            startDate: data.startDate,
-                            endDate: '',
-                            duration: data.duration,
-                            cycle: data.cycleLength
-                          }
-                        ]);
-                        setTimeout(() => setShowSuccess(false), 1200);
-                      }}
+                    <MenstrualCyclePopup
+                        open={showCyclePopup}
+                        onClose={() => setShowCyclePopup(false)}
+                        onSave={(data) => {
+                            setShowCyclePopup(false);
+                            setShowSuccess(true);
+                            setCycles(prev => [
+                                ...prev,
+                                {
+                                    id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
+                                    startDate: data.startDate,
+                                    endDate: '',
+                                    duration: data.duration,
+                                    cycle: data.cycleLength
+                                }
+                            ]);
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
                     />
-                    <ReminderSettingsPopup 
-                      open={showReminderPopup} 
-                      onClose={() => setShowReminderPopup(false)}
-                      onSave={() => {
-                        setShowReminderPopup(false);
-                        setShowSuccess(true);
-                        setTimeout(() => setShowSuccess(false), 1200);
-                      }}
+                    <ReminderSettingsPopup
+                        open={showReminderPopup}
+                        onClose={() => setShowReminderPopup(false)}
+                        onSave={() => {
+                            setShowReminderPopup(false);
+                            setShowSuccess(true);
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
                     />
-                    <DayNotePopup 
-                      open={showDayNote} 
-                      onClose={() => setShowDayNote(false)}                      onSave={data => {
+                    <DayNotePopup
+                        open={showDayNote}
+                        onClose={() => setShowDayNote(false)} onSave={data => {
                         setShowDayNote(false);
                         setShowSuccess(true);
                         if (selectedDay) {
-                          const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                          // Nếu triệu chứng là "Không có", xóa triệu chứng khỏi object để không hiện viền
-                          if (data.symptom === 'Không có') {
-                            setSymptoms(prev => {
-                              const newState = {...prev};
-                              delete newState[key];
-                              return newState;
-                            });
-                          } else {
-                            // Ngược lại thì lưu triệu chứng cho ngày đó
-                            setSymptoms(prev => ({ ...prev, [key]: data }));
-                          }
+                            const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                            // Nếu triệu chứng là "Không có", xóa triệu chứng khỏi object để không hiện viền
+                            if (data.symptom === 'Không có') {
+                                setSymptoms(prev => {
+                                    const newState = {...prev};
+                                    delete newState[key];
+                                    return newState;
+                                });
+                            } else {
+                                // Ngược lại thì lưu triệu chứng cho ngày đó
+                                setSymptoms(prev => ({...prev, [key]: data}));
+                            }
                         }
                         setTimeout(() => setShowSuccess(false), 1200);
-                      }}
-                      {...(selectedDay && symptoms[
-                        `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
-                      ] ? {
-                        defaultValue: symptoms[
-                          `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
-                        ]
-                      } : {})}
+                    }}
+                        {...(selectedDay && symptoms[
+                            `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
+                            ] ? {
+                            defaultValue: symptoms[
+                                `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
+                                ]
+                        } : {})}
                     />
-                    <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!" />
+                    <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>
             </div>
         </div>
@@ -322,9 +375,9 @@ const MenstrualCycleDashboard: React.FC = () => {
 };
 
 export default function MenstrualCyclesWithProvider() {
-  return (
-    <MenstrualCycleProvider>
-      <MenstrualCycleDashboard />
-    </MenstrualCycleProvider>
-  );
+    return (
+        <MenstrualCycleProvider>
+            <MenstrualCycleDashboard/>
+        </MenstrualCycleProvider>
+    );
 }

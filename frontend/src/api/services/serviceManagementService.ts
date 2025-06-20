@@ -1,20 +1,19 @@
-import axios from '../axios';
-import { createBaseService, BaseEntity, BaseFilters } from '../../utils/serviceUtils';
+import {BaseEntity, BaseFilters, createBaseService} from '../../utils/serviceUtils';
 
 export interface Service extends BaseEntity {
-  name: string;
-  description: string;
-  price: number;
-  duration: number;
-  status: string;
-  category: string;
+    name: string;
+    description: string;
+    price: number;
+    duration: number;
+    status: string;
+    category: string;
 }
 
 export interface ServiceFilters extends BaseFilters {
-  category?: string;
-  status?: string;
-  priceMin?: number;
-  priceMax?: number;
+    category?: string;
+    status?: string;
+    priceMin?: number;
+    priceMax?: number;
 }
 
 export const serviceManagementService = createBaseService<Service, ServiceFilters>('/services');

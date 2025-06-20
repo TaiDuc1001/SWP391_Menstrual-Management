@@ -108,12 +108,14 @@ const Blogs: React.FC = () => {
                         <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-8 shadow-lg">
                             <div className="flex flex-col lg:flex-row items-center gap-8">
                                 <div className="lg:w-1/3">
-                                    <div className="w-full h-64 bg-gradient-to-br from-pink-200 to-purple-200 rounded-2xl flex items-center justify-center">
+                                    <div
+                                        className="w-full h-64 bg-gradient-to-br from-pink-200 to-purple-200 rounded-2xl flex items-center justify-center">
                                         <span className="text-8xl">{featuredPost.image}</span>
                                     </div>
                                 </div>
                                 <div className="lg:w-2/3">
-                                    <div className="text-sm text-pink-500 font-medium mb-2">{featuredPost.category}</div>
+                                    <div
+                                        className="text-sm text-pink-500 font-medium mb-2">{featuredPost.category}</div>
                                     <h3 className="text-3xl font-bold text-gray-800 mb-4">{featuredPost.title}</h3>
                                     <p className="text-gray-600 text-lg mb-6 leading-relaxed">{featuredPost.description}</p>
                                     <div className="flex items-center gap-4 mb-6">
@@ -121,7 +123,8 @@ const Blogs: React.FC = () => {
                                         <span className="text-sm text-gray-500">•</span>
                                         <span className="text-sm text-gray-500">{featuredPost.readTime}</span>
                                     </div>
-                                    <button className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105">
+                                    <button
+                                        className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105">
                                         Read article
                                     </button>
                                 </div>
@@ -140,13 +143,16 @@ const Blogs: React.FC = () => {
                             <article
                                 key={post.id}
                                 className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
-                                onClick={() => {}}
+                                onClick={() => {
+                                }}
                             >
-                                <div className="h-48 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+                                <div
+                                    className="h-48 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                     <span className="text-6xl">{post.image}</span>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-sm text-pink-500 font-medium mb-2 bg-pink-50 px-3 py-1 rounded-full inline-block">
+                                    <div
+                                        className="text-sm text-pink-500 font-medium mb-2 bg-pink-50 px-3 py-1 rounded-full inline-block">
                                         {post.category}
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-800 mb-4">{post.title}</h3>
@@ -156,7 +162,8 @@ const Blogs: React.FC = () => {
                                         <span className="text-sm text-gray-500">•</span>
                                         <span className="text-sm text-gray-500">{post.readTime}</span>
                                     </div>
-                                    <button className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300">
+                                    <button
+                                        className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300">
                                         Read more →
                                     </button>
                                 </div>

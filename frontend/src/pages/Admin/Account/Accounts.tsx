@@ -107,20 +107,30 @@ const Accounts: React.FC = () => {
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
-            case 'Customer': return 'bg-green-100 text-green-600';
-            case 'Consultant': return 'bg-yellow-100 text-yellow-600';
-            case 'Staff': return 'bg-blue-100 text-blue-600';
-            case 'Manager': return 'bg-purple-100 text-purple-600';
-            default: return 'bg-gray-100 text-gray-600';
+            case 'Customer':
+                return 'bg-green-100 text-green-600';
+            case 'Consultant':
+                return 'bg-yellow-100 text-yellow-600';
+            case 'Staff':
+                return 'bg-blue-100 text-blue-600';
+            case 'Manager':
+                return 'bg-purple-100 text-purple-600';
+            default:
+                return 'bg-gray-100 text-gray-600';
         }
     };
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case 'Active': return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">Active</span>;
-            case 'Locked': return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Locked</span>;
-            case 'Inactive': return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">Inactive</span>;
-            case 'Pending': return <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs">Pending</span>;
-            default: return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">{status}</span>;
+            case 'Active':
+                return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">Active</span>;
+            case 'Locked':
+                return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Locked</span>;
+            case 'Inactive':
+                return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">Inactive</span>;
+            case 'Pending':
+                return <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs">Pending</span>;
+            default:
+                return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">{status}</span>;
         }
     };
 
@@ -156,7 +166,7 @@ const Accounts: React.FC = () => {
                         className="w-full px-4 py-2 border rounded"
                     />
                     <span className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                        <img src={searchIcon} alt="Search" className="w-5 h-5 text-gray-400" />
+                        <img src={searchIcon} alt="Search" className="w-5 h-5 text-gray-400"/>
                     </span>
                 </div>
 
@@ -244,7 +254,7 @@ const Accounts: React.FC = () => {
                         onClick={handleRefresh}
                         className="flex items-center px-4 py-2 border rounded bg-white hover:bg-gray-100 transition"
                     >
-                        <img src={refreshIcon} alt="Refresh" className="w-4 h-4 mr-2" />
+                        <img src={refreshIcon} alt="Refresh" className="w-4 h-4 mr-2"/>
                         Refresh
                     </button>
                 </div>
@@ -261,7 +271,7 @@ const Accounts: React.FC = () => {
                     <thead>
                     <tr className="bg-gray-50 text-gray-700">
                         <th className="p-2 border w-3">No</th>
-                        <th className="p-2 border w-20">Name</th>   
+                        <th className="p-2 border w-20">Name</th>
                         <th className="p-2 border w-20">Email</th>
                         <th className="p-2 border w-10">Password</th>
                         <th className="p-2 border w-12">Role</th>
@@ -280,19 +290,22 @@ const Accounts: React.FC = () => {
                             <tr key={user.id} className="hover:bg-gray-50">
                                 <td className="p-2 border text-center">{idx + 1}</td>
                                 <td className="p-2 border flex items-center gap-2">
-                                    <img src={user.avatar} alt="avatar" className="w-7 h-7 rounded-full border" />
+                                    <img src={user.avatar} alt="avatar" className="w-7 h-7 rounded-full border"/>
                                     <span>{user.name}</span>
                                 </td>
                                 <td className="p-2 border">{user.email}</td>
                                 <td className="p-2 border text-center">********</td>
                                 <td className="p-2 border text-center">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>{user.role}</span>
+                                    <span
+                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>{user.role}</span>
                                 </td>
                                 <td className="p-2 border text-center">{user.phone}</td>
                                 <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
                                 <td className="p-2 border text-center">
-                                    <button title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4 mr-4" /></button>
-                                    <button title="Delete"><img src={deleteIcon} alt="delete" className="w-4 h-4" /></button>
+                                    <button title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4 mr-4"/>
+                                    </button>
+                                    <button title="Delete"><img src={deleteIcon} alt="delete" className="w-4 h-4"/>
+                                    </button>
                                 </td>
                             </tr>
                         ))
@@ -302,13 +315,16 @@ const Accounts: React.FC = () => {
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
                     <span>Displaying 1-4 of {totalUsers.toLocaleString()} users</span>
                     <div className="flex items-center gap-1">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-white border'}`}>{'<'}</button>
+                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}
+                                className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-white border'}`}>{'<'}</button>
                         {[...Array(3)].map((_, i) => (
-                            <button key={i} className={`px-2 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white border'}`}>{i + 1}</button>
+                            <button key={i}
+                                    className={`px-2 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white border'}`}>{i + 1}</button>
                         ))}
                         <span>...</span>
                         <button className="px-2 py-1 rounded bg-white border">{totalPages}</button>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className={`px-2 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-white border'}`}>{'>'}</button>
+                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}
+                                className={`px-2 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-white border'}`}>{'>'}</button>
                     </div>
                 </div>
             </div>

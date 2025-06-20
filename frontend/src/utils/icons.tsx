@@ -10,30 +10,30 @@ import phoneIcon from '../assets/icons/phone.svg';
 import keyIcon from '../assets/icons/key.svg';
 
 export const getIcon = (iconName: string): string | null => {
-  switch (iconName) {
-    case 'FaHome':
-      return homeIcon;
-    case 'FaInfoCircle':
-      return contentIcon;
-    case 'FaCogs':
-      return settingIcon;
-    case 'FaBlog':
-      return contentIcon;
-    case 'FaEnvelope':
-      return phoneIcon;
-    case 'FaCalendarAlt':
-      return calendarIcon;
-    case 'FaUserMd':
-      return cameraIcon;
-    case 'FaFlask':
-      return tubeIcon;
-    case 'FaUser':
-      return avatarIcon;
-    case 'FaUsers':
-      return multiUserIcon;
-    case 'FaKey':
-      return keyIcon;
-    default:
-      return null;
-  }
+    switch (iconName) {
+        case 'FaHome':
+            return homeIcon;
+        case 'FaInfoCircle':
+            return contentIcon;
+        case 'FaCogs':
+            return settingIcon;
+        case 'FaBlog':
+            return contentIcon;
+        case 'FaEnvelope':
+            return phoneIcon;
+        case 'FaCalendarAlt':
+            return calendarIcon;
+        case 'FaUserMd':
+            return cameraIcon;
+        case 'FaFlask':
+            return tubeIcon;
+        case 'FaUser':
+            return avatarIcon;
+        case 'FaUsers':
+            return multiUserIcon;
+        case 'FaKey':
+            return keyIcon;
+        default:
+            return null;
+    }
 };

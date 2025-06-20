@@ -1,17 +1,17 @@
 module.exports = {
-  content: [
-    './src/**/*.{js,ts,jsx,tsx}',
-    './public/index.html',
-  ],
-  theme: {
-    extend: {
-      fontFamily: {
-        'poppins': ['Poppins', 'sans-serif'],
-      },
+    content: [
+        './src/**/*.{js,ts,jsx,tsx}',
+        './public/index.html',
+    ],
+    theme: {
+        extend: {
+            fontFamily: {
+                'poppins': ['Poppins', 'sans-serif'],
+            },
+        },
     },
-  },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
+    variants: {
+        extend: {},
+    },
+    plugins: [],
 }
