@@ -4,7 +4,7 @@ import sortAscIcon from '../../../assets/icons/sort-asc.svg';
 import sortDescIcon from '../../../assets/icons/sort-desc.svg';
 import sortIcon from '../../../assets/icons/sort.svg';
 
-const BaseTable = <T extends Record<string, any>>({
+const Table = <T extends Record<string, any>>({
   columns,
   data,
   actions = [],
@@ -211,4 +211,4 @@ const BaseTable = <T extends Record<string, any>>({
   );
 };
 
-export default BaseTable;
+export default Table;
