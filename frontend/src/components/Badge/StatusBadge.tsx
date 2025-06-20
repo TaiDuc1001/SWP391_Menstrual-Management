@@ -68,13 +68,34 @@ const STATUS_STYLES: Record<string, { badgeClass: string; icon?: string; textCol
     textColor: '#EF4444',
     border: 'border border-red-200',
     shadow: 'shadow-red-100',
-  },
+  },    
   Confirmed: {
     badgeClass: 'bg-blue-100 text-blue-700',
     icon: confirmedIcon,
     textColor: '#2563EB',
     border: 'border border-blue-200',
     shadow: 'shadow-blue-100',
+  },
+  'Waiting for Doctor': {
+    badgeClass: 'bg-purple-100 text-purple-700',
+    icon: yellowClockIcon,
+    textColor: '#7C3AED',
+    border: 'border border-purple-200',
+    shadow: 'shadow-purple-100',
+  },
+  'Waiting for Customer': {
+    badgeClass: 'bg-purple-100 text-purple-700',
+    icon: yellowClockIcon,
+    textColor: '#7C3AED',
+    border: 'border border-purple-200',
+    shadow: 'shadow-purple-100',
+  },
+  Waiting: {
+    badgeClass: 'bg-purple-100 text-purple-700',
+    icon: yellowClockIcon,
+    textColor: '#7C3AED',
+    border: 'border border-purple-200',
+    shadow: 'shadow-purple-100',
   },
 };
 

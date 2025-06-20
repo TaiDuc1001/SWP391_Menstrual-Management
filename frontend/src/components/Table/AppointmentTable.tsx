@@ -25,12 +25,14 @@ interface AppointmentTableProps {
   hideRows?: number[];
   onViewRows?: (ids: number[]) => void;
   onCancelRows?: (ids: number[]) => void;
+  onConfirmRows?: (ids: number[]) => void;
+  onJoinMeeting?: (id: number) => void;
   currentPage?: number;
   appointmentsPerPage?: number;
 }
 
 const AppointmentTable: React.FC<AppointmentTableProps> = ({
-  records, selected, handleCheckboxChange, handleSelectAll, hideRows = [], onViewRows, onCancelRows, currentPage = 1, appointmentsPerPage = 5
+  records, selected, handleCheckboxChange, handleSelectAll, hideRows = [], onViewRows, onCancelRows, onConfirmRows, onJoinMeeting, currentPage = 1, appointmentsPerPage = 5
 }) => {
   // Sorting state
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
@@ -119,18 +121,49 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
         <span className="w-8 h-8 rounded-full bg-gray-300 block"></span>
         <span>{row.doctor || row.name}</span>
       </div>
-    ) },
-    { key: 'status', label: <button type="button" className="flex items-center gap-1 justify-center w-full text-center" onClick={() => handleSort('status')}>Status {getSortIndicator('status')}</button>, render: (row: AppointmentRecord) => <StatusBadge status={row.status} />, width: 'w-32', headerClassName: 'text-center', cellClassName: 'text-center' },
-    { key: 'actions', label: '', render: (row: AppointmentRecord) => (
-      <div className="flex gap-2">
-        {row.status === 'Completed' && (
-          <ViewResultButton onClick={() => onViewRows && onViewRows([row.id])} />
-        )}
-        {row.status === 'Upcoming' && (
-          <button className="text-red-500 hover:underline" onClick={() => onCancelRows && onCancelRows([row.id])}>Cancel</button>
-        )}
-      </div>
-    ), width: 'w-32' },
+    ) },    { key: 'status', label: <button type="button" className="flex items-center gap-1 justify-center w-full text-center" onClick={() => handleSort('status')}>Status {getSortIndicator('status')}</button>, render: (row: AppointmentRecord) => <StatusBadge status={row.status} />, width: 'w-32', headerClassName: 'text-center', cellClassName: 'text-center' },    { key: 'actions', label: '', render: (row: AppointmentRecord) => {
+      return (
+        <div className="flex gap-2">
+          {row.status === 'Completed' && (
+            <ViewResultButton onClick={() => onViewRows && onViewRows([row.id])} />
+          )}
+          {row.status === 'Booked' && (
+            <button 
+              className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded font-semibold transition"
+              onClick={() => window.location.href = `/checkout/${row.id}`}
+            >
+              Checkout
+            </button>          )}{(row.status === 'Confirmed' || row.status === 'Waiting for Customer') && (
+            <button 
+              className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded font-semibold transition"
+              onClick={() => onConfirmRows && onConfirmRows([row.id])}
+            >
+              Confirm
+            </button>
+          )}{row.status === 'Waiting for Doctor' && (
+            <div className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded font-semibold">
+              Waiting for Doctor
+            </div>
+          )}
+          {row.status === 'Waiting for Customer' && (
+            <div className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded font-semibold">
+              Waiting for Customer
+            </div>
+          )}
+          {row.status === 'In progress' && (
+            <button 
+              className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded font-semibold transition"
+              onClick={() => onJoinMeeting && onJoinMeeting(row.id)}
+            >
+              Join Meeting
+            </button>
+          )}
+          {(row.status === 'Upcoming' || row.status === 'Booked') && (
+            <button className="text-red-500 hover:underline" onClick={() => onCancelRows && onCancelRows([row.id])}>Cancel</button>
+          )}
+        </div>
+      );
+    }, width: 'w-32' },
   ];
 
   return (

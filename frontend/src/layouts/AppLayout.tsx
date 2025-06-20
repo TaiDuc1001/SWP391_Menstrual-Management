@@ -20,6 +20,7 @@ import STIPackages from '../pages/Customer/STIPackages';
 import STIPackageDetail from '../pages/Customer/STIPackageDetail';
 import BookTestPage from '../pages/Customer/BookTestPage';
 import BookAppointmentPage from '../pages/Customer/BookAppointmentPage';
+import CheckoutPage from '../pages/Customer/CheckoutPage';
 import DoctorDetailPage from '../pages/Customer/DoctorDetailPage';
 import ForgotPassword from '../pages/Public/ForgotPassword';
 import EnterOTP from '../pages/Public/EnterOTP';
@@ -37,11 +38,11 @@ interface AppLayoutProps {
 
 
 const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, handleLogin, handleSignUp }) => {
-  const location = useLocation();
-  const sidebarRoutes = [
+  const location = useLocation();  const sidebarRoutes = [
     '/dashboard',
     '/menstrual-cycles',
     '/appointments',
+    '/checkout',
     '/sti-tests',
     '/sti-tests/packages',
     '/doctors',
@@ -69,8 +70,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
                 <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
                 <Route path="/sti-tests/packages" element={<STIPackages />} />
                 <Route path="/sti-tests/packages/:id" element={<STIPackageDetail />} />
-                <Route path="/sti-tests/book" element={<BookTestPage />} />
-                <Route path="/appointments/book" element={<BookAppointmentPage />} />
+                <Route path="/sti-tests/book" element={<BookTestPage />} />                <Route path="/appointments/book" element={<BookAppointmentPage />} />
+                <Route path="/checkout/:appointmentId" element={<CheckoutPage />} />
                 <Route path="/doctors/:id" element={<DoctorDetailPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

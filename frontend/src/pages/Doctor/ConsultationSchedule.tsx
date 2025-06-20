@@ -6,9 +6,16 @@ import { Badge } from '../../components/Badge';
 
 
 const mapAPIStatusToUI = (status: string): Appointment['status'] => {
-  switch (status) {
-    case 'BOOKED':
+  switch (status) {    case 'BOOKED':
       return 'Pending';
+    case 'CONFIRMED':
+      return 'Confirmed';
+    case 'WAITING_FOR_CUSTOMER':
+      return 'Waiting for Customer';
+    case 'WAITING_FOR_DOCTOR':
+      return 'Waiting for Doctor';
+    case 'WAITING':
+      return 'Waiting';
     case 'IN_PROGRESS':
       return 'In Progress';
     case 'FINISHED':
@@ -18,7 +25,7 @@ const mapAPIStatusToUI = (status: string): Appointment['status'] => {
     default:
       return 'Pending';
   }
-}; 
+};
 
 interface Appointment {
   id: number;
@@ -26,7 +33,7 @@ interface Appointment {
   date: string;
   time: string;
   type?: string;
-  status: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
+  status: 'Pending' | 'Confirmed' | 'Waiting' | 'Waiting for Customer' | 'Waiting for Doctor' | 'In Progress' | 'Completed' | 'Cancelled';
   patientPhone: string;
   notes?: string;
   meetingUrl?: string;
@@ -253,12 +260,21 @@ const WeekView: React.FC<WeekViewProps> = ({
               {dayAppointments.map(appointment => {
                 const [startTime] = appointment.time.split(' - ');
                 const [hours, minutes] = startTime.split(':').map(Number);
-                const top = (hours - 7) * 64 + (minutes / 60) * 64;
-
-                let bgColor;
+                const top = (hours - 7) * 64 + (minutes / 60) * 64;                let bgColor;
                 switch (appointment.status) {
                   case 'Pending':
                     bgColor = 'rgba(254, 243, 199, 0.9)';
+                    break;
+                  case 'Confirmed':
+                    bgColor = 'rgba(255, 237, 213, 0.9)';
+                    break;                  case 'Waiting':
+                    bgColor = 'rgba(243, 232, 255, 0.9)';
+                    break;
+                  case 'Waiting for Customer':
+                    bgColor = 'rgba(243, 232, 255, 0.9)';
+                    break;
+                  case 'Waiting for Doctor':
+                    bgColor = 'rgba(243, 232, 255, 0.9)';
                     break;
                   case 'In Progress':
                     bgColor = 'rgba(219, 234, 254, 0.9)';
@@ -349,7 +365,7 @@ const ConsultationSchedule: React.FC = () => {
 const fetchAppointments = async () => {
   setLoading(true);
   try {
-    const response = await api.get('/appointments');
+    const response = await api.get('/appointments/doctor');
     const data = response.data;
 
     const mappedAppointments: Appointment[] = data.map((item: any) => ({
@@ -439,11 +455,12 @@ useEffect(() => {
     } finally {
       setIsSavingNotes(false);
     }
-  };
-
-  const getStatusColor = (status: Appointment['status']) => {
-    const colors = {
+  };  const getStatusColor = (status: Appointment['status']) => {    const colors = {
       'Pending': 'bg-yellow-100 text-yellow-800',
+      'Confirmed': 'bg-orange-100 text-orange-800',
+      'Waiting': 'bg-purple-100 text-purple-800',
+      'Waiting for Customer': 'bg-purple-100 text-purple-800',
+      'Waiting for Doctor': 'bg-purple-100 text-purple-800',
       'In Progress': 'bg-blue-100 text-blue-800',
       'Completed': 'bg-green-100 text-green-800',
       'Cancelled': 'bg-red-100 text-red-800'
@@ -501,6 +518,37 @@ useEffect(() => {
     } catch (error) {
       console.error('Error starting meeting:', error);
       alert('An error occurred while starting the consultation');
+    } finally {
+      setLoading(false);
+    }  };
+  const handleConfirmReadyToStart = async (appointment: Appointment) => {
+    try {
+      setLoading(true);
+      
+      // Call the doctor confirmation endpoint
+      await api.put(`/appointments/doctor/confirm/${appointment.id}`);
+      
+      // Update local state
+      const updatedAppointments = appointments.map(app => 
+        app.id === appointment.id 
+          ? { 
+              ...app, 
+              status: 'In Progress' as Appointment['status'], // This will be updated from API response
+              meetingUrl: 'https://meet.google.com/rzw-jwjr-udw',
+              lastUpdated: new Date().toISOString()
+            } 
+          : app
+      );
+      setAppointments(updatedAppointments);
+
+      // Refresh appointments to get actual status
+      fetchAppointments();
+      
+      // Close modal
+      setSelectedAppointment(null);
+    } catch (error) {
+      console.error('Error confirming ready to start:', error);
+      alert('An error occurred while confirming appointment');
     } finally {
       setLoading(false);
     }
@@ -775,9 +823,7 @@ useEffect(() => {
                 {appointment.notes || 'Chưa có ghi chú'}
               </p>
             )}
-          </div>
-
-          {/* Action buttons */}
+          </div>          {/* Action buttons */}
           <div className="flex justify-end gap-3">
             {appointment.status === 'Pending' && (
               <>
@@ -795,11 +841,35 @@ useEffect(() => {
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                   {loading ? 'Đang tạo phòng tư vấn...' : (appointment.meetingUrl ? 'Bắt đầu tư vấn' : 'Tạo phòng tư vấn & Bắt đầu')}
                 </button>
               </>
+            )}            {appointment.status === 'Confirmed' && (
+              <button
+                onClick={() => handleConfirmReadyToStart(appointment)}
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 flex items-center gap-2"
+                disabled={loading}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                    d="M5 13l4 4L19 7" />
+                </svg>
+                {loading ? 'Confirming...' : 'Confirm Ready'}
+              </button>
+            )}            {(appointment.status === 'Waiting' || appointment.status === 'Waiting for Customer') && (
+              <button
+                onClick={() => handleConfirmReadyToStart(appointment)}
+                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 flex items-center gap-2"
+                disabled={loading}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                    d="M5 13l4 4L19 7" />
+                </svg>
+                {loading ? 'Confirming...' : 'Confirm Ready (Customer Waiting)'}
+              </button>
             )}
             {appointment.status === 'In Progress' && (
               <>

@@ -40,9 +40,7 @@ const AppointmentHistory: React.FC = () => {
   const parseDate = (str: string) => {
     const [day, month, year] = str.split('/').map(Number);
     return new Date(year, month - 1, day);
-  };
-
-  useEffect(() => {
+  };  useEffect(() => {
     api.get('/enumerators/slots')
       .then(res => {
         const options = [{ value: '', label: 'All slots' }];
@@ -56,7 +54,9 @@ const AppointmentHistory: React.FC = () => {
         setSlotOptions(options);
         setSlotMap(map);
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.error('Error loading slots:', error);
+      });
 
     api.get('/enumerators/appointment-status')
       .then(res => {
@@ -73,16 +73,23 @@ const AppointmentHistory: React.FC = () => {
     if (selectedSlot && !slotOptions.some(opt => opt.value === selectedSlot)) {
       setSelectedSlot('');
     }
-  }, [slotOptions, selectedSlot]);
-
-  useEffect(() => {
-    if (Object.keys(slotMap).length === 0) return;
-    setLoading(true);
-    api.get('/appointments')
+  }, [slotOptions, selectedSlot]);  useEffect(() => {
+    // Load appointments even if slotMap is empty - we can display basic info
+    setLoading(true);    api.get('/appointments')
       .then(res => {
         const mapped = res.data.map((item: any) => {
           const slotTime = item.timeRange || (item.slot ? slotMap[item.timeRange] || item.timeRange : '');
-          let status = item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase().replace('_', ' ');
+          let status;
+          switch (item.appointmentStatus) {
+            case 'WAITING_FOR_DOCTOR':
+              status = 'Waiting for Doctor';
+              break;
+            case 'WAITING_FOR_CUSTOMER':
+              status = 'Waiting for Customer';
+              break;
+            default:
+              status = item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase().replace('_', ' ');
+          }
           return {
             id: item.id,
             name: item.doctorName,
@@ -99,7 +106,8 @@ const AppointmentHistory: React.FC = () => {
         setAppointments(mapped);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error loading appointments:', error);
         setError('Failed to load appointments');
         setLoading(false);
       });
@@ -194,7 +202,7 @@ const AppointmentHistory: React.FC = () => {
           placeholder="To date"
           minDate={selectedDateFrom || undefined}
         />
-      </AppointmentUtilityBar>      
+      </AppointmentUtilityBar>
       <AppointmentTable
         records={filteredRecords.map(r => ({
           ...r,
@@ -211,6 +219,50 @@ const AppointmentHistory: React.FC = () => {
         onCancelRows={(ids) => {
           setHideRows(prev => [...prev, ...ids]);
           setSelected([]);
+        }}        onConfirmRows={async (ids) => {
+          try {
+            await api.put(`/appointments/customer/confirm/${ids[0]}`);
+            // Refresh appointments after confirmation
+            const res = await api.get('/appointments');
+            const mapped = res.data.map((item: any) => {
+              const slotTime = item.timeRange || (item.slot ? slotMap[item.timeRange] || item.timeRange : '');
+              let status;
+              switch (item.appointmentStatus) {
+                case 'WAITING_FOR_DOCTOR':
+                  status = 'Waiting for Doctor';
+                  break;
+                case 'WAITING_FOR_CUSTOMER':
+                  status = 'Waiting for Customer';
+                  break;
+                default:
+                  status = item.appointmentStatus.charAt(0) + item.appointmentStatus.slice(1).toLowerCase().replace('_', ' ');
+              }
+              return {
+                id: item.id,
+                name: item.doctorName,
+                date: item.date ? new Date(item.date).toLocaleDateString('en-GB') : '',
+                time: slotTime,
+                status,
+                appointmentStatus: item.appointmentStatus,
+                code: '',
+                slot: slotTime,
+                slotCode: item.slot,
+                slotTime: slotTime,
+              };
+            });
+            setAppointments(mapped);
+            alert('Meeting is starting! You can now join the meeting.');
+          } catch (error) {
+            console.error('Error confirming appointment:', error);
+            alert('Failed to confirm appointment');
+          }
+        }}
+        onJoinMeeting={(id) => {
+          const appointment = filteredRecords.find(r => r.id === id);
+          if (appointment) {
+            // In a real app, this would come from the appointment data
+            window.open('https://meet.google.com/rzw-jwjr-udw', '_blank');
+          }
         }}
         onViewRows={(ids) => {
           const appointment = filteredRecords.find(r => r.id === ids[0]);

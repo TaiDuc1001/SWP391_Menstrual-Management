@@ -36,20 +36,20 @@ const OnlineConsultation: React.FC = () => {
   const [notification, setNotification] = useState<NotificationState>({
     isOpen: false,
     message: '',
-    type: 'success'
+    type: 'success',
   });
   const [cancelModal, setCancelModal] = useState<CancelModalState>({
     isOpen: false,
-    appointmentId: null
+    appointmentId: null,
   });
+  const [joinedMeetings, setJoinedMeetings] = useState<Set<number>>(new Set());
 
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({
       isOpen: true,
       message,
-      type
+      type,
     });
-    // Auto close after 3 seconds
     setTimeout(() => {
       setNotification(prev => ({ ...prev, isOpen: false }));
     }, 3000);
@@ -61,12 +61,18 @@ const OnlineConsultation: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await api.get('/appointments');
+      const response = await api.get('/appointments/doctor');
+      console.log('All appointments:', response.data); // Debug log
       const filteredAppointments = response.data.filter(
         (apt: Appointment) =>
-          apt.doctorName === 'Doctor Test Account' &&
-          (apt.appointmentStatus === 'BOOKED' || apt.appointmentStatus === 'IN_PROGRESS')
+          (apt.appointmentStatus === 'BOOKED' ||
+           apt.appointmentStatus === 'CONFIRMED' ||
+           apt.appointmentStatus === 'WAITING_FOR_CUSTOMER' ||
+           apt.appointmentStatus === 'WAITING_FOR_DOCTOR' ||
+           apt.appointmentStatus === 'WAITING' ||
+           apt.appointmentStatus === 'IN_PROGRESS')
       );
+      console.log('Filtered appointments:', filteredAppointments); // Debug log
       setAppointments(filteredAppointments);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -146,19 +152,60 @@ const OnlineConsultation: React.FC = () => {
       showNotification('Không tìm thấy link họp!', 'error');
     }
   };
+  const handleJoinMeeting = (appointment: Appointment) => {
+    const meetingUrl = appointment.url || 'https://meet.google.com/rzw-jwjr-udw';
+    window.open(meetingUrl, '_blank');
 
+    setJoinedMeetings(prev => new Set(prev).add(appointment.id));
+    showNotification('Joined meeting successfully!', 'success');
+  };
   const handleEndMeeting = async (appointmentId: number) => {
     try {
       const response = await api.put(`/appointments/finish/${appointmentId}`);
       if (response.status === 200) {
-        showNotification('Kết thúc cuộc họp thành công!', 'success');
+        showNotification('Meeting ended successfully!', 'success');
+        setJoinedMeetings(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(appointmentId);
+          return newSet;
+        });
         await fetchAppointments();
       }
     } catch (error) {
       console.error('Error ending meeting:', error);
-      showNotification('Có lỗi xảy ra khi kết thúc cuộc họp!', 'error');
+      showNotification('Error ending meeting!', 'error');
     }
   };
+  const handleDoctorConfirm = async (appointment: Appointment) => {
+    try {
+      const response = await api.put(`/appointments/doctor/confirm/${appointment.id}`);
+      if (response.status === 200) {
+        const updatedAppointment = response.data;
+
+        // Check if status changed to IN_PROGRESS (both parties confirmed)
+        if (updatedAppointment.appointmentStatus === 'IN_PROGRESS') {
+          showNotification('Both parties confirmed! Starting meeting...', 'success');
+
+          // Open meeting URL if available
+          const meetingUrl = updatedAppointment.url || 'https://meet.google.com/rzw-jwjr-udw';
+          window.open(meetingUrl, '_blank');
+        } else if (updatedAppointment.appointmentStatus === 'WAITING_FOR_CUSTOMER') {
+          showNotification('You confirmed! Waiting for customer to confirm...', 'success');
+        } else if (updatedAppointment.appointmentStatus === 'WAITING') {
+          showNotification('You confirmed! Waiting for customer to confirm...', 'success');
+        } else {
+          showNotification('Confirmed successfully!', 'success');
+        }
+
+        // Refresh appointments to show updated status
+        await fetchAppointments();
+      }
+    } catch (error) {
+      console.error('Error confirming appointment:', error);
+      showNotification('Có lỗi xảy ra khi xác nhận!', 'error');
+    }
+  };
+
   const handleCancelAppointment = async (appointmentId: number) => {
     try {
       const response = await api.put(`http://localhost:8080/api/appointments/cancel/${appointmentId}`);
@@ -224,12 +271,13 @@ const OnlineConsultation: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">          <NotificationPopup
-        isOpen={notification.isOpen}
-        message={notification.message}
-        type={notification.type}
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
-      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <NotificationPopup
+            isOpen={notification.isOpen}
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+          />
         {/* Modal hủy cuộc hẹn */}
         {cancelModal.isOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -347,11 +395,18 @@ const OnlineConsultation: React.FC = () => {
                         <span className="text-sm text-gray-900">{appointment.timeRange}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${appointment.appointmentStatus === 'BOOKED'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-green-100 text-green-800'
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          appointment.appointmentStatus === 'BOOKED' ? 'bg-blue-100 text-blue-800' :
+                          appointment.appointmentStatus === 'CONFIRMED' ? 'bg-orange-100 text-orange-800' :
+                          (appointment.appointmentStatus === 'WAITING' || appointment.appointmentStatus === 'WAITING_FOR_CUSTOMER' || appointment.appointmentStatus === 'WAITING_FOR_DOCTOR') ? 'bg-purple-100 text-purple-800' :
+                          'bg-green-100 text-green-800'
                           }`}>
-                          {appointment.appointmentStatus === 'BOOKED' ? 'Booked' : 'In Progress'}
+                          {appointment.appointmentStatus === 'BOOKED' ? 'Booked' :
+                           appointment.appointmentStatus === 'CONFIRMED' ? 'Confirmed' :
+                           appointment.appointmentStatus === 'WAITING_FOR_CUSTOMER' ? 'Waiting for Customer' :
+                           appointment.appointmentStatus === 'WAITING_FOR_DOCTOR' ? 'Waiting for Doctor' :
+                           appointment.appointmentStatus === 'WAITING' ? 'Waiting' :
+                           'In Progress'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -372,12 +427,52 @@ const OnlineConsultation: React.FC = () => {
                               </button>
                             </>
                           )}
-                          {appointment.appointmentStatus === 'IN_PROGRESS' && (
+                          {appointment.appointmentStatus === 'CONFIRMED' && (
+                            <>
+                              <button
+                                onClick={() => handleDoctorConfirm(appointment)}
+                                className="text-white bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                              >
+                                Confirm Ready
+                              </button>
+                              <button
+                                onClick={() => openCancelModal(appointment.id)}
+                                className="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              >
+                                Hủy cuộc hẹn
+                              </button>
+                            </>
+                          )}
+                          {(appointment.appointmentStatus === 'WAITING' || appointment.appointmentStatus === 'WAITING_FOR_CUSTOMER') && (
+                            <>
+                              <button
+                                onClick={() => handleDoctorConfirm(appointment)}
+                                className="text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                              >
+                                Confirm Ready (Customer Waiting)
+                              </button>
+                              <button
+                                onClick={() => openCancelModal(appointment.id)}
+                                className="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              >
+                                Hủy cuộc hẹn
+                              </button>
+                            </>
+                          )}
+                          {appointment.appointmentStatus === 'IN_PROGRESS' && !joinedMeetings.has(appointment.id) && (
+                            <button
+                              onClick={() => handleJoinMeeting(appointment)}
+                              className="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              Join Meeting
+                            </button>
+                          )}
+                          {appointment.appointmentStatus === 'IN_PROGRESS' && joinedMeetings.has(appointment.id) && (
                             <button
                               onClick={() => handleEndMeeting(appointment.id)}
                               className="text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
-                              Kết thúc cuộc họp
+                              Finish Meeting
                             </button>
                           )}
                         </div>
