@@ -56,18 +56,16 @@ const Examinations: React.FC<TestTableProps> = ({
 }) => {
   const visibleRecords = filteredRecords.filter(record => !hideRows.includes(record.id));
 
-  const columns: TableColumn<TestRecord>[] = [
-    {
+  const columns: TableColumn<TestRecord>[] = [    {
       key: 'date',
       label: 'Date',
       sortable: true,
-      width: 'w-32'
-    },
-    {
+      width: 'table-column-date'
+    },    {
       key: 'slot',
       label: 'Time',
       sortable: true,
-      width: 'w-32',
+      width: 'table-column-date',
       render: (row) => slotTimeMap[row.slot] || row.time || ''
     },
     {
@@ -75,20 +73,19 @@ const Examinations: React.FC<TestTableProps> = ({
       label: 'Test panels',
       sortable: true,
       width: 'w-56'
-    },
-    {
+    },    {
       key: 'status',
       label: 'Status',
       sortable: true,
-      width: 'w-32',
+      width: 'table-column-status',
       align: 'center',
+      headerClassName: 'text-center',
+      cellClassName: 'text-center',
       render: (row) => <StatusBadge status={row.status} />
     }
-  ];
-
-  const actions: TableAction<TestRecord>[] = [
+  ];  const actions: TableAction<TestRecord>[] = [
     {
-      icon: <span className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded">View Result</span>,
+      icon: 'View Result',
       label: 'View Result',
       onClick: (row) => onViewRows?.([row.id]),
       hidden: (row) => row.status !== 'Completed'

@@ -61,12 +61,11 @@ const Appointments: React.FC<AppointmentTableProps> = ({
 }) => {
   const visibleRecords = records.filter(r => !hideRows.includes(r.id));
   
-  const columns: TableColumn<AppointmentRecord>[] = [
-    {
+  const columns: TableColumn<AppointmentRecord>[] = [    {
       key: 'date',
       label: 'Date',
       sortable: true,
-      width: 'w-32'
+      width: 'table-column-date'
     },
     {
       key: 'time',
@@ -74,59 +73,58 @@ const Appointments: React.FC<AppointmentTableProps> = ({
       sortable: true,
       width: 'w-24',
       render: (row) => row.slotTime || row.time
-    },
-    {
+    },    {
       key: 'doctor',
       label: 'Doctor',
       sortable: true,
-      width: 'w-48',
+      width: 'table-column-name',
       render: (row) => (
         <div className="flex items-center gap-2">
           <span className="w-8 h-8 rounded-full bg-gray-300 block"></span>
           <span>{row.doctor || row.name}</span>
         </div>
       )
-    },
-    {
+    },{
       key: 'status',
       label: 'Status',
       sortable: true,
-      width: 'w-32',
+      width: 'table-column-status',
       align: 'center',
+      headerClassName: 'text-center',
+      cellClassName: 'text-center',
       render: (row) => <StatusBadge status={row.status} />
     }
-  ];
-
-  const actions: TableAction<AppointmentRecord>[] = [
+  ];  const actions: TableAction<AppointmentRecord>[] = [
     {
-      icon: <span className="text-xs px-2 py-1 bg-green-100 text-green-600 rounded">View Result</span>,
+      icon: 'View Result',
       label: 'View Result',
       onClick: (row) => onViewRows?.([row.id]),
       hidden: (row) => row.status !== 'Completed'
     },
     {
-      icon: <span className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded">Checkout</span>,
+      icon: 'Checkout',
       label: 'Checkout',
       onClick: (row) => window.location.href = `/checkout/${row.id}`,
       hidden: (row) => row.status !== 'Booked'
     },
     {
-      icon: <span className="text-xs px-2 py-1 bg-green-100 text-green-600 rounded">Confirm</span>,
+      icon: 'Confirm',
       label: 'Confirm',
       onClick: (row) => onConfirmRows?.([row.id]),
       hidden: (row) => !['Confirmed', 'Waiting for Customer'].includes(row.status)
     },
     {
-      icon: <span className="text-xs px-2 py-1 bg-purple-100 text-purple-600 rounded">Join Meeting</span>,
+      icon: 'Join Meeting',
       label: 'Join Meeting',
       onClick: (row) => onJoinMeeting?.(row.id),
       hidden: (row) => row.status !== 'In progress'
     },
     {
-      icon: <span className="text-xs text-red-500 hover:underline">Cancel</span>,
+      icon: 'Cancel',
       label: 'Cancel',
       onClick: (row) => onCancelRows?.([row.id]),
-      hidden: (row) => !['Upcoming', 'Booked'].includes(row.status)
+      hidden: (row) => !['Upcoming', 'Booked'].includes(row.status),
+      variant: 'danger' as const
     }
   ];
 

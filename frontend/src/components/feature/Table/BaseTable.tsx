@@ -1,3 +1,4 @@
+import React from 'react';
 import {TableColumn, TableProps} from './types';
 import Checkbox from '../../common/Checkbox/Checkbox';
 import sortAscIcon from '../../../assets/icons/sort-asc.svg';
@@ -94,28 +95,61 @@ const BaseTable = <T extends Record<string, any>>({
       </td>
     );
   };
-
   const renderActions = (row: T) => {
     const visibleActions = actions.filter(action => !action.hidden?.(row));
     
-    if (visibleActions.length === 0) return null;
+    if (visibleActions.length === 0) return [null, null];
 
-    return (
+    const primaryActions = visibleActions.filter(action => 
+      action.variant !== 'danger' && !action.label.toLowerCase().includes('cancel')
+    );
+    const cancelAction = visibleActions.find(action => 
+      action.variant === 'danger' || action.label.toLowerCase().includes('cancel')
+    );    const primaryCell = primaryActions.length > 0 ? (
       <td className={`${classes.cell} text-center`}>
-        <div className="flex items-center justify-center gap-2">          {visibleActions.map((action, index) => (
-            <button
-              key={index}
-              onClick={() => action.onClick(row)}
-              disabled={action.disabled?.(row)}
-              title={action.label}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
-            >
-              {action.icon}
-            </button>
-          ))}
+        <div className="flex items-center justify-center gap-1">
+          {primaryActions.map((action, index) => {
+            const baseClasses = "table-action-button-primary";
+            let actionClasses = "";
+            
+            if (action.label.toLowerCase().includes('checkout')) {
+              actionClasses = "table-action-checkout";
+            } else if (action.label.toLowerCase().includes('view')) {
+              actionClasses = "table-action-view";
+            } else if (action.label.toLowerCase().includes('confirm')) {
+              actionClasses = "table-action-confirm";
+            } else if (action.label.toLowerCase().includes('join')) {
+              actionClasses = "table-action-join";
+            }
+            
+            return (
+              <button
+                key={index}
+                onClick={() => action.onClick(row)}
+                disabled={action.disabled?.(row)}
+                title={action.label}
+                className={`${baseClasses} ${actionClasses}`}
+              >
+                {action.icon}
+              </button>
+            );
+          })}
         </div>
       </td>
-    );
+    ) : <td className={`${classes.cell} text-center`}></td>;    const cancelCell = cancelAction ? (
+      <td className={`${classes.cell} text-center`}>
+        <button
+          onClick={() => cancelAction.onClick(row)}
+          disabled={cancelAction.disabled?.(row)}
+          title={cancelAction.label}
+          className="table-action-button-secondary table-action-cancel"
+        >
+          {cancelAction.icon}
+        </button>
+      </td>
+    ) : <td className={`${classes.cell} text-center`}></td>;
+
+    return [primaryCell, cancelCell];
   };
 
   if (loading) {
@@ -144,13 +178,13 @@ const BaseTable = <T extends Record<string, any>>({
                   />
                 </th>
               )}
-              {columns.map(column => (
+              {columns.map(column => (                
                 <th 
                   key={column.key}
                   className={`${classes.headerCell} ${column.headerClassName || ''}`}
                   style={{ width: column.width }}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${column.align === 'center' ? 'justify-center' : column.align === 'right' ? 'justify-end' : 'justify-start'}`}>
                     {column.label}
                     {column.sortable && onSort && (
                       <button
@@ -161,20 +195,21 @@ const BaseTable = <T extends Record<string, any>>({
                       </button>
                     )}
                   </div>
-                </th>
-              ))}
+                </th>))}
               {actions.length > 0 && (
-                <th className={`${classes.headerCell} w-32 text-center`}>
-                  Actions
-                </th>
+                <>
+                  <th className={`${classes.headerCell} table-column-action-primary text-center`}>
+                  </th>
+                  <th className={`${classes.headerCell} table-column-action-secondary text-center`}>
+                  </th>
+                </>
               )}
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 ? (
-              <tr>
+            {data.length === 0 ? (              <tr>
                 <td 
-                  colSpan={columns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)}
+                  colSpan={columns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 2 : 0)}
                   className={`${classes.cell} text-center text-gray-500 py-8`}
                 >
                   {emptyMessage}
@@ -196,10 +231,9 @@ const BaseTable = <T extends Record<string, any>>({
                           checked={isSelected}
                           onChange={() => handleRowSelectChange(rowId)}
                         />
-                      </td>
-                    )}
+                      </td>                    )}
                     {columns.map(column => renderCell(column, row, index))}
-                    {actions.length > 0 && renderActions(row)}
+                    {actions.length > 0 && renderActions(row).map((cell, idx) => cell && React.cloneElement(cell as React.ReactElement, { key: idx }))}
                   </tr>
                 );
               })
