@@ -26,6 +26,7 @@ interface AppointmentTableProps {
   onCancelRows?: (ids: number[]) => void;
   onConfirmRows?: (ids: number[]) => void;
   onJoinMeeting?: (id: number) => void;
+  onViewAppointmentDetail?: (id: number) => void;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
@@ -48,6 +49,7 @@ const Appointments: React.FC<AppointmentTableProps> = ({
   onCancelRows,
   onConfirmRows,
   onJoinMeeting,
+  onViewAppointmentDetail,
   currentPage,
   totalPages,
   onPageChange,
@@ -96,15 +98,20 @@ const Appointments: React.FC<AppointmentTableProps> = ({
     }
   ];  const actions: TableAction<AppointmentRecord>[] = [
     {
+      icon: 'View Details',
+      label: 'View Details',
+      onClick: (row) => onViewAppointmentDetail?.(row.id),
+    },
+    {
       icon: 'View Result',
       label: 'View Result',
       onClick: (row) => onViewRows?.([row.id]),
       hidden: (row) => row.status !== 'Completed'
-    },
+    },    
     {
       icon: 'Checkout',
       label: 'Checkout',
-      onClick: (row) => window.location.href = `/checkout/${row.id}`,
+      onClick: (row) => window.location.href = `/customer/checkout/${row.id}`,
       hidden: (row) => row.status !== 'Booked'
     },
     {

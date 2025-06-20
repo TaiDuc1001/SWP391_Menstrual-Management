@@ -158,11 +158,9 @@ public class AppointmentsController {
         }
         
         appointment.setCustomerConfirmed(true);
-        
-        boolean doctorConfirmed = appointment.getDoctorConfirmed() != null && appointment.getDoctorConfirmed();
+          boolean doctorConfirmed = appointment.getDoctorConfirmed() != null && appointment.getDoctorConfirmed();
         if (doctorConfirmed) {
             appointment.setAppointmentStatus(AppointmentStatus.IN_PROGRESS);
-            appointment.setUrl("https://meet.google.com/rzw-jwjr-udw");
         } else {
             appointment.setAppointmentStatus(AppointmentStatus.WAITING_FOR_DOCTOR);
         }
@@ -182,10 +180,8 @@ public class AppointmentsController {
         appointment.setDoctorConfirmed(true);
         
         boolean customerConfirmed = appointment.getCustomerConfirmed() != null && appointment.getCustomerConfirmed();
-        
-        if (customerConfirmed) {
+          if (customerConfirmed) {
             appointment.setAppointmentStatus(AppointmentStatus.IN_PROGRESS);
-            appointment.setUrl("https://meet.google.com/rzw-jwjr-udw");
         } else {
             appointment.setAppointmentStatus(AppointmentStatus.WAITING_FOR_CUSTOMER);
         }
@@ -199,14 +195,18 @@ public class AppointmentsController {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED) {
             return ResponseEntity.badRequest().build();
-        }
-        appointment.setCustomerConfirmed(true);
+        }        appointment.setCustomerConfirmed(true);
         appointment.setDoctorConfirmed(true);
         appointment.setAppointmentStatus(AppointmentStatus.IN_PROGRESS);
-        appointment.setUrl("https://meet.google.com/rzw-jwjr-udw");
 
         Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        return ResponseEntity.ok(appointmentMapper.toDTO(appointment));
     }
 
 }

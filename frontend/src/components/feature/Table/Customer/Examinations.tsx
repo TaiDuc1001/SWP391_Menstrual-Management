@@ -22,6 +22,7 @@ interface TestTableProps {
   hideRows: number[];
   onDeleteRows?: (ids: number[]) => void;
   onViewRows?: (ids: number[]) => void;
+  onViewExaminationDetail?: (id: number) => void;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
@@ -43,6 +44,7 @@ const Examinations: React.FC<TestTableProps> = ({
   hideRows,
   onDeleteRows,
   onViewRows,
+  onViewExaminationDetail,
   currentPage,
   totalPages,
   onPageChange,
@@ -84,6 +86,11 @@ const Examinations: React.FC<TestTableProps> = ({
       render: (row) => <StatusBadge status={row.status} />
     }
   ];  const actions: TableAction<TestRecord>[] = [
+    {
+      icon: 'View Details',
+      label: 'View Details',
+      onClick: (row) => onViewExaminationDetail?.(row.id),
+    },
     {
       icon: 'View Result',
       label: 'View Result',

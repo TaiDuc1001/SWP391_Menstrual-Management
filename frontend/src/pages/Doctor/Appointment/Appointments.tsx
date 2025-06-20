@@ -186,9 +186,6 @@ const Appointments: React.FC = () => {
         if (updatedAppointment.appointmentStatus === 'IN_PROGRESS') {
           showNotification('Both parties confirmed! Starting meeting...', 'success');
 
-          // Open meeting URL if available
-          const meetingUrl = updatedAppointment.url || 'https://meet.google.com/rzw-jwjr-udw';
-          window.open(meetingUrl, '_blank');
         } else if (updatedAppointment.appointmentStatus === 'WAITING_FOR_CUSTOMER') {
           showNotification('You confirmed! Waiting for customer to confirm...', 'success');
         } else if (updatedAppointment.appointmentStatus === 'WAITING') {
@@ -442,7 +439,7 @@ const Appointments: React.FC = () => {
                                 Hủy cuộc hẹn
                               </button>
                             </>
-                          )}
+                          )}                          
                           {(appointment.appointmentStatus === 'WAITING' || appointment.appointmentStatus === 'WAITING_FOR_CUSTOMER') && (
                             <>
                               <button
@@ -450,6 +447,22 @@ const Appointments: React.FC = () => {
                                 className="text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                               >
                                 Confirm Ready (Customer Waiting)
+                              </button>
+                              <button
+                                onClick={() => openCancelModal(appointment.id)}
+                                className="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              >
+                                Hủy cuộc hẹn
+                              </button>
+                            </>
+                          )}
+                          {appointment.appointmentStatus === 'WAITING_FOR_DOCTOR' && (
+                            <>
+                              <button
+                                onClick={() => handleDoctorConfirm(appointment)}
+                                className="text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                              >
+                                Confirm Appointment
                               </button>
                               <button
                                 onClick={() => openCancelModal(appointment.id)}

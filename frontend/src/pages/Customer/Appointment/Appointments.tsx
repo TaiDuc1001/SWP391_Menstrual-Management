@@ -38,7 +38,6 @@ const AppointmentHistory: React.FC = () => {
     return new Date(year, month - 1, day);
   };
 
-  // Filter appointments based on search criteria
   const filteredRecords = appointments.filter((record: any) => {
     if (hideRows.includes(record.id)) return false;
     
@@ -64,7 +63,7 @@ const AppointmentHistory: React.FC = () => {
     }
     
     return searchMatch && statusMatch && slotMatch && fromMatch && toMatch;
-  });  // Use table state for pagination and selection
+  });
   const {
     data: paginatedData,
     currentPage,
@@ -155,7 +154,6 @@ const AppointmentHistory: React.FC = () => {
   const handleConfirmRows = async (ids: number[]) => {
     try {
       await api.put(`/appointments/customer/confirm/${ids[0]}`);
-      // Refresh appointments after confirmation
       const res = await api.get('/appointments');
       const mapped = res.data.map((item: any) => {
         const slotTime = item.timeRange || (item.slot ? slotMap[item.timeRange] || item.timeRange : '');
@@ -218,6 +216,10 @@ const AppointmentHistory: React.FC = () => {
     if (appointment) {
       window.open('https://meet.google.com/rzw-jwjr-udw', '_blank');
     }
+  };
+
+  const handleViewAppointmentDetail = (id: number) => {
+    navigate(`/customer/appointments/${id}`);
   };
 
   if (loading) return <div className="p-6">Loading...</div>;
@@ -283,6 +285,7 @@ const AppointmentHistory: React.FC = () => {
         onConfirmRows={handleConfirmRows}
         onJoinMeeting={handleJoinMeeting}
         onViewRows={handleViewRows}
+        onViewAppointmentDetail={handleViewAppointmentDetail}
       />{showDetailPopup && selectedAppointment && (
         <AppointmentDetailPopup
           open={showDetailPopup}

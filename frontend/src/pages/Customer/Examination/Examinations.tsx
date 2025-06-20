@@ -142,6 +142,10 @@ const Examinations: React.FC = () => {
       setPanelOptions(options);
     });  }, []);
 
+    const handleViewExaminationDetail = (id: number) => {
+      navigate(`/customer/sti-tests/${id}`);
+    };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
     <TestingTitleBar
@@ -199,6 +203,7 @@ const Examinations: React.FC = () => {
             setShowResultPopup(true);
           }
         }}
+        onViewExaminationDetail={handleViewExaminationDetail}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
