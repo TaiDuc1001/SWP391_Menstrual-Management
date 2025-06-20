@@ -13,7 +13,7 @@ interface PaymentInfo {
   qrCodeUrl: string;
 }
 
-const CheckoutPage: React.FC = () => {
+const Checkout: React.FC = () => {
   const { appointmentId } = useParams();
   const navigate = useNavigate();
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
@@ -195,4 +195,4 @@ const CheckoutPage: React.FC = () => {
   );
 };
 
-export default CheckoutPage;
+export default Checkout;

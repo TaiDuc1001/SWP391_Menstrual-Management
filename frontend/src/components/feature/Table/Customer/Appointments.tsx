@@ -1,6 +1,6 @@
 import React from 'react';
-import Base from './Base';
-import { TableColumn, TableAction } from '../types';
+import CustomerTable from './BaseTable';
+import {TableAction, TableColumn} from '../types';
 import StatusBadge from '../../../common/Badge/StatusBadge';
 
 interface AppointmentRecord {
@@ -38,7 +38,7 @@ interface AppointmentTableProps {
   className?: string;
 }
 
-const AppointmentTable: React.FC<AppointmentTableProps> = ({
+const Appointments: React.FC<AppointmentTableProps> = ({
   records,
   selected,
   onSelectChange,
@@ -140,9 +140,8 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
   const handleSelectChange = (newSelected: number[] | string[]) => {
     onSelectChange(newSelected as number[]);
   };
-
   return (
-    <Base
+    <CustomerTable
       data={visibleRecords}
       columns={columns}
       actions={actions}
@@ -165,4 +164,4 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
   );
 };
 
-export default AppointmentTable;
+export default Appointments;

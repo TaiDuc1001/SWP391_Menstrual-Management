@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import avatarIcon from '../assets/icons/avatar.svg';
+import React, {useState} from 'react';
 import tubeIcon from '../assets/icons/tube.svg';
 import calendarIcon from '../assets/icons/calendar.svg';
 import chatIcon from '../assets/icons/CustomerSupportIcon.svg';

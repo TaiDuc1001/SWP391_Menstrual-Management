@@ -8,7 +8,7 @@ import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 
 import TestingTitleBar from '../../../components/feature/TitleBar/TestingTitleBar';
 import TestingUtilityBar from '../../../components/feature/UtilityBar/TestingUtilityBar';
-import Examinations from '../../../components/feature/Table/Customer/Examinations';
+import ExaminationsTable from '../../../components/feature/Table/Customer/Examinations';
 import SearchInput from '../../../components/feature/Filter/SearchInput';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
@@ -24,7 +24,7 @@ const availableTypes = [
 
 const TESTS_PER_PAGE = 5;
 
-const STITests: React.FC = () => {
+const Examinations: React.FC = () => {
   const [testRecords, setTestRecords] = useState<any[]>([]);
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
   const [selectedDateTo, setSelectedDateTo] = useState<Date | null>(null);
@@ -180,8 +180,9 @@ const STITests: React.FC = () => {
           onChange={setSelectedDateTo}
           placeholder="To date"
           minDate={selectedDateFrom || undefined}
-        />
-      </TestingUtilityBar>        <Examinations
+        />      
+        </TestingUtilityBar>        
+      <ExaminationsTable
         filteredRecords={paginatedData}
         slotTimeMap={slotMap}
         selected={selected as number[]}
@@ -214,4 +215,4 @@ const STITests: React.FC = () => {
   );
 };
 
-export default STITests;
+export default Examinations;

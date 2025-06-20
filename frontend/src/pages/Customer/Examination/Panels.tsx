@@ -23,7 +23,7 @@ const TAG_BADGE_STYLES: Record<string, string> = {
   NEW: 'bg-blue-100 text-blue-600',
 };
 
-const STIPackages: React.FC = () => {
+const Panels: React.FC = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -166,4 +166,4 @@ const STIPackages: React.FC = () => {
   );
 };
 
-export default STIPackages;
+export default Panels;

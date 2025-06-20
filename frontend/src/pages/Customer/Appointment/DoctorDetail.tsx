@@ -85,7 +85,7 @@ const mockAdvisors = [
   },
 ];
 
-const DoctorDetailPage: React.FC = () => {
+const DoctorDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const doctor = mockAdvisors.find(d => d.id === Number(id));
@@ -132,4 +132,4 @@ const DoctorDetailPage: React.FC = () => {
   );
 };
 
-export default DoctorDetailPage;
+export default DoctorDetail;

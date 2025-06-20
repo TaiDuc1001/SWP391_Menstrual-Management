@@ -1,12 +1,12 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import AdminHeader from "../Header/AdminHeader";
 import StaffSidebar from "../Sidebar/StaffSidebar";
 import Footer from '../Footer/Footer';
-import StaffDashboard from '../../../pages/Staff/StaffDashboard';
+import Dashboard from '../../../pages/Staff/Dashboard';
 import CustomerSupport from '../../../pages/Staff/CustomerSupport';
 import ScheduleConsultation from '../../../pages/Staff/ScheduleConsultation';
-import UpdateTestResult from '../../../pages/Staff/UpdateTestResult';
+import UpdateTestResult from '../../../pages/Staff/Examination/UpdateTestResult';
 import NotFound from '../../../pages/NotFound';
 
 interface StaffLayoutProps {
@@ -36,7 +36,7 @@ const StaffLayout: React.FC<StaffLayoutProps> = ({ isAuthenticated, onAuthToggle
                 <main className={`flex-1 bg-white min-w-0 rounded-2xl shadow-md transition-all duration-300 m-5 ${showSidebar ? 'ml-[280px]' : ''}`}>
                     <Routes>
 
-                        <Route path="/staff/dashboard" element={<StaffDashboard />} />
+                        <Route path="/staff/dashboard" element={<Dashboard />} />
                         <Route path="/staff/customers-support" element={<CustomerSupport />} />
                         <Route path="/staff/schedule-consultations" element={<ScheduleConsultation />} />
                         <Route path="/staff/update-test-results" element={<UpdateTestResult />} />

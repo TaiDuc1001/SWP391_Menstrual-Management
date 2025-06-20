@@ -13,7 +13,7 @@ const reviewOptions = [
   { value: 'low', label: 'Lowest Rated' },
 ];
 
-const BookAppointmentPage: React.FC = () => {
+const AppointmentBooking: React.FC = () => {
   const [advisors, setAdvisors] = useState<any[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAdvisor, setSelectedAdvisor] = useState<number | null>(null);
@@ -259,4 +259,4 @@ const BookAppointmentPage: React.FC = () => {
   );
 };
 
-export default BookAppointmentPage;
+export default AppointmentBooking;

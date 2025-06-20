@@ -1,6 +1,6 @@
 import React from 'react';
-import Base from './Base';
-import { TableColumn, TableAction } from '../types';
+import BaseTable from './BaseTable';
+import {TableAction, TableColumn} from '../types';
 
 interface User {
   id: number;
@@ -32,7 +32,7 @@ interface UserManagementTableProps {
   className?: string;
 }
 
-const UserManagementTable: React.FC<UserManagementTableProps> = ({
+const Accounts: React.FC<UserManagementTableProps> = ({
   users,
   selected,
   onSelectChange,
@@ -159,7 +159,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
   };
 
   return (
-    <Base
+    <BaseTable
       data={users}
       columns={columns}
       actions={actions}
@@ -181,4 +181,4 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
   );
 };
 
-export default UserManagementTable;
+export default Accounts;

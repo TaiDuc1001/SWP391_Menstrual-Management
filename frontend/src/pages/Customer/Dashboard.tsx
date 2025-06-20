@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import plusIcon from '../../assets/icons/plus-white.svg';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import notificationIcon from '../../assets/icons/notification.svg';
@@ -11,12 +11,9 @@ import angryIcon from '../../assets/icons/angry.svg';
 import ReminderSettingsPopup from '../../components/feature/Popup/ReminderSettingsPopup';
 import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
 import api from '../../api/axios';
-import { Doughnut } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip
-} from 'chart.js';
+import {Doughnut} from 'react-chartjs-2';
+import {ArcElement, Chart as ChartJS, Tooltip} from 'chart.js';
+
 ChartJS.register(ArcElement, Tooltip);
 
 const Dashboard: React.FC = () => {

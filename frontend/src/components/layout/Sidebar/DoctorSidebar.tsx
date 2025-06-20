@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import homeIcon from '../../../assets/icons/home.svg';
 import sheduleIcon from '../../../assets/icons/scheduleIcon.svg';
 import onlineConsultation from '../../../assets/icons/video_call.svg';
@@ -14,7 +14,7 @@ const DoctorSidebar: React.FC<SidebarProps> = () => {
         { icon: sheduleIcon, label: 'Consultation Schedule', path: '/doctor/consultation-schedule' },
         { icon: onlineConsultation, label: 'Online Consultation', path: '/doctor/online-consultation' },
         { icon: inbox, label: 'Question Inbox', path: '/doctor/question-inbox' },
-        { icon: personalProfile, label: 'Personal Profile', path: '/doctor/personal-profile' },
+        { icon: personalProfile, label: 'Personal MyProfile', path: '/doctor/personal-profile' },
     ];
 
  

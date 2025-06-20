@@ -1,6 +1,6 @@
 import React from 'react';
-import Base from './Base';
-import { TableColumn, TableAction } from '../types';
+import BaseTable from './BaseTable';
+import {TableAction, TableColumn} from '../types';
 
 interface Service {
   id: number;
@@ -27,7 +27,7 @@ interface ServiceManagementTableProps {
   className?: string;
 }
 
-const ServiceManagementTable: React.FC<ServiceManagementTableProps> = ({
+const TestPanels: React.FC<ServiceManagementTableProps> = ({
   services,
   onEditService,
   onDeleteService,
@@ -109,7 +109,7 @@ const ServiceManagementTable: React.FC<ServiceManagementTableProps> = ({
   ];
 
   return (
-    <Base
+    <BaseTable
       data={services}
       columns={columns}
       actions={actions}
@@ -128,4 +128,4 @@ const ServiceManagementTable: React.FC<ServiceManagementTableProps> = ({
   );
 };
 
-export default ServiceManagementTable;
+export default TestPanels;

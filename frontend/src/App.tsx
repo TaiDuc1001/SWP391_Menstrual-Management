@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {BrowserRouter as Router} from 'react-router-dom';
 import AppLayout from './components/layout/Layouts/AppLayout';
 import AdminLayout from './components/layout/Layouts/AdminLayout';
 import StaffLayout from './components/layout/Layouts/StaffLayout';

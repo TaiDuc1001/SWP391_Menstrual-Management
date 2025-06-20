@@ -1,5 +1,5 @@
 import React from 'react';
-import { TableColumn, TableAction } from './types';
+import {TableAction, TableColumn} from './types';
 
 export const getStatusBadgeClass = (status: string, variant: 'admin' | 'customer' = 'admin') => {
   const baseClass = 'status-badge-base';
@@ -105,7 +105,7 @@ export const createDeleteAction = <T extends Record<string, any>>(onClick: (row:
   variant: 'danger'
 });
 
-// Table configuration presets
+// BaseTable configuration presets
 export const customerTableConfig = {
   variant: 'customer' as const,
   hoverable: true,

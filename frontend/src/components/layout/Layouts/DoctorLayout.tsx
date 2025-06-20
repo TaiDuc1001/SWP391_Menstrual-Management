@@ -1,13 +1,13 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import AdminHeader from "../Header/AdminHeader";
 import DoctorSidebar from "../Sidebar/DoctorSidebar";
 import Footer from '../Footer/Footer';
 import DoctorDashboard from '../../../pages/Doctor/Dashboard';
 import ScheduleConsultation from '../../../pages/Doctor/ConsultationSchedule';
-import OnlineConsultation from '../../../pages/Doctor/OnlineConsultation';
+import Appointments from '../../../pages/Doctor/Appointment/Appointments';
 import QuestionInbox from '../../../pages/Doctor/QuestionInbox';
-import PersonalProfile from '../../../pages/Doctor/PersonalProfile';
+import MyProfile from '../../../pages/Doctor/MyProfile';
 
 import NotFound from '../../../pages/NotFound';
 
@@ -41,9 +41,9 @@ const DoctorLayout: React.FC<DoctorLayoutProps> = ({ isAuthenticated, onAuthTogg
 
                         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
                         <Route path="/doctor/consultation-schedule" element={<ScheduleConsultation />} />
-                        <Route path="/doctor/online-consultation" element={<OnlineConsultation />} />
+                        <Route path="/doctor/online-consultation" element={<Appointments />} />
                         <Route path="/doctor/question-inbox" element={<QuestionInbox />} />
-                        <Route path="/doctor/personal-profile" element={<PersonalProfile />} />
+                        <Route path="/doctor/personal-profile" element={<MyProfile />} />
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </main>

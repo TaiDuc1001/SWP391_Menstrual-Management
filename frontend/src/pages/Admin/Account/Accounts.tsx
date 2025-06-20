@@ -1,12 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import dropDownIcon from '../../assets/icons/drop-down.svg';
-import NewUserButton from "../../components/common/Button/AdminCreateButton";
-import plusWhiteIcon from "../../assets/icons/plus-white.svg";
-import searchIcon from "../../assets/icons/search.svg";
-import refreshIcon from "../../assets/icons/refresh.svg";
-import editIcon from '../../assets/icons/edit.svg';
-import deleteIcon from '../../assets/icons/trash-bin.svg';
-import userAvt from '../../assets/icons/avatar.svg';
+import dropDownIcon from '../../../assets/icons/drop-down.svg';
+import NewUserButton from "../../../components/common/Button/AdminCreateButton";
+import plusWhiteIcon from "../../../assets/icons/plus-white.svg";
+import searchIcon from "../../../assets/icons/search.svg";
+import refreshIcon from "../../../assets/icons/refresh.svg";
+import editIcon from '../../../assets/icons/edit.svg';
+import deleteIcon from '../../../assets/icons/trash-bin.svg';
+import userAvt from '../../../assets/icons/avatar.svg';
 
 
 const roles = ['Customer', 'Consultant', 'Staff', 'Manager'];

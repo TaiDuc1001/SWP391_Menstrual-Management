@@ -3,7 +3,7 @@ import Popup from './ExitPopup';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import cameraIcon from '../../../assets/icons/camera.svg';
 import meetingIcon from '../../../assets/icons/meeting.svg';
-import { Rating } from 'react-simple-star-rating';
+import {Rating} from 'react-simple-star-rating';
 
 interface AppointmentDetailPopupProps {
   open: boolean;

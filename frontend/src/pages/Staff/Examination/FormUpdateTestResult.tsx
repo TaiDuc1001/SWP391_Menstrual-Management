@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import api from '../../api/axios';
+import api from '../../../api/axios';
 
 interface TestDetail {
   id: string;
@@ -146,13 +146,13 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
         )}
         {successMessage && (
           <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded flex items-center justify-center">
-            <img src={require('../../assets/icons/green-check.svg').default} alt="success" className="w-5 h-5 mr-2" />
+            <img src={require('../../../assets/icons/green-check.svg').default} alt="success" className="w-5 h-5 mr-2" />
             {successMessage}
           </div>
         )}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
-            <img src={require('../../assets/icons/testing.svg').default} alt="icon" className="w-6 h-6" />
+            <img src={require('../../../assets/icons/testing.svg').default} alt="icon" className="w-6 h-6" />
             <span className="text-lg font-bold">Update Test Results</span>
           </div>
           <div className="grid grid-cols-4 gap-4 mt-2">
@@ -263,7 +263,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
             onClick={handleCancel}
           >
             <span className="flex items-center gap-2">
-              <img src={require('../../assets/icons/cancel.svg').default} alt="cancel" className="w-4 h-4" />
+              <img src={require('../../../assets/icons/cancel.svg').default} alt="cancel" className="w-4 h-4" />
               Cancel
             </span>
           </button>
@@ -271,7 +271,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
             className="px-6 py-2 rounded-lg bg-green-400 text-white font-semibold hover:bg-green-500 flex items-center gap-2"
             onClick={handleSubmit}
           >
-            <img src={require('../../assets/icons/green-check.svg').default} alt="update" className="w-4 h-4" />
+            <img src={require('../../../assets/icons/green-check.svg').default} alt="update" className="w-4 h-4" />
             Update Results
           </button>
         </div>

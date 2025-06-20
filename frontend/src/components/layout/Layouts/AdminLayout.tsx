@@ -1,14 +1,14 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import AdminHeader from "../Header/AdminHeader";
 import AdminSidebar from "../Sidebar/AdminSidebar";
 import Footer from '../Footer/Footer';
-import AdminDashboard from '../../../pages/Admin/AdminDashboard';
-import UserManagement from '../../../pages/Admin/UserManagement';
-import ServiceManagement from '../../../pages/Admin/ServiceManagement';
-import ContentManagement from '../../../pages/Admin/ContentManagement';
-import Reports from '../../../pages/Admin/Reports';
-import ApproveResult from '../../../pages/Admin/ApproveResult';
+import Dashboard from '../../../pages/Admin/Dashboard';
+import Accounts from '../../../pages/Admin/Account/Accounts';
+import TestPanels from '../../../pages/Admin/TestPanel/TestPanels';
+import Blogs from '../../../pages/Admin/Blog/Blogs';
+import Reports from '../../../pages/Admin/Statistic/Reports';
+import Examinations from '../../../pages/Admin/Examination/Examinations';
 import NotFound from '../../../pages/NotFound';
 
 interface AdminLayoutProps {
@@ -40,12 +40,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ isAuthenticated, onAuthToggle
                 <main className={`flex-1 bg-white min-w-0 rounded-2xl shadow-md transition-all duration-300 m-5 ${showSidebar ? 'ml-[280px]' : ''}`}>
                     <Routes>
 
-                        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                        <Route path="/admin/users-management" element={<UserManagement />} />
-                        <Route path="/admin/services-management" element={<ServiceManagement />} />
-                        <Route path="/admin/content-management" element={<ContentManagement />} />
+                        <Route path="/admin/dashboard" element={<Dashboard />} />
+                        <Route path="/admin/users-management" element={<Accounts />} />
+                        <Route path="/admin/services-management" element={<TestPanels />} />
+                        <Route path="/admin/content-management" element={<Blogs />} />
                         <Route path="/admin/reports" element={<Reports />} />
-                        <Route path="/admin/approve-results" element={<ApproveResult />} />
+                        <Route path="/admin/approve-results" element={<Examinations />} />
 
                         <Route path="*" element={<NotFound />} />
                     </Routes>

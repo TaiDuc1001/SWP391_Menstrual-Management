@@ -1,6 +1,6 @@
 import React from 'react';
-import Base from './Base';
-import { TableColumn, TableAction } from '../types';
+import BaseTable from './BaseTable';
+import {TableAction, TableColumn} from '../types';
 
 interface Post {
   id: number;
@@ -30,7 +30,7 @@ interface ContentManagementTableProps {
   className?: string;
 }
 
-const ContentManagementTable: React.FC<ContentManagementTableProps> = ({
+const Blogs: React.FC<ContentManagementTableProps> = ({
   posts,
   onEditPost,
   onDeletePost,
@@ -131,7 +131,7 @@ const ContentManagementTable: React.FC<ContentManagementTableProps> = ({
   ];
 
   return (
-    <Base
+    <BaseTable
       data={posts}
       columns={columns}
       actions={actions}
@@ -150,4 +150,4 @@ const ContentManagementTable: React.FC<ContentManagementTableProps> = ({
   );
 };
 
-export default ContentManagementTable;
+export default Blogs;

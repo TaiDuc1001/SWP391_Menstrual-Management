@@ -1,8 +1,8 @@
 import logo from '../../../assets/icons/logo.svg';
 import dropDownIcon from '../../../assets/icons/drop-down.svg';
 import notificationIcon from '../../../assets/icons/notification.svg';
-import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import {useEffect, useRef, useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import DropDown from './DropDown';
 
 interface HeaderProps {
@@ -69,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) => {
           )}
         </span>
         <span className="flex items-center cursor-pointer group" onClick={() => { setDropdownOpen(false); setShowNoti(false); navigate('/profile'); }}>
-          <img src="https://i.pravatar.cc/36?img=3" alt="Profile" className="rounded-full w-10 h-10 border-2 border-pink-300 mx-2 hover:ring-2 hover:ring-pink-200 transition-all duration-200 shadow-md" />
+          <img src="https://i.pravatar.cc/36?img=3" alt="MyProfile" className="rounded-full w-10 h-10 border-2 border-pink-300 mx-2 hover:ring-2 hover:ring-pink-200 transition-all duration-200 shadow-md" />
           <span className="ml-2 font-poppins font-semibold text-gray-700 group-hover:text-pink-500 transition-colors duration-200">{userName}</span>
         </span>
         <span className="cursor-pointer flex items-center" onClick={() => { setDropdownOpen((open) => !open); setShowNoti(false); }}>

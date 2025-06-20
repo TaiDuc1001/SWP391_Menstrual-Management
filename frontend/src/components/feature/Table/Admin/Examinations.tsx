@@ -1,6 +1,6 @@
 import React from 'react';
-import Base from './Base';
-import { TableColumn, TableAction } from '../types';
+import BaseTable from './BaseTable';
+import {TableAction, TableColumn} from '../types';
 
 interface ExaminationRecord {
   id: number;
@@ -26,7 +26,7 @@ interface ApproveResultTableProps {
   className?: string;
 }
 
-const ApproveResultTable: React.FC<ApproveResultTableProps> = ({
+const Examinations: React.FC<ApproveResultTableProps> = ({
   examinations,
   onApprove,
   onViewDetails,
@@ -134,7 +134,7 @@ const ApproveResultTable: React.FC<ApproveResultTableProps> = ({
   const filteredExaminations = examinations.filter(exam => exam.examinationStatus === 'EXAMINED');
 
   return (
-    <Base
+    <BaseTable
       data={filteredExaminations}
       columns={columns}
       actions={actions}
@@ -153,4 +153,4 @@ const ApproveResultTable: React.FC<ApproveResultTableProps> = ({
   );
 };
 
-export default ApproveResultTable;
+export default Examinations;

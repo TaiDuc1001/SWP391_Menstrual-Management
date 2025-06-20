@@ -1,10 +1,10 @@
-import { TableColumn, TableAction, TableProps } from './types';
+import {TableColumn, TableProps} from './types';
 import Checkbox from '../../common/Checkbox/Checkbox';
 import sortAscIcon from '../../../assets/icons/sort-asc.svg';
 import sortDescIcon from '../../../assets/icons/sort-desc.svg';
 import sortIcon from '../../../assets/icons/sort.svg';
 
-const Table = <T extends Record<string, any>>({
+const BaseTable = <T extends Record<string, any>>({
   columns,
   data,
   actions = [],
@@ -211,4 +211,4 @@ const Table = <T extends Record<string, any>>({
   );
 };
 
-export default Table;
+export default BaseTable;

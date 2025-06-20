@@ -5,7 +5,7 @@ import bloodTestingImage from '../../../assets/images/blood-testing.svg';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
 
-const BookTestPage: React.FC = () => {
+const ExaminationBooking: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [date, setDate] = useState('');
   const [slot, setSlot] = useState('');
@@ -123,4 +123,4 @@ const BookTestPage: React.FC = () => {
   );
 };
 
-export default BookTestPage;
+export default ExaminationBooking;

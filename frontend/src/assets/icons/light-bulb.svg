@@ -3,7 +3,7 @@
     <ellipse cx="16" cy="14" rx="8" ry="10" fill="#f8bbd0" stroke="#ec407a" stroke-width="2"/>
     <!-- Filament -->
     <path d="M13 16 Q16 19, 19 16" stroke="#ec407a" stroke-width="2" fill="none"/>
-    <!-- Base -->
+    <!-- BaseTable -->
     <rect x="12" y="22" width="8" height="5" rx="2" fill="#f8bbd0" stroke="#ec407a" stroke-width="1"/>
     <!-- Screw lines -->
     <line x1="13" y1="24" x2="19" y2="24" stroke="#ec407a" stroke-width="1"/>

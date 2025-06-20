@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import plusWhiteIcon from '../../assets/icons/plus-white.svg';
-import searchIcon from '../../assets/icons/search.svg';
-import editIcon from '../../assets/icons/edit.svg';
-import deleteIcon from '../../assets/icons/trash-bin.svg';
-import NewServiceButton from '../../components/common/Button/AdminCreateButton';
+import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
+import searchIcon from '../../../assets/icons/search.svg';
+import editIcon from '../../../assets/icons/edit.svg';
+import deleteIcon from '../../../assets/icons/trash-bin.svg';
+import NewServiceButton from '../../../components/common/Button/AdminCreateButton';
 
 const tabs = [
     { label: 'Service Management' },

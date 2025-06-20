@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import {useCallback, useState} from 'react';
 
 export const useBulkActions = <T extends Record<string, any>>(
   selected: (string | number)[],

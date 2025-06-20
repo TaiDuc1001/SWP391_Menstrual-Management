@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { format, addDays, startOfWeek, endOfWeek } from 'date-fns';
+import React, {useEffect, useState} from 'react';
+import {addDays, format, startOfWeek} from 'date-fns';
 import api from '../../api/axios';
-import { Button } from '../../components/common/Button';
-import { Badge } from '../../components/common/Badge';
+import {Button} from '../../components/common/Button';
+import {Badge} from '../../components/common/Badge';
 
 
 const mapAPIStatusToUI = (status: string): Appointment['status'] => {

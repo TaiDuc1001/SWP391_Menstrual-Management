@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import {useNavigate} from 'react-router-dom';
-import api from '../../api/axios';
-import {useTableState} from '../../api/hooks';
-import plusWhiteIcon from '../../assets/icons/plus-white.svg';
-import AppointmentTitleBar from '../../components/feature/TitleBar/AppointmentTitleBar';
-import AppointmentUtilityBar from '../../components/feature/UtilityBar/AppointmentUtilityBar';
-import Appointments from '../../components/feature/Table/Customer/Appointments';
-import SearchInput from '../../components/feature/Filter/SearchInput';
-import DropdownSelect from '../../components/feature/Filter/DropdownSelect';
-import DatePickerInput from '../../components/feature/Filter/DatePickerInput';
-import AppointmentDetailPopup from '../../components/feature/Popup/AppointmentDetailPopup';
-import TestResultPopup from '../../components/feature/Popup/TestResultPopup';
+import api from '../../../api/axios';
+import {useTableState} from '../../../api/hooks';
+import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
+import AppointmentTitleBar from '../../../components/feature/TitleBar/AppointmentTitleBar';
+import AppointmentUtilityBar from '../../../components/feature/UtilityBar/AppointmentUtilityBar';
+import Appointments from '../../../components/feature/Table/Customer/Appointments';
+import SearchInput from '../../../components/feature/Filter/SearchInput';
+import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
+import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
+import AppointmentDetailPopup from '../../../components/feature/Popup/AppointmentDetailPopup';
+import TestResultPopup from '../../../components/feature/Popup/TestResultPopup';
 
 const plusIcon = plusWhiteIcon;
 

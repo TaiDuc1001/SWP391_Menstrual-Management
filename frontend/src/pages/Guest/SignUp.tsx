@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import api from '../../api/axios';
 import shieldIcon from '../../assets/icons/shield.svg';
 import userIcon from '../../assets/icons/multi-user.svg';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import avatarIcon from '../assets/icons/avatar.svg';
 import emailIcon from '../assets/icons/email.svg';
 import locationIcon from '../assets/icons/hospital.svg';

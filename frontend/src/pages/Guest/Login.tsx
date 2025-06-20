@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import avatarIcon from '../../assets/icons/avatar.svg';
 import keyIcon from '../../assets/icons/eye.svg';
 import eyeIcon from '../../assets/icons/eye.svg';

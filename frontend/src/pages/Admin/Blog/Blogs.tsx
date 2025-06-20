@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {EyeIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, TrashIcon} from '@heroicons/react/24/outline';
-import PostDetailModal from '../../components/feature/PostDetailModal/PostDetailModal';
+import PostDetailModal from '../../../components/feature/PostDetailModal/PostDetailModal';
 
 interface Post {
   id: number;

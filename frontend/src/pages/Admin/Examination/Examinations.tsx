@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import StatusBadge from '../../components/common/Badge/StatusBadge';
-import refreshIcon from '../../assets/icons/refresh.svg';
-import searchIcon from '../../assets/icons/search.svg';
-import NotificationPopup from '../../components/feature/Popup/NotificationPopup';
+import StatusBadge from '../../../components/common/Badge/StatusBadge';
+import refreshIcon from '../../../assets/icons/refresh.svg';
+import searchIcon from '../../../assets/icons/search.svg';
+import NotificationPopup from '../../../components/feature/Popup/NotificationPopup';
 import axios from 'axios';
 
 interface Examination {

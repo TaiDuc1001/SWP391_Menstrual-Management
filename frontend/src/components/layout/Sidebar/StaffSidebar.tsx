@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import homeIcon from '../../../assets/icons/home.svg';
 import sheduleIcon from '../../../assets/icons/scheduleIcon.svg';
 import customerSupIcon from '../../../assets/icons/CustomerSupportIcon.svg';

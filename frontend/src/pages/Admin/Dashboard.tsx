@@ -49,7 +49,7 @@ const recentActivities = [
   { time: '08:00', action: 'Daily revenue report created', type: 'report' },
 ];
 
-const AdminDashboard: React.FC = () => {
+const Dashboard: React.FC = () => {
   return (
     <div className="p-6 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -160,4 +160,4 @@ const AdminDashboard: React.FC = () => {
   );
 };
 
-export default AdminDashboard;
+export default Dashboard;

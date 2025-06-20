@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const HealthTipsCarousel: React.FC = () => {
     const [currentTip, setCurrentTip] = useState(0);

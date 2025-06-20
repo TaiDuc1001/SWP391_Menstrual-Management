@@ -4,7 +4,7 @@ import TitleBar from '../../../components/feature/TitleBar/TitleBar';
 import ActionButton from '../../../components/common/Button/ActionButton';
 import api from '../../../api/axios';
 
-const STIPackageDetail: React.FC = () => {
+const PanelDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [panel, setPanel] = useState<any>(null);
@@ -81,4 +81,4 @@ const STIPackageDetail: React.FC = () => {
   );
 };
 
-export default STIPackageDetail;
+export default PanelDetail;

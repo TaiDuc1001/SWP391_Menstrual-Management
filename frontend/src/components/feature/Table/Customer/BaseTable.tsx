@@ -1,7 +1,6 @@
 import React from 'react';
-import Table from '../Table';
-import Pagination from '../../../common/Pagination/Pagination';
-import { TableColumn, TableAction } from '../types';
+import TableBase from '../BaseTable';
+import {TableAction, TableColumn} from '../types';
 
 interface CustomerTableProps<T = any> {
   data: T[];
@@ -15,6 +14,8 @@ interface CustomerTableProps<T = any> {
   onSort?: (key: string) => void;
   loading?: boolean;
   emptyMessage?: string;
+  variant?: 'admin' | 'customer' | 'default';
+  hoverable?: boolean;
   
   // Pagination
   currentPage?: number;
@@ -30,7 +31,7 @@ interface CustomerTableProps<T = any> {
   className?: string;
 }
 
-const Table = <T extends Record<string, any>>({
+const BaseTable = <T extends Record<string, any>>({
   data,
   columns,
   actions = [],
@@ -82,9 +83,8 @@ const Table = <T extends Record<string, any>>({
         </div>
       )}
       
-      {/* Table */}
-      <div className="p-4">
-        <Table
+      {/* BaseTable */}
+      <div className="p-4">        <TableBase
           columns={columns}
           data={data}
           actions={actions}
@@ -149,4 +149,4 @@ const Table = <T extends Record<string, any>>({
   );
 };
 
-export default Table;
+export default BaseTable;

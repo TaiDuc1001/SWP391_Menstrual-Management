@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import api from '../../api/axios';
+import api from '../../../api/axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import NotificationPopup from '../../components/feature/Popup/NotificationPopup';
-import refreshIcon from '../../assets/icons/refresh.svg';
+import NotificationPopup from '../../../components/feature/Popup/NotificationPopup';
+import refreshIcon from '../../../assets/icons/refresh.svg';
 
 interface Appointment {
   id: number;
@@ -27,7 +27,7 @@ interface CancelModalState {
   appointmentId: number | null;
 }
 
-const OnlineConsultation: React.FC = () => {
+const Appointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -502,4 +502,4 @@ const OnlineConsultation: React.FC = () => {
   );
 };
 
-export default OnlineConsultation;
+export default Appointments;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import keyIcon from '../../assets/icons/key.svg';
 import eyeIcon from '../../assets/icons/eye.svg';
 

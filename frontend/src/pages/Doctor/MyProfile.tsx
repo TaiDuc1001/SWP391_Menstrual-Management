@@ -42,7 +42,7 @@ interface DoctorProfile {
   achievements: string[];
 }
 
-const PersonalProfile: React.FC = () => {
+const MyProfile: React.FC = () => {
   const [profile, setProfile] = useState<DoctorProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState<Partial<DoctorProfile>>({});
@@ -571,4 +571,4 @@ const PersonalProfile: React.FC = () => {
   );
 };
 
-export default PersonalProfile;
+export default MyProfile;

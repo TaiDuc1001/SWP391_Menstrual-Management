@@ -6,7 +6,7 @@ import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSet
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
 
-const MenstrualCycles: React.FC = () => {
+const MenstrualCycleDashboard: React.FC = () => {
     const now = new Date();
     const [currentMonth, setCurrentMonth] = useState(now.getMonth());
     const [currentYear, setCurrentYear] = useState(now.getFullYear());
@@ -324,7 +324,7 @@ const MenstrualCycles: React.FC = () => {
 export default function MenstrualCyclesWithProvider() {
   return (
     <MenstrualCycleProvider>
-      <MenstrualCycles />
+      <MenstrualCycleDashboard />
     </MenstrualCycleProvider>
   );
 }

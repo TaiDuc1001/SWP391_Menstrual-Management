@@ -1,14 +1,14 @@
 import React from 'react';
-import { useLocation, Routes, Route } from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
 import Footer from '../Footer/Footer';
 import Dashboard from '../../../pages/Customer/Dashboard';
-import MenstrualCycles from '../../../pages/Customer/MenstrualCycles';
-import MenstrualCyclesAll from '../../../pages/Customer/MenstrualCyclesAll';
-import Appointments from '../../../pages/Customer/Appointments';
-import STITests from '../../../pages/Customer/STITests';
-import Profile from '../../../pages/Customer/Profile';
+import MenstrualCycles from '../../../pages/Customer/Cycle/MenstrualCycleDashboard';
+import MenstrualCyclesAll from '../../../pages/Customer/Cycle/MenstrualCycleHistory';
+import Appointments from '../../../pages/Customer/Appointment/Appointments';
+import Examinations from '../../../pages/Customer/Examination/Examinations';
+import MyProfile from '../../../pages/Customer/MyProfile';
 import Home from '../../../pages/Home';
 import AboutUs from '../../../pages/AboutUs';
 import Blogs from '../../../pages/Blogs';
@@ -16,12 +16,12 @@ import Login from '../../../pages/Guest/Login';
 import SignUp from '../../../pages/Guest/SignUp';
 import NotFound from '../../../pages/NotFound';
 import RequireLogin from '../../../pages/Guest/RequireLogin';
-import STIPackages from '../../../pages/Customer/STIPackages';
-import STIPackageDetail from '../../../pages/Customer/STIPackageDetail';
-import BookTestPage from '../../../pages/Customer/BookTestPage';
-import BookAppointmentPage from '../../../pages/Customer/BookAppointmentPage';
-import CheckoutPage from '../../../pages/Customer/CheckoutPage';
-import DoctorDetailPage from '../../../pages/Customer/DoctorDetailPage';
+import Panels from '../../../pages/Customer/Examination/Panels';
+import PanelDetail from '../../../pages/Customer/Examination/PanelDetail';
+import ExaminationBooking from '../../../pages/Customer/Examination/ExaminationBooking';
+import AppointmentBooking from '../../../pages/Customer/Appointment/AppointmentBooking';
+import Checkout from '../../../pages/Customer/Appointment/Checkout';
+import DoctorDetail from '../../../pages/Customer/Appointment/DoctorDetail';
 import ForgotPassword from '../../../pages/Guest/ForgotPassword';
 import EnterOTP from '../../../pages/Guest/EnterOTP';
 import ChangePassword from '../../../pages/Guest/ChangePassword';
@@ -66,13 +66,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onAuthToggle, ha
                 <Route path="/menstrual-cycles" element={isAuthenticated ? <MenstrualCycles /> : <RequireLogin />} />
                 <Route path="/menstrual-cycles/all" element={<MenstrualCyclesAll />} />
                 <Route path="/appointments" element={isAuthenticated ? <Appointments /> : <RequireLogin />} />
-                <Route path="/sti-tests" element={isAuthenticated ? <STITests /> : <RequireLogin />} />
-                <Route path="/profile" element={isAuthenticated ? <Profile /> : <RequireLogin />} />
-                <Route path="/sti-tests/packages" element={<STIPackages />} />
-                <Route path="/sti-tests/packages/:id" element={<STIPackageDetail />} />
-                <Route path="/sti-tests/book" element={<BookTestPage />} />                <Route path="/appointments/book" element={<BookAppointmentPage />} />
-                <Route path="/checkout/:appointmentId" element={<CheckoutPage />} />
-                <Route path="/doctors/:id" element={<DoctorDetailPage />} />
+                <Route path="/sti-tests" element={isAuthenticated ? <Examinations /> : <RequireLogin />} />
+                <Route path="/profile" element={isAuthenticated ? <MyProfile /> : <RequireLogin />} />
+                <Route path="/sti-tests/packages" element={<Panels />} />
+                <Route path="/sti-tests/packages/:id" element={<PanelDetail />} />
+                <Route path="/sti-tests/book" element={<ExaminationBooking />} />                <Route path="/appointments/book" element={<AppointmentBooking />} />
+                <Route path="/checkout/:appointmentId" element={<Checkout />} />
+                <Route path="/doctors/:id" element={<DoctorDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

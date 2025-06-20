@@ -6,7 +6,7 @@ import MenstrualCyclePopup from '../../../components/feature/Popup/MenstrualCycl
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import {MenstrualCycleProvider, useMenstrualCycles} from '../../../context/MenstrualCycleContext';
 
-const MenstrualCyclesAll: React.FC = () => {
+const MenstrualCycleHistory: React.FC = () => {
   const [search, setSearch] = useState('');
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
@@ -39,7 +39,7 @@ const MenstrualCyclesAll: React.FC = () => {
       row.endDate.includes(search) ||
       row.duration.toString().includes(search) ||
       row.cycle.toString().includes(search);
-    // Format dates for search like STITests.tsx
+    // Format dates for search like Examinations.tsx
     const formattedStart = row.startDate;
     const formattedEnd = row.endDate;
     const searchLower = search.toLowerCase();
@@ -209,7 +209,7 @@ const MenstrualCyclesAll: React.FC = () => {
 export default function MenstrualCyclesAllWithProvider() {
   return (
     <MenstrualCycleProvider>
-      <MenstrualCyclesAll />
+      <MenstrualCycleHistory />
     </MenstrualCycleProvider>
   );
 }

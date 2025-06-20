@@ -1,6 +1,6 @@
 import React from 'react';
-import Base from './Base';
-import { TableColumn, TableAction } from '../types';
+import CustomerTable from './BaseTable';
+import {TableAction, TableColumn} from '../types';
 import StatusBadge from '../../../common/Badge/StatusBadge';
 
 interface TestRecord {
@@ -34,7 +34,7 @@ interface TestTableProps {
   className?: string;
 }
 
-const TestTable: React.FC<TestTableProps> = ({
+const Examinations: React.FC<TestTableProps> = ({
   filteredRecords,
   slotTimeMap,
   selected,
@@ -106,9 +106,8 @@ const TestTable: React.FC<TestTableProps> = ({
   const handleSelectChange = (newSelected: number[] | string[]) => {
     onSelectChange(newSelected as number[]);
   };
-
   return (
-    <Base
+    <CustomerTable
       data={visibleRecords}
       columns={columns}
       actions={actions}
@@ -131,4 +130,4 @@ const TestTable: React.FC<TestTableProps> = ({
   );
 };
 
-export default TestTable;
+export default Examinations;
