@@ -1,8 +1,0 @@
-{
-  "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,css,md,json}": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  }
-}
