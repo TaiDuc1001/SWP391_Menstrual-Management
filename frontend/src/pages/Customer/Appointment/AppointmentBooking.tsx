@@ -93,7 +93,7 @@ const AppointmentBooking: React.FC = () => {
       });
       setShowSuccess(true);
       setTimeout(() => {
-        navigate('/appointments');
+        navigate('/customer/appointments');
       }, 10000);
     } catch (err) {
     } finally {
@@ -250,7 +250,7 @@ const AppointmentBooking: React.FC = () => {
             time={displayTime}
             note={problem || '[Nội dung bạn đã nhập trong mô tả]'}
             onGoHome={() => navigate('/')}
-            onViewHistory={() => navigate('/appointments')}
+            onViewHistory={() => navigate('/customer/appointments')}
             onBookNew={() => { setShowSuccess(false); setSelectedDate(''); setSelectedTime(''); setProblem(''); }}
           />
         )}

@@ -56,7 +56,8 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) => {
         <img src={logo} alt="Logo" className="h-12 w-auto mr-10 drop-shadow-lg hover:scale-105 transition-transform duration-200" />
         <div className="h-10 w-px bg-pink-100 mx-2 hidden md:block" />
         <nav className="navbar">
-          <ul className="flex gap-3 md:gap-6">            {isAuthenticated && (
+          <ul className="flex gap-3 md:gap-6">            
+            {isAuthenticated && (
               <li>
                 <Link to={getDashboardPath()} className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-pink-200/60 hover:text-pink-600 focus:bg-pink-300/80 focus:text-pink-700 shadow-sm hover:shadow-pink-100">Dashboard</Link>
               </li>
@@ -82,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) => {
             </div>
           )}
         </span>
-        <span className="flex items-center cursor-pointer group" onClick={() => { setDropdownOpen(false); setShowNoti(false); navigate('/profile'); }}>
+        <span className="flex items-center cursor-pointer group" onClick={() => { setDropdownOpen(false); setShowNoti(false); navigate('/customer/profile'); }}>
           <img src="https://i.pravatar.cc/36?img=3" alt="MyProfile" className="rounded-full w-10 h-10 border-2 border-pink-300 mx-2 hover:ring-2 hover:ring-pink-200 transition-all duration-200 shadow-md" />
           <span className="ml-2 font-poppins font-semibold text-gray-700 group-hover:text-pink-500 transition-colors duration-200">{userName}</span>
         </span>

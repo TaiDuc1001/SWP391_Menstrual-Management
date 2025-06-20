@@ -65,16 +65,16 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({ open, onClo
         const response = await api.get(`/panels/${panelId}`);
         const panel = response.data;
         const testTypesNames = panel.testTypesNames || [];
-        const testTypesDescriptions = panel.testTypesDescriptions || [];
+        const testTypesNormalRanges = panel.testTypesNormalRanges || [];
         const testTypesIds = panel.testTypesIds || [];
         if (isMounted) {
           setDetails(testTypesNames.map((name: string, idx: number) => ({
             id: testTypesIds[idx]?.toString() || '',
             name,
             result: '',
-            normal: testTypesDescriptions[idx] || '',
+            normal: testTypesNormalRanges[idx] || '',
             value: '',
-            normalValue: testTypesDescriptions[idx] || '',
+            normalValue: testTypesNormalRanges[idx] || '',
             note: '',
           })));
         }

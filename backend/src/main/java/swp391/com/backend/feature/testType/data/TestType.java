@@ -16,9 +16,9 @@ public class TestType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
 
+    @Column(name = "normal_range")
     private String normalRange;
 
     private String unit;

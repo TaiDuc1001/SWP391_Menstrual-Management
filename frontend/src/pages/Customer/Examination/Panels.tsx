@@ -118,14 +118,14 @@ const Panels: React.FC = () => {
                   outlined
                   variant="secondary"
                   actionType="learn-more"
-                  onClick={() => navigate(`/sti-tests/packages/${pkg.id}`)}
+                  onClick={() => navigate(`/customer/sti-tests/packages/${pkg.id}`)}
                 >
                   Learn more
                 </ActionButton>
                 <ActionButton
                   variant="primary"
                   actionType="book"
-                  onClick={() => navigate('/sti-tests/book', { state: { panelId: pkg.id } })}
+                  onClick={() => navigate('/customer/sti-tests/book', { state: { panelId: pkg.id } })}
                 >
                   Book
                 </ActionButton>

@@ -49,14 +49,13 @@ const Checkout: React.FC = () => {
         alert('Starting 10-second countdown to simulate appointment time...');
         setTimeout(() => {
           alert('It\'s time for your appointment! Please go to Appointments page and click the Confirm button when ready.');
-          navigate('/appointments');
-        }, 10000);
-        
-        navigate('/appointments');
+          navigate('/customer/appointments');
+        }, 10000);        
+        navigate('/customer/appointments');
       } else {
         // Payment failed
         alert('Payment failed! Your appointment has been cancelled.');
-        navigate('/appointments');
+        navigate('/customer/appointments');
       }
     } catch (err) {
       setError('Payment processing failed. Please try again.');
@@ -69,7 +68,7 @@ const Checkout: React.FC = () => {
     try {
       await api.put(`/appointments/cancel/${appointmentId}`);
       alert('Appointment cancelled successfully.');
-      navigate('/appointments');
+      navigate('/customer/appointments');
     } catch (err) {
       setError('Failed to cancel appointment');
     }
@@ -105,7 +104,7 @@ const Checkout: React.FC = () => {
         <TitleBar
           text="Checkout"
           buttonLabel={<><span style={{fontSize: '1.2em'}}>&larr;</span> Back</>}
-          onButtonClick={() => navigate('/appointments')}
+          onButtonClick={() => navigate('/customer/appointments')}
         />
         
         <div className="bg-white rounded-xl shadow-md p-8 mt-4">

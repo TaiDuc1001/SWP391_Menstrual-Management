@@ -215,7 +215,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     className="text-purple-600 text-xs font-semibold hover:underline"
                                     onClick={e => {
                                         e.preventDefault();
-                                        navigate('/menstrual-cycles/all');
+                                        navigate('/customer/menstrual-cycles/all');
                                     }}
                                 >
                                     Xem tất cả

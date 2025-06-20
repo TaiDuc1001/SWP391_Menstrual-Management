@@ -57,7 +57,7 @@ const ExaminationBooking: React.FC = () => {
       const res = await api.post(`/panels/${panelId}`, { date, slot, note });
       setShowSuccess(true);
       setTimeout(() => {
-        navigate('/sti-tests');
+        navigate('/customer/sti-tests');
       }, 1800);
     } catch (err) {
       setError('Booking failed. Please try again.');

@@ -38,7 +38,6 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationI
   if (loading) return <Popup open={true} onClose={onClose}><div className="p-8 text-center">Loading...</div></Popup>;
   if (!result) return <Popup open={true} onClose={onClose}><div className="p-8 text-center">{'No result found.'}</div></Popup>;
 
-  // Map API response to UI fields
   const code = result.id;
   const testDate = result.date ? new Date(result.date).toLocaleDateString('en-GB') : '-';
   const testTime = result.timeRange || result.slot || '-';
@@ -99,7 +98,6 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationI
               )}
             </tbody>
           </table>
-          {/* Optionally, show a warning if any result is positive */}
           {testResults.some((tr: any) => tr.diagnosis === true) && (
             <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded mb-4 flex items-center gap-3">
               <span className="text-orange-500 text-xl">⚠️</span>
@@ -108,7 +106,7 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationI
           )}
           <div className="flex gap-3 mt-4 justify-end">
             <button className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600">Download PDF</button>
-            <button className="bg-green-500 text-white px-4 py-2 rounded font-semibold hover:bg-green-600" onClick={() => navigate('/appointments/book')}>Book consultation</button>
+            <button className="bg-green-500 text-white px-4 py-2 rounded font-semibold hover:bg-green-600" onClick={() => navigate('/customer/appointments/book')}>Book consultation</button>
             <button className="bg-yellow-400 text-white px-4 py-2 rounded font-semibold hover:bg-yellow-500">Review</button>
           </div>
         </div>

@@ -140,13 +140,13 @@ const Dashboard: React.FC = () => {
         <div className="flex gap-3 mt-4 md:mt-0">
           <button
             className="bg-pink-400 hover:bg-pink-500 text-white font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2"
-            onClick={() => navigate('/menstrual-cycles', { state: { openCyclePopup: true } })}
+            onClick={() => navigate('/customer/menstrual-cycles', { state: { openCyclePopup: true } })}
           >
             <img src={plusIcon} alt="New" className="w-4 h-4" /> New menstrual cycle
           </button>
           <button
             className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2"
-            onClick={() => navigate('/appointments/book')}
+            onClick={() => navigate('/customer/appointments/book')}
           >
             <img src={calendarIcon} alt="Calendar" className="w-4 h-4" /> Book an appointment
           </button>
@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="flex justify-between items-center mt-2">
             <span className="text-gray-500 text-sm">Ovulation: <span className="text-pink-600 font-bold">{ovulationDate}</span></span>
-            <button className="text-pink-500 hover:underline text-sm" onClick={() => navigate('/menstrual-cycles')}>Xem lịch</button>
+            <button className="text-pink-500 hover:underline text-sm" onClick={() => navigate('/customer/menstrual-cycles')}>Xem lịch</button>
           </div>
         </div>
         <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center justify-center">
@@ -222,7 +222,7 @@ const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/appointments')}>Xem chi tiết</button>
+          <button className="text-pink-500 hover:underline text-sm mt-2 w-max" onClick={() => navigate('/customer/appointments')}>Xem chi tiết</button>
         </div>
         <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-pink-500 font-semibold">

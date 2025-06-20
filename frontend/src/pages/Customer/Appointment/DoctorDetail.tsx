@@ -124,7 +124,7 @@ const DoctorDetail: React.FC = () => {
           </div>
           <button
             className="mt-4 px-6 py-2 rounded bg-pink-500 hover:bg-pink-600 text-white font-semibold"
-            onClick={() => navigate('/appointments/book')}
+            onClick={() => navigate('/customer/appointments/book')}
           >Book appointment</button>
         </div>
       </div>

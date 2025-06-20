@@ -144,9 +144,9 @@ const Examinations: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <TestingTitleBar
+    <TestingTitleBar
         title="Testing history"
-        onNewOrder={() => { navigate('/sti-tests/packages'); }}
+        onNewOrder={() => { navigate('/customer/sti-tests/packages'); }}
         newOrderIcon={<img src={plusIcon} alt="Plus" className="w-5 h-5" />} />
       <TestingUtilityBar>
         <SearchInput

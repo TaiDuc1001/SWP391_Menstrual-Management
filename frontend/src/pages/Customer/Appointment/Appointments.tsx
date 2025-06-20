@@ -227,7 +227,7 @@ const AppointmentHistory: React.FC = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <AppointmentTitleBar
         title="Appointment history"
-        onNewAppointment={() => { navigate('/appointments/book'); }}
+        onNewAppointment={() => { navigate('/customer/appointments/book'); }}
         icon={<img src={plusIcon} alt="Plus" className="w-5 h-5" />}
         buttonText="New appointment"
       />
