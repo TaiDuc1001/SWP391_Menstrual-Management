@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import TitleBar from '../../components/TitleBar/TitleBar';
+import TitleBar from '../../components/feature/TitleBar/TitleBar';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import bloodTestingImage from '../../assets/images/blood-testing.svg';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';

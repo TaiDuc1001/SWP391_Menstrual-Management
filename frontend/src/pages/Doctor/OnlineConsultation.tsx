@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import NotificationPopup from '../../components/Popup/NotificationPopup';
+import NotificationPopup from '../../components/feature/Popup/NotificationPopup';
 import refreshIcon from '../../assets/icons/refresh.svg';
 
 interface Appointment {

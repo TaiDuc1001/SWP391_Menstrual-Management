@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import TitleBar from '../../components/TitleBar/TitleBar';
+import TitleBar from '../../components/feature/TitleBar/TitleBar';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import { useNavigate } from 'react-router-dom';
-import DropdownSelect from '../../components/Filter/DropdownSelect';
-import SearchInput from '../../components/Filter/SearchInput';
-import BookingSuccessPopup from '../../components/Popup/BookingSuccessPopup';
+import DropdownSelect from '../../components/feature/Filter/DropdownSelect';
+import SearchInput from '../../components/feature/Filter/SearchInput';
+import BookingSuccessPopup from '../../components/feature/Popup/BookingSuccessPopup';
 import api from '../../api/axios';
 
 const reviewOptions = [

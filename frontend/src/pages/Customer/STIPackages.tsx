@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TypeBadge from '../../components/Badge/TypeBadge';
-import TagBadge from '../../components/Badge/TagBadge';
-import ActionButton from '../../components/Button/ActionButton';
+import TypeBadge from '../../components/common/Badge/TypeBadge';
+import TagBadge from '../../components/common/Badge/TagBadge';
+import ActionButton from '../../components/common/Button/ActionButton';
 import searchIcon from '../../assets/icons/search.svg';
-import DropdownSelect from '../../components/Filter/DropdownSelect';
-import MultiSelectDropdown from '../../components/Filter/MultiSelectDropdown';
-import TitleBar from '../../components/TitleBar/TitleBar';
+import DropdownSelect from '../../components/feature/Filter/DropdownSelect';
+import MultiSelectDropdown from '../../components/feature/Filter/MultiSelectDropdown';
+import TitleBar from '../../components/feature/TitleBar/TitleBar';
 import api from '../../api/axios';
 
 const TYPE_BADGE_STYLES: Record<string, string> = {

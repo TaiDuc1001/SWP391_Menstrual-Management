@@ -8,8 +8,8 @@ import pdfIcon from '../../assets/icons/pdf.svg';
 import bloodIcon from '../../assets/icons/blood.svg';
 import strawberyyIcon from '../../assets/icons/strawberyy.svg';
 import angryIcon from '../../assets/icons/angry.svg';
-import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
-import SuccessPopup from '../../components/Popup/SuccessPopup';
+import ReminderSettingsPopup from '../../components/feature/Popup/ReminderSettingsPopup';
+import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
 import api from '../../api/axios';
 import { Doughnut } from 'react-chartjs-2';
 import {

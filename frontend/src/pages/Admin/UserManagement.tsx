@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import dropDownIcon from '../../assets/icons/drop-down.svg';
-import NewUserButton from "../../components/Button/AdminCreateButton";
+import NewUserButton from "../../components/common/Button/AdminCreateButton";
 import plusWhiteIcon from "../../assets/icons/plus-white.svg";
 import searchIcon from "../../assets/icons/search.svg";
 import refreshIcon from "../../assets/icons/refresh.svg";

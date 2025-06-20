@@ -3,15 +3,15 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
-import AppointmentTitleBar from '../../components/TitleBar/AppointmentTitleBar';
-import AppointmentUtilityBar from '../../components/UtilityBar/AppointmentUtilityBar';
-import AppointmentTable from '../../components/Table/AppointmentTable';
-import SearchInput from '../../components/Filter/SearchInput';
-import DropdownSelect from '../../components/Filter/DropdownSelect';
-import DatePickerInput from '../../components/Filter/DatePickerInput';
-import AppointmentDetailPopup from '../../components/Popup/AppointmentDetailPopup';
-import TestResultPopup from '../../components/Popup/TestResultPopup';
-import StatusBadge from '../../components/Badge/StatusBadge';
+import AppointmentTitleBar from '../../components/feature/TitleBar/AppointmentTitleBar';
+import AppointmentUtilityBar from '../../components/feature/UtilityBar/AppointmentUtilityBar';
+import AppointmentTable from '../../components/feature/Table/AppointmentTable';
+import SearchInput from '../../components/feature/Filter/SearchInput';
+import DropdownSelect from '../../components/feature/Filter/DropdownSelect';
+import DatePickerInput from '../../components/feature/Filter/DatePickerInput';
+import AppointmentDetailPopup from '../../components/feature/Popup/AppointmentDetailPopup';
+import TestResultPopup from '../../components/feature/Popup/TestResultPopup';
+import StatusBadge from '../../components/common/Badge/StatusBadge';
 
 const plusIcon = plusWhiteIcon;
 

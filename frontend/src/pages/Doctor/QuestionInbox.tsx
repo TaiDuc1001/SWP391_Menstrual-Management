@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import api from '../../api/axios';
-import { Button } from '../../components/Button';
-import { Badge } from '../../components/Badge';
+import { Button } from '../../components/common/Button';
+import { Badge } from '../../components/common/Badge';
 import inboxIcon from '../../assets/icons/inbox.svg';
 import draftIcon from '../../assets/icons/draft.svg';
 import contentIcon from '../../assets/icons/content.svg';

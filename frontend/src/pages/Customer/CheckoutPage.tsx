@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
-import TitleBar from '../../components/TitleBar/TitleBar';
+import TitleBar from '../../components/feature/TitleBar/TitleBar';
 
 interface PaymentInfo {
   appointmentId: number;

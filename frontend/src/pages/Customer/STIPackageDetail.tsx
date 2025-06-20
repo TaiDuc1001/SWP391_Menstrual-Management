@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import TitleBar from '../../components/TitleBar/TitleBar';
-import ActionButton from '../../components/Button/ActionButton';
+import TitleBar from '../../components/feature/TitleBar/TitleBar';
+import ActionButton from '../../components/common/Button/ActionButton';
 import api from '../../api/axios';
 
 const STIPackageDetail: React.FC = () => {

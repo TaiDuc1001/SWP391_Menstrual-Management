@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import TitleBar from '../../components/TitleBar/TitleBar';
+import TitleBar from '../../components/feature/TitleBar/TitleBar';
 
 const mockAdvisors = [
   {

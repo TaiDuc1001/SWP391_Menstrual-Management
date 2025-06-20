@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchInput from '../../components/Filter/SearchInput';
-import DatePickerInput from '../../components/Filter/DatePickerInput';
-import Table from '../../components/Table/Table';
-import ActionButton from '../../components/Button/ActionButton';
-import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
-import SuccessPopup from '../../components/Popup/SuccessPopup';
+import SearchInput from '../../components/feature/Filter/SearchInput';
+import DatePickerInput from '../../components/feature/Filter/DatePickerInput';
+import Table from '../../components/feature/Table/Table';
+import ActionButton from '../../components/common/Button/ActionButton';
+import MenstrualCyclePopup from '../../components/feature/Popup/MenstrualCyclePopup';
+import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
 import { MenstrualCycleProvider, useMenstrualCycles } from '../../context/MenstrualCycleContext';
 
 const MenstrualCyclesAll: React.FC = () => {

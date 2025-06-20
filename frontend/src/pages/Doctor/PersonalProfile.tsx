@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '../../components/Button';
-import { Badge } from '../../components/Badge';
+import { Button } from '../../components/common/Button';
+import { Badge } from '../../components/common/Badge';
 import api from '../../api/axios';
 import uploadIcon from '../../assets/icons/upload.svg';
 import editIcon from '../../assets/icons/edit.svg';

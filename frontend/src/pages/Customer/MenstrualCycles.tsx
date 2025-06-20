@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import MenstrualCyclePopup from '../../components/Popup/MenstrualCyclePopup';
-import SuccessPopup from '../../components/Popup/SuccessPopup';
-import ReminderSettingsPopup from '../../components/Popup/ReminderSettingsPopup';
-import DayNotePopup from '../../components/Popup/DayNotePopup'; 
+import MenstrualCyclePopup from '../../components/feature/Popup/MenstrualCyclePopup';
+import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
+import ReminderSettingsPopup from '../../components/feature/Popup/ReminderSettingsPopup';
+import DayNotePopup from '../../components/feature/Popup/DayNotePopup';
 import Woman from '../../assets/images/Woman.svg';
 import pen from '../../assets/images/pen.svg';
 import MenstrualCyclesAll from './MenstrualCyclesAll';

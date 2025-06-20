@@ -5,14 +5,14 @@ import api from '../../api/axios';
 
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 
-import TestingTitleBar from '../../components/TitleBar/TestingTitleBar';
-import TestingUtilityBar from '../../components/UtilityBar/TestingUtilityBar';
-import TestTable from '../../components/Table/TestTable';
-import SearchInput from '../../components/Filter/SearchInput';
-import DropdownSelect from '../../components/Filter/DropdownSelect';
-import MultiSelectDropdown from '../../components/Filter/MultiSelectDropdown';
-import DatePickerInput from '../../components/Filter/DatePickerInput';
-import TestResultPopup from '../../components/Popup/TestResultPopup';
+import TestingTitleBar from '../../components/feature/TitleBar/TestingTitleBar';
+import TestingUtilityBar from '../../components/feature/UtilityBar/TestingUtilityBar';
+import TestTable from '../../components/feature/Table/TestTable';
+import SearchInput from '../../components/feature/Filter/SearchInput';
+import DropdownSelect from '../../components/feature/Filter/DropdownSelect';
+import MultiSelectDropdown from '../../components/feature/Filter/MultiSelectDropdown';
+import DatePickerInput from '../../components/feature/Filter/DatePickerInput';
+import TestResultPopup from '../../components/feature/Popup/TestResultPopup';
 
 const plusIcon = plusWhiteIcon; 
 
