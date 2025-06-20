@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
+import { useTableState } from '../../api/hooks';
 
 import plusWhiteIcon from '../../assets/icons/plus-white.svg';
 
 import TestingTitleBar from '../../components/feature/TitleBar/TestingTitleBar';
 import TestingUtilityBar from '../../components/feature/UtilityBar/TestingUtilityBar';
-import TestTable from '../../components/feature/Table/TestTable';
+import TestTable from '../../components/feature/Table/variants/TestTable';
 import SearchInput from '../../components/feature/Filter/SearchInput';
 import DropdownSelect from '../../components/feature/Filter/DropdownSelect';
-import MultiSelectDropdown from '../../components/feature/Filter/MultiSelectDropdown';
 import DatePickerInput from '../../components/feature/Filter/DatePickerInput';
 import TestResultPopup from '../../components/feature/Popup/TestResultPopup';
 
@@ -26,7 +26,6 @@ const TESTS_PER_PAGE = 5;
 
 const STITests: React.FC = () => {
   const [testRecords, setTestRecords] = useState<any[]>([]);
-  const [selected, setSelected] = useState<number[]>([]);
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date | null>(null);
   const [selectedDateTo, setSelectedDateTo] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,7 +35,6 @@ const STITests: React.FC = () => {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [hideRows, setHideRows] = useState<number[]>([]);
   const [showResultPopup, setShowResultPopup] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [currentExaminationId, setCurrentExaminationId] = useState<number | null>(null);
   const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All slots' }]);
   const [slotMap, setSlotMap] = useState<{ [key: string]: string }>({});
@@ -44,6 +42,44 @@ const STITests: React.FC = () => {
   const [panelOptions, setPanelOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'All panels' }]);
   const [selectedPanel, setSelectedPanel] = useState('');
   const navigate = useNavigate();
+
+  const parseDate = (dateStr: string): Date => {
+    const [day, month, year] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  // Filter data first
+  const filteredRecords = testRecords.filter((record: any) => {
+    const searchMatch = searchTerm ? record.panels.toLowerCase().includes(searchTerm.toLowerCase()) || record.date.includes(searchTerm) : true;
+    const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
+    const statusMatch = selectedStatus ? record.status === selectedStatus : true;
+    const panelMatch = selectedPanel ? record.panels === selectedPanel : true;
+    const recordPanelList = record.panels.split(',').map((p: string) => p.trim());
+    const typeMatch = selectedTypes.length === 0 ? true : selectedTypes.some(type => recordPanelList.includes(type));
+    const recordDate = parseDate(record.date);
+    const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
+    const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
+    return searchMatch && slotMatch && typeMatch && statusMatch && panelMatch && fromMatch && toMatch;
+  }).filter(record => !hideRows.includes(record.id));
+
+  // Use table state hook for pagination, sorting, and selection
+  const {
+    data: paginatedData,
+    currentPage,
+    totalPages,
+    selected,
+    handlePageChange,
+    handleSelectChange,
+    handleSelectAll: handleSelectAllBase,
+    handleSort,
+    sortConfig
+  } = useTableState(filteredRecords, {
+    initialPageSize: TESTS_PER_PAGE
+  });
+
+  const handleSelectAllWrapper = (checked: boolean) => {
+    handleSelectAllBase(checked);
+  };
 
   useEffect(() => {
     api.get('/examinations').then(res => {
@@ -104,73 +140,7 @@ const STITests: React.FC = () => {
         options.push({ value: panel.panelName, label: panel.panelName });
       });
       setPanelOptions(options);
-    });
-  }, []);
-
-  const handleCheckboxChange = (id: number) => {
-    setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((i) => i !== id)
-        : [...prev, id]
-    );
-  };
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      const visibleRecords = filteredRecords.filter((record) => !hideRows.includes(record.id));
-      setSelected(visibleRecords.map((record) => record.id));
-    } else {
-      setSelected([]);
-    }
-  };
-
-  const parseDate = (str: string) => {
-    const [day, month, year] = str.split('/').map(Number);
-    return new Date(year, month - 1, day);
-  };
-
-  const filteredRecords = testRecords.filter((record) => {
-    if (hideRows.includes(record.id)) {
-      return false;
-    }
-    const searchMatch =
-      record.date.includes(searchTerm) ||
-      record.slot.includes(searchTerm) ||
-      record.panels.toLowerCase().includes(searchTerm.toLowerCase());
-    const slotMatch = selectedSlot ? record.time === selectedSlot : true;
-    const statusMatch = selectedStatus ? record.statusRaw === selectedStatus : true;
-    const panelMatch = selectedPanel ? record.panels === selectedPanel : true;
-    const recordPanelList = record.panels.split(',').map((p: string) => p.trim());
-    const typeMatch = selectedTypes.length === 0 ? true : selectedTypes.some(type => recordPanelList.includes(type));
-    const recordDate = parseDate(record.date);
-    const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
-    const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-    return searchMatch && slotMatch && typeMatch && statusMatch && panelMatch && fromMatch && toMatch;
-  });
-
-  // Paging should use filteredRecords
-  const totalPages = Math.ceil(filteredRecords.length / TESTS_PER_PAGE);
-  const startIdx = (currentPage - 1) * TESTS_PER_PAGE;
-  const endIdx = startIdx + TESTS_PER_PAGE;
-  const pagedRecords = filteredRecords.slice(startIdx, endIdx);
-
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedSlot, selectedTypes, selectedStatus, selectedDateFrom, selectedDateTo]);
-
-  React.useEffect(() => {
-    const newSelected = selected.filter(id => !hideRows.includes(id));
-    if (newSelected.length !== selected.length) {
-      setSelected(newSelected);
-    }
-  }, [hideRows]);
-
-  React.useEffect(() => {
-    const visibleIds = filteredRecords.map(r => r.id);
-    const newSelected = selected.filter(id => visibleIds.includes(id));
-    if (newSelected.length !== selected.length) {
-      setSelected(newSelected);
-    }
-  }, [filteredRecords]);
+    });  }, []);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -211,55 +181,32 @@ const STITests: React.FC = () => {
           placeholder="To date"
           minDate={selectedDateFrom || undefined}
         />
-      </TestingUtilityBar>      
-      <TestTable
-        filteredRecords={filteredRecords}
+      </TestingUtilityBar>        <TestTable
+        filteredRecords={paginatedData}
         slotTimeMap={slotMap}
-        selected={selected}
-        handleCheckboxChange={handleCheckboxChange}
-        handleSelectAll={handleSelectAll}
+        selected={selected as number[]}
+        onSelectChange={handleSelectChange}
+        onSelectAll={handleSelectAllWrapper}
         hideRows={hideRows}
-        onDeleteRows={(ids) => {
+        onDeleteRows={(ids: number[]) => {
           setHideRows(prev => [...prev, ...ids]);
-          setSelected([]);
+          handleSelectChange([]);
         }}
-        onViewRows={(ids) => {
+        onViewRows={(ids: number[]) => {
           if (ids && ids.length > 0) {
             setCurrentExaminationId(ids[0]);
             setShowResultPopup(true);
           }
         }}
         currentPage={currentPage}
-        testsPerPage={TESTS_PER_PAGE}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        itemsPerPage={TESTS_PER_PAGE}
+        totalItems={filteredRecords.length}
+        sortConfig={sortConfig}
+        onSort={handleSort}
       />
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-pink-100 text-pink-600 hover:bg-pink-200'}`}
-          >
-            Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-pink-100'}`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400' : 'bg-pink-100 text-pink-600 hover:bg-pink-200'}`}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      {/* Pagination is now handled by the TestTable component */}
       {showResultPopup && currentExaminationId !== null && (
         <TestResultPopup onClose={() => { setShowResultPopup(false); setCurrentExaminationId(null); }} examinationId={currentExaminationId} />
       )}
