@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import StatusBadge from '../../../components/common/Badge/StatusBadge';
 import refreshIcon from '../../../assets/icons/refresh.svg';
 import searchIcon from '../../../assets/icons/search.svg';
+import userIcon from '../../../assets/icons/avatar.svg';
 import NotificationPopup from '../../../components/feature/Popup/NotificationPopup';
 import axios from 'axios';
 
@@ -63,6 +64,7 @@ const Examinations: React.FC = () => {
     });
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedExamination, setSelectedExamination] = useState<ExaminationDetail | null>(null);
+    const [selectedPanelName, setSelectedPanelName] = useState<string>('');
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
     const itemsPerPage = 10;
 
@@ -103,23 +105,19 @@ const Examinations: React.FC = () => {
         }
     };
 
-    const handleViewDetails = async (id: number) => {
+    const handleViewDetails = async (row: Examination) => {
         setIsLoadingDetail(true);
+        setSelectedPanelName(row.panelName); // Lưu panelName từ row
         try {
-            const response = await axios.get<ExaminationDetail>(`http://localhost:8080/api/examinations/examined/${id}`);
+            const response = await axios.get<ExaminationDetail>(`http://localhost:8080/api/examinations/examined/${row.id}`);
             setSelectedExamination(response.data);
             setIsDetailModalOpen(true);
         } catch (error) {
             console.error('Error loading details:', error);
-            setNotification({
-                message: 'An error occurred while loading details',
-                type: 'error',
-                isOpen: true
-            });
         } finally {
             setIsLoadingDetail(false);
         }
-    };
+    };    
 
     const handleCloseDetailModal = () => {
         setIsDetailModalOpen(false);
@@ -220,7 +218,7 @@ const Examinations: React.FC = () => {
                                             )}
                                             <button
                                                 className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-blue-500 text-white hover:bg-blue-600 transition"
-                                                onClick={() => handleViewDetails(row.id)}
+                                                onClick={() => handleViewDetails(row)}
                                             >
                                                 View Details
                                             </button>
@@ -291,7 +289,7 @@ const Examinations: React.FC = () => {
                         <div className="flex items-center justify-between p-6 border-b">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                                    <span className="text-gray-600 font-semibold">👤</span>
+                                    <img src={userIcon} alt="userIcon" className="w-10 h-10" />
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-bold text-gray-800">DETAILED TEST RESULT</h2>
@@ -325,8 +323,8 @@ const Examinations: React.FC = () => {
                                     <span className="font-semibold">{selectedExamination.staffName || '-'}</span>
                                 </div>
                                 <div>
-                                    <span className="text-sm text-gray-600">Type: </span>
-                                    <span className="font-semibold">-</span>
+                                    <span className="text-sm text-gray-600">Test panel: </span>
+                                    <span className="font-semibold">{selectedPanelName || '-'}</span>
                                 </div>
                             </div>
 
