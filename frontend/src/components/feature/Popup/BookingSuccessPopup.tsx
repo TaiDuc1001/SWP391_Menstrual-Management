@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Popup from './ExitPopup';
 import greenCheckIcon from '../../../assets/icons/green-check.svg';
 import calendarIcon from '../../../assets/icons/calendar.svg';
@@ -29,6 +30,7 @@ const BookingSuccessPopup: React.FC<BookingSuccessPopupProps> = ({
                                                                      onViewHistory,
                                                                      onBookNew,
                                                                  }) => {
+    const navigate = useNavigate();
     if (!open) return null;
     return (
         <Popup open={open} onClose={onClose} className="w-full max-w-md p-8">
@@ -64,7 +66,7 @@ const BookingSuccessPopup: React.FC<BookingSuccessPopupProps> = ({
                 <div className="flex gap-2 mt-6 w-full">
                     <button
                         className="flex-1 px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold"
-                        onClick={onGoHome}
+                        onClick={() => navigate('/customer/dashboard')}
                     >Go to Home
                     </button>
                     <button
