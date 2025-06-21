@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Popup from './ExitPopup';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
+import jsPDF from 'jspdf';
 
 interface TestResultPopupProps {
   onClose: () => void;
@@ -45,6 +46,76 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationI
   const staffName = result.staffName || '-';
   const panels = result.panelName || '-';
   const testResults = Array.isArray(result.testResults) ? result.testResults : [];
+
+  // PDF download handler
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    let y = 10;
+    doc.setFontSize(16);
+    doc.text('Detailed Test Result', 10, y);
+    y += 10;
+    doc.setFontSize(12);
+    doc.text(`Code: ${code}`, 10, y);
+    y += 8;
+    doc.text(`Test date: ${testDate}`, 10, y);
+    y += 8;
+    doc.text(`Test time: ${testTime}`, 10, y);
+    y += 8;
+    doc.text(`Staff: ${staffName}`, 10, y);
+    y += 8;
+    doc.text(`Type: ${panels}`, 10, y);
+    y += 12;
+    doc.setFontSize(14);
+    doc.text('Detailed result table:', 10, y);
+    y += 8;
+    doc.setFontSize(11);
+    // Table header
+    doc.text('Item', 10, y, { maxWidth: 38 });
+    doc.text('Result', 50, y, { maxWidth: 28 });
+    doc.text('Normal range', 80, y, { maxWidth: 38 });
+    doc.text('Test index', 120, y, { maxWidth: 28 });
+    doc.text('Note', 150, y, { maxWidth: 50 });
+    y += 6;
+    // Table rows with wrapping
+    testResults.forEach((tr: any) => {
+      const item = tr.name || '-';
+      const result = tr.diagnosis === true ? 'Positive' : tr.diagnosis === false ? 'Negative' : '-';
+      const normalRange = tr.normalRange || '-';
+      const testIndex = tr.testIndex ? String(tr.testIndex) : '-';
+      const note = tr.note || '-';
+      // Calculate max lines needed for this row
+      const itemLines = doc.splitTextToSize(item, 38);
+      const resultLines = doc.splitTextToSize(result, 28);
+      const normalRangeLines = doc.splitTextToSize(normalRange, 38);
+      const testIndexLines = doc.splitTextToSize(testIndex, 28);
+      const noteLines = doc.splitTextToSize(note, 50);
+      const maxLines = Math.max(itemLines.length, resultLines.length, normalRangeLines.length, testIndexLines.length, noteLines.length);
+      for (let i = 0; i < maxLines; i++) {
+        doc.text(itemLines[i] || '', 10, y, { maxWidth: 38 });
+        doc.text(resultLines[i] || '', 50, y, { maxWidth: 28 });
+        doc.text(normalRangeLines[i] || '', 80, y, { maxWidth: 38 });
+        doc.text(testIndexLines[i] || '', 120, y, { maxWidth: 28 });
+        doc.text(noteLines[i] || '', 150, y, { maxWidth: 50 });
+        y += 6;
+        if (y > 270 && i < maxLines - 1) {
+          doc.addPage();
+          y = 10;
+        }
+      }
+      if (y > 270) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+    // Warning if any positive
+    if (testResults.some((tr: any) => tr.diagnosis === true)) {
+      y += 10;
+      doc.setTextColor(255, 140, 0);
+      doc.text('⚠️ You have a positive result. Please schedule a consultation soon for timely treatment support.', 10, y, { maxWidth: 180 });
+      doc.setTextColor(0, 0, 0);
+    }
+    doc.save(`TestResult_${code}.pdf`);
+  };
 
   return (
     <Popup open={true} onClose={onClose} className="w-full max-w-6xl p-8 relative">
@@ -107,7 +178,7 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({ onClose, examinationI
             </div>
           )}
           <div className="flex gap-3 mt-4 justify-end">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600">Download PDF</button>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600" onClick={handleDownloadPDF}>Download PDF</button>
             <button className="bg-green-500 text-white px-4 py-2 rounded font-semibold hover:bg-green-600" onClick={() => navigate('/appointments/book')}>Book consultation</button>
             <button className="bg-yellow-400 text-white px-4 py-2 rounded font-semibold hover:bg-yellow-500">Review</button>
           </div>
