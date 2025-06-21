@@ -22,6 +22,7 @@ import swp391.com.backend.feature.resultDetail.service.ResultDetailsService;
 import swp391.com.backend.feature.panel.service.PanelService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/examinations")
@@ -92,6 +93,21 @@ public class ExaminationController {
         List<TestResultListDTO> testResultList = testResultMapper.toTestResultDtoList(testTypes, resultDetails);
         dto.setTestResults(testResultList);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/payment/{id}")
+    public ResponseEntity<ExaminedExaminationDTO> bookExamination(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
+        Examination examination = examinationService.findExaminationById(id);
+        Examination updatedExamination = null;
+        if(examination.getExaminationStatus() != null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if(queryParams.containsKey("vnp_ResponseCode") && !queryParams.get("vnp_ResponseCode").equals("00")) {
+            updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.CANCELLED);
+        } else {
+            updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.IN_PROGRESS);
+        }
+        return ResponseEntity.ok(examinationMapper.toExaminedDTO(updatedExamination));
     }
 
     @PutMapping("/sampled/{id}")
