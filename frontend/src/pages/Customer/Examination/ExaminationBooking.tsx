@@ -5,6 +5,7 @@ import bloodTestingImage from '../../../assets/images/blood-testing.svg';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
 import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
+import { examinationService } from '../../../api/services/examinationService';
 
 const ExaminationBooking: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
@@ -14,11 +15,13 @@ const ExaminationBooking: React.FC = () => {
     const [error, setError] = useState('');
     const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([]);
     const [slotLabelMap, setSlotLabelMap] = useState<{ [key: string]: string }>({});
-    const [panelName, setPanelName] = useState('');
+    const [panelName, setPanelName] = useState('');    const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {panelId: panelIdParam} = useParams();
-    const location = useLocation();
-    const panelId = panelIdParam || (location.state && location.state.panelId);
+    const location = useLocation();    const panelId = panelIdParam || (location.state && location.state.panelId);
+
     useEffect(() => {
         api.get('/enumerators/slots')
             .then(res => {
@@ -35,6 +38,21 @@ const ExaminationBooking: React.FC = () => {
             })
             .catch(() => {
             });
+    }, []);
+
+    useEffect(() => {
+        if (date) {
+            setLoadingSlots(true);
+            examinationService.getAvailableSlots(date)
+                .then(slots => {
+                    setAvailableSlots(slots || []);
+                })
+                .finally(() => {
+                    setLoadingSlots(false);
+                });
+        } else {
+            setAvailableSlots([]);
+        }
     }, [date]);
 
     useEffect(() => {
@@ -64,16 +82,36 @@ const ExaminationBooking: React.FC = () => {
         if (!date || !slot) {
             setError('Please select date and time slot.');
             return;
-        }
+        }        setLoading(true);
+
         try {
-            await api.post(`/panels/${panelId}`, {date, slot, note});
-            setShowSuccess(true);
-            setTimeout(() => {
-                setShowSuccess(false);
-                navigate('/customer/sti-tests');
-            }, 1500);
-        } catch (err) {
-            setError('Booking failed. Please try again.');
+            const result = await examinationService.createExamination(Number(panelId), {
+                date,
+                slot,
+                note
+            });
+
+            if (result.error) {
+                setError(result.error.message);
+                if (result.error.isConflict) {
+                    setSlot('');
+                    if (date) {
+                        const updatedSlots = await examinationService.getAvailableSlots(date);
+                        setAvailableSlots(updatedSlots);
+                    }
+                }
+            } else if (result.data) {
+                setShowSuccess(true);
+                setTimeout(() => {
+                    setShowSuccess(false);
+                    navigate('/customer/sti-tests');
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Unexpected error during examination creation:', error);
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -101,16 +139,43 @@ const ExaminationBooking: React.FC = () => {
                                                setDate(e.target.value);
                                                setSlot('');
                                            }}/>
-                                </div>
-                                <div className="flex-1">
+                                </div>                                <div className="flex-1">
                                     <label className="block text-gray-700 font-semibold mb-1">Time Slot</label>
-                                    <select className="w-full border rounded px-4 py-2" value={slot}
-                                            onChange={e => setSlot(e.target.value)}>
-                                        <option value="">Select slot</option>
-                                        {slotOptions.map(opt => (
-                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                        ))}
-                                    </select>
+                                    {loadingSlots ? (
+                                        <div className="text-gray-500 text-sm">Loading available slots...</div>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {slotOptions.map(opt => {
+                                                const isSelected = slot === String(opt.value);
+                                                const isAvailable = date ? availableSlots.includes(String(opt.value)) : true;
+                                                const isDisabled = date && !isAvailable;
+                                                return (
+                                                    <label
+                                                        key={String(opt.value)}
+                                                        className={[
+                                                            "flex items-center gap-2 border rounded-lg px-3 py-2 transition-all cursor-pointer",
+                                                            isSelected ? "slot-selected" : "",
+                                                            isDisabled ? "slot-unavailable" : "slot-available"
+                                                        ].join(" ")}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name="timeSlot"
+                                                            value={String(opt.value)}
+                                                            checked={slot === String(opt.value)}
+                                                            onChange={e => setSlot(String(e.target.value))}
+                                                            className="accent-pink-400"
+                                                            disabled={!!isDisabled}
+                                                        />
+                                                        <span className={isDisabled ? "text-gray-400" : ""}>
+                                                            {opt.label}
+                                                            {isDisabled && " (Booked)"}
+                                                        </span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div>
@@ -119,10 +184,11 @@ const ExaminationBooking: React.FC = () => {
                                        placeholder="Enter any notes if needed..." value={note}
                                        onChange={e => setNote(e.target.value)}/>
                             </div>
-                            {error && <div className="text-red-500 text-sm">{error}</div>}
-                            <button type="submit"
-                                    className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 flex items-center justify-center gap-2 text-lg hover:bg-pink-500 transition">
-                                <img src={calendarIcon} alt="calendar" className="w-6 h-6"/>                                Book
+                            {error && <div className="text-red-500 text-sm">{error}</div>}                            <button type="submit"
+                                    className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 flex items-center justify-center gap-2 text-lg hover:bg-pink-500 transition disabled:opacity-60"
+                                    disabled={!slot || !date || loading}>
+                                <img src={calendarIcon} alt="calendar" className="w-6 h-6"/>
+                                {loading ? 'Booking...' : 'Book'}
                             </button>
                         </form>
                     </div>
@@ -133,18 +199,18 @@ const ExaminationBooking: React.FC = () => {
             </div>
             <BookingSuccessPopup 
                 open={showSuccess} 
-                onClose={() => setShowSuccess(false)} 
+                onClose={() => setShowSuccess(false)}
                 doctor={panelName}
                 date={date ? new Date(date).toLocaleDateString() : ''}
                 time={slotLabelMap[slot] || slot}
                 note={note || 'No additional notes'}
-                onViewHistory={() => {
-                    setShowSuccess(false);
-                    navigate('/customer/sti-tests');
-                }}
+                onGoHome={() => navigate('/customer/dashboard')}
+                onViewHistory={() => navigate('/customer/sti-tests')}
                 onBookNew={() => {
                     setShowSuccess(false);
-                    navigate('/customer/sti-tests/packages');
+                    setDate('');
+                    setSlot('');
+                    setNote('');
                 }}
             />
         </div>

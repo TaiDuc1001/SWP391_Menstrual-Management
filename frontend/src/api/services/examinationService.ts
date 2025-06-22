@@ -53,7 +53,36 @@ export const examinationService = {
 
     getAllExaminations: async (): Promise<ExaminationDetail[]> => {
         const response = await api.get('/examinations');
-        console.log('All examinations from API:', response.data);
         return response.data;
+    },
+
+    getAvailableSlots: async (date: string): Promise<string[]> => {
+        try {
+            const response = await api.get('/examinations/available-slots', {
+                params: { date }
+            });
+            return response.data || [];
+        } catch (error) {
+            console.error('Error fetching available examination slots:', error);
+            return [];
+        }
+    },
+
+    createExamination: async (panelId: number, data: { date: string; slot: string; note?: string }) => {
+        try {
+            const response = await api.post(`/panels/${panelId}`, data);
+            return { data: response.data, error: null };
+        } catch (error: any) {
+            const isConflict = error.response?.status === 409;
+            return {
+                data: null,
+                error: {
+                    message: isConflict 
+                        ? 'This time slot is already booked. Please select another slot.'
+                        : error.response?.data?.message || 'Failed to create examination. Please try again.',
+                    isConflict
+                }
+            };
+        }
     },
 };

@@ -208,6 +208,12 @@ public class ExaminationController {
         return ResponseEntity.ok(paymentInfo);
     }
 
+    @GetMapping("/available-slots")
+    public ResponseEntity<List<String>> getAvailableSlots(@RequestParam String date) {
+        List<String> availableSlots = examinationService.getAvailableSlots(date);
+        return ResponseEntity.ok(availableSlots);
+    }
+
     @GetMapping("/staff")
     public ResponseEntity<List<SimpleExaminationDTO>> getExaminationsForStaff() {
         List<SimpleExaminationDTO> result = examinationService.getExaminationsForStaff()
