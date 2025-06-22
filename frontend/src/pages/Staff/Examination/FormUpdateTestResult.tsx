@@ -10,6 +10,8 @@ interface TestDetail {
     value: string;
     normalValue: string;
     note: string;
+    unit: string;
+    isBoolean: boolean;
 }
 
 interface SampledData {
@@ -69,17 +71,24 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                 const panel = response.data;
                 const testTypesNames = panel.testTypesNames || [];
                 const testTypesNormalRanges = panel.testTypesNormalRanges || [];
+                const testTypesUnits = panel.testTypesUnits || [];
                 const testTypesIds = panel.testTypesIds || [];
                 if (isMounted) {
-                    setDetails(testTypesNames.map((name: string, idx: number) => ({
-                        id: testTypesIds[idx]?.toString() || '',
-                        name,
-                        result: '',
-                        normal: testTypesNormalRanges[idx] || '',
-                        value: '',
-                        normalValue: testTypesNormalRanges[idx] || '',
-                        note: '',
-                    })));
+                    setDetails(testTypesNames.map((name: string, idx: number) => {
+                        const unit = testTypesUnits[idx] || '';
+                        const isBoolean = unit.toLowerCase() === 'boolean';
+                        return {
+                            id: testTypesIds[idx]?.toString() || '',
+                            name,
+                            result: '',
+                            normal: testTypesNormalRanges[idx] || '',
+                            value: '',
+                            normalValue: testTypesNormalRanges[idx] || '',
+                            note: '',
+                            unit,
+                            isBoolean,
+                        };
+                    }));
                 }
             } catch (error) {
                 setError('Unable to fetch test items from the package.');
@@ -90,20 +99,126 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
             isMounted = false;
         };
     }, [panelId]);
-
     const validateForm = (): boolean => {
-        const emptyFields = details.filter(detail => !detail.result || !detail.value);
-        if (emptyFields.length > 0) {
-            setError('Please fill in all test results and values for each item.');
-            return false;
+        for (const detail of details) {
+            if (detail.isBoolean) {
+                if (!detail.result) {
+                    setError('Please select result for all boolean test items.');
+                    return false;
+                }
+            } else {
+                if (!detail.value) {
+                    setError('Please enter test index for all numerical test items.');
+                    return false;
+                }
+                if (isNaN(Number(detail.value))) {
+                    setError('Test index must be a valid number.');
+                    return false;
+                }
+            }
         }
         setError('');
         return true;
     };
+    const evaluateResult = (value: string, normalRange: string): string => {
+        if (!value || !normalRange) return '';
+        
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) return '';
 
-    const handleSubmit = async () => {
-        if (!validateForm()) return;
-        try {
+        if (normalRange.includes('<')) {
+            const threshold = parseFloat(normalRange.replace('<', '').trim());
+            return numValue < threshold ? 'Negative' : 'Positive';
+        } else if (normalRange.includes('>')) {
+            const threshold = parseFloat(normalRange.replace('>', '').trim());
+            return numValue > threshold ? 'Negative' : 'Positive';
+        } else if (normalRange.includes('-')) {
+            const [min, max] = normalRange.split('-').map(s => parseFloat(s.trim()));
+            return (numValue >= min && numValue <= max) ? 'Negative' : 'Positive';
+        }
+        
+        return '';
+    };
+    const generateSpecificRecommendation = (abnormalResults: TestDetail[]): string => {
+        const recommendations: string[] = [];
+        
+        abnormalResults.forEach(result => {
+            const testName = result.name.toLowerCase();
+            
+            if (testName.includes('chlamydia') && testName.includes('pcr')) {
+                recommendations.push('⚠️ Chlamydia PCR positive indicates active chlamydia infection. Immediate antibiotic treatment (azithromycin or doxycycline) is required. Partner notification and testing essential.');
+            } else if (testName.includes('chlamydia') && testName.includes('igm')) {
+                recommendations.push('⚠️ Chlamydia IgM elevated suggests recent or active chlamydia infection. Consider confirmatory PCR testing and antibiotic treatment if clinically indicated.');
+            } else if (testName.includes('gonorrhea') || testName.includes('gonorrhoea')) {
+                recommendations.push('⚠️ Gonorrhea positive requires immediate dual antibiotic therapy (ceftriaxone + azithromycin). Partner treatment and retesting in 3 months recommended.');
+            } else if (testName.includes('hiv')) {
+                recommendations.push('⚠️ HIV screening reactive requires confirmatory testing with HIV-1/2 differentiation assay. Immediate referral to infectious disease specialist for evaluation and potential treatment initiation.');
+            } else if (testName.includes('syphilis') || testName.includes('vdrl') || testName.includes('rpr')) {
+                recommendations.push('⚠️ Syphilis screening positive requires confirmatory treponemal testing and staging. Penicillin-based treatment regimen depends on disease stage.');
+            } else if (testName.includes('hepatitis b') || testName.includes('hbv')) {
+                recommendations.push('⚠️ Hepatitis B markers positive require liver function assessment and hepatitis B DNA quantification. Antiviral therapy may be indicated.');
+            } else if (testName.includes('hepatitis c') || testName.includes('hcv')) {
+                recommendations.push('⚠️ Hepatitis C antibody positive requires HCV RNA testing for active infection. Direct-acting antiviral therapy achieves >95% cure rate.');
+            } else if (testName.includes('herpes') || testName.includes('hsv')) {
+                recommendations.push('⚠️ Herpes simplex positive may indicate active or past infection. Antiviral therapy (acyclovir, valacyclovir) for symptom management and transmission reduction.');
+            } else if (testName.includes('trichomonas')) {
+                recommendations.push('⚠️ Trichomonas positive requires oral metronidazole or tinidazole treatment. Partner treatment essential to prevent reinfection.');
+            } else if (testName.includes('gardnerella') || testName.includes('bacterial vaginosis')) {
+                recommendations.push('⚠️ Bacterial vaginosis confirmed requires metronidazole or clindamycin treatment. Consider probiotics for recurrence prevention.');
+            } else if (testName.includes('candida') || testName.includes('yeast')) {
+                recommendations.push('⚠️ Candida/yeast infection confirmed requires antifungal treatment (fluconazole oral or topical azoles). Address predisposing factors.');
+            } else {
+                recommendations.push(`⚠️ ${result.name} abnormal (value: ${result.value || 'positive'}) requires clinical correlation and appropriate medical management.`);
+            }
+        });
+        
+        let finalRecommendation = recommendations.join('\n\n');
+        finalRecommendation += '\n\n\n🏥 URGENT: Schedule consultation within 24-48 hours for proper diagnosis confirmation, treatment initiation, and partner notification if applicable. Avoid sexual contact until treatment completion and clearance.';
+        
+        return finalRecommendation;
+    };
+
+    const evaluateOverallResult = (): { hasAbnormal: boolean, recommendation: string, isIncomplete: boolean } => {
+        const incompleteResults = details.filter(detail => {
+            if (detail.isBoolean) {
+                return !detail.result;
+            } else {
+                return !detail.value;
+            }
+        });
+        
+        const abnormalResults = details.filter(detail => detail.result === 'Positive');
+        const hasAbnormal = abnormalResults.length > 0;
+        const isIncomplete = incompleteResults.length > 0;
+        
+        if (isIncomplete) {
+            return {
+                hasAbnormal: false,
+                recommendation: "Please complete all test results before assessment can be generated.",
+                isIncomplete: true
+            };
+        }
+        
+        if (!hasAbnormal) {
+            return {
+                hasAbnormal: false,
+                recommendation: "✅ All test results are within normal range. No sexually transmitted infections detected. Continue safe sexual practices, regular screening as recommended by healthcare provider, and maintain good reproductive health habits.",
+                isIncomplete: false
+            };
+        }
+        
+        return {
+            hasAbnormal: true,
+            recommendation: generateSpecificRecommendation(abnormalResults),
+            isIncomplete: false
+        };
+    };const handleSubmit = async () => {
+        if (!validateForm()) return;        try {
+            const overallResult = evaluateOverallResult();
+            const finalNote = note.trim() 
+                ? `${note}\n\nOverall Assessment: ${overallResult.recommendation}`
+                : overallResult.recommendation;
+                
             const testResults = details.map(detail => ({
                 testTypeId: parseInt(detail.id),
                 name: detail.name,
@@ -119,13 +234,16 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                 testResults: testResults,
                 customerName: sampledData?.customerName,
                 staffName: sampledData?.staffName,
-                examinationStatus: sampledData?.examinationStatus
+                examinationStatus: sampledData?.examinationStatus,
+                overallNote: finalNote
             };
+            
             const staffId = getCurrentStaffId();
             const url = staffId 
                 ? `/examinations/examined/${request.id}?staffId=${staffId}`
                 : `/examinations/examined/${request.id}`;
             const response = await api.put(url, payload);
+            
             if (response.status === 200) {
                 setSuccessMessage('Test results updated successfully!');
                 setTimeout(() => {
@@ -140,9 +258,22 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
     };
 
     if (!open) return null;
-
     const handleDetailChange = (idx: number, key: keyof TestDetail, value: string) => {
-        setDetails(prev => prev.map((d, i) => i === idx ? {...d, [key]: value} : d));
+        setDetails(prev => prev.map((d, i) => {
+            if (i !== idx) return d;
+            
+            const updated = {...d, [key]: value};
+            
+            if (key === 'value' && !updated.isBoolean) {
+                if (value && !isNaN(Number(value))) {
+                    updated.result = evaluateResult(value, updated.normalValue);
+                } else {
+                    updated.result = '';
+                }
+            }
+            
+            return updated;
+        }));
     };
 
     const handleCancel = () => {
@@ -193,18 +324,19 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                     <div className="overflow-x-auto rounded-xl border border-gray-100">
                         <table className="min-w-full text-sm border-collapse">
                             <thead>
-                            <tr className="bg-gray-50 text-gray-700">
+                                <tr className="bg-gray-50 text-gray-700">
                                 <th className="p-3 font-semibold border">Item</th>
                                 <th className="p-3 font-semibold border">Result</th>
                                 <th className="p-3 font-semibold border">Test Index</th>
+                                <th className="p-3 font-semibold border">Unit</th>
                                 <th className="p-3 font-semibold border whitespace-nowrap">Normal Range</th>
                                 <th className="p-3 font-semibold border">Note</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {details.length === 0 ? (
+                                {details.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="text-center p-4">No test items available</td>
+                                    <td colSpan={6} className="text-center p-4">No test items available</td>
                                 </tr>
                             ) : (
                                 details.map((row, idx) => (
@@ -220,9 +352,13 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                                         </td>
                                         <td className="p-2 border">
                                             <select
-                                                className={`border rounded px-2 py-1 w-full ${row.result === '' ? 'border-red-300 bg-red-50' : ''}`}
+                                                className={`border rounded px-2 py-1 w-full ${
+                                                    !row.isBoolean ? 'bg-gray-100 cursor-not-allowed' : 
+                                                    row.result === '' ? 'border-red-300 bg-red-50' : ''
+                                                }`}
                                                 value={row.result}
                                                 onChange={e => handleDetailChange(idx, 'result', e.target.value)}
+                                                disabled={!row.isBoolean}
                                             >
                                                 <option value="">Select Result</option>
                                                 <option value="Positive">Positive</option>
@@ -231,10 +367,30 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                                         </td>
                                         <td className="p-2 border">
                                             <input
-                                                className={`border rounded px-2 py-1 w-full ${row.value === '' ? 'border-red-300 bg-red-50' : ''}`}
+                                                className={`border rounded px-2 py-1 w-full ${
+                                                    row.isBoolean ? 'bg-gray-100 cursor-not-allowed' : 
+                                                    row.value === '' ? 'border-red-300 bg-red-50' : ''
+                                                }`}
                                                 value={row.value}
-                                                onChange={e => handleDetailChange(idx, 'value', e.target.value)}
-                                                placeholder="Index"
+                                                onChange={e => {
+                                                    const value = e.target.value;
+                                                    if (row.isBoolean) return;
+                                                    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                                        handleDetailChange(idx, 'value', value);
+                                                    }
+                                                }}
+                                                placeholder={row.isBoolean ? "N/A" : "Enter number"}
+                                                disabled={row.isBoolean}
+                                                type="text"
+                                            />
+                                        </td>
+                                        <td className="p-2 border">
+                                            <input
+                                                className="bg-gray-100 border rounded px-2 py-1 w-full text-gray-700 cursor-not-allowed"
+                                                value={row.unit}
+                                                readOnly
+                                                disabled
+                                                placeholder="Unit"
                                             />
                                         </td>
                                         <td className="p-2 border">
@@ -260,8 +416,7 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div className="mb-6">
+                </div>                <div className="mb-6">
                     <div className="font-semibold mb-2 flex items-center gap-2">
                         <span className="inline-block w-2 h-2 bg-gray-400 rounded-full"></span>
                         Notes for Customer
@@ -273,6 +428,39 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                         onChange={e => setNote(e.target.value)}
                     />
                 </div>
+                  {details.length > 0 && (
+                    <div className="mb-6">
+                        <div className="font-semibold mb-2 flex items-center gap-2">
+                            <span className="inline-block w-2 h-2 bg-blue-400 rounded-full"></span>
+                            Overall Assessment Preview
+                        </div>
+                        <div className={`p-3 rounded-xl border-2 ${
+                            evaluateOverallResult().isIncomplete 
+                                ? 'border-gray-200 bg-gray-50'
+                                : evaluateOverallResult().hasAbnormal 
+                                    ? 'border-orange-200 bg-orange-50' 
+                                    : 'border-green-200 bg-green-50'
+                        }`}>
+                            <div className={`text-sm font-medium mb-1 ${
+                                evaluateOverallResult().isIncomplete
+                                    ? 'text-gray-600'
+                                    : evaluateOverallResult().hasAbnormal 
+                                        ? 'text-orange-700' 
+                                        : 'text-green-700'
+                            }`}>
+                                {evaluateOverallResult().isIncomplete
+                                    ? '⏳ Incomplete Assessment'
+                                    : evaluateOverallResult().hasAbnormal 
+                                        ? '⚠️ Requires Attention' 
+                                        : '✅ Normal Results'
+                                }
+                            </div>
+                            <div className="text-sm text-gray-700">
+                                {evaluateOverallResult().recommendation}
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="flex justify-end gap-3 mt-6">
                     <button
                         className="px-6 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50"

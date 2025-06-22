@@ -23,6 +23,7 @@ interface TestResult {
     testIndex: string;
     normalRange: string;
     note: string;
+    unit: string;
 }
 
 interface ExaminationDetail {
@@ -34,6 +35,7 @@ interface ExaminationDetail {
     staffName: string | null;
     examinationStatus: string;
     panelId: number;
+    overallNote?: string;
 }
 
 const getStatusLabel = (status: string): string => {
@@ -82,6 +84,10 @@ const UpdateTestResult: React.FC = () => {
     const handleOpenModal = (row: Examination) => {
         setSelectedRequest(row);
         setModalOpen(true);
+    };    const handleUpdateSuccess = () => {
+        fetchData();
+        setModalOpen(false);
+        setSelectedRequest(null);
     };
 
     const handleCloseModal = () => {
@@ -101,8 +107,7 @@ const UpdateTestResult: React.FC = () => {
         } catch (error) {
             console.error('Error updating status:', error);
         }
-    };
-    const handleViewDetails = async (row: Examination) => {
+    };    const handleViewDetails = async (row: Examination) => {
         setIsLoadingDetail(true);
         setSelectedPanelName(row.panelName);
         try {
@@ -114,7 +119,7 @@ const UpdateTestResult: React.FC = () => {
         } finally {
             setIsLoadingDetail(false);
         }
-    };    
+    };
 
 
     const handleCloseDetailModal = () => {
@@ -279,12 +284,11 @@ const UpdateTestResult: React.FC = () => {
                     </div>
                 </div>
                 </div>
-            </div> {modalOpen && selectedRequest && (
-                <FormUpdateTestResult
+            </div> {modalOpen && selectedRequest && (                <FormUpdateTestResult
                     open={modalOpen}
                     onClose={handleCloseModal}
                     request={selectedRequest}
-                    onUpdateSuccess={fetchData}
+                    onUpdateSuccess={handleUpdateSuccess}
                 />
             )}
 
@@ -349,8 +353,9 @@ const UpdateTestResult: React.FC = () => {
                                             <tr>
                                                 <th className="p-3 text-left font-semibold text-gray-700">Item</th>
                                                 <th className="p-3 text-left font-semibold text-gray-700">Result</th>
-                                                <th className="p-3 text-left font-semibold text-gray-700">Normal range</th>
                                                 <th className="p-3 text-left font-semibold text-gray-700">Test index</th>
+                                                <th className="p-3 text-left font-semibold text-gray-700">Unit</th>
+                                                <th className="p-3 text-left font-semibold text-gray-700">Normal range</th>
                                                 <th className="p-3 text-left font-semibold text-gray-700">Note</th>
                                             </tr>
                                         </thead>
@@ -366,35 +371,73 @@ const UpdateTestResult: React.FC = () => {
                                                             {result.diagnosis ? 'Positive' : 'Negative'}
                                                         </span>
                                                     </td>
-                                                    <td className="p-3">{result.normalRange}</td>
                                                     <td className="p-3">{result.testIndex}</td>
+                                                    <td className="p-3">{result.unit || '-'}</td>
+                                                    <td className="p-3">{result.normalRange}</td>
                                                     <td className="p-3">{result.note || '-'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 </div>
+                                </div>                            {/* Medical Assessment Section */}
+                            <div className="mt-6">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                    <span className="text-blue-500">🩺</span>
+                                    Medical Assessment & Recommendations
+                                </h3>
+                                {selectedExamination.overallNote ? (
+                                    <div className={`rounded-lg p-4 border-l-4 ${
+                                        selectedExamination.testResults.some(tr => tr.diagnosis === true)
+                                            ? 'bg-orange-50 border-orange-400'
+                                            : 'bg-green-50 border-green-400'
+                                    }`}>
+                                        <div className="whitespace-pre-line text-gray-800 leading-relaxed text-sm">
+                                            {selectedExamination.overallNote}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    (() => {
+                                        const positiveResults = selectedExamination.testResults.filter(tr => tr.diagnosis === true);
+                                        const hasPositive = positiveResults.length > 0;
+                                        
+                                        let generatedAssessment = '';
+                                        if (hasPositive) {
+                                            const recommendations = positiveResults.map(result => {
+                                                const testName = result.name.toLowerCase();
+                                                if (testName.includes('hiv')) {
+                                                    return '⚠️ HIV screening reactive requires confirmatory testing with HIV-1/2 differentiation assay. Immediate referral to infectious disease specialist for evaluation and potential treatment initiation.';
+                                                } else if (testName.includes('chlamydia')) {
+                                                    return '⚠️ Chlamydia positive indicates active infection. Immediate antibiotic treatment required. Partner notification and testing essential.';
+                                                } else {
+                                                    return `⚠️ ${result.name} positive requires clinical correlation and appropriate medical management.`;
+                                                }
+                                            });
+                                            generatedAssessment = recommendations.join('\n\n') + '\n\n🏥 URGENT: Schedule consultation within 24-48 hours for proper diagnosis confirmation, treatment initiation, and partner notification if applicable.';
+                                        } else {
+                                            generatedAssessment = '✅ All test results are within normal range. No sexually transmitted infections detected. Continue safe sexual practices and regular screening as recommended by healthcare provider.';
+                                        }
+                                        
+                                        return (
+                                            <div>
+                                                <div className={`rounded-lg p-4 border-l-4 ${
+                                                    hasPositive ? 'bg-orange-50 border-orange-400' : 'bg-green-50 border-green-400'
+                                                }`}>
+                                                    <div className="whitespace-pre-line text-gray-800 leading-relaxed text-sm">
+                                                        {generatedAssessment}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()
+                                )}
                             </div>
 
-                            {/* Thông báo cảnh báo */}
-                            <div className="mt-6 bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
-                                <div className="flex items-start">
-                                    <div className="flex-shrink-0">
-                                        <span className="text-orange-400">⚠️</span>
-                                    </div>
-                                    <div className="ml-3"><p className="text-sm text-orange-700">
-                                        You have a positive result. Please schedule a consultation appointment soon to
-                                        receive timely treatment support.
-                                    </p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Loading overlay cho modal */}
             {isLoadingDetail && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6">

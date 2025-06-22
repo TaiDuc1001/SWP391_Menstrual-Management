@@ -341,19 +341,65 @@ const Examinations: React.FC = () => {
                                         ))}
                                         </tbody>
                                     </table>
-                                </div>
+                                </div>                            
+                            </div>
+                            <div className="mt-6">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                    <span className="text-blue-500">🩺</span>
+                                    Medical Assessment & Recommendations
+                                </h3>
+                                {selectedExamination.overallNote ? (
+                                    <div className={`rounded-lg p-4 border-l-4 ${
+                                        selectedExamination.testResults?.some(tr => tr.diagnosis === true)
+                                            ? 'bg-orange-50 border-orange-400'
+                                            : 'bg-green-50 border-green-400'
+                                    }`}>
+                                        <div className="whitespace-pre-line text-gray-800 leading-relaxed text-sm">
+                                            {selectedExamination.overallNote}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    (() => {
+                                        const positiveResults = selectedExamination.testResults?.filter(tr => tr.diagnosis === true) || [];
+                                        const hasPositive = positiveResults.length > 0;
+                                        
+                                        let generatedAssessment = '';
+                                        if (hasPositive) {
+                                            const recommendations = positiveResults.map(result => {
+                                                const testName = result.name.toLowerCase();
+                                                if (testName.includes('hiv')) {
+                                                    return '⚠️ HIV screening reactive requires confirmatory testing with HIV-1/2 differentiation assay. Immediate referral to infectious disease specialist for evaluation and potential treatment initiation.';
+                                                } else if (testName.includes('chlamydia')) {
+                                                    return '⚠️ Chlamydia positive indicates active infection. Immediate antibiotic treatment required. Partner notification and testing essential.';
+                                                } else {
+                                                    return `⚠️ ${result.name} positive requires clinical correlation and appropriate medical management.`;
+                                                }
+                                            });
+                                            generatedAssessment = recommendations.join('\n\n') + '\n\n🏥 URGENT: Schedule consultation within 24-48 hours for proper diagnosis confirmation, treatment initiation, and partner notification if applicable.';
+                                        } else {
+                                            generatedAssessment = '✅ All test results are within normal range. No sexually transmitted infections detected. Continue safe sexual practices and regular screening as recommended by healthcare provider.';
+                                        }
+                                        
+                                        return (
+                                            <div>
+                                                
+                                                <div className={`rounded-lg p-4 border-l-4 ${
+                                                    hasPositive ? 'bg-orange-50 border-orange-400' : 'bg-green-50 border-green-400'
+                                                }`}>
+                                                    <div className="whitespace-pre-line text-gray-800 leading-relaxed text-sm">
+                                                        {generatedAssessment}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()
+                                )}
                             </div>
 
-                            {/* Thông báo cảnh báo */}
                             <div className="mt-6 bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
                                         <span className="text-orange-400">⚠️</span>
-                                    </div>
-                                    <div className="ml-3"><p className="text-sm text-orange-700">
-                                        You have a positive result. Please schedule a consultation appointment soon to
-                                        receive timely treatment support.
-                                    </p>
                                     </div>
                                 </div>
                             </div>
@@ -362,7 +408,6 @@ const Examinations: React.FC = () => {
                 </div>
             )}
 
-            {/* Loading overlay cho modal */}
             {isLoadingDetail && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6">

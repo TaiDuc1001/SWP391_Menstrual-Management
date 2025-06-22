@@ -106,12 +106,7 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({onClose, examinationId
                         )}
                         </tbody>
                     </table>
-                    {testResults.some((tr: any) => tr.diagnosis === true) && (
-                        <div style={{ background: '#fff7ed', borderLeft: '4px solid #fb923c', padding: 16, borderRadius: 8, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <span style={{ color: '#f59e42', fontSize: 22 }}>⚠️</span>
-                            <span style={{ color: '#ea580c', fontWeight: 600 }}>You have a positive result. Please schedule a consultation soon for timely treatment support.</span>
-                        </div>
-                    )}
+                    {testResults.some((tr: any) => tr.diagnosis === true)}
                 </div>
             </div>
             <button
@@ -170,13 +165,7 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({onClose, examinationId
                         )}
                         </tbody>
                     </table>
-                    {testResults.some((tr: any) => tr.diagnosis === true) && (
-                        <div
-                            className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded mb-4 flex items-center gap-3">
-                            <span className="text-orange-500 text-xl">⚠️</span>
-                            <span className="text-orange-700 font-medium">You have a positive result. Please schedule a consultation soon for timely treatment support.</span>
-                        </div>
-                    )}
+                    {testResults.some((tr: any) => tr.diagnosis === true)}
                     <div className="flex gap-3 mt-4 justify-end">
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600"

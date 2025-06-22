@@ -55,6 +55,10 @@ public class PanelController {
                 .stream()
                 .map(testType -> testType.getNormalRange())
                 .toList();
+        List<String> testTypesUnits = panelTestTypeService.getTestTypesByPanelId(id)
+                .stream()
+                .map(testType -> testType.getUnit())
+                .toList();
         List<Long> testTypesIds = panelTestTypeService.getTestTypesByPanelId(id)
                 .stream()
                 .map(testType -> testType.getId())
@@ -62,6 +66,7 @@ public class PanelController {
         result.setTestTypesDescriptions(testTypesDescriptions);
         result.setTestTypesNames(testTypesNames);
         result.setTestTypesNormalRanges(testTypesNormalRanges);
+        result.setTestTypesUnits(testTypesUnits);
         result.setTestTypesIds(testTypesIds);
         return ResponseEntity.ok(result);
     }

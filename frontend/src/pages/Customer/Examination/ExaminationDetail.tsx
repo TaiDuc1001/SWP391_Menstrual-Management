@@ -23,7 +23,6 @@ const ExaminationDetail: React.FC = () => {
             day: 'numeric'
         });
     };
-
     const getResultIndicator = (diagnosis: boolean, testIndex: string, normalRange: string) => {
         if (diagnosis) {
             return (
@@ -39,22 +38,35 @@ const ExaminationDetail: React.FC = () => {
         const isNumeric = !isNaN(parseFloat(testIndex));
         if (isNumeric && normalRange) {
             const value = parseFloat(testIndex);
-            const ranges = normalRange.match(/(\d+\.?\d*)/g);
-            if (ranges && ranges.length >= 2) {
-                const min = parseFloat(ranges[0]);
-                const max = parseFloat(ranges[1]);
-                const isNormal = value >= min && value <= max;
+            let isNormal = false;
 
-                return (
-                    <div className="flex items-center space-x-2">
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                isNormal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-            }`}>
-              {isNormal ? '✅ Normal' : '⚠️ Outside Range'}
-            </span>
-                    </div>
-                );
+            if (normalRange.includes('<')) {
+                const threshold = parseFloat(normalRange.replace('<', '').trim());
+                isNormal = value < threshold;
+            } else if (normalRange.includes('>')) {
+                const threshold = parseFloat(normalRange.replace('>', '').trim());
+                isNormal = value > threshold;
+            } else if (normalRange.includes('-')) {
+                const [min, max] = normalRange.split('-').map(s => parseFloat(s.trim()));
+                isNormal = value >= min && value <= max;
+            } else {
+                const ranges = normalRange.match(/(\d+\.?\d*)/g);
+                if (ranges && ranges.length >= 2) {
+                    const min = parseFloat(ranges[0]);
+                    const max = parseFloat(ranges[1]);
+                    isNormal = value >= min && value <= max;
+                }
             }
+
+            return (
+                <div className="flex items-center space-x-2">
+        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+            isNormal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+        }`}>
+          {isNormal ? '✅ Normal' : '⚠️ Outside Range'}
+        </span>
+                </div>
+            );
         }
 
         return (
@@ -246,10 +258,43 @@ const ExaminationDetail: React.FC = () => {
                             alignItems: 'center',
                             gap: 12
                         }}>
-                            <span style={{color: '#f59e42', fontSize: 22}}>⚠️</span>
-                            <span style={{color: '#ea580c', fontWeight: 600}}>You have a positive result. Please schedule a consultation soon for timely treatment support.</span>
                         </div>
                     )}
+                    
+                    {/* Medical Assessment in PDF */}
+                    {examination?.overallNote && (
+                        <div style={{marginTop: 24}}>
+                            <div style={{
+                                fontSize: 18,
+                                fontWeight: 600,
+                                marginBottom: 12,
+                                color: '#222'
+                            }}>Medical Assessment & Recommendations:</div>
+                            <div style={{
+                                background: examination?.testResults && examination.testResults.some((tr: TestResult) => tr.diagnosis === true) ? '#fff7ed' : '#f0fdf4',
+                                border: examination?.testResults && examination.testResults.some((tr: TestResult) => tr.diagnosis === true) ? '1px solid #fb923c' : '1px solid #22c55e',
+                                borderRadius: 8,
+                                padding: 16,
+                                whiteSpace: 'pre-line',
+                                lineHeight: 1.6,
+                                fontSize: 14
+                            }}>
+                                {examination.overallNote}
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div style={{
+                        marginTop: 24,
+                        padding: 16,
+                        background: '#f8fafc',
+                        borderRadius: 8,
+                        fontSize: 12,
+                        color: '#64748b',
+                        borderLeft: '4px solid #3b82f6'
+                    }}>
+                        <strong>Medical Disclaimer:</strong> This assessment is provided for informational purposes and should not replace professional medical consultation. Please discuss these results with your healthcare provider for proper medical advice and treatment planning.
+                    </div>
                 </div>
             </div>
             <div className="max-w-6xl mx-auto p-6">
@@ -377,6 +422,95 @@ const ExaminationDetail: React.FC = () => {
                                 </div>
                             </div>
                         )}
+                        {examination.testResults && examination.testResults.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-sm p-6">
+                                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                    <span className="text-blue-500">🩺</span>
+                                    Medical Assessment
+                                </h2>                                {examination.testResults.some(result => result.note && result.note.trim()) && (
+                                    <div className="mb-6">
+                                        <h3 className="text-lg font-medium text-gray-700 mb-3">Individual Test Notes</h3>
+                                        <div className="space-y-3">
+                                            {examination.testResults.filter(result => result.note && result.note.trim()).map((result, index) => (
+                                                <div key={index} className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-400">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="font-medium text-gray-800">{result.name}</h4>
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                            result.diagnosis 
+                                                                ? 'bg-red-100 text-red-800' 
+                                                                : 'bg-green-100 text-green-800'
+                                                        }`}>
+                                                            {result.diagnosis ? 'Positive' : 'Negative'}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-gray-700 text-sm leading-relaxed">{result.note}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}                                {examination.overallNote ? (
+                                    <div>
+                                        <h3 className="text-lg font-medium text-gray-700 mb-3">Overall Assessment & Recommendations</h3>
+                                        <div className={`rounded-lg p-4 border-l-4 ${
+                                            examination.testResults.some(tr => tr.diagnosis === true)
+                                                ? 'bg-orange-50 border-orange-400'
+                                                : 'bg-green-50 border-green-400'
+                                        }`}>
+                                            <div className="whitespace-pre-line text-gray-800 leading-relaxed">
+                                                {examination.overallNote}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    (() => {
+                                        const positiveResults = examination.testResults.filter(tr => tr.diagnosis === true);
+                                        const hasPositive = positiveResults.length > 0;
+                                        
+                                        let generatedAssessment = '';
+                                        if (hasPositive) {
+                                            const recommendations = positiveResults.map(result => {
+                                                const testName = result.name.toLowerCase();
+                                                if (testName.includes('hiv')) {
+                                                    return '⚠️ HIV screening reactive requires confirmatory testing with HIV-1/2 differentiation assay. Immediate referral to infectious disease specialist for evaluation and potential treatment initiation.';
+                                                } else if (testName.includes('chlamydia')) {
+                                                    return '⚠️ Chlamydia positive indicates active infection. Immediate antibiotic treatment required. Partner notification and testing essential.';
+                                                } else {
+                                                    return `⚠️ ${result.name} positive requires clinical correlation and appropriate medical management.`;
+                                                }
+                                            });
+                                            generatedAssessment = recommendations.join('\n\n') + '\n\n🏥 URGENT: Schedule consultation within 24-48 hours for proper diagnosis confirmation, treatment initiation, and partner notification if applicable.';
+                                        } else {
+                                            generatedAssessment = '✅ All test results are within normal range. No sexually transmitted infections detected. Continue safe sexual practices and regular screening as recommended by healthcare provider.';
+                                        }
+                                        
+                                        return (
+                                            <div>
+                                                <div className={`rounded-lg p-4 border-l-4 ${
+                                                    hasPositive ? 'bg-orange-50 border-orange-400' : 'bg-green-50 border-green-400'
+                                                }`}>
+                                                    <div className="whitespace-pre-line text-gray-800 leading-relaxed">
+                                                        {generatedAssessment}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()
+                                )}
+
+                                {(examination.testResults.some(result => result.note && result.note.trim()) || examination.overallNote) && (
+                                    <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-blue-500 text-lg">ℹ️</span>
+                                            <div className="text-sm text-blue-800">
+                                                <p className="font-medium mb-1">Important Medical Information:</p>
+                                                <p>This assessment is provided for informational purposes and should not replace professional medical consultation. Please discuss these results with your healthcare provider for proper medical advice and treatment planning.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* No Results Message */}
                         {examination.examinationStatus.toLowerCase() === 'pending' && (
                             <div className="bg-white rounded-2xl shadow-sm p-6">
@@ -430,7 +564,7 @@ const ExaminationDetail: React.FC = () => {
                                         Complete Payment
                                     </button>
                                 )}
-                                {examination.examinationStatus.toLowerCase() === 'completed' && examination.testResults && examination.testResults.length > 0 && (
+                                {examination.testResults && examination.testResults.length > 0 && (
                                     <button
                                         onClick={handleDownloadPDF}
                                         className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold"

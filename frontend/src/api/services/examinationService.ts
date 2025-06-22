@@ -19,6 +19,7 @@ export interface ExaminationDetail extends BaseEntity {
     panelId: number;
     testResults?: TestResult[];
     panelName?: string;
+    overallNote?: string;
 }
 
 export interface ExaminationFilters extends BaseFilters {

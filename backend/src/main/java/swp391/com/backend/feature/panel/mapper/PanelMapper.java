@@ -12,6 +12,7 @@ public interface PanelMapper {
     @Mapping(target = "testTypesNames", ignore = true)
     @Mapping(target = "testTypesDescriptions", ignore = true)
     @Mapping(target = "testTypesNormalRanges", ignore = true)
+    @Mapping(target = "testTypesUnits", ignore = true)
     @Mapping(target = "testTypesIds", ignore = true)
     PanelDTO toDTO(Panel entity);
     Panel toEntity(PanelDTO dto);
