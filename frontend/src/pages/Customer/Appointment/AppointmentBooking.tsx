@@ -6,6 +6,7 @@ import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import {SearchInput} from '../../../components';
 import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
 import api from '../../../api/axios';
+import { appointmentService } from '../../../api/services/appointmentService';
 
 const reviewOptions = [
     {value: '', label: 'Reviews'},
@@ -23,14 +24,23 @@ const AppointmentBooking: React.FC = () => {
     const [reviewFilter, setReviewFilter] = useState('');
     const [specializationFilter, setSpecializationFilter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([]);
+    const [loading, setLoading] = useState(false);    const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([]);
     const [slotLabelMap, setSlotLabelMap] = useState<{ [key: string]: string }>({});
     const [showSlotError, setShowSlotError] = useState(false);
+    const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
+    const [redirectTimeout, setRedirectTimeout] = useState<NodeJS.Timeout | null>(null);
     const navigate = useNavigate();
 
     const customerId = 3;
 
+    useEffect(() => {
+        return () => {
+            if (redirectTimeout) {
+                clearTimeout(redirectTimeout);
+            }
+        };
+    }, [redirectTimeout]);
     useEffect(() => {
         api.get('/enumerators/slots')
             .then(res => {
@@ -47,7 +57,21 @@ const AppointmentBooking: React.FC = () => {
             })
             .catch(() => {
             });
-    }, [selectedDate]);
+    }, []);
+    useEffect(() => {
+        if (selectedAdvisor && selectedDate) {
+            setLoadingSlots(true);
+            appointmentService.getAvailableSlots(selectedAdvisor, selectedDate)
+                .then(slots => {
+                    setAvailableSlots(slots || []);
+                })
+                .finally(() => {
+                    setLoadingSlots(false);
+                });
+        } else {
+            setAvailableSlots([]);
+        }
+    }, [selectedAdvisor, selectedDate]);
 
     useEffect(() => {
         api.get('/doctors')
@@ -57,10 +81,10 @@ const AppointmentBooking: React.FC = () => {
                     data.map((d: any) => ({
                         id: d.id,
                         name: d.name,
-                        avatar: '', // Placeholder
-                        rating: 4.5, // Default or random, since API doesn't provide
-                        reviews: 10, // Default
-                        appointments: 0, // Default
+                        avatar: '', 
+                        rating: 4.5, 
+                        reviews: 10, 
+                        appointments: 0, 
                         specialization: d.specialization,
                         price: d.price,
                     }))
@@ -82,20 +106,40 @@ const AppointmentBooking: React.FC = () => {
         }
         setShowSlotError(false);
         setLoading(true);
+        
+        if (redirectTimeout) {
+            clearTimeout(redirectTimeout);
+            setRedirectTimeout(null);
+        }
+        
         try {
-            await api.post('/appointments', {
+            const result = await appointmentService.createAppointment({
                 doctorId: selectedAdvisor,
                 customerId,
                 date: selectedDate,
                 slot: selectedTime,
-                customerNote: problem,            });
+                customerNote: problem,
+            });
             
-            setShowSuccess(true);
-            setTimeout(() => {
-                navigate('/customer/appointments');
-            }, 10000);
-        } catch (err) {
-            alert('Failed to create appointment. Please try again.');
+            if (result.error) {
+                alert(result.error.message);
+                if (result.error.isConflict) {
+                    setSelectedTime('');
+                    if (selectedAdvisor && selectedDate) {
+                        const updatedSlots = await appointmentService.getAvailableSlots(selectedAdvisor, selectedDate);
+                        setAvailableSlots(updatedSlots);
+                    }
+                }
+            } else if (result.data) {
+                setShowSuccess(true);
+                const timeout = setTimeout(() => {
+                    navigate('/customer/appointments');
+                }, 10000);
+                setRedirectTimeout(timeout);
+            }
+        } catch (error) {
+            console.error('Unexpected error during appointment creation:', error);
+            alert('An unexpected error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -204,30 +248,43 @@ const AppointmentBooking: React.FC = () => {
                                     required
                                     style={{width: 220}}
                                 />
-                            </div>
-                            <div className="mb-6">
+                            </div>                            <div className="mb-6">
                                 <div className="font-semibold text-gray-700 mb-2">Choose your time</div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {slotOptions.map(opt => {
-                                        const isSelected = selectedTime === String(opt.value);
-                                        return (
-                                            <label
-                                                key={String(opt.value)}
-                                                className={["flex items-center gap-2 cursor-pointer border rounded-lg px-3 py-2 hover:border-pink-400 transition-all", isSelected ? "border-pink-400 bg-pink-50" : ""].join(" ")}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name="timeSlot"
-                                                    value={String(opt.value)}
-                                                    checked={selectedTime === String(opt.value)}
-                                                    onChange={e => setSelectedTime(String(e.target.value))}
-                                                    className="accent-pink-400"
-                                                />
-                                                <span>{opt.label}</span>
-                                            </label>
-                                        );
-                                    })}
-                                </div>
+                                {loadingSlots ? (
+                                    <div className="text-gray-500">Loading available slots...</div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {slotOptions.map(opt => {
+                                            const isSelected = selectedTime === String(opt.value);
+                                            const isAvailable = selectedAdvisor && selectedDate ? availableSlots.includes(String(opt.value)) : true;
+                                            const isDisabled = selectedAdvisor && selectedDate && !isAvailable;
+                                              return (
+                                                <label
+                                                    key={String(opt.value)}
+                                                    className={[
+                                                        "flex items-center gap-2 border rounded-lg px-3 py-2 transition-all",
+                                                        isSelected ? "slot-selected" : "",
+                                                        isDisabled ? "slot-unavailable" : "slot-available"
+                                                    ].join(" ")}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="timeSlot"
+                                                        value={String(opt.value)}
+                                                        checked={selectedTime === String(opt.value)}
+                                                        onChange={e => setSelectedTime(String(e.target.value))}
+                                                        className="accent-pink-400"
+                                                        disabled={!!isDisabled}
+                                                    />
+                                                    <span className={isDisabled ? "text-gray-400" : ""}>
+                                                        {opt.label}
+                                                        {isDisabled && " (Booked)"}
+                                                    </span>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                                 {showSlotError && !selectedTime &&
                                     <div className="text-xs text-red-500 mt-1">Please select a time slot.</div>}
                             </div>
@@ -255,18 +312,44 @@ const AppointmentBooking: React.FC = () => {
                         </div>
                     </div>
                     </form>
-            </div>
-            {showSuccess && (
+            </div>            {showSuccess && (
                 <BookingSuccessPopup
                     open={showSuccess}
-                    onClose={() => setShowSuccess(false)}
+                    onClose={() => {
+                        setShowSuccess(false);
+                        if (redirectTimeout) {
+                            clearTimeout(redirectTimeout);
+                            setRedirectTimeout(null);
+                        }
+                    }}
                     doctor={advisor?.name || ''}
                     date={selectedDate ? new Date(selectedDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
                     time={displayTime}
                     note={problem || '[Content you entered in the description]'}
-                    onGoHome={() => navigate('/customer/dashboard')}
-                    onViewHistory={() => navigate('/customer/appointments')}
-                    onBookNew={() => { setShowSuccess(false); setSelectedDate(''); setSelectedTime(''); setProblem(''); }}
+                    onGoHome={() => {
+                        if (redirectTimeout) {
+                            clearTimeout(redirectTimeout);
+                            setRedirectTimeout(null);
+                        }
+                        navigate('/customer/dashboard');
+                    }}
+                    onViewHistory={() => {
+                        if (redirectTimeout) {
+                            clearTimeout(redirectTimeout);
+                            setRedirectTimeout(null);
+                        }
+                        navigate('/customer/appointments');
+                    }}
+                    onBookNew={() => { 
+                        setShowSuccess(false); 
+                        setSelectedDate(''); 
+                        setSelectedTime(''); 
+                        setProblem('');
+                        if (redirectTimeout) {
+                            clearTimeout(redirectTimeout);
+                            setRedirectTimeout(null);
+                        }
+                    }}
                 />
             )}
         </div>

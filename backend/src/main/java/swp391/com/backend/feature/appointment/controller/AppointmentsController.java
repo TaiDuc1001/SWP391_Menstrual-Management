@@ -36,7 +36,6 @@ public class AppointmentsController {
                 .toList();
         return ResponseEntity.ok(results);
     }
-
     @GetMapping("/doctor")
     public ResponseEntity<List<SimpleAppointmentDTO>> getAppointmentsForDoctor() {
         List<SimpleAppointmentDTO> results = appointmentsService.getAppointmentsForDoctor()
@@ -46,6 +45,11 @@ public class AppointmentsController {
         return ResponseEntity.ok(results);
     }
 
+    @GetMapping("/available-slots")
+    public ResponseEntity<List<String>> getAvailableSlots(@RequestParam Long doctorId, @RequestParam String date) {
+        List<String> availableSlots = appointmentsService.getAvailableSlots(doctorId, date);
+        return ResponseEntity.ok(availableSlots);
+    }
     @PostMapping
     public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentCreateRequest request) {
         Doctor doctor = doctorService.findDoctorById(request.getDoctorId());
