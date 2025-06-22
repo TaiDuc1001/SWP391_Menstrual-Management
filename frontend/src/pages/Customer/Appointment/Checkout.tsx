@@ -42,16 +42,8 @@ const Checkout: React.FC = () => {
         try {
             // Call the new scan endpoint that simulates payment success/failure
             const response = await api.put(`/appointments/payment/scan/${appointmentId}`);
-
             if (response.data.appointmentStatus === 'CONFIRMED') {
                 alert('Payment successful! Your appointment is now confirmed.');
-
-                // Start 10-second demo timer for "meeting time"
-                alert('Starting 10-second countdown to simulate appointment time...');
-                setTimeout(() => {
-                    alert('It\'s time for your appointment! Please go to Appointments page and click the Confirm button when ready.');
-                    navigate('/customer/appointments');
-                }, 10000);
                 navigate('/customer/appointments');
             } else {
                 // Payment failed

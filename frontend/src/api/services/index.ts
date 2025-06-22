@@ -5,6 +5,7 @@ export {stiTestService} from './stiTestService';
 export {contentManagementService} from './contentManagementService';
 export {approvalService} from './approvalService';
 export {doctorService} from './doctorService';
+export {examinationService} from './examinationService';
 
 export type {User, UserFilters} from './userService';
 export type {Appointment, AppointmentFilters} from './appointmentService';
@@ -13,3 +14,4 @@ export type {STITest, STITestFilters} from './stiTestService';
 export type {Content, ContentFilters} from './contentManagementService';
 export type {ApprovalRequest, ApprovalFilters} from './approvalService';
 export type {Doctor, DoctorFilters} from './doctorService';
+export type {ExaminationDetail, ExaminationFilters, TestResult} from './examinationService';

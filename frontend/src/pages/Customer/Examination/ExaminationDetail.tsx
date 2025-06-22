@@ -1,60 +1,19 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import api from '../../../api/axios';
+import React, { useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useExaminationDetail } from '../../../api/hooks';
+import { TestResult } from '../../../api/services';
 import StatusBadge from '../../../components/common/Badge/StatusBadge';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import clockIcon from '../../../assets/icons/clock.svg';
 import userIcon from '../../../assets/icons/profile.svg';
 import testIcon from '../../../assets/icons/tube.svg';
-import {exportNodeToPDF} from '../../../utils/exportPdf';
-
-interface TestResult {
-    testTypeId: number;
-    name: string;
-    diagnosis: boolean;
-    testIndex: string;
-    normalRange: string;
-    note: string;
-}
-
-interface ExaminationDetailData {
-    id: number;
-    date: string;
-    timeRange: string;
-    customerName: string;
-    staffName: string | null;
-    examinationStatus: string;
-    panelId: number;
-    testResults?: TestResult[];
-    panelName?: string;
-}
+import { exportNodeToPDF } from '../../../utils/exportPdf';
 
 const ExaminationDetail: React.FC = () => {
-    const {id} = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [examination, setExamination] = useState<ExaminationDetailData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { examination, loading, error } = useExaminationDetail(id);
     const printableRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const fetchExaminationDetail = async () => {
-            if (!id) return;
-
-            try {
-                setLoading(true);
-                const response = await api.get(`/examinations/${id}`);
-                setExamination(response.data);
-            } catch (err) {
-                console.error('Error fetching examination details:', err);
-                setError('Failed to load examination details');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchExaminationDetail();
-    }, [id]);
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-GB', {
@@ -226,9 +185,8 @@ const ExaminationDetail: React.FC = () => {
                             }}>Note</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {examination?.testResults && examination.testResults.length > 0 ? (
-                            examination.testResults.map((tr, idx) => (
+                        <tbody>                        {examination?.testResults && examination.testResults.length > 0 ? (
+                            examination.testResults.map((tr: TestResult, idx: number) => (
                                 <tr key={idx}>
                                     <td style={{
                                         padding: 8,
@@ -278,7 +236,7 @@ const ExaminationDetail: React.FC = () => {
                         )}
                         </tbody>
                     </table>
-                    {examination?.testResults && examination.testResults.some((tr) => tr.diagnosis === true) && (
+                    {examination?.testResults && examination.testResults.some((tr: TestResult) => tr.diagnosis === true) && (
                         <div style={{
                             background: '#fff7ed',
                             borderLeft: '4px solid #fb923c',
@@ -395,7 +353,7 @@ const ExaminationDetail: React.FC = () => {
                                         </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                        {examination.testResults.map((result, index) => (
+                                        {examination.testResults.map((result: TestResult, index: number) => (
                                             <tr key={index} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div
