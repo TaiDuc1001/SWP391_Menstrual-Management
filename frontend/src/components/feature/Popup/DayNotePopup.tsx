@@ -5,9 +5,10 @@ interface DayNotePopupProps {
     open: boolean;
     onClose: () => void;
     onSave?: (data: { symptom: string; period: string; flow: string }) => void;
+    symptomOptions?: string[];
 }
 
-const symptomOptions = [
+const defaultSymptomOptions = [
     'Abdominal pain',
     'Back pain',
     'Headache',
@@ -25,7 +26,7 @@ const flowOptions = [
     'Heavy'
 ];
 
-const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave}) => {
+const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, symptomOptions}) => {
     const [symptom, setSymptom] = useState('');
     const [period, setPeriod] = useState('');
     const [flow, setFlow] = useState('');
@@ -56,7 +57,7 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave}) => {
                     <select className="w-full border rounded px-3 py-2 focus:outline-pink-400" value={symptom}
                             onChange={e => setSymptom(e.target.value)} required>
                         <option value="">Select</option>
-                        {symptomOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        {(symptomOptions || defaultSymptomOptions).map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                 </div>
                 <div>

@@ -340,25 +340,43 @@ const MenstrualCycleDashboard: React.FC = () => {
                     />
                     <DayNotePopup
                         open={showDayNote}
-                        onClose={() => setShowDayNote(false)} onSave={data => {
-                        setShowDayNote(false);
-                        setShowSuccess(true);
-                        if (selectedDay) {
-                            const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                            // Nếu triệu chứng là "Không có", xóa triệu chứng khỏi object để không hiện viền
-                            if (data.symptom === 'Không có') {
-                                setSymptoms(prev => {
-                                    const newState = {...prev};
-                                    delete newState[key];
-                                    return newState;
-                                });
-                            } else {
-                                // Ngược lại thì lưu triệu chứng cho ngày đó
-                                setSymptoms(prev => ({...prev, [key]: data}));
+                        onClose={() => setShowDayNote(false)}
+                        onSave={data => {
+                            setShowDayNote(false);
+                            setShowSuccess(true);
+                            if (selectedDay) {
+                                const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                                // Nếu triệu chứng là "Không có", xóa triệu chứng khỏi object để không hiện viền
+                                if (data.symptom === 'Không có') {
+                                    setSymptoms(prev => {
+                                        const newState = {...prev};
+                                        delete newState[key];
+                                        return newState;
+                                    });
+                                } else {
+                                    // Ngược lại thì lưu triệu chứng cho ngày đó
+                                    setSymptoms(prev => ({...prev, [key]: data}));
+                                }
                             }
-                        }
-                        setTimeout(() => setShowSuccess(false), 1200);
-                    }}
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
+                        symptomOptions={[
+                            'HEADACHE',
+                            'CRAMPS',
+                            'NAUSEA',
+                            'FATIGUE',
+                            'MOOD_SWINGS',
+                            'BREAST_TENDERNESS',
+                            'BACK_PAIN',
+                            'BLOATING',
+                            'FOOD_CRAVINGS',
+                            'IRRITABILITY',
+                            'SLEEP_DISTURBANCES',
+                            'JOINT_PAIN',
+                            'SKIN_CHANGES',
+                            'DIGESTIVE_ISSUES',
+                            'OTHER'
+                        ]}
                         {...(selectedDay && symptoms[
                             `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
                             ] ? {
