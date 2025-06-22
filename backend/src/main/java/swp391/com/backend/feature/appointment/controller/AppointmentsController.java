@@ -61,9 +61,8 @@ public class AppointmentsController {
         Appointment result = appointmentsService.createAppointment(appointment);
         return ResponseEntity.ok(appointmentMapper.toDTO(result));
     }
-
-    @GetMapping("/payment/{id}")
-    public ResponseEntity<AppointmentDTO> bookAppointment(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
+    @GetMapping("/payment/callback/{id}")
+    public ResponseEntity<AppointmentDTO> handlePaymentCallback(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != null) {
             return ResponseEntity.badRequest().build();

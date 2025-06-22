@@ -111,11 +111,10 @@ public class VNPayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
-
         if(dto.getService().equals(" Appointment ")){
-            vnp_ReturnUrl = "http://localhost:8080/api/appointments/payment/" + serviceId;
+            vnp_ReturnUrl = "http://localhost:8080/api/appointments/payment/callback/" + serviceId;
         } else if (dto.getService().equals("Examination")) {
-            vnp_ReturnUrl = "http://localhost:8080/api/examinations/payment/" + serviceId;
+            vnp_ReturnUrl = "http://localhost:8080/api/examinations/payment/callback/" + serviceId;
         } else{
             vnp_ReturnUrl = "http://localhost:8080/api/payments/payment-return";
         }

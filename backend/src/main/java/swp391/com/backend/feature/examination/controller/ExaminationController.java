@@ -92,9 +92,8 @@ public class ExaminationController {
         dto.setTestResults(testResultList);
         return ResponseEntity.ok(dto);
     }
-
-    @GetMapping("/payment/{id}")
-    public ResponseEntity<ExaminedExaminationDTO> bookExamination(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
+    @GetMapping("/payment/callback/{id}")
+    public ResponseEntity<ExaminedExaminationDTO> handleExaminationPaymentCallback(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
         Examination examination = examinationService.findExaminationById(id);
         Examination updatedExamination = null;
         if(examination.getExaminationStatus() != null) {
