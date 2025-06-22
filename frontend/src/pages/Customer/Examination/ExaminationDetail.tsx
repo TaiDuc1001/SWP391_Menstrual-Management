@@ -497,17 +497,6 @@ const ExaminationDetail: React.FC = () => {
                                     })()
                                 )}
 
-                                {(examination.testResults.some(result => result.note && result.note.trim()) || examination.overallNote) && (
-                                    <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                                        <div className="flex items-start gap-3">
-                                            <span className="text-blue-500 text-lg">ℹ️</span>
-                                            <div className="text-sm text-blue-800">
-                                                <p className="font-medium mb-1">Important Medical Information:</p>
-                                                <p>This assessment is provided for informational purposes and should not replace professional medical consultation. Please discuss these results with your healthcare provider for proper medical advice and treatment planning.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         )}
 

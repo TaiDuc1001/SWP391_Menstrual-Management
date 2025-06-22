@@ -90,13 +90,7 @@ const Examinations: React.FC<TestTableProps> = ({
         {
             icon: 'View Details',
             label: 'View Details',
-            onClick: (row) => onViewExaminationDetail?.(row.id),
-        },
-        {
-            icon: 'View Result',
-            label: 'View Result',
-            onClick: (row) => onViewRows?.([row.id]),
-            hidden: (row) => row.status !== 'Completed'
+            onClick: (row) => onViewExaminationDetail?.(row.id)
         }
     ];
 
