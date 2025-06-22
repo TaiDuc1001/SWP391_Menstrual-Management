@@ -47,7 +47,8 @@ public class ExaminationController {
 
     @GetMapping("/sampled/{id}")
     public ResponseEntity<?> getSampledExaminationInfo(@PathVariable Long id) {
-        Examination examination = examinationService.findExaminationById(id);        if(examination.getExaminationStatus().ordinal() < 2) {
+        Examination examination = examinationService.findExaminationById(id);
+      if(examination.getExaminationStatus().ordinal() < 2) {
             return ResponseEntity.badRequest().body("Unsampled examination");
         }
 
@@ -91,6 +92,22 @@ public class ExaminationController {
         dto.setTestResults(testResultList);
         return ResponseEntity.ok(dto);
     }
+
+    @GetMapping("/payment/{id}")
+    public ResponseEntity<ExaminedExaminationDTO> bookExamination(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
+        Examination examination = examinationService.findExaminationById(id);
+        Examination updatedExamination = null;
+        if(examination.getExaminationStatus() != null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if(queryParams.containsKey("vnp_ResponseCode") && !queryParams.get("vnp_ResponseCode").equals("00")) {
+            updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.CANCELLED);
+        } else {
+            updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.IN_PROGRESS);
+        }
+        return ResponseEntity.ok(examinationMapper.toExaminedDTO(updatedExamination));
+    }
+
     @PutMapping("/sampled/{id}")
     public ResponseEntity<SimpleExaminationDTO> sampleExamination(@PathVariable Long id, @RequestParam(required = false) Long staffId) {
         Examination updatedExamination = examinationService.updateExaminationStatusWithStaff(id, ExaminationStatus.SAMPLED, staffId);

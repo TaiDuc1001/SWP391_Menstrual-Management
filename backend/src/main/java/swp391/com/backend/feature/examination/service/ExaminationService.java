@@ -27,6 +27,7 @@ public class ExaminationService {
         return examinationRepository.save(examination);
     }
 
+
     public void deleteOrder(Long id){
         Examination examination = examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Examination not found"));
         examinationRepository.delete(examination);
@@ -101,4 +102,6 @@ public class ExaminationService {
         Examination updatedExamination = examinationRepository.save(existingExamination);
         return updatedExamination;
     }
+
+
 }

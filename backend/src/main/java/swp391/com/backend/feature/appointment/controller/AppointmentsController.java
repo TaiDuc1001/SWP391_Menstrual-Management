@@ -17,6 +17,7 @@ import swp391.com.backend.feature.customer.service.CustomerService;
 import swp391.com.backend.feature.doctor.service.DoctorService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,6 +62,23 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentMapper.toDTO(result));
     }
 
+    @GetMapping("/payment/{id}")
+    public ResponseEntity<AppointmentDTO> bookAppointment(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        if (appointment.getAppointmentStatus() != null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(queryParams.containsKey("vnp_ResponseCode") && !queryParams.get("vnp_ResponseCode").equals("00")) {
+            appointment.setAppointmentStatus(AppointmentStatus.CANCELLED);
+        }else {
+            appointment.setAppointmentStatus(AppointmentStatus.BOOKED);
+        }
+
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestBody AppointmentDTO appointmentDTO) {
         Appointment appointment = appointmentMapper.toEntity(appointmentDTO);
@@ -69,7 +87,7 @@ public class AppointmentsController {
     }
 
     @PutMapping("/confirm/{id}")
-    public ResponseEntity<AppointmentDTO> startAppointment(@PathVariable Long id) {
+    public ResponseEntity<AppointmentDTO> confirmAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED) {
             return ResponseEntity.badRequest().build();
