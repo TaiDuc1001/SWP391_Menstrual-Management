@@ -10,6 +10,7 @@ import swp391.com.backend.feature.resultDetail.data.ResultDetail;
 import swp391.com.backend.feature.testType.data.TestType;
 import swp391.com.backend.feature.examination.data.ExaminationRepository;
 import swp391.com.backend.feature.result.service.ResultService;
+import swp391.com.backend.feature.staff.data.Staff;
 
 import java.util.List;
 
@@ -18,9 +19,8 @@ import java.util.List;
 public class ExaminationService {
     private final ExaminationRepository examinationRepository;
     private final ResultService resultService;
-
     public List<Examination> getAllExaminations() {
-        return examinationRepository.findAll();
+        return examinationRepository.findAllWithRelations();
     }
 
     public Examination createExamination(Examination examination) {
@@ -31,10 +31,12 @@ public class ExaminationService {
     public void deleteOrder(Long id){
         Examination examination = examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Examination not found"));
         examinationRepository.delete(examination);
-    }
-
-    public Examination findExaminationById(Long id) {
-        return examinationRepository.findById(id).orElseThrow(() -> new RuntimeException("Examination not found"));
+    }    public Examination findExaminationById(Long id) {
+        Examination examination = examinationRepository.findExaminationByIdWithRelations(id);
+        if (examination == null) {
+            throw new RuntimeException("Examination not found with id: " + id);
+        }
+        return examination;
     }
 
     public List<ResultDetail> getResultDetailById(Long id){
@@ -55,7 +57,6 @@ public class ExaminationService {
                 // Create and associate a new Result
                 Result result = new Result();
                 result.setExamination(existingExamination);
-                // Optionally set other fields like code, etc.
                 Result savedResult = resultService.saveResult(result);
                 existingExamination.setResult(savedResult);
             }
@@ -71,6 +72,35 @@ public class ExaminationService {
         Examination existingExamination = findExaminationById(id);
         existingExamination.getResult().setResultDetails(testResults);
         return examinationRepository.save(existingExamination);
+    }    public List<Examination> getExaminationsForStaff() {
+        return examinationRepository.findAllWithRelations().stream()
+                .filter(examination -> examination.getExaminationStatus() != ExaminationStatus.PENDING)
+                .toList();
+    }
+    public Examination updateExaminationStatusWithStaff(Long id, ExaminationStatus status, Long staffId) {
+        Examination existingExamination = examinationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Examination not found with id: " + id));
+        if (staffId != null && (status == ExaminationStatus.IN_PROGRESS || status == ExaminationStatus.SAMPLED || status == ExaminationStatus.EXAMINED)) {
+            if (existingExamination.getStaff() == null) {
+                Staff staff = new Staff();
+                staff.setId(staffId);
+                existingExamination.setStaff(staff);
+            }
+        }
+
+        if (existingExamination.getExaminationStatus() == ExaminationStatus.SAMPLED && status == ExaminationStatus.EXAMINED) {
+            if (existingExamination.getResult() == null) {
+                Result result = new Result();
+                result.setExamination(existingExamination);
+                Result savedResult = resultService.saveResult(result);
+                existingExamination.setResult(savedResult);
+            }
+        }
+
+        existingExamination.setExaminationStatus(status);
+
+        Examination updatedExamination = examinationRepository.save(existingExamination);
+        return updatedExamination;
     }
 
 

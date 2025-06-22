@@ -16,15 +16,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorController {
     private final DoctorService doctorService;
-    private final DoctorMapper doctorMapper;
-
-    @GetMapping
+    private final DoctorMapper doctorMapper;    @GetMapping
     public ResponseEntity<List<SimpleDoctorDTO>> getAllDoctors() {
         List<SimpleDoctorDTO> doctors = doctorService.getAllDoctors()
                 .stream()
                 .map(doctorMapper::toSimpleDTO)
                 .toList();
         return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DoctorDTO> getDoctorById(@PathVariable Long id) {
+        Doctor doctor = doctorService.findDoctorById(id);
+        DoctorDTO doctorDTO = doctorMapper.toDTO(doctor);
+        return ResponseEntity.ok(doctorDTO);
     }
 
     @PutMapping("/{id}")

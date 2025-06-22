@@ -47,10 +47,17 @@ public class PanelController {
                 .stream()
                 .map(testType -> testType.getDescription())
                 .toList();
-
-        List<String> testTypesNames = panelTestTypeService.getTestTypesByPanelId(id)
+                List<String> testTypesNames = panelTestTypeService.getTestTypesByPanelId(id)
                 .stream()
                 .map(testType -> testType.getName())
+                .toList();
+        List<String> testTypesNormalRanges = panelTestTypeService.getTestTypesByPanelId(id)
+                .stream()
+                .map(testType -> testType.getNormalRange())
+                .toList();
+        List<String> testTypesUnits = panelTestTypeService.getTestTypesByPanelId(id)
+                .stream()
+                .map(testType -> testType.getUnit())
                 .toList();
         List<Long> testTypesIds = panelTestTypeService.getTestTypesByPanelId(id)
                 .stream()
@@ -58,6 +65,8 @@ public class PanelController {
                 .toList();
         result.setTestTypesDescriptions(testTypesDescriptions);
         result.setTestTypesNames(testTypesNames);
+        result.setTestTypesNormalRanges(testTypesNormalRanges);
+        result.setTestTypesUnits(testTypesUnits);
         result.setTestTypesIds(testTypesIds);
         return ResponseEntity.ok(result);
     }
@@ -71,7 +80,7 @@ public class PanelController {
                 .date(request.getDate())
                 .slot(request.getSlot())
                 .customer(customerService.findCustomerById(3L))
-                .examinationStatus(null)
+                .examinationStatus(ExaminationStatus.PENDING)
                 .build();
 
         Examination createdExamination = examinationService.createExamination(examination);

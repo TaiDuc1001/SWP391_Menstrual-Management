@@ -1,5 +1,5 @@
 const ScheduleConsultation = () => {
-  return <div>Schedule Consultation</div>;
+    return <div>Schedule Consultation</div>;
 };
 
 export default ScheduleConsultation;

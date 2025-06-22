@@ -18,6 +18,10 @@ public class AppointmentsService {
         return appointmentRepository.findAll();
     }
 
+    public List<Appointment> getAppointmentsForDoctor() {
+        return appointmentRepository.findAppointmentsForDoctor();
+    }
+
     public void deleteAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));

@@ -9,12 +9,12 @@ import swp391.com.backend.feature.examination.dto.SimpleExaminationDTO;
 import swp391.com.backend.feature.examination.data.Examination;
 
 @Mapper(componentModel = "spring")
-public interface ExaminationMapper {
-    @Mapping(target = "testResults", ignore = true)
+public interface ExaminationMapper {    @Mapping(target = "testResults", ignore = true)
     @Mapping(source = "customer.name", target = "customerName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
     @Mapping(source = "staff.name", target = "staffName")
     @Mapping(source = "panel.id", target = "panelId")
+    @Mapping(source = "panel.panelName", target = "panelName")
     ExaminedExaminationDTO toExaminedDTO(Examination entity);
 
     @Mapping(target = "testTypes", ignore = true)
@@ -22,10 +22,10 @@ public interface ExaminationMapper {
     @Mapping(source = "slot.timeRange", target = "timeRange")
     @Mapping(source = "staff.name", target = "staffName")
     SampledExaminationDTO toSampledDTO(Examination entity);
-
     @Mapping(source = "panel.panelName", target = "panelName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
     @Mapping(source = "customer.name", target = "customerName")
+    @Mapping(source = "staff.name", target = "staffName")
     SimpleExaminationDTO toSimpleDTO(Examination entity);
 
     @Mapping(source = "slot.timeRange", target = "timeRange")

@@ -4,5 +4,7 @@
     <!-- Folded corner -->
     <polygon points="24,4 28,8 24,8" fill="#f8bbd0"/>
     <!-- PDF text -->
-    <text x="16" y="27" text-anchor="middle" font-size="7" font-family="Arial, Helvetica, sans-serif" fill="#ec407a" font-weight="bold">PDF</text>
+    <text x="16" y="27" text-anchor="middle" font-size="7" font-family="Arial, Helvetica, sans-serif" fill="#ec407a"
+          font-weight="bold">PDF
+    </text>
 </svg>

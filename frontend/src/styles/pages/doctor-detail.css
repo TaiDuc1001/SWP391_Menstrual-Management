@@ -1,0 +1,129 @@
+.doctor-detail-container {
+    padding: 1.5rem;
+    background-color: #f9fafb;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.doctor-detail-content {
+    width: 100%;
+    max-width: 32rem;
+}
+
+.doctor-detail-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.doctor-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.doctor-detail-avatar {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #6b7280;
+}
+
+.doctor-detail-info {
+    flex: 1;
+}
+
+.doctor-detail-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.doctor-detail-field {
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.doctor-detail-field-value {
+    font-weight: 600;
+}
+
+.doctor-detail-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.doctor-detail-rating {
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.doctor-detail-section {
+    margin-bottom: 1rem;
+}
+
+.doctor-detail-section-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.doctor-detail-section-content {
+    color: #374151;
+}
+
+.doctor-detail-loading {
+    padding: 2rem;
+    text-align: center;
+}
+
+.doctor-detail-error {
+    padding: 2rem;
+    text-align: center;
+}
+
+.doctor-detail-error-icon {
+    color: #ef4444;
+    font-size: 3.75rem;
+    margin-bottom: 1rem;
+}
+
+.doctor-detail-error-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.doctor-detail-error-message {
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.doctor-detail-error-btn {
+    background-color: #ec4899;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.doctor-detail-error-btn:hover {
+    background-color: #db2777;
+}

@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve"><g><ellipse cx="256" cy="256" rx="256" ry="255.832" style="" fill="#e21b1b" data-original="#e21b1b"></ellipse><path d="M228.021 113.143h55.991v285.669h-55.991z" style="" transform="rotate(-45.001 256.015 255.982)" fill="#ffffff" data-original="#ffffff"></path><path d="M113.164 227.968h285.669v55.991H113.164z" style="" transform="rotate(-45.001 255.997 255.968)" fill="#ffffff" data-original="#ffffff"></path></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="512" height="512" x="0" y="0" viewBox="0 0 512 512"
+     style="enable-background:new 0 0 512 512" xml:space="preserve"><g><ellipse cx="256" cy="256" rx="256" ry="255.832" style="" fill="#e21b1b" data-original="#e21b1b"></ellipse><path
+        d="M228.021 113.143h55.991v285.669h-55.991z" style="" transform="rotate(-45.001 256.015 255.982)" fill="#ffffff"
+        data-original="#ffffff"></path><path d="M113.164 227.968h285.669v55.991H113.164z" style=""
+                                             transform="rotate(-45.001 255.997 255.968)" fill="#ffffff"
+                                             data-original="#ffffff"></path></g></svg>

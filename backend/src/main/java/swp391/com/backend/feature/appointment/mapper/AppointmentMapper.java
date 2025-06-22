@@ -15,9 +15,11 @@ public interface AppointmentMapper {
     SimpleAppointmentDTO toSimpleDTO(Appointment appointment);
 
     Appointment toEntity(AppointmentDTO dto);
-
     @Mapping(source = "customer.id", target = "customerId")
+    @Mapping(source = "customer.name", target = "customerName")
+    @Mapping(source = "customer.phoneNumber", target = "phoneNumber")
     @Mapping(source = "doctor.id", target = "doctorId")
+    @Mapping(source = "doctor.name", target = "doctorName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
     AppointmentDTO toDTO(Appointment entity);
 }

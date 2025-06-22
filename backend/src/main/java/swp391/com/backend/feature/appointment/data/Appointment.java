@@ -36,11 +36,13 @@ public class Appointment {
     private AppointmentStatus appointmentStatus;
 
     private String doctorNote;
-
     private String customerNote;
 
     @Lob
     private String feedback;
 
     private Integer score;
+
+    private Boolean customerConfirmed = false;
+    private Boolean doctorConfirmed = false;
 }

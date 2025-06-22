@@ -1,0 +1,215 @@
+.appointment-detail-container {
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+.appointment-detail-content {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.appointment-detail-back-btn {
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    transition: color 0.2s;
+    margin-bottom: 1rem;
+}
+
+.appointment-detail-back-btn:hover {
+    color: #ec4899;
+}
+
+.appointment-detail-header-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.appointment-detail-info-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.appointment-detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .appointment-detail-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.appointment-detail-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.appointment-detail-icon-wrapper {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.appointment-detail-icon-pink {
+    background-color: #fce7f3;
+}
+
+.appointment-detail-icon-blue {
+    background-color: #dbeafe;
+}
+
+.appointment-detail-icon-green {
+    background-color: #d1fae5;
+}
+
+.appointment-detail-doctor-btn {
+    font-weight: 600;
+    color: #1f2937;
+    transition: color 0.2s;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.appointment-detail-doctor-btn:hover {
+    color: #ec4899;
+}
+
+.appointment-detail-notes-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.appointment-detail-meeting-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.appointment-detail-meeting-content {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.appointment-detail-actions-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.appointment-detail-timeline-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.appointment-detail-action-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.appointment-detail-btn-green {
+    background-color: #10b981;
+    color: white;
+}
+
+.appointment-detail-btn-green:hover {
+    background-color: #059669;
+}
+
+.appointment-detail-btn-red {
+    background-color: #ef4444;
+    color: white;
+}
+
+.appointment-detail-btn-red:hover {
+    background-color: #dc2626;
+}
+
+.appointment-detail-btn-pink {
+    background-color: #ec4899;
+    color: white;
+}
+
+.appointment-detail-btn-pink:hover {
+    background-color: #db2777;
+}
+
+.appointment-detail-btn-gray {
+    background-color: #6b7280;
+    color: white;
+}
+
+.appointment-detail-btn-gray:hover {
+    background-color: #4b5563;
+}
+
+.appointment-detail-btn-blue {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.appointment-detail-btn-blue:hover {
+    background-color: #2563eb;
+}
+
+.appointment-detail-timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.appointment-detail-timeline-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+}
+
+.appointment-detail-timeline-dot-active {
+    background-color: #10b981;
+}
+
+.appointment-detail-timeline-dot-inactive {
+    background-color: #d1d5db;
+}
+
+.appointment-detail-timeline-dot-cancelled {
+    background-color: #ef4444;
+}
+
+.appointment-detail-timeline-dot-progress {
+    background-color: #3b82f6;
+    animation: pulse 2s infinite;
+}
+
+.appointment-detail-timeline-text {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.appointment-detail-timeline-subtext {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
