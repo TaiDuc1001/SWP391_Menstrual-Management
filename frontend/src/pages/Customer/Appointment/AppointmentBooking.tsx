@@ -4,6 +4,7 @@ import calendarIcon from '../../../assets/icons/calendar.svg';
 import {useNavigate} from 'react-router-dom';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import {SearchInput} from '../../../components';
+import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
 import api from '../../../api/axios';
 
 const reviewOptions = [
@@ -14,6 +15,7 @@ const reviewOptions = [
 
 const AppointmentBooking: React.FC = () => {
     const [advisors, setAdvisors] = useState<any[]>([]);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [selectedAdvisor, setSelectedAdvisor] = useState<number | null>(null);
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
@@ -86,11 +88,12 @@ const AppointmentBooking: React.FC = () => {
                 customerId,
                 date: selectedDate,
                 slot: selectedTime,
-                customerNote: problem,
-            });
+                customerNote: problem,            });
             
-            alert('Appointment booked successfully! Please proceed to payment.');
-            navigate('/customer/appointments');
+            setShowSuccess(true);
+            setTimeout(() => {
+                navigate('/customer/appointments');
+            }, 10000);
         } catch (err) {
             alert('Failed to create appointment. Please try again.');
         } finally {
@@ -251,8 +254,21 @@ const AppointmentBooking: React.FC = () => {
                             </button>
                         </div>
                     </div>
-                </form>
+                    </form>
             </div>
+            {showSuccess && (
+                <BookingSuccessPopup
+                    open={showSuccess}
+                    onClose={() => setShowSuccess(false)}
+                    doctor={advisor?.name || ''}
+                    date={selectedDate ? new Date(selectedDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
+                    time={displayTime}
+                    note={problem || '[Content you entered in the description]'}
+                    onGoHome={() => navigate('/customer/dashboard')}
+                    onViewHistory={() => navigate('/customer/appointments')}
+                    onBookNew={() => { setShowSuccess(false); setSelectedDate(''); setSelectedTime(''); setProblem(''); }}
+                />
+            )}
         </div>
     );
 };
