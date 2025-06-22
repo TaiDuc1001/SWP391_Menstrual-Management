@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
 import StatusBadge from '../../../components/common/Badge/StatusBadge';
@@ -6,6 +6,7 @@ import calendarIcon from '../../../assets/icons/calendar.svg';
 import clockIcon from '../../../assets/icons/clock.svg';
 import userIcon from '../../../assets/icons/profile.svg';
 import testIcon from '../../../assets/icons/tube.svg';
+import {exportNodeToPDF} from '../../../utils/exportPdf';
 
 interface TestResult {
     testTypeId: number;
@@ -34,6 +35,7 @@ const ExaminationDetail: React.FC = () => {
     const [examination, setExamination] = useState<ExaminationDetailData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const printableRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchExaminationDetail = async () => {
@@ -105,6 +107,12 @@ const ExaminationDetail: React.FC = () => {
         );
     };
 
+    const handleDownloadPDF = async () => {
+        if (printableRef.current && examination) {
+            await exportNodeToPDF(printableRef.current, `ExaminationResult_${examination.id}.pdf`);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -136,6 +144,157 @@ const ExaminationDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            {/* Hidden printable content for PDF export */}
+            <div style={{position: 'absolute', left: '-9999px', top: 0}}>
+                <div ref={printableRef} style={{
+                    fontFamily: 'Arial, Helvetica, sans-serif',
+                    padding: 32,
+                    color: '#111',
+                    minWidth: 700,
+                    background: '#fff',
+                    borderRadius: 16,
+                    boxShadow: '0 2px 16px #0002',
+                    maxWidth: 700,
+                    margin: '0 auto'
+                }}>
+                    <div style={{fontSize: 16, marginBottom: 8}}>
+                        <span style={{fontWeight: 600}}>Doctor:</span> <span>{examination?.staffName || '-'}</span>
+                    </div>
+                    <div style={{fontSize: 16, marginBottom: 8}}>
+                        <span style={{fontWeight: 600}}>Date:</span> <span>{examination?.date ? formatDate(examination.date) : '-'}</span>
+                    </div>
+                    <div style={{fontSize: 16, marginBottom: 8}}>
+                        <span style={{fontWeight: 600}}>Time:</span> <span>{examination?.timeRange || '-'}</span>
+                    </div>
+                    <div style={{fontSize: 16, marginBottom: 8}}>
+                        <span style={{fontWeight: 600}}>Type:</span> <span>{examination?.panelName || 'STI Test Panel'}</span>
+                    </div>
+                    <div style={{fontSize: 16, marginBottom: 8}}>
+                        <span style={{fontWeight: 600}}>Code:</span> <span>{examination?.id ? `EXM-${examination.id.toString().padStart(4, '0')}` : '-'}</span>
+                    </div>
+                    <div style={{
+                        fontSize: 18,
+                        fontWeight: 600,
+                        marginBottom: 8,
+                        marginTop: 24,
+                        color: '#222'
+                    }}>Detailed result table:
+                    </div>
+                    <table style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: 15,
+                        marginBottom: 16,
+                        tableLayout: 'fixed',
+                        borderRadius: 8,
+                        overflow: 'hidden',
+                        boxShadow: '0 1px 4px #0001'
+                    }}>
+                        <colgroup>
+                            <col style={{width: '20%'}}/>
+                            <col style={{width: '20%'}}/>
+                            <col style={{width: '20%'}}/>
+                            <col style={{width: '20%'}}/>
+                            <col style={{width: '20%'}}/>
+                        </colgroup>
+                        <thead style={{background: '#f1f5f9'}}>
+                        <tr>
+                            <th style={{
+                                textAlign: 'left',
+                                fontWeight: 600,
+                                padding: 8
+                            }}>Item</th>
+                            <th style={{
+                                textAlign: 'left',
+                                fontWeight: 600,
+                                padding: 8
+                            }}>Result</th>
+                            <th style={{
+                                textAlign: 'left',
+                                fontWeight: 600,
+                                padding: 8
+                            }}>Value</th>
+                            <th style={{
+                                textAlign: 'left',
+                                fontWeight: 600,
+                                padding: 8
+                            }}>Normal range</th>
+                            <th style={{
+                                textAlign: 'left',
+                                fontWeight: 600,
+                                padding: 8
+                            }}>Note</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {examination?.testResults && examination.testResults.length > 0 ? (
+                            examination.testResults.map((tr, idx) => (
+                                <tr key={idx}>
+                                    <td style={{
+                                        padding: 8,
+                                        verticalAlign: 'top',
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-line',
+                                        borderBottom: '1px solid #eee'
+                                    }}>{tr.name}</td>
+                                    <td style={{
+                                        padding: 8,
+                                        verticalAlign: 'top',
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-line',
+                                        borderBottom: '1px solid #eee'
+                                    }}>{tr.diagnosis === true ? 'Positive' : tr.diagnosis === false ? 'Negative' : '-'}</td>
+                                    <td style={{
+                                        padding: 8,
+                                        verticalAlign: 'top',
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-line',
+                                        borderBottom: '1px solid #eee'
+                                    }}>{tr.testIndex || '-'}</td>
+                                    <td style={{
+                                        padding: 8,
+                                        verticalAlign: 'top',
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-line',
+                                        borderBottom: '1px solid #eee'
+                                    }}>{tr.normalRange || '-'}</td>
+                                    <td style={{
+                                        padding: 8,
+                                        verticalAlign: 'top',
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-line',
+                                        borderBottom: '1px solid #eee'
+                                    }}>{tr.note || ''}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} style={{
+                                    padding: 8,
+                                    textAlign: 'center',
+                                    color: '#888'
+                                }}>No test results available.</td>
+                            </tr>
+                        )}
+                        </tbody>
+                    </table>
+                    {examination?.testResults && examination.testResults.some((tr) => tr.diagnosis === true) && (
+                        <div style={{
+                            background: '#fff7ed',
+                            borderLeft: '4px solid #fb923c',
+                            padding: 16,
+                            borderRadius: 8,
+                            marginBottom: 16,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12
+                        }}>
+                            <span style={{color: '#f59e42', fontSize: 22}}>⚠️</span>
+                            <span style={{color: '#ea580c', fontWeight: 600}}>You have a positive result. Please schedule a consultation soon for timely treatment support.</span>
+                        </div>
+                    )}
+                </div>
+            </div>
             <div className="max-w-6xl mx-auto p-6">
                 {/* Header */}
                 <div className="mb-6">
@@ -295,7 +454,7 @@ const ExaminationDetail: React.FC = () => {
                             <div className="space-y-3">
                                 {examination.testResults && examination.testResults.length > 0 && (
                                     <button
-                                        onClick={() => window.print()}
+                                        onClick={handleDownloadPDF}
                                         className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
                                     >
                                         Download Results
