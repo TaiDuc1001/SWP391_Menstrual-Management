@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Popup from './ExitPopup';
 
 interface DayNotePopupProps {
@@ -6,6 +6,7 @@ interface DayNotePopupProps {
     onClose: () => void;
     onSave?: (data: { symptom: string; period: string; flow: string }) => void;
     symptomOptions?: string[];
+    defaultValue?: { symptom: string; period: string; flow: string };
 }
 
 const defaultSymptomOptions = [
@@ -26,10 +27,17 @@ const flowOptions = [
     'Heavy'
 ];
 
-const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, symptomOptions}) => {
-    const [symptom, setSymptom] = useState('');
-    const [period, setPeriod] = useState('');
-    const [flow, setFlow] = useState('');
+const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, symptomOptions, defaultValue}) => {
+    const [symptom, setSymptom] = useState(defaultValue?.symptom || '');
+    const [period, setPeriod] = useState(defaultValue?.period || '');
+    const [flow, setFlow] = useState(defaultValue?.flow || '');
+
+    // Update state when defaultValue changes
+    useEffect(() => {
+        setSymptom(defaultValue?.symptom || '');
+        setPeriod(defaultValue?.period || '');
+        setFlow(defaultValue?.flow || '');
+    }, [defaultValue]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

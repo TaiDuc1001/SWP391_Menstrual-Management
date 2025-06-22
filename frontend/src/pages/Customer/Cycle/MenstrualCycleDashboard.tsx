@@ -5,6 +5,7 @@ import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
+import { cycleSymptomService } from '../../../api/services/cycleSymptomService';
 
 const MenstrualCycleDashboard: React.FC = () => {
     const now = new Date();
@@ -118,6 +119,27 @@ const MenstrualCycleDashboard: React.FC = () => {
         }
         // eslint-disable-next-line
     }, []);
+
+    // Fetch symptoms from backend when month/year/cycle changes
+    useEffect(() => {
+        if (cycles && cycles.length > 0) {
+            const currentCycle = cycles[cycles.length - 1];
+            cycleSymptomService.getSymptomsByCycle(currentCycle.id)
+                .then((res: any) => {
+                    // Assuming backend returns array of {date, symptom}
+                    const symptomMap: { [key: string]: { symptom: string; period: string; flow: string } } = {};
+                    (res.data || []).forEach((item: any) => {
+                        symptomMap[item.date] = {
+                            symptom: item.symptom,
+                            period: item.period || '',
+                            flow: item.flow || ''
+                        };
+                    });
+                    setSymptoms(symptomMap);
+                })
+                .catch(() => {});
+        }
+    }, [currentMonth, currentYear, cycles]);
 
     const historyData = cycles;
 
@@ -341,21 +363,29 @@ const MenstrualCycleDashboard: React.FC = () => {
                     <DayNotePopup
                         open={showDayNote}
                         onClose={() => setShowDayNote(false)}
-                        onSave={data => {
+                        onSave={async data => {
                             setShowDayNote(false);
                             setShowSuccess(true);
                             if (selectedDay) {
                                 const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                                // Nếu triệu chứng là "Không có", xóa triệu chứng khỏi object để không hiện viền
+                                const currentCycle = cycles[cycles.length - 1];
                                 if (data.symptom === 'Không có') {
                                     setSymptoms(prev => {
-                                        const newState = {...prev};
+                                        const newState = { ...prev };
                                         delete newState[key];
                                         return newState;
                                     });
+                                    // Optionally: call API to delete symptom for this day
                                 } else {
-                                    // Ngược lại thì lưu triệu chứng cho ngày đó
-                                    setSymptoms(prev => ({...prev, [key]: data}));
+                                    setSymptoms(prev => ({ ...prev, [key]: data }));
+                                    // Save to backend
+                                    try {
+                                        await cycleSymptomService.saveSymptomNote({
+                                            cycleId: currentCycle.id,
+                                            date: key,
+                                            symptom: data.symptom
+                                        });
+                                    } catch {}
                                 }
                             }
                             setTimeout(() => setShowSuccess(false), 1200);
