@@ -23,6 +23,7 @@ interface TestTableProps {
     onDeleteRows?: (ids: number[]) => void;
     onViewRows?: (ids: number[]) => void;
     onViewExaminationDetail?: (id: number) => void;
+    onCheckout?: (id: number) => void;
     currentPage?: number;
     totalPages?: number;
     onPageChange?: (page: number) => void;
@@ -45,6 +46,7 @@ const Examinations: React.FC<TestTableProps> = ({
                                                     onDeleteRows,
                                                     onViewRows,
                                                     onViewExaminationDetail,
+                                                    onCheckout,
                                                     currentPage,
                                                     totalPages,
                                                     onPageChange,
@@ -91,6 +93,12 @@ const Examinations: React.FC<TestTableProps> = ({
             icon: 'View Details',
             label: 'View Details',
             onClick: (row) => onViewExaminationDetail?.(row.id)
+        },
+        {
+            icon: 'Checkout',
+            label: 'Checkout',
+            onClick: (row) => onCheckout?.(row.id),
+            hidden: (row) => row.status !== 'Pending'
         }
     ];
 

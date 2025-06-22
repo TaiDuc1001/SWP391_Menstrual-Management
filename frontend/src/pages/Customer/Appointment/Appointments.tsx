@@ -190,9 +190,12 @@ const AppointmentHistory: React.FC = () => {
             window.open('https://meet.google.com/rzw-jwjr-udw', '_blank');
         }
     };
-
     const handleViewAppointmentDetail = (id: number) => {
         navigate(`/customer/appointments/${id}`);
+    };
+
+    const handleCheckout = (id: number) => {
+        navigate(`/customer/vnpay-checkout/${id}`);
     };
 
     if (loading) return <div className="p-6">Loading...</div>;
@@ -257,10 +260,10 @@ const AppointmentHistory: React.FC = () => {
             onSort={handleSort}
             loading={loading}
             onCancelRows={handleCancelRows}
-            onConfirmRows={handleConfirmRows}
-            onJoinMeeting={handleJoinMeeting}
+            onConfirmRows={handleConfirmRows}            onJoinMeeting={handleJoinMeeting}
             onViewRows={handleViewRows}
             onViewAppointmentDetail={handleViewAppointmentDetail}
+            onCheckout={handleCheckout}
         />{showDetailPopup && selectedAppointment && (
             <AppointmentDetailPopup
                 open={showDetailPopup}

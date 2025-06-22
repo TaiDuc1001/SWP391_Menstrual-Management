@@ -4,7 +4,6 @@ import calendarIcon from '../../../assets/icons/calendar.svg';
 import {useNavigate} from 'react-router-dom';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import {SearchInput} from '../../../components';
-import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
 import api from '../../../api/axios';
 
 const reviewOptions = [
@@ -15,7 +14,6 @@ const reviewOptions = [
 
 const AppointmentBooking: React.FC = () => {
     const [advisors, setAdvisors] = useState<any[]>([]);
-    const [showSuccess, setShowSuccess] = useState(false);
     const [selectedAdvisor, setSelectedAdvisor] = useState<number | null>(null);
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
@@ -74,9 +72,7 @@ const AppointmentBooking: React.FC = () => {
     const specializationOptions = [
         {value: '', label: 'Specialization'},
         ...Array.from(new Set(advisors.map(a => a.specialization))).map(s => ({value: s, label: s}))
-    ];
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    ];    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedAdvisor || !selectedDate || !selectedTime) {
             setShowSlotError(!selectedTime);
@@ -92,11 +88,11 @@ const AppointmentBooking: React.FC = () => {
                 slot: selectedTime,
                 customerNote: problem,
             });
-            setShowSuccess(true);
-            setTimeout(() => {
-                navigate('/customer/appointments');
-            }, 10000);
+            
+            alert('Appointment booked successfully! Please proceed to payment.');
+            navigate('/customer/appointments');
         } catch (err) {
+            alert('Failed to create appointment. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -256,29 +252,6 @@ const AppointmentBooking: React.FC = () => {
                         </div>
                     </div>
                 </form>
-                {showSuccess && (
-                    <BookingSuccessPopup
-                        open={showSuccess}
-                        onClose={() => setShowSuccess(false)}
-                        doctor={advisor?.name || ''}
-                        date={selectedDate ? new Date(selectedDate).toLocaleDateString('vi-VN', {
-                            weekday: 'long',
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        }) : ''}
-                        time={displayTime}
-                        note={problem || '[Nội dung bạn đã nhập trong mô tả]'}
-                        onGoHome={() => navigate('/')}
-                        onViewHistory={() => navigate('/customer/appointments')}
-                        onBookNew={() => {
-                            setShowSuccess(false);
-                            setSelectedDate('');
-                            setSelectedTime('');
-                            setProblem('');
-                        }}
-                    />
-                )}
             </div>
         </div>
     );

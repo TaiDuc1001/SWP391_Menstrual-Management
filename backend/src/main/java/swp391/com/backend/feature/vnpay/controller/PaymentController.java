@@ -17,8 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentController {
     private final VNPayService vnPayService;
-
-    @GetMapping
+    @PostMapping
     public ResponseEntity<String> createPayment(@RequestBody CreatePaymentRequest dto) throws UnsupportedEncodingException {
         return ResponseEntity.ok(vnPayService.createPayment(dto));
     }

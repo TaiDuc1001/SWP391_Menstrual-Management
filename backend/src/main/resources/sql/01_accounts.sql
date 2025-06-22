@@ -27,12 +27,12 @@ INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, addr
 -- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (16, 'Pham Minh Tuan', '1995-05-10', 1, '0908765432', '321654987123', '101 Vo Van Tan, Hanoi');
 -- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (17, 'Hoang Thi Lan', '1988-09-05', 0, '0943216547', '654321987654', '202 Ba Trieu, Hue');
 
-INSERT INTO doctors (id, specialization, name, price) VALUES (1, 'Gynecology', 'Doctor Test Account', 210.00);
--- INSERT INTO doctors (id, specialization, name, price) VALUES (6, 'Gynecology', 'Vo Thi Minh', 200.00);
--- INSERT INTO doctors (id, specialization, name, price) VALUES (7, 'Urology', 'Bui Van Thanh', 180.00);
--- INSERT INTO doctors (id, specialization, name, price) VALUES (8, 'Infectious Diseases', 'Nguyen Van Long', 220.00);
--- INSERT INTO doctors (id, specialization, name, price) VALUES (9, 'Sexual Health', 'Tran Thi Ngoc', 160.00);
--- INSERT INTO doctors (id, specialization, name, price) VALUES (10, 'Sexual Health', 'Le Thi Hoa', 150.00);
+INSERT INTO doctors (id, specialization, name, price) VALUES (1, 'Gynecology', 'Doctor Test Account', 210000.00);
+-- INSERT INTO doctors (id, specialization, name, price) VALUES (6, 'Gynecology', 'Vo Thi Minh', 200000.00);
+-- INSERT INTO doctors (id, specialization, name, price) VALUES (7, 'Urology', 'Bui Van Thanh', 180000.00);
+-- INSERT INTO doctors (id, specialization, name, price) VALUES (8, 'Infectious Diseases', 'Nguyen Van Long', 220000.00);
+-- INSERT INTO doctors (id, specialization, name, price) VALUES (9, 'Sexual Health', 'Tran Thi Ngoc', 160000.00);
+-- INSERT INTO doctors (id, specialization, name, price) VALUES (10, 'Sexual Health', 'Le Thi Hoa', 150000.00);
 
 INSERT INTO admins (id, name) VALUES (4, 'Admin Test Account');
 

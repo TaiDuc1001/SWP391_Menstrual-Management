@@ -95,16 +95,25 @@ public class ExaminationController {
     @GetMapping("/payment/callback/{id}")
     public ResponseEntity<ExaminedExaminationDTO> handleExaminationPaymentCallback(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
         Examination examination = examinationService.findExaminationById(id);
-        Examination updatedExamination = null;
-        if(examination.getExaminationStatus() != null) {
+        if (examination.getExaminationStatus() != ExaminationStatus.PENDING) {
             return ResponseEntity.badRequest().build();
         }
+        
+        Examination updatedExamination = null;
         if(queryParams.containsKey("vnp_ResponseCode") && !queryParams.get("vnp_ResponseCode").equals("00")) {
             updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.CANCELLED);
         } else {
             updatedExamination = examinationService.updateExaminationStatus(id, ExaminationStatus.IN_PROGRESS);
         }
-        return ResponseEntity.ok(examinationMapper.toExaminedDTO(updatedExamination));
+        
+        String frontendUrl = "http://localhost:3000/customer/examination-payment-return";
+        if (queryParams.containsKey("vnp_ResponseCode")) {
+            frontendUrl += "?status=" + queryParams.get("vnp_ResponseCode");
+        }
+        
+        return ResponseEntity.status(302)
+            .header("Location", frontendUrl)
+            .build();
     }
 
     @PutMapping("/sampled/{id}")

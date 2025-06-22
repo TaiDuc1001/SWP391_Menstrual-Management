@@ -143,9 +143,12 @@ const Examinations: React.FC = () => {
             setPanelOptions(options);
         });
     }, []);
-
     const handleViewExaminationDetail = (id: number) => {
         navigate(`/customer/sti-tests/${id}`);
+    };
+
+    const handleCheckout = (id: number) => {
+        navigate(`/customer/vnpay-examination-checkout/${id}`);
     };
 
     return (
@@ -206,8 +209,8 @@ const Examinations: React.FC = () => {
                         setCurrentExaminationId(ids[0]);
                         setShowResultPopup(true);
                     }
-                }}
-                onViewExaminationDetail={handleViewExaminationDetail}
+                }}                onViewExaminationDetail={handleViewExaminationDetail}
+                onCheckout={handleCheckout}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}

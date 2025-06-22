@@ -64,18 +64,27 @@ public class AppointmentsController {
     @GetMapping("/payment/callback/{id}")
     public ResponseEntity<AppointmentDTO> handlePaymentCallback(@PathVariable Long id, @RequestParam Map<String, String> queryParams) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
-        if (appointment.getAppointmentStatus() != null) {
+        if (appointment.getAppointmentStatus() != AppointmentStatus.BOOKED) {
             return ResponseEntity.badRequest().build();
         }
 
         if(queryParams.containsKey("vnp_ResponseCode") && !queryParams.get("vnp_ResponseCode").equals("00")) {
             appointment.setAppointmentStatus(AppointmentStatus.CANCELLED);
-        }else {
-            appointment.setAppointmentStatus(AppointmentStatus.BOOKED);
+        } else {
+            appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
         }
 
         Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
-        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+        
+        // Redirect to frontend payment return page with status
+        String frontendUrl = "http://localhost:3000/customer/payment-return";
+        if (queryParams.containsKey("vnp_ResponseCode")) {
+            frontendUrl += "?status=" + queryParams.get("vnp_ResponseCode");
+        }
+        
+        return ResponseEntity.status(302)
+            .header("Location", frontendUrl)
+            .build();
     }
 
     @PutMapping("/{id}")

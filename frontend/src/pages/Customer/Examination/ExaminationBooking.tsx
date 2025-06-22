@@ -4,6 +4,7 @@ import calendarIcon from '../../../assets/icons/calendar.svg';
 import bloodTestingImage from '../../../assets/images/blood-testing.svg';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
+import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
 
 const ExaminationBooking: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
@@ -13,11 +14,11 @@ const ExaminationBooking: React.FC = () => {
     const [error, setError] = useState('');
     const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([]);
     const [slotLabelMap, setSlotLabelMap] = useState<{ [key: string]: string }>({});
+    const [panelName, setPanelName] = useState('');
     const navigate = useNavigate();
     const {panelId: panelIdParam} = useParams();
     const location = useLocation();
     const panelId = panelIdParam || (location.state && location.state.panelId);
-
     useEffect(() => {
         api.get('/enumerators/slots')
             .then(res => {
@@ -36,6 +37,18 @@ const ExaminationBooking: React.FC = () => {
             });
     }, [date]);
 
+    useEffect(() => {
+        if (panelId) {
+            api.get(`/panels/${panelId}`)
+                .then(res => {
+                    setPanelName(res.data.panelName || 'Test Panel');
+                })
+                .catch(() => {
+                    setPanelName('Test Panel');
+                });
+        }
+    }, [panelId]);
+
     if (!panelId) {
         return (
             <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center justify-center">
@@ -53,11 +66,12 @@ const ExaminationBooking: React.FC = () => {
             return;
         }
         try {
-            const res = await api.post(`/panels/${panelId}`, {date, slot, note});
+            await api.post(`/panels/${panelId}`, {date, slot, note});
             setShowSuccess(true);
             setTimeout(() => {
+                setShowSuccess(false);
                 navigate('/customer/sti-tests');
-            }, 1800);
+            }, 1500);
         } catch (err) {
             setError('Booking failed. Please try again.');
         }
@@ -108,27 +122,31 @@ const ExaminationBooking: React.FC = () => {
                             {error && <div className="text-red-500 text-sm">{error}</div>}
                             <button type="submit"
                                     className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 flex items-center justify-center gap-2 text-lg hover:bg-pink-500 transition">
-                                <img src={calendarIcon} alt="calendar" className="w-6 h-6"/>
-                                Book
+                                <img src={calendarIcon} alt="calendar" className="w-6 h-6"/>                                Book
                             </button>
                         </form>
-                        {showSuccess && (
-                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-                                <div
-                                    className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center gap-4 animate-fade-in">
-                                    <img src={calendarIcon} alt="success" className="w-12 h-12 text-pink-500"/>
-                                    <div className="text-xl font-bold text-pink-500">Booking Successful!</div>
-                                    <div className="text-gray-600">You will be redirected to your tests page...
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
                     <div className="hidden md:block">
                         <img src={bloodTestingImage} alt="lab test" className="w-80 h-auto"/>
                     </div>
                 </div>
             </div>
+            <BookingSuccessPopup 
+                open={showSuccess} 
+                onClose={() => setShowSuccess(false)} 
+                doctor={panelName}
+                date={date ? new Date(date).toLocaleDateString() : ''}
+                time={slotLabelMap[slot] || slot}
+                note={note || 'No additional notes'}
+                onViewHistory={() => {
+                    setShowSuccess(false);
+                    navigate('/customer/sti-tests');
+                }}
+                onBookNew={() => {
+                    setShowSuccess(false);
+                    navigate('/customer/sti-tests/packages');
+                }}
+            />
         </div>
     );
 };
