@@ -115,86 +115,155 @@ const ExaminationBooking: React.FC = () => {
         }
     };
 
-    return (
-        <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
-            <div className="w-full max-w-4xl">
+    return (        <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
+            <div className="w-full max-w-6xl">
                 <TitleBar
                     text="Book a Testing"
                     buttonLabel={<><span style={{fontSize: '1.2em'}}>&larr;</span> Back</>}
                     onButtonClick={() => window.history.back()}
                 />
-                <div className="bg-white rounded-xl shadow-md p-8 mt-4 flex flex-col md:flex-row items-center gap-8">
-                    <div className="flex-1 min-w-[300px]">
-                        <div className="flex items-center gap-2 mb-6">
+                <div className="bg-white rounded-xl shadow-lg p-8 mt-4 animate-fade-in">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center">
                             <img src={require('../../../assets/icons/calendar.svg').default} alt="calendar"
-                                 className="w-8 h-8 text-pink-500"/>
-                            <span className="text-xl font-bold text-pink-600">Book a Testing</span>
+                                 className="w-7 h-7 text-pink-500"/>
                         </div>
-                        <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div className="flex gap-4">
-                                <div className="flex-1">
-                                    <label className="block text-gray-700 font-semibold mb-1">Date</label>
-                                    <input type="date" className="w-full border rounded px-4 py-2" value={date}
-                                           onChange={e => {
-                                               setDate(e.target.value);
-                                               setSlot('');
-                                           }}/>
-                                </div>                                <div className="flex-1">
-                                    <label className="block text-gray-700 font-semibold mb-1">Time Slot</label>
-                                    {loadingSlots ? (
-                                        <div className="text-gray-500 text-sm">Loading available slots...</div>
-                                    ) : (
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {slotOptions.map(opt => {
-                                                const isSelected = slot === String(opt.value);
-                                                const isAvailable = date ? availableSlots.includes(String(opt.value)) : true;
-                                                const isDisabled = date && !isAvailable;
-                                                return (
-                                                    <label
-                                                        key={String(opt.value)}
-                                                        className={[
-                                                            "flex items-center gap-2 border rounded-lg px-3 py-2 transition-all cursor-pointer",
-                                                            isSelected ? "slot-selected" : "",
-                                                            isDisabled ? "slot-unavailable" : "slot-available"
-                                                        ].join(" ")}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="timeSlot"
-                                                            value={String(opt.value)}
-                                                            checked={slot === String(opt.value)}
-                                                            onChange={e => setSlot(String(e.target.value))}
-                                                            className="accent-pink-400"
-                                                            disabled={!!isDisabled}
-                                                        />
-                                                        <span className={isDisabled ? "text-gray-400" : ""}>
-                                                            {opt.label}
-                                                            {isDisabled && " (Booked)"}
-                                                        </span>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-800">Book a Testing</h1>
+                            <p className="text-pink-600 font-medium">{panelName}</p>
+                        </div>
+                    </div>
+                    
+                    <form className="space-y-8" onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-gray-700 font-semibold mb-3 text-lg">Select Date</label>
+                                    <input 
+                                        type="date" 
+                                        className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-lg focus:border-pink-400 focus:outline-none transition-colors" 
+                                        value={date}
+                                        min={new Date().toISOString().split('T')[0]}
+                                        onChange={e => {
+                                            setDate(e.target.value);
+                                            setSlot('');
+                                        }}
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-gray-700 font-semibold mb-3 text-lg">Additional Notes</label>
+                                    <textarea 
+                                        className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-lg focus:border-pink-400 focus:outline-none transition-colors resize-none"
+                                        placeholder="Enter any notes if needed..."
+                                        rows={4}
+                                        value={note}
+                                        onChange={e => setNote(e.target.value)}
+                                    />
                                 </div>
                             </div>
+
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-1">Additional Notes</label>
-                                <input type="text" className="w-full border rounded px-4 py-2"
-                                       placeholder="Enter any notes if needed..." value={note}
-                                       onChange={e => setNote(e.target.value)}/>
+                                <label className="block text-gray-700 font-semibold mb-3 text-lg">Choose Time Slot</label>
+                                {!date && (
+                                    <div className="text-gray-500 text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
+                                        Please select a date first
+                                    </div>
+                                )}
+                                {date && loadingSlots && (
+                                    <div className="text-gray-500 text-center py-8">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-2"></div>
+                                        Loading available slots...
+                                    </div>
+                                )}                                {date && !loadingSlots && (
+                                    <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+                                        {slotOptions.map(opt => {
+                                            const isSelected = slot === String(opt.value);
+                                            const isAvailable = availableSlots.includes(String(opt.value));
+                                            const isDisabled = !isAvailable;
+                                            return (
+                                                <label
+                                                    key={String(opt.value)}
+                                                    className={[
+                                                        "flex items-center gap-4 border-2 rounded-xl px-5 py-4 transition-all duration-200 cursor-pointer hover:shadow-sm",
+                                                        isSelected ? "slot-selected border-pink-400 bg-pink-50" : "",
+                                                        isDisabled ? "slot-unavailable border-gray-200 bg-gray-50" : "slot-available border-gray-200 hover:border-pink-300"
+                                                    ].join(" ")}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name="timeSlot"
+                                                        value={String(opt.value)}
+                                                        checked={slot === String(opt.value)}
+                                                        onChange={e => setSlot(String(e.target.value))}
+                                                        className="w-5 h-5 accent-pink-500"
+                                                        disabled={isDisabled}
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className={`text-lg font-semibold ${isDisabled ? "text-gray-400" : isSelected ? "text-pink-600" : "text-gray-800"}`}>
+                                                            {opt.label}
+                                                        </div>
+                                                        <div className="text-sm mt-1">
+                                                            {isDisabled && (
+                                                                <span className="text-red-500 font-medium">Already booked</span>
+                                                            )}
+                                                            {isSelected && !isDisabled && (
+                                                                <span className="text-pink-600 font-medium">✓ Selected</span>
+                                                            )}
+                                                            {isAvailable && !isSelected && (
+                                                                <span className="text-green-600 font-medium">Available</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-shrink-0">
+                                                        {isDisabled && (
+                                                            <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                                                <span className="text-red-500 text-sm font-bold">✕</span>
+                                                            </div>
+                                                        )}
+                                                        {isSelected && !isDisabled && (
+                                                            <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                                                                <span className="text-pink-500 text-sm font-bold">✓</span>
+                                                            </div>
+                                                        )}
+                                                        {isAvailable && !isSelected && (
+                                                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                                <span className="text-green-500 text-sm font-bold">◯</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
-                            {error && <div className="text-red-500 text-sm">{error}</div>}                            <button type="submit"
-                                    className="w-full bg-pink-400 text-white font-bold py-3 rounded-lg mt-4 flex items-center justify-center gap-2 text-lg hover:bg-pink-500 transition disabled:opacity-60"
-                                    disabled={!slot || !date || loading}>
-                                <img src={calendarIcon} alt="calendar" className="w-6 h-6"/>
-                                {loading ? 'Booking...' : 'Book'}
+                        </div>
+
+                        {error && (
+                            <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded">
+                                <div className="text-red-700 font-medium">{error}</div>
+                            </div>
+                        )}
+
+                        <div className="flex gap-4 pt-4">
+                            <button 
+                                type="button"
+                                onClick={() => window.history.back()}
+                                className="flex-1 bg-gray-100 text-gray-700 font-semibold py-4 rounded-lg hover:bg-gray-200 transition"
+                            >
+                                Cancel
                             </button>
-                        </form>
-                    </div>
-                    <div className="hidden md:block">
-                        <img src={bloodTestingImage} alt="lab test" className="w-80 h-auto"/>
-                    </div>
+                            <button 
+                                type="submit"
+                                className="flex-2 bg-pink-500 text-white font-bold py-4 px-8 rounded-lg hover:bg-pink-600 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                disabled={!slot || !date || loading}
+                            >
+                                <img src={calendarIcon} alt="calendar" className="w-6 h-6"/>
+                                <span className="text-lg">{loading ? 'Booking...' : 'Book Examination'}</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
             <BookingSuccessPopup 
