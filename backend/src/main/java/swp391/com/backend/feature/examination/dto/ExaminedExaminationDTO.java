@@ -18,4 +18,5 @@ public class ExaminedExaminationDTO {
     private String staffName;
     private ExaminationStatus examinationStatus;
     private Long panelId;
+    private String panelName;
 }

@@ -21,11 +21,11 @@ function App() {
         setRole(lowerRole);
         localStorage.setItem('role', lowerRole);
     };
-
     const handleAuthToggle = () => {
         setIsAuthenticated(false);
         setRole(null);
         localStorage.removeItem('role');
+        localStorage.removeItem('userProfile');
     };
 
     const handleSignUp = () => {

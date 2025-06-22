@@ -35,5 +35,24 @@ export const examinationService = {
     getExaminationDetail: async (id: string): Promise<ExaminationDetail> => {
         const response = await api.get(`/examinations/${id}`);
         return response.data;
-    }
+    },
+    
+    getExaminedDetail: async (id: number): Promise<ExaminationDetail> => {
+        const response = await api.get(`/examinations/examined/${id}`);
+        return response.data;
+    },
+    
+    approveExamination: async (id: number): Promise<void> => {
+        await api.put(`/examinations/completed/${id}`);
+    },
+    
+    cancelExamination: async (id: number): Promise<void> => {
+        await api.put(`/examinations/cancel/${id}`);
+    },
+
+    getAllExaminations: async (): Promise<ExaminationDetail[]> => {
+        const response = await api.get('/examinations');
+        console.log('All examinations from API:', response.data);
+        return response.data;
+    },
 };

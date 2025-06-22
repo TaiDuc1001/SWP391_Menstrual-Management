@@ -38,7 +38,6 @@ const ExaminationDetail: React.FC = () => {
 
         const isNumeric = !isNaN(parseFloat(testIndex));
         if (isNumeric && normalRange) {
-            // Simple range check for numeric values
             const value = parseFloat(testIndex);
             const ranges = normalRange.match(/(\d+\.?\d*)/g);
             if (ranges && ranges.length >= 2) {
@@ -378,8 +377,23 @@ const ExaminationDetail: React.FC = () => {
                                 </div>
                             </div>
                         )}
-
                         {/* No Results Message */}
+                        {examination.examinationStatus.toLowerCase() === 'pending' && (
+                            <div className="bg-white rounded-2xl shadow-sm p-6">
+                                <div className="text-center py-8">
+                                    <div className="text-orange-500 text-6xl mb-4">💳</div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Payment Required</h3>
+                                    <p className="text-gray-600 mb-4">Please complete payment to confirm your examination.</p>
+                                    <button
+                                        onClick={() => navigate(`/customer/examination-checkout/${examination.id}`)}
+                                        className="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition-colors font-semibold"
+                                    >
+                                        Complete Payment
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {examination.examinationStatus.toLowerCase() === 'in_progress' && (
                             <div className="bg-white rounded-2xl shadow-sm p-6">
                                 <div className="text-center py-8">
@@ -407,10 +421,16 @@ const ExaminationDetail: React.FC = () => {
                     <div className="space-y-6">
                         {/* Quick Actions */}
                         <div className="bg-white rounded-2xl shadow-sm p-6">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-
-                            <div className="space-y-3">
-                                {examination.testResults && examination.testResults.length > 0 && (
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>                            <div className="space-y-3">
+                                {examination.examinationStatus.toLowerCase() === 'pending' && (
+                                    <button
+                                        onClick={() => navigate(`/customer/examination-checkout/${examination.id}`)}
+                                        className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors font-semibold"
+                                    >
+                                        Complete Payment
+                                    </button>
+                                )}
+                                {examination.examinationStatus.toLowerCase() === 'completed' && examination.testResults && examination.testResults.length > 0 && (
                                     <button
                                         onClick={handleDownloadPDF}
                                         className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
@@ -437,18 +457,26 @@ const ExaminationDetail: React.FC = () => {
 
                         {/* Status Timeline */}
                         <div className="bg-white rounded-2xl shadow-sm p-6">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Status Timeline</h2>
-
-                            <div className="space-y-4">
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Status Timeline</h2>                            <div className="space-y-4">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                     <div>
                                         <p className="font-medium text-gray-800">Test Scheduled</p>
-                                        <p className="text-sm text-gray-500">Appointment booked</p>
+                                        <p className="text-sm text-gray-500">Examination booked</p>
                                     </div>
                                 </div>
 
-                                {examination.examinationStatus.toLowerCase() !== 'in_progress' && (
+                                {examination.examinationStatus.toLowerCase() !== 'pending' && (
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        <div>
+                                            <p className="font-medium text-gray-800">Payment Completed</p>
+                                            <p className="text-sm text-gray-500">Examination confirmed</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!['pending', 'in_progress'].includes(examination.examinationStatus.toLowerCase()) && (
                                     <div className="flex items-center space-x-3">
                                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                         <div>

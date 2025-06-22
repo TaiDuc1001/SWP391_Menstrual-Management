@@ -75,7 +75,7 @@ public class PanelController {
                 .date(request.getDate())
                 .slot(request.getSlot())
                 .customer(customerService.findCustomerById(3L))
-                .examinationStatus(ExaminationStatus.IN_PROGRESS)
+                .examinationStatus(ExaminationStatus.PENDING)
                 .build();
 
         Examination createdExamination = examinationService.createExamination(examination);

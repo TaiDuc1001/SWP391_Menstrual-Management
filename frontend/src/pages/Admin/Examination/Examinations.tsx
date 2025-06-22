@@ -1,19 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import StatusBadge from '../../../components/common/Badge/StatusBadge';
 import refreshIcon from '../../../assets/icons/refresh.svg';
-import searchIcon from '../../../assets/icons/search.svg';
+import searchIcon from '../../../assets/icons/avatar.svg';
 import userIcon from '../../../assets/icons/avatar.svg';
 import NotificationPopup from '../../../components/feature/Popup/NotificationPopup';
-import axios from 'axios';
-
-interface Examination {
-    id: number;
-    date: string;
-    timeRange: string;
-    examinationStatus: string;
-    panelName: string;
-    customerName: string;
-}
+import { useAdminExaminations } from '../../../api/hooks/useAdminExaminations';
+import { ExaminationDetail as ExaminationDetailType } from '../../../api/services/examinationService';
 
 interface TestResult {
     testTypeId: number;
@@ -22,17 +14,6 @@ interface TestResult {
     testIndex: string;
     normalRange: string;
     note: string;
-}
-
-interface ExaminationDetail {
-    id: number;
-    testResults: TestResult[];
-    date: string;
-    timeRange: string;
-    customerName: string;
-    staffName: string | null;
-    examinationStatus: string;
-    panelId: number;
 }
 
 const getStatusLabel = (status: string): string => {
@@ -53,7 +34,16 @@ const getStatusLabel = (status: string): string => {
 };
 
 const Examinations: React.FC = () => {
-    const [data, setData] = useState<Examination[]>([]);
+    const {
+        examinations,
+        loading,
+        error,
+        refetch,
+        approveExamination,
+        cancelExamination,
+        getExaminationDetail
+    } = useAdminExaminations();
+    
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -63,61 +53,44 @@ const Examinations: React.FC = () => {
         isOpen: false
     });
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-    const [selectedExamination, setSelectedExamination] = useState<ExaminationDetail | null>(null);
+    const [selectedExamination, setSelectedExamination] = useState<ExaminationDetailType | null>(null);
     const [selectedPanelName, setSelectedPanelName] = useState<string>('');
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
     const itemsPerPage = 10;
 
-    const fetchData = async () => {
-        try {
-            const res = await axios.get<Examination[]>('http://localhost:8080/api/examinations');
-            setData(res.data);
-        } catch (error) {
-            console.error('Error loading data:', error);
-            setNotification({
-                message: 'An error occurred while loading data',
-                type: 'error',
-                isOpen: true
-            });
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const handleApprove = async (id: number) => {
-        try {
-            await axios.put(`http://localhost:8080/api/examinations/completed/${id}`);
-            setNotification({
-                message: 'Status updated successfully',
-                type: 'success',
-                isOpen: true
-            });
-            fetchData();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            setNotification({
-                message: 'An error occurred while updating status',
-                type: 'error',
-                isOpen: true
-            });
-        }
+        const result = await approveExamination(id);
+        setNotification({
+            message: result.message,
+            type: result.success ? 'success' : 'error',
+            isOpen: true
+        });
     };
 
-    const handleViewDetails = async (row: Examination) => {
+    const handleCancel = async (id: number) => {
+        const result = await cancelExamination(id);
+        setNotification({
+            message: result.message,
+            type: result.success ? 'success' : 'error',
+            isOpen: true
+        });
+    };
+
+    const handleViewDetails = async (row: any) => {
         setIsLoadingDetail(true);
-        setSelectedPanelName(row.panelName); // Lưu panelName từ row
+        setSelectedPanelName(row.panelName);
         try {
-            const response = await axios.get<ExaminationDetail>(`http://localhost:8080/api/examinations/examined/${row.id}`);
-            setSelectedExamination(response.data);
-            setIsDetailModalOpen(true);
+            const detail = await getExaminationDetail(row.id);
+            if (detail) {
+                setSelectedExamination(detail);
+                setIsDetailModalOpen(true);
+            }
         } catch (error) {
             console.error('Error loading details:', error);
         } finally {
             setIsLoadingDetail(false);
         }
-    };    
+    };
 
     const handleCloseDetailModal = () => {
         setIsDetailModalOpen(false);
@@ -127,9 +100,8 @@ const Examinations: React.FC = () => {
     const handleCloseNotification = () => {
         setNotification(prev => ({...prev, isOpen: false}));
     };
-
-    const filteredData = data.filter(item =>
-        item.examinationStatus === 'EXAMINED' &&
+    const filteredData = examinations.filter(item =>
+        (item.examinationStatus === 'EXAMINED' || item.examinationStatus === 'COMPLETED') &&
         (!status || item.examinationStatus.toLowerCase() === status.toLowerCase()) &&
         (item.customerName.toLowerCase().includes(search.toLowerCase()) ||
             item.panelName.toLowerCase().includes(search.toLowerCase()) ||
@@ -173,7 +145,7 @@ const Examinations: React.FC = () => {
                 </span>
                             </div>
                             <button
-                                onClick={fetchData}
+                                onClick={refetch}
                                 className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold px-5 h-10 rounded-lg transition shadow min-w-[120px]"
                             >
                                 <img src={refreshIcon} alt="refresh" className="w-5 h-5"/>
@@ -204,15 +176,24 @@ const Examinations: React.FC = () => {
                                         <td className="p-3 whitespace-nowrap">{row.timeRange}</td>
                                         <td className="p-3">
                                             <StatusBadge status={getStatusLabel(row.examinationStatus)}/>
-                                        </td>
-                                        <td className="p-3 flex gap-2">
+                                        </td>                                        <td className="p-3 flex gap-2">
                                             {row.examinationStatus === 'EXAMINED' ? (
-                                                <button
-                                                    className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-green-500 text-white hover:bg-green-600 transition"
-                                                    onClick={() => handleApprove(row.id)}
-                                                >
-                                                    Update
-                                                </button>
+                                                <>
+                                                    <button
+                                                        className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-green-500 text-white hover:bg-green-600 transition"
+                                                        onClick={() => handleApprove(row.id)}
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-red-500 text-white hover:bg-red-600 transition"
+                                                        onClick={() => handleCancel(row.id)}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
+                                            ) : row.examinationStatus === 'COMPLETED' ? (
+                                                <span className="text-green-600 text-xs font-semibold">Approved</span>
                                             ) : (
                                                 <span className="text-gray-400 text-xs">Unavailable</span>
                                             )}
@@ -233,7 +214,6 @@ const Examinations: React.FC = () => {
                                 )}
                                 </tbody>
                             </table>
-                            {/* Pagination */}
                             {totalPages > 1 && (
                                 <div className="flex justify-center items-center gap-2 p-4 border-t">
                                     <button
@@ -276,7 +256,6 @@ const Examinations: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {/* Modal chi tiết kết quả xét nghiệm */}
             {isDetailModalOpen && selectedExamination && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -343,7 +322,7 @@ const Examinations: React.FC = () => {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {selectedExamination.testResults.map((result, index) => (
+                                        {selectedExamination.testResults?.map((result: TestResult, index: number) => (
                                             <tr key={index} className="border-b hover:bg-gray-50">
                                                 <td className="p-3 font-medium">{result.name}</td>
                                                 <td className="p-3">

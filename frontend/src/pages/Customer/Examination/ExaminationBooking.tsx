@@ -45,9 +45,7 @@ const ExaminationBooking: React.FC = () => {
                 </div>
             </div>
         );
-    }
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    }    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         if (!date || !slot) {
@@ -120,7 +118,7 @@ const ExaminationBooking: React.FC = () => {
                                     className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center gap-4 animate-fade-in">
                                     <img src={calendarIcon} alt="success" className="w-12 h-12 text-pink-500"/>
                                     <div className="text-xl font-bold text-pink-500">Booking Successful!</div>
-                                    <div className="text-gray-600">You will be redirected to your test history page...
+                                    <div className="text-gray-600">You will be redirected to your tests page...
                                     </div>
                                 </div>
                             </div>

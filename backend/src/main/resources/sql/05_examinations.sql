@@ -1,9 +1,4 @@
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (1, 3, 2, 1, 1, '2025-06-15', 1, 1);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (2, 3, 2, 2, 3, '2025-06-16', 5, 2);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (3, 3, 2, 9, 0, '2025-06-23', 1, 4);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (4, 3, 2, 10, 1, '2025-06-24', 5, 2);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (5, 3, 2, 17, 0, '2025-07-01', 3, 0);
-INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (6, 3, 2, 18, 1, '2025-07-02', 2, 3);
+INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (1, 3, 2, 9, 1, '2025-06-23', 1, 4);
 -- INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (3, 5, 13, 3, 5, '2025-06-17', 1, 4);
 -- INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (4, 16, 14, 4, 2, '2025-06-18', 5, 1);
 -- INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (5, 17, 15, 5, 4, '2025-06-19', 1, 2);
@@ -19,12 +14,7 @@ INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payme
 -- INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (19, 5, 11, 18, 2, '2025-07-03', 1, 4);
 -- INSERT INTO examinations (id, customer_id, staff_id, panel_id, slot, date, payment_method, examination_status) VALUES (20, 16, 12, 18, 3, '2025-07-04', 2, 2);
 
-INSERT INTO results (id, order_id, code) VALUES (1, 1, 'RES-20250616-001');
-INSERT INTO results (id, order_id, code) VALUES (2, 2, 'RES-20250617-002');
-INSERT INTO results (id, order_id, code) VALUES (3, 3, 'RES-20250618-003');
-INSERT INTO results (id, order_id, code) VALUES (4, 4, 'RES-20250619-004');
-INSERT INTO results (id, order_id, code) VALUES (5, 5, 'RES-20250620-005');
-INSERT INTO results (id, order_id, code) VALUES (6, 6, 'RES-20250621-006');
+INSERT INTO results (id, order_id, code) VALUES (1, 1, 'RES-20250618-003');
 -- INSERT INTO results (id, order_id, code) VALUES (7, 8, 'RES-20250622-008');
 -- INSERT INTO results (id, order_id, code) VALUES (8, 9, 'RES-20250623-009');
 -- INSERT INTO results (id, order_id, code) VALUES (9, 10, 'RES-20250624-010');
@@ -41,12 +31,7 @@ INSERT INTO results (id, order_id, code) VALUES (6, 6, 'RES-20250621-006');
 
 
 
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (1, 1, 'Negative', 'No Chlamydia trachomatis DNA found', 0);
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (2, 2, '2', 'Syphilis RPR titer within normal range', 0);
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (3, 3, 'Negative', 'No Neisseria gonorrhoeae DNA detected', 0);
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (4, 4, '0.5', 'HSV-2 IgG below threshold', 0);
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (5, 5, 'Negative', 'No Trichomonas vaginalis DNA detected', 0);
-INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (6, 6, 'Negative', 'No high-risk HPV DNA detected', 0);
+INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (1, 3, 'Negative', 'No Neisseria gonorrhoeae DNA detected', 0);
 -- INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (7, 7, 'Negative', 'No Hepatitis B surface antigen detected', 0);
 -- INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (8, 8, 'Negative', 'No Hepatitis C antibodies detected', 0);
 -- INSERT INTO result_details (result_id, test_type_id, test_index, notes, diagnosis) VALUES (9, 9, 'Negative', 'No Ureaplasma urealyticum DNA detected', 0);

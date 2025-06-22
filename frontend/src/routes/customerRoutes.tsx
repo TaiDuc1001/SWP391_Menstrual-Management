@@ -15,6 +15,7 @@ import DoctorDetail from '../pages/Customer/Appointment/DoctorDetail';
 import Examinations from '../pages/Customer/Examination/Examinations';
 import ExaminationDetail from '../pages/Customer/Examination/ExaminationDetail';
 import ExaminationBooking from '../pages/Customer/Examination/ExaminationBooking';
+import ExaminationCheckout from '../pages/Customer/Examination/ExaminationCheckout';
 import Panels from '../pages/Customer/Examination/Panels';
 import PanelDetail from '../pages/Customer/Examination/PanelDetail';
 
@@ -61,6 +62,7 @@ export const customerPaths: RouteConfig[] = [
     {path: '/customer/sti-tests/packages', element: <Panels/>},
     {path: '/customer/sti-tests/packages/:id', element: <PanelDetail/>},
     {path: '/customer/sti-tests/book', element: <ExaminationBooking/>},
+    {path: '/customer/examination-checkout/:examinationId', element: <ExaminationCheckout/>},
 
     {path: '/customer/profile', element: <MyProfile/>},
 ];

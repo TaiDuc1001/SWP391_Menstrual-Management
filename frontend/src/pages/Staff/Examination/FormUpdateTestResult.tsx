@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../../api/axios';
+import { getCurrentStaffId } from '../../../utils/auth';
 
 interface TestDetail {
     id: string;
@@ -120,7 +121,11 @@ const FormUpdateTestResult: React.FC<FormUpdateTestResultProps> = ({open, onClos
                 staffName: sampledData?.staffName,
                 examinationStatus: sampledData?.examinationStatus
             };
-            const response = await api.put(`/examinations/examined/${request.id}`, payload);
+            const staffId = getCurrentStaffId();
+            const url = staffId 
+                ? `/examinations/examined/${request.id}?staffId=${staffId}`
+                : `/examinations/examined/${request.id}`;
+            const response = await api.put(url, payload);
             if (response.status === 200) {
                 setSuccessMessage('Test results updated successfully!');
                 setTimeout(() => {

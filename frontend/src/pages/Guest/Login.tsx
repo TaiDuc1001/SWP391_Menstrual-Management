@@ -24,6 +24,9 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
         try {
             const response = await api.post('/accounts/login', {email, password});
             const returnedRole = response.data.role?.toLowerCase();
+            
+            localStorage.setItem('userProfile', JSON.stringify(response.data));
+            
             onLogin(returnedRole);
             switch (returnedRole) {
                 case 'admin':

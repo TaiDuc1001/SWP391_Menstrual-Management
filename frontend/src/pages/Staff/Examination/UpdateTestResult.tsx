@@ -5,6 +5,7 @@ import userIcon from '../../../assets/icons/avatar.svg';
 import searchIcon from '../../../assets/icons/search.svg';
 import FormUpdateTestResult from './FormUpdateTestResult';
 import axios from 'axios';
+import {getCurrentStaffId} from '../../../utils/auth';
 
 interface Examination {
     id: number;
@@ -37,6 +38,8 @@ interface ExaminationDetail {
 
 const getStatusLabel = (status: string): string => {
     switch (status) {
+        case 'PENDING':
+            return 'Pending Payment';
         case 'SAMPLED':
             return 'Sampled';
         case 'IN_PROGRESS':
@@ -63,11 +66,9 @@ const UpdateTestResult: React.FC = () => {
     const [selectedExamination, setSelectedExamination] = useState<ExaminationDetail | null>(null);
     const [selectedPanelName, setSelectedPanelName] = useState<string>('');
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
-    const itemsPerPage = 10;
-
-    const fetchData = async () => {
+    const itemsPerPage = 10;    const fetchData = async () => {
         try {
-            const res = await axios.get<Examination[]>('http://localhost:8080/api/examinations');
+            const res = await axios.get<Examination[]>('http://localhost:8080/api/examinations/staff');
             setData(res.data);
         } catch (error) {
             console.error('Error calling API:', error);
@@ -87,10 +88,15 @@ const UpdateTestResult: React.FC = () => {
         setModalOpen(false);
         setSelectedRequest(null);
     };
-
     const handleSampled = async (id: number) => {
         try {
-            await axios.put(`http://localhost:8080/api/examinations/sampled/${id}`);
+            const staffId = getCurrentStaffId();
+            
+            const url = staffId 
+                ? `http://localhost:8080/api/examinations/sampled/${id}?staffId=${staffId}`
+                : `http://localhost:8080/api/examinations/sampled/${id}`;
+                
+            await axios.put(url);
             fetchData();
         } catch (error) {
             console.error('Error updating status:', error);
@@ -98,7 +104,7 @@ const UpdateTestResult: React.FC = () => {
     };
     const handleViewDetails = async (row: Examination) => {
         setIsLoadingDetail(true);
-        setSelectedPanelName(row.panelName); // Lưu panelName từ row
+        setSelectedPanelName(row.panelName);
         try {
             const response = await axios.get<ExaminationDetail>(`http://localhost:8080/api/examinations/examined/${row.id}`);
             setSelectedExamination(response.data);
@@ -116,10 +122,8 @@ const UpdateTestResult: React.FC = () => {
         setSelectedExamination(null);
         setSelectedPanelName('');
     };
-
     const filteredData = data.filter(item =>
         item.examinationStatus !== 'CANCELLED' &&
-        item.examinationStatus !== 'COMPLETED' &&
         (!status || item.examinationStatus.toLowerCase() === status.toLowerCase()) &&
         (item.customerName.toLowerCase().includes(search.toLowerCase()) ||
             item.panelName.toLowerCase().includes(search.toLowerCase()) ||
@@ -201,8 +205,7 @@ const UpdateTestResult: React.FC = () => {
                                         <td className="p-3">{row.timeRange}</td>
                                         <td className="p-3">
                                             <StatusBadge status={getStatusLabel(row.examinationStatus)} />
-                                        </td>                                        
-                                        <td className="p-3">
+                                        </td>                                          <td className="p-3">
                                             {row.examinationStatus === 'IN_PROGRESS' ? (
                                                 <button
                                                     className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-blue-500 text-white hover:bg-blue-600 transition"
@@ -216,13 +219,15 @@ const UpdateTestResult: React.FC = () => {
                                                     onClick={() => handleOpenModal(row)}
                                                 >
                                                     Update
-                                                </button>) : row.examinationStatus === 'EXAMINED' ? (                                                    <button
-                                                        className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-purple-500 text-white hover:bg-purple-600 transition"
-                                                        onClick={() => handleViewDetails(row)}
-                                                    >
-                                                        View Details
-                                                    </button>
-                                                ) : (
+                                                </button>
+                                            ) : (row.examinationStatus === 'EXAMINED' || row.examinationStatus === 'COMPLETED') ? (
+                                                <button
+                                                    className="px-4 py-1.5 rounded-lg text-xs font-semibold shadow bg-purple-500 text-white hover:bg-purple-600 transition"
+                                                    onClick={() => handleViewDetails(row)}
+                                                >
+                                                    View Details
+                                                </button>
+                                            ) : (
                                                 <span className="text-gray-400 text-xs">Unavailable</span>
                                             )}
                                         </td>

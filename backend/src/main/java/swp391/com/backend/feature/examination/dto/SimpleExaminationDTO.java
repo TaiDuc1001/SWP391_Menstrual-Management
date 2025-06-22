@@ -16,4 +16,5 @@ public class SimpleExaminationDTO {
     ExaminationStatus examinationStatus;
     String panelName;
     String customerName;
+    String staffName;
 }
