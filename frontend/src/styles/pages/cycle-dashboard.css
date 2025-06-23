@@ -1,0 +1,20 @@
+/* Menstrual Cycle Dashboard Styles */
+.cycle-period-day {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-red-600 text-white hover:scale-105 hover:shadow-md;
+}
+
+.cycle-fertile-day {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-teal-400 text-white hover:scale-105 hover:shadow-md;
+}
+
+.cycle-ovulation-day {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-yellow-400 text-gray-900 hover:scale-105 hover:shadow-md;
+}
+
+.cycle-regular-day {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800;
+}
+
+.cycle-symptom-border {
+    @apply border-2 border-indigo-400;
+}

@@ -8,6 +8,7 @@ export {doctorService} from './doctorService';
 export {examinationService} from './examinationService';
 export * from './cycleService';
 export * from './aiService';
+export * from './cycleSymptomService';
 
 export type {User, UserFilters} from './userService';
 export type {Appointment, AppointmentFilters} from './appointmentService';
