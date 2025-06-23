@@ -5,6 +5,8 @@ import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
+import { useCycles, useAIRecommendations } from '../../../api/hooks';
+import { CycleData } from '../../../api/services';
 
 const MenstrualCycleDashboard: React.FC = () => {
     const now = new Date();
@@ -19,7 +21,10 @@ const MenstrualCycleDashboard: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     
-    const [cycles, setCycles] = useState([
+    const { cycles, loading: cyclesLoading, refetch } = useCycles();
+    const { recommendations, loading: aiLoading, generateRecommendations } = useAIRecommendations();
+    
+    const [localCycles, setLocalCycles] = useState([
         {
             id: 1,
             startDate: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`,
@@ -46,15 +51,23 @@ const MenstrualCycleDashboard: React.FC = () => {
         for (let day = 1; day <= daysInMonth; day++) days.push(day);
         return days;
     };
-    const days = getDaysInMonth(currentMonth, currentYear);
-
-    
+    const days = getDaysInMonth(currentMonth, currentYear);    
     const getPredictedCycles = () => {
-        if (!cycles || cycles.length === 0) return [];
-        const lastCycle = cycles[cycles.length - 1];
-        const startDate = new Date(lastCycle.startDate);
-        const cycleLength = lastCycle.cycle || 28;
-        const duration = lastCycle.duration || 7;
+        const activeCycles = cycles.length > 0 ? cycles : localCycles.map(c => ({
+            id: c.id,
+            cycleStartDate: c.startDate,
+            cycleLength: c.cycle,
+            periodDuration: c.duration,
+            ovulationDate: '',
+            fertilityWindowStart: '',
+            fertilityWindowEnd: ''
+        }));
+        
+        if (!activeCycles || activeCycles.length === 0) return [];
+        const lastCycle = activeCycles[activeCycles.length - 1];
+        const startDate = new Date(lastCycle.cycleStartDate);
+        const cycleLength = lastCycle.cycleLength || 28;
+        const duration = lastCycle.periodDuration || 7;
         const predictions = [];
         for (let i = 0; i < 3; i++) {
             const cycleStart = new Date(startDate);
@@ -70,12 +83,19 @@ const MenstrualCycleDashboard: React.FC = () => {
             });
         }
         return predictions;
-    };
-
-    
-    const getDayTypeForCalendar = (day: number | null) => {
+    };    const getDayTypeForCalendar = (day: number | null) => {
         if (!day) return '';
-        if (!cycles || cycles.length === 0) return '';
+        const activeCycles = cycles.length > 0 ? cycles : localCycles.map(c => ({
+            id: c.id,
+            cycleStartDate: c.startDate,
+            cycleLength: c.cycle,
+            periodDuration: c.duration,
+            ovulationDate: '',
+            fertilityWindowStart: '',
+            fertilityWindowEnd: ''
+        }));
+        
+        if (!activeCycles || activeCycles.length === 0) return '';
         const predictions = getPredictedCycles();
         
         const pred = predictions.find(p => p.start.getMonth() === currentMonth && p.start.getFullYear() === currentYear);
@@ -100,13 +120,10 @@ const MenstrualCycleDashboard: React.FC = () => {
         const saved = localStorage.getItem('menstrual_symptoms');
         return saved ? JSON.parse(saved) : {};
     });
-
-    
     useEffect(() => {
         localStorage.setItem('menstrual_symptoms', JSON.stringify(symptoms));
     }, [symptoms]);
 
-    
     useEffect(() => {
         const savedSymptoms = localStorage.getItem('menstrual_symptoms');
         if (savedSymptoms) {
@@ -116,21 +133,55 @@ const MenstrualCycleDashboard: React.FC = () => {
                 setSymptoms({});
             }
         }
-        
-    }, []);
+    }, []);    const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
 
-    const historyData = cycles;
+    useEffect(() => {
+        const activeCycles = cycles.length > 0 ? cycles : localCycles.map(c => ({
+            id: c.id,
+            cycleStartDate: c.startDate,
+            cycleLength: c.cycle,
+            periodDuration: c.duration,
+            ovulationDate: '',
+            fertilityWindowStart: '',
+            fertilityWindowEnd: ''
+        }));
+        
+        if (activeCycles.length > 0 && !hasGeneratedRecommendations && !aiLoading) {
+            generateRecommendations(activeCycles, symptoms);
+            setHasGeneratedRecommendations(true);
+        }
+    }, [cycles.length, hasGeneratedRecommendations, aiLoading]);
+
+    const handleGenerateRecommendations = () => {
+        const activeCycles = cycles.length > 0 ? cycles : localCycles.map(c => ({
+            id: c.id,
+            cycleStartDate: c.startDate,
+            cycleLength: c.cycle,
+            periodDuration: c.duration,
+            ovulationDate: '',
+            fertilityWindowStart: '',
+            fertilityWindowEnd: ''
+        }));
+        
+        if (activeCycles.length > 0) {
+            generateRecommendations(activeCycles, symptoms);
+        }
+    };
+
+    const historyData = cycles.length > 0 ? cycles : localCycles;
 
     return (
         <div className="p-3 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen w-full">
             <div className="flex w-full">
                 <main className="flex-1 w-full">
-                    <div className="flex justify-between items-center mb-4">                        <h2 className="text-xl font-extrabold text-purple-700 flex items-center gap-2">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-extrabold text-purple-700 flex items-center gap-2">
                             <span
                                 className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                             My Cycle
                         </h2>
-                        <div className="flex gap-2">                            <button
+                        <div className="flex gap-2">
+                            <button
                                 className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
                                 onClick={() => setShowCyclePopup(true)}>Declare Cycle
                             </button>
@@ -143,7 +194,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         <div
                             className="col-span-2 bg-white rounded-2xl shadow p-4 flex flex-col border border-gray-100">
-                            <div className="flex items-center justify-between mb-3">                                <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
                                     <span
                                         className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                     Cycle calendar for {currentMonth + 1}/{currentYear}
@@ -197,7 +249,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         </div>
                                     );
                                 })}
-                            </div>                            <div className="flex gap-4 mt-2 text-xs items-center">
+                            </div>
+                            <div className="flex gap-4 mt-2 text-xs items-center">
                                 <div className="flex items-center gap-1"><span
                                     className="w-3 h-3 bg-red-600 rounded-full inline-block"></span> Period days
                                 </div>
@@ -212,7 +265,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     symptoms
                                 </div>
                             </div>
-                        </div>                        <div
+                        </div>
+                        <div
                             className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
                             <h3 className="font-semibold text-lg text-purple-800 mb-2">Predictions & Analysis</h3>
                             <div className="flex flex-col gap-1 text-xs">
@@ -236,11 +290,13 @@ const MenstrualCycleDashboard: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
                         <div className="bg-white rounded-2xl shadow p-4 col-span-1">
-                            <div className="flex items-center justify-between mb-3">                                <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
                                     <span
                                         className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                     Cycle history
-                                </h3>                                <a
+                                </h3>
+                                <a
                                     href="/menstrual-cycles/all"
                                     className="text-purple-600 text-xs font-semibold hover:underline"
                                     onClick={e => {
@@ -253,7 +309,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                             </div>
                             <div className={historyData.length > 3 ? "overflow-y-auto max-h-32 transition-all" : ""}
                                  id="cycle-history-body">
-                                <table className="w-full text-xs mt-2">                                    <thead>
+                                <table className="w-full text-xs mt-2">
+                                    <thead>
                                     <tr className="text-gray-600">
                                         <th className="py-1 font-medium">Start</th>
                                         <th className="py-1 font-medium">End</th>
@@ -262,53 +319,83 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {historyData.map((row, idx) => (
+                                        {historyData.map((row, idx) => (
                                         <tr key={idx}
                                             className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
-                                            <td className="py-1">{row.startDate}</td>
-                                            <td className="py-1">{row.endDate}</td>
-                                            <td className="py-1">{row.duration}</td>
-                                            <td className="py-1">{row.cycle}</td>
+                                            <td className="py-1">
+                                                {'cycleStartDate' in row ? row.cycleStartDate : row.startDate}
+                                            </td>
+                                            <td className="py-1">
+                                                {'cycleStartDate' in row ? 
+                                                    (row.cycleStartDate ? new Date(new Date(row.cycleStartDate).getTime() + row.periodDuration * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : '') 
+                                                    : row.endDate}
+                                            </td>
+                                            <td className="py-1">
+                                                {'periodDuration' in row ? row.periodDuration : row.duration}
+                                            </td>
+                                            <td className="py-1">
+                                                {'cycleLength' in row ? row.cycleLength : row.cycle}
+                                            </td>
                                         </tr>
                                     ))}
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                        <div
+                        </div>                        <div
                             className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 col-span-2 flex flex-col gap-2">                            <h3 className="font-semibold text-lg text-purple-800 mb-2 flex items-center gap-2">
                                 <span
                                     className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                 AI Recommendations
-                            </h3>                            <ul className="list-disc pl-4 text-xs text-gray-800 flex flex-col gap-1">
-                                <li><span className="font-semibold text-pink-600">Cycle trend:</span> Regular and
-                                    stable. <span className="font-semibold text-pink-600">Suggestion:</span> Keep
-                                    maintaining healthy lifestyle habits!
-                                </li>
-                                <li><span className="font-semibold text-yellow-600">Reminder:</span> If you notice
-                                    irregular periods, consider <span
-                                        className="underline">regular gynecological check-ups</span>.
-                                </li>
-                                <li><span className="font-semibold text-red-500">Note:</span> If stress persists,
-                                    try to spend more time relaxing and resting.
-                                </li>
-                                <li><span
-                                    className="font-semibold text-green-600">Food & exercise suggestions:</span> Eat
-                                    more fruits, green vegetables and do gentle yoga during menstruation to reduce fatigue.
-                                </li>
+                                {aiLoading && (
+                                    <div className="ml-2 w-4 h-4 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
+                                )}
+                                <button
+                                    onClick={handleGenerateRecommendations}
+                                    disabled={aiLoading}
+                                    className="ml-auto text-xs bg-white border border-purple-400 text-purple-600 px-2 py-1 rounded hover:bg-purple-50 transition-all duration-200 disabled:opacity-50"
+                                >
+                                    Refresh
+                                </button>
+                            </h3>
+                            <ul className="list-disc pl-4 text-xs text-gray-800 flex flex-col gap-1">
+                                {recommendations.length > 0 ? recommendations.map((recommendation, index) => (
+                                    <li key={index} dangerouslySetInnerHTML={{ __html: recommendation }}></li>
+                                )) : (
+                                    <>
+                                        <li><span className="font-semibold text-pink-600">Cycle trend:</span> Regular and
+                                            stable. <span className="font-semibold text-pink-600">Suggestion:</span> Keep
+                                            maintaining healthy lifestyle habits!
+                                        </li>
+                                        <li><span className="font-semibold text-yellow-600">Reminder:</span> If you notice
+                                            irregular periods, consider <span
+                                                className="underline">regular gynecological check-ups</span>.
+                                        </li>
+                                        <li><span className="font-semibold text-red-500">Note:</span> If stress persists,
+                                            try to spend more time relaxing and resting.
+                                        </li>
+                                        <li><span
+                                            className="font-semibold text-green-600">Food & exercise suggestions:</span> Eat
+                                            more fruits, green vegetables and do gentle yoga during menstruation to reduce fatigue.
+                                        </li>
+                                    </>
+                                )}
                             </ul>
+                            {recommendations.length === 0 && (
+                                <div className="mt-2 text-xs text-gray-600 bg-yellow-50 p-2 rounded">
+                                    <span className="font-semibold">Note:</span> AI recommendations are temporarily unavailable. Showing default health tips.
+                                </div>
+                            )}
                         </div>
                     </div>
                     <MenstrualCyclePopup
                         open={showCyclePopup}
-                        onClose={() => setShowCyclePopup(false)}
-                        onSave={(data) => {
+                        onClose={() => setShowCyclePopup(false)}                        onSave={(data) => {
                             setShowCyclePopup(false);
                             setShowSuccess(true);
-                            setCycles(prev => [
+                            setLocalCycles(prev => [
                                 ...prev,
                                 {
-                                    id: prev.length > 0 ? Math.max(...prev.map(r => r.id)) + 1 : 1,
+                                    id: prev.length > 0 ? Math.max(...prev.map((r: any) => r.id)) + 1 : 1,
                                     startDate: data.startDate,
                                     endDate: '',
                                     duration: data.duration,
@@ -329,8 +416,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                     />
                     <DayNotePopup
                         open={showDayNote}
-                        onClose={() => setShowDayNote(false)} onSave={data => {
-                        setShowDayNote(false);
+                        onClose={() => setShowDayNote(false)} onSave={data => {                        setShowDayNote(false);
                         setShowSuccess(true);
                         if (selectedDay) {
                             const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
@@ -345,6 +431,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 
                                 setSymptoms(prev => ({...prev, [key]: data}));
                             }
+                            setHasGeneratedRecommendations(false);
                         }
                         setTimeout(() => setShowSuccess(false), 1200);
                     }}
