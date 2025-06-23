@@ -19,9 +19,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
-    const navigate = useNavigate();
-    
-    const { cycles, loading: cyclesLoading, refetch } = useCycles();
+    const navigate = useNavigate();    const { cycles, loading: cyclesLoading, refetch } = useCycles();
     const { recommendations, loading: aiLoading, generateRecommendations } = useAIRecommendations();
     
     const [localCycles, setLocalCycles] = useState([
@@ -109,31 +107,20 @@ const MenstrualCycleDashboard: React.FC = () => {
             if (d.getTime() === pred.ovulation.getTime()) return 'ovulation';
             return 'fertile';
         }
-        return '';
-    };
+        return '';    };
 
-    
-    
     const [symptoms, setSymptoms] = useState<{
         [key: string]: { symptom: string; period: string; flow: string }
     }>(() => {
         const saved = localStorage.getItem('menstrual_symptoms');
         return saved ? JSON.parse(saved) : {};
     });
+
     useEffect(() => {
         localStorage.setItem('menstrual_symptoms', JSON.stringify(symptoms));
     }, [symptoms]);
 
-    useEffect(() => {
-        const savedSymptoms = localStorage.getItem('menstrual_symptoms');
-        if (savedSymptoms) {
-            try {
-                setSymptoms(JSON.parse(savedSymptoms));
-            } catch (e) {
-                setSymptoms({});
-            }
-        }
-    }, []);    const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
+    const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
 
     useEffect(() => {
         const activeCycles = cycles.length > 0 ? cycles : localCycles.map(c => ({
@@ -144,9 +131,7 @@ const MenstrualCycleDashboard: React.FC = () => {
             ovulationDate: '',
             fertilityWindowStart: '',
             fertilityWindowEnd: ''
-        }));
-        
-        if (activeCycles.length > 0 && !hasGeneratedRecommendations && !aiLoading) {
+        }));        if (activeCycles.length > 0 && !hasGeneratedRecommendations && !aiLoading) {
             generateRecommendations(activeCycles, symptoms);
             setHasGeneratedRecommendations(true);
         }
@@ -161,9 +146,7 @@ const MenstrualCycleDashboard: React.FC = () => {
             ovulationDate: '',
             fertilityWindowStart: '',
             fertilityWindowEnd: ''
-        }));
-        
-        if (activeCycles.length > 0) {
+        }));        if (activeCycles.length > 0) {
             generateRecommendations(activeCycles, symptoms);
         }
     };
@@ -211,26 +194,25 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
                                          className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
-                                ))}
-                                {days.map((day, idx) => {
-                                    let type = '';
+                                ))}                                {days.map((day, idx) => {                                    let type = '';
                                     if (cycles && cycles.length > 0) {
                                         type = getDayTypeForCalendar(day);
                                     }
-                                    let hasSymptom = false;
-                                    let dayKey = '';
+                                      let hasSymptom = false;
                                     if (day) {
-                                        dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                                        
+                                        const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
                                     }
+                                    
                                     let style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800";
                                     if (type === 'period') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-red-600 text-white hover:scale-105 hover:shadow-md";
                                     if (type === 'fertile') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-teal-400 text-white hover:scale-105 hover:shadow-md";
                                     if (type === 'ovulation') style = "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-yellow-400 text-gray-900 hover:scale-105 hover:shadow-md";
                                     
+                                    // Add border for days with symptoms
                                     if (hasSymptom) style += ' border-2 border-indigo-400';
+                                    
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
@@ -249,8 +231,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         </div>
                                     );
                                 })}
-                            </div>
-                            <div className="flex gap-4 mt-2 text-xs items-center">
+                            </div>                            <div className="flex gap-4 mt-2 text-xs items-center">
                                 <div className="flex items-center gap-1"><span
                                     className="w-3 h-3 bg-red-600 rounded-full inline-block"></span> Period days
                                 </div>
@@ -261,8 +242,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     className="w-3 h-3 bg-teal-400 rounded-full inline-block"></span> Fertile window
                                 </div>
                                 <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Has
-                                    symptoms
+                                    className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Has symptoms
                                 </div>
                             </div>
                         </div>
@@ -413,35 +393,35 @@ const MenstrualCycleDashboard: React.FC = () => {
                             setShowSuccess(true);
                             setTimeout(() => setShowSuccess(false), 1200);
                         }}
-                    />
-                    <DayNotePopup
+                    />                    <DayNotePopup
                         open={showDayNote}
-                        onClose={() => setShowDayNote(false)} onSave={data => {                        setShowDayNote(false);
-                        setShowSuccess(true);
-                        if (selectedDay) {
-                            const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                            
-                            if (data.symptom === 'None') {
-                                setSymptoms(prev => {
-                                    const newState = {...prev};
-                                    delete newState[key];
-                                    return newState;
-                                });
-                            } else {
+                        onClose={() => setShowDayNote(false)} 
+                        onSave={(data) => {
+                            setShowDayNote(false);
+                            setShowSuccess(true);
+                            if (selectedDay) {
+                                const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
                                 
-                                setSymptoms(prev => ({...prev, [key]: data}));
+                                if (data.symptom === 'None') {
+                                    setSymptoms(prev => {
+                                        const newState = {...prev};
+                                        delete newState[key];
+                                        return newState;
+                                    });
+                                } else {
+                                    setSymptoms(prev => ({...prev, [key]: data}));
+                                }
+                                setHasGeneratedRecommendations(false);
                             }
-                            setHasGeneratedRecommendations(false);
-                        }
-                        setTimeout(() => setShowSuccess(false), 1200);
-                    }}
-                        {...(selectedDay && symptoms[
-                            `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
-                            ] ? {
-                            defaultValue: symptoms[
-                                `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`
-                                ]
-                        } : {})}
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
+                        defaultValue={(() => {
+                            if (selectedDay) {
+                                const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                                return symptoms[dayKey];
+                            }
+                            return undefined;
+                        })()}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>
