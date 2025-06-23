@@ -135,7 +135,6 @@ const Examinations: React.FC<ApproveResultTableProps> = ({
         }
     ];
 
-    // Filter to only show EXAMINED status examinations
     const filteredExaminations = examinations.filter(exam => exam.examinationStatus === 'EXAMINED');
 
     return (

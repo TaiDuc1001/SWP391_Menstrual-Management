@@ -17,11 +17,9 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id,@RequestBody CustomerDTO customerDTO) {
-        // Convert DTO to entity
         Customer customerDetails = customerMapper.toEntity(customerDTO);
         System.out.println(customerDetails.getName());
         Customer customer = customerService.updateCustomer(id, customerDetails);
-        // Convert entity back to DTO
         CustomerDTO updatedCustomerDTO = customerMapper.toDTO(customer);
         return ResponseEntity.ok(updatedCustomerDTO);
     }

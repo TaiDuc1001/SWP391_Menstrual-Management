@@ -43,7 +43,7 @@ const QuestionInbox: React.FC = () => {
     const [responseAttachments, setResponseAttachments] = useState<File[]>([]);
 
     useEffect(() => {
-        // Mock data - replace with actual API call
+        
         const mockQuestions: Question[] = [
             {
                 id: 1,
@@ -105,7 +105,7 @@ const QuestionInbox: React.FC = () => {
 
         try {
             setLoading(true);
-            // Mock API call - replace with actual implementation
+            
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             const updatedQuestion = {
@@ -174,16 +174,16 @@ const QuestionInbox: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-7xl mx-auto">
-                {/* Header */}
+                
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Hộp thư câu hỏi</h1>
                     <p className="text-gray-600">Quản lý và trả lời các câu hỏi từ bệnh nhân</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left column - Questions list */}
+                    
                     <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                        {/* Search and filter */}
+                        
                         <div className="p-4 border-b">
                             <div className="flex gap-2 mb-4">
                                 <div className="flex-1 relative">
@@ -223,7 +223,7 @@ const QuestionInbox: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Questions list */}
+                        
                         <div className="divide-y divide-gray-200 max-h-[calc(100vh-300px)] overflow-y-auto">
                             {filteredQuestions.map(question => (
                                 <div
@@ -263,11 +263,11 @@ const QuestionInbox: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Right column - Question detail and response */}
+                    
                     <div className="lg:col-span-2">
                         {selectedQuestion ? (
                             <div className="bg-white rounded-xl shadow-md p-6">
-                                {/* Question detail */}
+                                
                                 <div className="mb-6">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
@@ -306,7 +306,7 @@ const QuestionInbox: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Previous response if exists */}
+                                
                                 {selectedQuestion.response && (
                                     <div className="mb-6">
                                         <h3 className="text-sm font-medium text-gray-700 mb-2">Câu trả lời trước:</h3>
@@ -320,7 +320,7 @@ const QuestionInbox: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* Response form */}
+                                
                                 <div>
                                     <h3 className="text-sm font-medium text-gray-700 mb-2">Trả lời:</h3>
                                     <textarea
@@ -330,7 +330,7 @@ const QuestionInbox: React.FC = () => {
                                         onChange={(e) => setResponseContent(e.target.value)}
                                     />
 
-                                    {/* File attachments */}
+                                    
                                     {responseAttachments.length > 0 && (
                                         <div className="mb-4">
                                             <h4 className="text-sm font-medium text-gray-700 mb-2">Tệp đính kèm:</h4>

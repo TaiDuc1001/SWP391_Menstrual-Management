@@ -9,33 +9,33 @@ const PaymentReturn: React.FC = () => {
     const [message, setMessage] = useState('Processing payment...');    useEffect(() => {
         const handlePaymentReturn = async () => {
             try {
-                // Check for status in URL params
+                
                 const status = searchParams.get('status');
                 const vnpResponseCode = searchParams.get('vnp_ResponseCode');
                 
-                // Use either parameter to determine payment success
+                
                 const responseCode = status || vnpResponseCode;
                 
                 if (responseCode === '00') {
-                    // Payment successful
+                    
                     setStatus('success');
                     setMessage('Payment successful! Your appointment has been confirmed.');
                     
-                    // Redirect to appointments after 3 seconds
+                    
                     setTimeout(() => {
                         navigate('/customer/appointments');
                     }, 3000);
                 } else if (responseCode && responseCode !== '00') {
-                    // Payment failed
+                    
                     setStatus('failed');
                     setMessage('Payment failed. Your appointment has been cancelled.');
                     
-                    // Redirect to appointments after 3 seconds
+                    
                     setTimeout(() => {
                         navigate('/customer/appointments');
                     }, 3000);
                 } else {
-                    // No status parameter found, show generic error
+                    
                     setStatus('failed');
                     setMessage('Payment status could not be determined.');
                     

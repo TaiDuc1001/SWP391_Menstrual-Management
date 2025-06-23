@@ -34,10 +34,8 @@ public class DoctorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<DoctorDTO> updateDoctor(@PathVariable Long id,@RequestBody DoctorDTO doctorDTO) {
-        // Convert DTO to entity
         Doctor doctorDetails = doctorMapper.toEntity(doctorDTO);
         Doctor updatedDoctor = doctorService.updateDoctor(id ,doctorDetails);
-        // Convert entity back to DTO
         DoctorDTO updatedDoctorDTO = doctorMapper.toDTO(updatedDoctor);
         return ResponseEntity.ok(updatedDoctorDTO);
     }

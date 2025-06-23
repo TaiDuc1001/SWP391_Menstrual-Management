@@ -64,7 +64,6 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
                 {stats.map((stat) => (
                     <div key={stat.label}
@@ -77,7 +76,6 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                {/* Revenue Chart */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6 text-gray-800">Revenue Chart</h2>
                     <div className="h-80">
@@ -94,7 +92,6 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Service Distribution */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6 text-gray-800">Service Distribution</h2>
                     <div className="h-80">
@@ -124,7 +121,6 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Recent Activities */}
                 <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6 text-gray-800">Recent Activities</h2>
                     <div className="space-y-4">
@@ -143,7 +139,6 @@ const Dashboard: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Notifications */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6 text-gray-800">System Notifications</h2>
                     <div className="space-y-4">

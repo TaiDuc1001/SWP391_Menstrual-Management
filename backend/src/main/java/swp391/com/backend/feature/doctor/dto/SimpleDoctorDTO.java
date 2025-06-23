@@ -12,5 +12,5 @@ public class SimpleDoctorDTO {
     Long id;
     String name;
     String specialization;
-    BigDecimal price; // Use String to handle formatting and currency symbols
+    BigDecimal price;
 }

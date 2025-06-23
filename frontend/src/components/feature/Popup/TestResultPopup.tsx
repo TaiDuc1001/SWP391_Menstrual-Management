@@ -60,10 +60,8 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({onClose, examinationId
 
     return (
         <Popup open={true} onClose={onClose} className="w-full max-w-6xl p-8 relative">
-            {/* Hidden printable content for PDF export */}
             <div style={{position: 'absolute', left: '-9999px', top: 0}}>
                 <div ref={printableRef} style={{ fontFamily: 'Arial, Helvetica, sans-serif', padding: 32, color: '#111', minWidth: 700, background: '#fff', borderRadius: 16, boxShadow: '0 2px 16px #0002', maxWidth: 700, margin: '0 auto' }}>
-                    {/* Removed check icon and BOOKING SUCCESSFUL title as requested */}
                     <div style={{ fontSize: 16, marginBottom: 8 }}><span style={{fontWeight:600}}>Doctor:</span> <span>{staffName}</span></div>
                     <div style={{ fontSize: 16, marginBottom: 8 }}><span style={{fontWeight:600}}>Date:</span> <span>{testDate}</span></div>
                     <div style={{ fontSize: 16, marginBottom: 8 }}><span style={{fontWeight:600}}>Time:</span> <span>{testTime}</span></div>

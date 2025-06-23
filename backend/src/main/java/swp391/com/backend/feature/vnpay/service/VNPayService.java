@@ -60,19 +60,19 @@ public class VNPayService {
     }
 
     private boolean verifyPaymentReturn(Map<String, String> vnpParams) {
-        // Extract the secure hash from the parameters
+        
         String vnpSecureHash = vnpParams.get("vnp_SecureHash");
 
-        // Remove the secure hash from the map to build the hash data
+        
         Map<String, String> params = new HashMap<>(vnpParams);
         params.remove("vnp_SecureHash");
         params.remove("vnp_SecureHashType");
 
-        // Sort the parameters
+        
         List<String> fieldNames = new ArrayList<>(params.keySet());
         Collections.sort(fieldNames);
 
-        // Build the hash data
+        
         StringBuilder hashData = new StringBuilder();
         Iterator<String> itr = fieldNames.iterator();
         while (itr.hasNext()) {
@@ -93,10 +93,10 @@ public class VNPayService {
             }
         }
 
-        // Calculate the hash
+        
         String secureHash = hmacSHA512("5PZXHULWJC9I887GU5J0L018DGAQ4VIV", hashData.toString());
 
-        // Compare the hashes
+        
         return secureHash.equals(vnpSecureHash);
     }
 

@@ -16,7 +16,6 @@ import {
 } from 'recharts';
 import {ArrowDownTrayIcon, ArrowTrendingUpIcon, CalendarIcon, ChartBarIcon,} from '@heroicons/react/24/outline';
 
-// Mock data for charts
 const revenueData = [
     {month: 'Jan', revenue: 120000000, appointments: 150, users: 800},
     {month: 'Feb', revenue: 150000000, appointments: 180, users: 950},
@@ -77,7 +76,6 @@ const Reports: React.FC = () => {
 
     return (
         <div className="p-6 bg-gray-50">
-            {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Statistical Report</h1>
                 <div className="flex space-x-4">
@@ -98,7 +96,6 @@ const Reports: React.FC = () => {
                 </div>
             </div>
 
-            {/* Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {metrics.map((metric, index) => (
                     <div key={index} className="bg-white rounded-xl shadow-sm p-6">
@@ -119,9 +116,7 @@ const Reports: React.FC = () => {
                 ))}
             </div>
 
-            {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Revenue Chart */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6">Revenue Over Time</h2>
                     <div className="h-80">
@@ -143,7 +138,6 @@ const Reports: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Service Distribution */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6">Service Distribution</h2>
                     <div className="h-80">
@@ -171,7 +165,6 @@ const Reports: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Appointments Chart */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6">Appointments by Month</h2>
                     <div className="h-80">
@@ -187,7 +180,6 @@ const Reports: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Users Growth Chart */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6">User Growth</h2>
                     <div className="h-80">
@@ -211,7 +203,6 @@ const Reports: React.FC = () => {
                 </div>
             </div>
 
-            {/* Additional Statistics */}
             <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-semibold mb-6">Detailed Statistics</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

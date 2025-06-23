@@ -114,7 +114,6 @@ const Examinations: React.FC = () => {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-    // Handle page change
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
@@ -287,7 +286,6 @@ const Examinations: React.FC = () => {
                         </div>
 
                         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                            {/* Thông tin cơ bản */}
                             <div className="grid grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <span className="text-sm text-gray-600">Test date: </span>
@@ -307,7 +305,6 @@ const Examinations: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Bảng kết quả chi tiết */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-4 text-gray-800">Detailed result table</h3>
                                 <div className="overflow-x-auto border rounded-lg">

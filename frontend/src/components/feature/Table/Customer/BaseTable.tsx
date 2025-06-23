@@ -17,14 +17,12 @@ interface CustomerTableProps<T = any> {
     variant?: 'admin' | 'customer' | 'default';
     hoverable?: boolean;
 
-    // Pagination
     currentPage?: number;
     totalPages?: number;
     onPageChange?: (page: number) => void;
     itemsPerPage?: number;
     totalItems?: number;
 
-    // Header
     title?: string;
     headerActions?: React.ReactNode;
 
@@ -59,7 +57,6 @@ const BaseTable = <T extends Record<string, any>>({
 
     return (
         <div className={`bg-white rounded-lg shadow w-full ${className}`}>
-            {/* Header */}
             {(title || headerActions) && (
                 <div className="p-4 border-b border-gray-100">
                     <div className="flex justify-between items-center">
@@ -69,7 +66,6 @@ const BaseTable = <T extends Record<string, any>>({
                 </div>
             )}
 
-            {/* Selection Bar */}
             {selectable && selected.length > 0 && (
                 <div className="px-4 py-3 bg-pink-50 border-b border-pink-100">
                     <div className="flex items-center justify-between">
@@ -77,13 +73,11 @@ const BaseTable = <T extends Record<string, any>>({
               {selected.length} item{selected.length > 1 ? 's' : ''} selected
             </span>
                         <div className="flex items-center gap-2">
-                            {/* Add bulk action buttons here if needed */}
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* BaseTable */}
             <div className="p-4"><TableBase
                 columns={columns}
                 data={data}
@@ -101,7 +95,6 @@ const BaseTable = <T extends Record<string, any>>({
             />
             </div>
 
-            {/* Pagination */}
             {showPagination && (
                 <div className="px-4 py-3 border-t border-gray-100">
                     <div className="flex justify-center items-center gap-2">

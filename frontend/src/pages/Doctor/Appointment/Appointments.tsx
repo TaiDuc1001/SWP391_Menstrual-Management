@@ -77,7 +77,7 @@ const Appointments: React.FC = () => {
     const fetchAppointments = async () => {
         try {
             const response = await api.get('/appointments/doctor');
-            console.log('All appointments:', response.data); // Debug log
+            console.log('All appointments:', response.data); 
             const filteredAppointments = response.data.filter(
                 (apt: Appointment) =>
                     (apt.appointmentStatus === 'BOOKED' ||
@@ -87,7 +87,7 @@ const Appointments: React.FC = () => {
                         apt.appointmentStatus === 'WAITING' ||
                         apt.appointmentStatus === 'IN_PROGRESS')
             );
-            console.log('Filtered appointments:', filteredAppointments); // Debug log
+            console.log('Filtered appointments:', filteredAppointments); 
             setAppointments(filteredAppointments);
         } catch (error) {
             console.error('Error fetching appointments:', error);
@@ -195,7 +195,7 @@ const Appointments: React.FC = () => {
             if (response.status === 200) {
                 const updatedAppointment = response.data;
 
-                // Check if status changed to IN_PROGRESS (both parties confirmed)
+                
                 if (updatedAppointment.appointmentStatus === 'IN_PROGRESS') {
                     showNotification('Both parties confirmed! Starting meeting...', 'success');
 
@@ -207,7 +207,7 @@ const Appointments: React.FC = () => {
                     showNotification('Confirmed successfully!', 'success');
                 }
 
-                // Refresh appointments to show updated status
+                
                 await fetchAppointments();
             }
         } catch (error) {            console.error('Error confirming appointment:', error);
@@ -298,7 +298,7 @@ const Appointments: React.FC = () => {
                     type={notification.type}
                     onClose={() => setNotification(prev => ({...prev, isOpen: false}))}
                 />
-                {/* Modal hủy cuộc hẹn */}
+                
                 {cancelModal.isOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white rounded-lg w-[400px] shadow-xl">
@@ -326,7 +326,7 @@ const Appointments: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                )}                {/* Modal chi tiết cuộc hẹn */}
+                )}                
                 {detailModal.isOpen && detailModal.appointment && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-lg w-[800px] max-h-[90vh] overflow-y-auto shadow-xl">
@@ -362,7 +362,7 @@ const Appointments: React.FC = () => {
                                 </div>
 
                                 <div className="space-y-6">
-                                    {/* Date and Time Section */}
+                                    
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="flex items-center space-x-4 p-4 bg-pink-50 rounded-lg">
                                             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -396,7 +396,7 @@ const Appointments: React.FC = () => {
                                         </div>
                                     </div>                                    
                                     
-                                    {/* Customer Section */}
+                                    
                                     {detailModal.appointment.customerName && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="flex items-center space-x-4 p-4 bg-yellow-50 rounded-lg">
@@ -412,7 +412,7 @@ const Appointments: React.FC = () => {
                                             </div>
                                             
 
-                                            {/* Phone Section */}
+                                            
                                             {detailModal.appointment.phoneNumber && (
                                                 <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
                                                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -429,7 +429,7 @@ const Appointments: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {/* Notes Section */}
+                                    
                                     {detailModal.appointment.customerNote && (
                                         <div className="bg-gray-50 rounded-lg p-6">
                                             <h4 className="text-lg font-bold text-gray-800 mb-4">Notes</h4>

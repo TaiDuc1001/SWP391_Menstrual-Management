@@ -13,7 +13,6 @@ interface Post {
     content?: string;
 }
 
-// Mở rộng MOCK_POSTS với nội dung mẫu
 const MOCK_POSTS: Post[] = [
     {
         id: 1,
@@ -123,7 +122,6 @@ const Blogs: React.FC = () => {
                 </button>
             </div>
 
-            {/* Filters and Search */}
             <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="relative">
@@ -161,7 +159,6 @@ const Blogs: React.FC = () => {
                 </div>
             </div>
 
-            {/* Content BaseTable */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -235,7 +232,6 @@ const Blogs: React.FC = () => {
                 </div>
             </div>
 
-            {/* Pagination */}
             <div
                 className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-xl shadow-sm">
                 <div className="flex-1 flex justify-between sm:hidden">
@@ -284,7 +280,6 @@ const Blogs: React.FC = () => {
                 </div>
             </div>
 
-            {/* Post Detail Modal */}
             <PostDetailModal
                 post={selectedPost}
                 onClose={() => setSelectedPost(null)}

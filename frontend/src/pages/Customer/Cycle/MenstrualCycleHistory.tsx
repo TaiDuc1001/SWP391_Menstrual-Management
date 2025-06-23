@@ -18,7 +18,7 @@ const MenstrualCycleHistory: React.FC = () => {
     const {cycles, setCycles} = useMenstrualCycles();
 
     const parseDate = (str: string) => {
-        // Ensure dd/mm/yyyy format is parsed correctly
+        
         if (!str) return new Date('');
         const [day, month, year] = str.split('/').map(Number);
         if (!day || !month || !year) return new Date('');
@@ -39,14 +39,14 @@ const MenstrualCycleHistory: React.FC = () => {
             row.endDate.includes(search) ||
             row.duration.toString().includes(search) ||
             row.cycle.toString().includes(search);
-        // Format dates for search like Examinations.tsx
+        
         const formattedStart = row.startDate;
         const formattedEnd = row.endDate;
         const searchLower = search.toLowerCase();
         const dateMatch =
             formattedStart.toLowerCase().includes(searchLower) ||
             formattedEnd.toLowerCase().includes(searchLower);
-        // Fix: filter by fromDate (startDate) and toDate (endDate)
+        
         const start = fromDate ? parseDate(row.startDate) >= fromDate : true;
         const end = toDate ? parseDate(row.endDate) <= toDate : true;
         return (searchMatch || dateMatch) && start && end;
@@ -160,7 +160,7 @@ const MenstrualCycleHistory: React.FC = () => {
                 onSave={(data) => {
                     setShowCyclePopup(false);
                     setEditRow(null);
-                    // Calculate endDate from startDate and duration
+                    
                     const parseDMY = (str: string) => {
                         const [day, month, year] = str.split('/').map(Number);
                         return new Date(year, month - 1, day);
@@ -175,7 +175,7 @@ const MenstrualCycleHistory: React.FC = () => {
                     const end = new Date(start);
                     end.setDate(start.getDate() + data.duration - 1);
                     const endDate = formatDMY(end);
-                    // If editing, update; else, add new
+                    
                     if (editRow && editRow.id) {
                         setCycles(prev => prev.map(row => row.id === editRow.id ? {
                             ...row,
@@ -212,7 +212,7 @@ const MenstrualCycleHistory: React.FC = () => {
     );
 };
 
-// Wrap the page with MenstrualCycleProvider
+
 export default function MenstrualCyclesAllWithProvider() {
     return (
         <MenstrualCycleProvider>

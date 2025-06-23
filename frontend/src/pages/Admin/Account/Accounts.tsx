@@ -59,7 +59,6 @@ const users = [
 ];
 
 
-// handfle button refresh
 const handleRefresh = () => {
 };
 
@@ -145,7 +144,6 @@ const Accounts: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
 
-            {/*header + create button */}
             <div className="bg-white p-4 rounded shadow w-full mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-black">User management</h1>
                 <NewUserButton icon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}>
@@ -153,10 +151,8 @@ const Accounts: React.FC = () => {
                 </NewUserButton>
             </div>
 
-            {/*search , role, status dropdown*/}
             <div className="mb-4 flex space-x-4 w-full">
 
-                {/*search*/}
                 <div className="relative flex-1 min-w-0">
                     <input
                         type="text"
@@ -170,7 +166,6 @@ const Accounts: React.FC = () => {
                     </span>
                 </div>
 
-                {/*all roles*/}
                 <div className="relative" ref={roleRef}>
                     <button
                         className="border px-4 py-2 rounded flex items-center justify-between gap-2 min-w-[100px]"
@@ -209,7 +204,6 @@ const Accounts: React.FC = () => {
                     )}
                 </div>
 
-                {/*all status*/}
                 <div className="relative" ref={statusRef}>
                     <button
                         className="border px-2 py-2 rounded flex justify-between items-center gap-2 min-w-[100px]"
@@ -261,7 +255,6 @@ const Accounts: React.FC = () => {
             </div>
 
 
-            {/*table*/}
             <div className="bg-white p-4 rounded shadow w-full">
                 <div className="flex items-center mb-2">
                     <h2 className="text-lg font-semibold mr-2">User List</h2>

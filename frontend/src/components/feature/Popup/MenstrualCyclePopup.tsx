@@ -11,14 +11,14 @@ interface MenstrualCyclePopupProps {
 }
 
 const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow}) => {
-    // If editing, prefill values
+    
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState(5);
     const [cycleLength, setCycleLength] = useState(28);
 
     React.useEffect(() => {
         if (editRow) {
-            // Convert dd/mm/yyyy to yyyy-mm-dd for input type="date"
+            
             if (editRow.startDate) {
                 const [day, month, year] = editRow.startDate.split('/');
                 setStartDate(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
@@ -34,7 +34,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Convert yyyy-mm-dd to dd/mm/yyyy for storage
+        
         let formattedStartDate = startDate;
         if (startDate && startDate.includes('-')) {
             const [year, month, day] = startDate.split('-');

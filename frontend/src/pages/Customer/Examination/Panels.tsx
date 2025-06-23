@@ -51,7 +51,7 @@ const Panels: React.FC = () => {
                     onButtonClick={() => navigate(-1)}
                 />
             </div>
-            {/* Utility Bar */}
+            
             <div className="mb-4 flex space-x-4 w-4/5 mx-auto" style={{maxWidth: '100%'}}>
                 <SearchInput
                     value={search}
@@ -96,7 +96,7 @@ const Panels: React.FC = () => {
                             <div className="text-gray-400 text-xs">Results in {pkg.responseTime} hours</div>
                         </div>
                         <div className="flex flex-col items-end mt-4 md:mt-0 md:ml-4">
-                            {/* Price and consultation info can be added if available in API */}
+                            
                             <div className="flex gap-2">
                                 <ActionButton
                                     outlined
@@ -118,7 +118,7 @@ const Panels: React.FC = () => {
                     </div>
                 ))}
             </div>
-            {/* Pagination Controls */}
+            
             {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-8">
                     <button

@@ -3,13 +3,10 @@
  * Import all types from this single entry point
  */
 
-// Route types
 export * from './routes';
 
-// Table types
 export * from './table';
 
-// Common UI component types
 export interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'outline';
     size?: 'small' | 'medium' | 'large';
@@ -61,7 +58,7 @@ export interface SelectProps {
     className?: string;
 }
 
-// Status types
+
 export type Status = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'active' | 'inactive';
 
 export interface StatusBadgeProps {
@@ -69,7 +66,7 @@ export interface StatusBadgeProps {
     className?: string;
 }
 
-// Form types
+
 export interface FormField {
     name: string;
     label: string;
@@ -94,7 +91,7 @@ export interface FormErrors {
     [key: string]: string;
 }
 
-// Navigation types
+
 export interface NavigationItem {
     path: string;
     label: string;
@@ -103,7 +100,7 @@ export interface NavigationItem {
     roles?: string[];
 }
 
-// User types
+
 export interface BaseUser {
     id: string;
     email: string;
@@ -118,7 +115,7 @@ export interface BaseUser {
 
 export type UserRole = 'admin' | 'doctor' | 'staff' | 'customer';
 
-// Staff types
+
 export interface StaffProfile {
     id: number;
     name: string;
@@ -130,7 +127,7 @@ export interface StaffProfile {
     joinDate: string;
 }
 
-// Common data types
+
 export interface BaseEntity {
     id: string;
     createdAt: string;
@@ -142,7 +139,7 @@ export interface TimestampedEntity extends BaseEntity {
     updatedBy?: string;
 }
 
-// Filter types
+
 export interface BaseFilters {
     page?: number;
     limit?: number;
@@ -161,7 +158,7 @@ export interface StatusFilters {
     statuses?: Status[];
 }
 
-// API response types
+
 export interface ApiResponse<T = any> {
     data: T;
     message?: string;
@@ -182,7 +179,7 @@ export interface ApiError {
     code?: string;
 }
 
-// Theme types
+
 export interface ThemeConfig {
     primary: string;
     secondary: string;
@@ -192,7 +189,7 @@ export interface ThemeConfig {
     info: string;
 }
 
-// Layout types
+
 export interface LayoutProps {
     children: React.ReactNode;
     className?: string;
@@ -207,12 +204,12 @@ export interface SidebarItem {
     roles?: UserRole[];
 }
 
-// Utility types
+
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type Partial<T> = { [P in keyof T]?: T[P] };
 export type Required<T> = { [P in keyof T]-?: T[P] };
 
-// Generic component props
+
 export interface BaseComponentProps {
     className?: string;
     'data-testid'?: string;

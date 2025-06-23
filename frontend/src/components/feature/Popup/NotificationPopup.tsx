@@ -12,7 +12,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({message, type, isO
         if (isOpen) {
             const timer = setTimeout(() => {
                 onClose();
-            }, 3000); // Auto close after 3 seconds
+            }, 3000);
 
             return () => clearTimeout(timer);
         }

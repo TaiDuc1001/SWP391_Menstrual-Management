@@ -143,7 +143,7 @@ const DayView: React.FC<DayViewProps> = ({
                                              onSelectAppointment
                                          }) => {
     const timeSlots = Array.from({length: 9}, (_, i) => {
-        const hour = i + 9; // Từ 9h sáng
+        const hour = i + 9; 
         return `${hour.toString().padStart(2, '0')}:00`;
     });
 
@@ -153,7 +153,7 @@ const DayView: React.FC<DayViewProps> = ({
     return (
         <div className="bg-white rounded-lg shadow">
             <div className="grid grid-cols-[100px_1fr] h-[600px]">
-                {/* Time slots */}
+                
                 <div className="border-r">
                     {timeSlots.map(time => (
                         <div key={time} className="h-16 border-b p-2 text-sm text-gray-600">
@@ -161,12 +161,12 @@ const DayView: React.FC<DayViewProps> = ({
                         </div>
                     ))}
                 </div>
-                {/* Appointments */}
+                
                 <div className="relative">
                     {todayAppointments.map(appointment => {
                         const [startTime] = appointment.time.split(' - ');
                         const [hours] = startTime.split(':');
-                        const top = (parseInt(hours) - 9) * 64; // 64px là chiều cao của mỗi ô 1 giờ
+                        const top = (parseInt(hours) - 9) * 64; 
 
                         return (
                             <div
@@ -207,7 +207,6 @@ const WeekView: React.FC<WeekViewProps> = ({
     const startOfWeekDate = startOfWeek(selectedDate, {weekStartsOn: 1});
     const daysOfWeek = Array.from({length: 7}, (_, i) => addDays(startOfWeekDate, i));
 
-    // Tạo mảng khung giờ từ 7:00 đến 17:00
     const timeSlots = Array.from({length: 11}, (_, i) => ({
         hour: i + 7,
         label: `${(i + 7).toString().padStart(2, '0')}:00`
@@ -215,7 +214,6 @@ const WeekView: React.FC<WeekViewProps> = ({
 
     return (
         <div className="bg-white rounded-lg shadow">
-            {/* Header với các ngày trong tuần */}
             <div className="grid grid-cols-8 border-b">
                 <div className="p-4 border-r"></div>
                 {daysOfWeek.map(date => (
@@ -233,9 +231,8 @@ const WeekView: React.FC<WeekViewProps> = ({
                 ))}
             </div>
 
-            {/* Grid chứa các khung giờ và lịch hẹn */}
             <div className="grid grid-cols-8">
-                {/* Cột khung giờ */}
+                
                 <div className="border-r">
                     {timeSlots.map(({hour, label}) => (
                         <div key={hour} className="h-16 border-b p-2 text-sm text-gray-600">
@@ -244,7 +241,7 @@ const WeekView: React.FC<WeekViewProps> = ({
                     ))}
                 </div>
 
-                {/* Các cột ngày trong tuần */}
+                
                 {daysOfWeek.map(date => {
                     const dayAppointments = appointments.filter(
                         app => app.date === format(date, 'yyyy-MM-dd')
@@ -252,12 +249,12 @@ const WeekView: React.FC<WeekViewProps> = ({
 
                     return (
                         <div key={date.toString()} className="relative border-r h-[704px]">
-                            {/* Background grid */}
+                            
                             {timeSlots.map(({hour}) => (
                                 <div key={hour} className="h-16 border-b"></div>
                             ))}
 
-                            {/* Appointments */}
+                            
                             {dayAppointments.map(appointment => {
                                 const [startTime] = appointment.time.split(' - ');
                                 const [hours, minutes] = startTime.split(':').map(Number);
@@ -330,12 +327,12 @@ const ConsultationSchedule: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<Appointment['status'] | 'all'>('all');
 
-    // State for notes editing
+    
     const [isEditingNotes, setIsEditingNotes] = useState(false);
     const [notesInput, setNotesInput] = useState('');
     const [isSavingNotes, setIsSavingNotes] = useState(false);
 
-    // Stats state
+    
     const [stats, setStats] = useState({
         totalToday: 0,
         completed: 0,
@@ -364,7 +361,7 @@ const ConsultationSchedule: React.FC = () => {
         };
     };
 
-    // Fetch appointments from API
+    
     const fetchAppointments = async () => {
         setLoading(true);
         try {
@@ -411,7 +408,7 @@ const ConsultationSchedule: React.FC = () => {
     const handleStatusChange = async (appointmentId: number, newStatus: Appointment['status']) => {
         try {
             await api.patch(`/appointments/${appointmentId}/status`, {status: newStatus});
-            fetchAppointments(); // Refresh data
+            fetchAppointments(); 
         } catch (error) {
             console.error('Error updating appointment status:', error);
         }
@@ -420,13 +417,13 @@ const ConsultationSchedule: React.FC = () => {
     const addNotes = async (appointmentId: number, notes: string) => {
         try {
             setLoading(true);
-            // Gọi API để thêm ghi chú
+            
             await api.put(`/appointments/${appointmentId}/notes`, {
                 notes,
                 lastUpdated: new Date().toISOString()
             });
 
-            // Cập nhật state local
+            
             const updatedAppointments = appointments.map(app =>
                 app.id === appointmentId
                     ? {
@@ -445,7 +442,7 @@ const ConsultationSchedule: React.FC = () => {
         }
     };
 
-    // Handle saving notes
+    
     const handleSaveNotes = async () => {
         if (!selectedAppointment) return;
         setIsSavingNotes(true);
@@ -487,7 +484,7 @@ const ConsultationSchedule: React.FC = () => {
         try {
             setLoading(true);
 
-            // Kiểm tra nếu có cuộc tư vấn nào đang diễn ra
+            
             const ongoingAppointment = appointments.find(a => a.status === 'In Progress');
             if (ongoingAppointment) {
                 if (!window.confirm('Hiện đang có một cuộc tư vấn khác. Bạn có muốn tiếp tục?')) {
@@ -495,14 +492,14 @@ const ConsultationSchedule: React.FC = () => {
                 }
             }
 
-            // Gọi API để cập nhật trạng thái thành "Đang tư vấn"
+            
             await api.put(`/appointments/${appointment.id}/start`, {
                 status: 'Đang tư vấn',
                 meetingUrl: MEETING_INFO.meetingUrl,
                 lastUpdated: new Date().toISOString()
             });
 
-            // Cập nhật state local
+            
             const updatedAppointments = appointments.map(app =>
                 app.id === appointment.id
                     ? {
@@ -515,10 +512,10 @@ const ConsultationSchedule: React.FC = () => {
             );
             setAppointments(updatedAppointments);
 
-            // Mở URL cuộc họp trong tab mới
+            
             window.open(MEETING_INFO.meetingUrl, '_blank');
 
-            // Đóng modal
+            
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error starting meeting:', error);
@@ -531,15 +528,15 @@ const ConsultationSchedule: React.FC = () => {
         try {
             setLoading(true);
 
-            // Call the doctor confirmation endpoint
+            
             await api.put(`/appointments/doctor/confirm/${appointment.id}`);
 
-            // Update local state
+            
             const updatedAppointments = appointments.map(app =>
                 app.id === appointment.id
                     ? {
                         ...app,
-                        status: 'In Progress' as Appointment['status'], // This will be updated from API response
+                        status: 'In Progress' as Appointment['status'], 
                         meetingUrl: 'https://meet.google.com/rzw-jwjr-udw',
                         lastUpdated: new Date().toISOString()
                     }
@@ -547,10 +544,10 @@ const ConsultationSchedule: React.FC = () => {
             );
             setAppointments(updatedAppointments);
 
-            // Refresh appointments to get actual status
+            
             fetchAppointments();
 
-            // Close modal
+            
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error confirming ready to start:', error);
@@ -568,18 +565,18 @@ const ConsultationSchedule: React.FC = () => {
         try {
             setLoading(true);
 
-            // Kiểm tra nếu có ghi chú trước khi kết thúc
+            
             if (!appointment.notes && !window.confirm('You have not added any notes. Do you still want to finish?')) {
                 return;
             }
 
-            // Gọi API để cập nhật trạng thái thành "Hoàn thành"
+            
             await api.put(`/appointments/${appointment.id}/finish`, {
                 status: 'Hoàn thành',
                 lastUpdated: new Date().toISOString()
             });
 
-            // Cập nhật state local
+            
             const updatedAppointments = appointments.map(app =>
                 app.id === appointment.id
                     ? {
@@ -591,7 +588,7 @@ const ConsultationSchedule: React.FC = () => {
             );
             setAppointments(updatedAppointments);
 
-            // Đóng modal
+            
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error finishing meeting:', error);
@@ -602,20 +599,20 @@ const ConsultationSchedule: React.FC = () => {
     };
 
     const handleCancelAppointment = async (appointment: Appointment) => {
-        // Xác nhận trước khi hủy
+        
         if (!window.confirm('Are you sure you want to cancel this appointment?')) {
             return;
         }
 
         try {
             setLoading(true);
-            // Gọi API để cập nhật trạng thái thành "Đã hủy"
+            
             await api.put(`/appointments/${appointment.id}/cancel`, {
                 status: 'Đã hủy',
                 lastUpdated: new Date().toISOString()
             });
 
-            // Cập nhật state local
+            
             const updatedAppointments = appointments.map(app =>
                 app.id === appointment.id
                     ? {
@@ -627,7 +624,7 @@ const ConsultationSchedule: React.FC = () => {
             );
             setAppointments(updatedAppointments);
 
-            // Đóng modal
+            
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error canceling appointment:', error);
@@ -731,7 +728,7 @@ const ConsultationSchedule: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Hiển thị thông tin meeting */}
+                    
                     {(appointment.status === 'In Progress' || appointment.meetingUrl) && (
                         <div className="col-span-2 bg-blue-50 p-4 rounded-lg">
                             <div className="flex justify-between items-center mb-3">
@@ -782,7 +779,7 @@ const ConsultationSchedule: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Notes section */}
+                    
                     <div className="mb-6">
                         <div className="flex justify-between items-center mb-2">
                             <label className="text-sm text-gray-500">Ghi chú</label>
@@ -832,7 +829,7 @@ const ConsultationSchedule: React.FC = () => {
                             </p>
                         )}
                     </div>
-                    {/* Action buttons */}
+                    
                     <div className="flex justify-end gap-3">
                         {appointment.status === 'Pending' && (
                             <>
@@ -908,7 +905,7 @@ const ConsultationSchedule: React.FC = () => {
         );
     };
 
-    // Điều hướng ngày
+    
     const handlePrevDate = () => {
         setSelectedDate(prev => addDays(prev, -1));
     };
@@ -923,7 +920,7 @@ const ConsultationSchedule: React.FC = () => {
 
     return (
         <div className="p-6">
-            {/* Stats Overview */}
+            
             <div className="grid grid-cols-4 gap-4 mb-6">
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h3 className="text-gray-500">Lịch hẹn hôm nay</h3>
@@ -943,7 +940,7 @@ const ConsultationSchedule: React.FC = () => {
                 </div>
             </div>
 
-            {/* Controls */}
+            
             <div className="flex justify-between items-center mb-6">
                 <div className="flex gap-2">
                     <Button
@@ -1002,7 +999,7 @@ const ConsultationSchedule: React.FC = () => {
                 </div>
             </div>
 
-            {/* Main Content */}
+            
             {currentView === 'day' && (
                 <DayView
                     appointments={filterAppointments(appointments)}
@@ -1026,7 +1023,7 @@ const ConsultationSchedule: React.FC = () => {
                 />
             )}
 
-            {/* Appointment Detail Modal */}
+            
             {selectedAppointment && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white rounded-lg p-6 max-w-2xl w-full">

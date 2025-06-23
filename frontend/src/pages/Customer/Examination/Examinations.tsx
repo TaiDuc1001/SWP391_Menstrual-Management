@@ -48,7 +48,7 @@ const Examinations: React.FC = () => {
         return new Date(year, month - 1, day);
     };
 
-    // Filter data first
+    
     const filteredRecords = testRecords.filter((record: any) => {
         const searchMatch = searchTerm ? record.panels.toLowerCase().includes(searchTerm.toLowerCase()) || record.date.includes(searchTerm) : true;
         const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
@@ -60,7 +60,7 @@ const Examinations: React.FC = () => {
         return searchMatch && slotMatch && statusMatch && panelMatch && fromMatch && toMatch;
     }).filter(record => !hideRows.includes(record.id));
 
-    // Use table state hook for pagination, sorting, and selection
+    
     const {
         data: paginatedData,
         currentPage,
@@ -93,7 +93,7 @@ const Examinations: React.FC = () => {
                 id: order.id,
                 date: order.date ? new Date(order.date).toLocaleDateString('en-GB') : '',
                 slot: order.slot ?? '',
-                time: order.timeRange || '', // Lấy trực tiếp từ API
+                time: order.timeRange || '', 
                 panels: order.panelName || 'No info',
                 statusRaw: order.examinationStatus || '',
                 status: order.examinationStatus
@@ -209,7 +209,8 @@ const Examinations: React.FC = () => {
                         setCurrentExaminationId(ids[0]);
                         setShowResultPopup(true);
                     }
-                }}                onViewExaminationDetail={handleViewExaminationDetail}
+                }}
+                onViewExaminationDetail={handleViewExaminationDetail}
                 onCheckout={handleCheckout}
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -219,7 +220,6 @@ const Examinations: React.FC = () => {
                 sortConfig={sortConfig}
                 onSort={handleSort}
             />
-            {/* Pagination is now handled by the Examinations component */}
             {showResultPopup && currentExaminationId !== null && (
                 <TestResultPopup onClose={() => {
                     setShowResultPopup(false);

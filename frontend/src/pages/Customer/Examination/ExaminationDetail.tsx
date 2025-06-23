@@ -114,7 +114,6 @@ const ExaminationDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Hidden printable content for PDF export */}
             <div style={{position: 'absolute', left: '-9999px', top: 0}}>
                 <div ref={printableRef} style={{
                     fontFamily: 'Arial, Helvetica, sans-serif',
@@ -196,7 +195,8 @@ const ExaminationDetail: React.FC = () => {
                             }}>Note</th>
                         </tr>
                         </thead>
-                        <tbody>                        {examination?.testResults && examination.testResults.length > 0 ? (
+                        <tbody>
+                            {examination?.testResults && examination.testResults.length > 0 ? (
                             examination.testResults.map((tr: TestResult, idx: number) => (
                                 <tr key={idx}>
                                     <td style={{
@@ -261,7 +261,6 @@ const ExaminationDetail: React.FC = () => {
                         </div>
                     )}
                     
-                    {/* Medical Assessment in PDF */}
                     {examination?.overallNote && (
                         <div style={{marginTop: 24}}>
                             <div style={{
@@ -298,7 +297,6 @@ const ExaminationDetail: React.FC = () => {
                 </div>
             </div>
             <div className="max-w-6xl mx-auto p-6">
-                {/* Header */}
                 <div className="mb-6">
                     <button
                         onClick={() => navigate('/customer/sti-tests')}
@@ -319,11 +317,8 @@ const ExaminationDetail: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Main Content */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column - Examination Info */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Basic Information */}
                         <div className="bg-white rounded-2xl shadow-sm p-6">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Examination Information</h2>
 
@@ -370,7 +365,6 @@ const ExaminationDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Test Results */}
                         {examination.testResults && examination.testResults.length > 0 && (
                             <div className="bg-white rounded-2xl shadow-sm p-6">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Test Results</h2>
@@ -500,7 +494,6 @@ const ExaminationDetail: React.FC = () => {
                             </div>
                         )}
 
-                        {/* No Results Message */}
                         {examination.examinationStatus.toLowerCase() === 'pending' && (
                             <div className="bg-white rounded-2xl shadow-sm p-6">
                                 <div className="text-center py-8">
@@ -508,7 +501,7 @@ const ExaminationDetail: React.FC = () => {
                                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Payment Required</h3>
                                     <p className="text-gray-600 mb-4">Please complete payment to confirm your examination.</p>
                                     <button
-                                        onClick={() => navigate(`/customer/examination-checkout/${examination.id}`)}
+                                        onClick={() => navigate(`/customer/vnpay-examination-checkout/${examination.id}`)}
                                         className="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition-colors font-semibold"
                                     >
                                         Complete Payment
@@ -540,20 +533,20 @@ const ExaminationDetail: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Right Column - Actions & Info */}
+                    
                     <div className="space-y-6">
-                        {/* Quick Actions */}
+                        
                         <div className="bg-white rounded-2xl shadow-sm p-6">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>                            <div className="space-y-3">
                                 {examination.examinationStatus.toLowerCase() === 'pending' && (
                                     <button
-                                        onClick={() => navigate(`/customer/examination-checkout/${examination.id}`)}
+                                        onClick={() => navigate(`/customer/vnpay-examination-checkout/${examination.id}`)}
                                         className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors font-semibold"
                                     >
                                         Complete Payment
                                     </button>
                                 )}
-                                {examination.testResults && examination.testResults.length > 0 && (
+                                {examination.examinationStatus.toLowerCase() === 'completed' && (
                                     <button
                                         onClick={handleDownloadPDF}
                                         className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
@@ -578,7 +571,7 @@ const ExaminationDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Status Timeline */}
+                        
                         <div className="bg-white rounded-2xl shadow-sm p-6">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Status Timeline</h2>                            <div className="space-y-4">
                                 <div className="flex items-center space-x-3">
@@ -631,7 +624,7 @@ const ExaminationDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Important Notes */}
+                        
                         <div className="bg-white rounded-2xl shadow-sm p-6">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Important Notes</h2>
 

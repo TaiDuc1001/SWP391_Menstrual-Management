@@ -51,7 +51,6 @@ const MyProfile: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
-        // Mock data - replace with actual API call
         const mockProfile: DoctorProfile = {
             id: 1,
             name: "TS.BS Nguyễn Thị Hoa",
@@ -121,7 +120,7 @@ const MyProfile: React.FC = () => {
         const file = event.target.files?.[0];
         if (file) {
             setAvatarFile(file);
-            // Show preview
+            
             const reader = new FileReader();
             reader.onload = (e) => {
                 setEditedProfile(prev => ({
@@ -136,10 +135,10 @@ const MyProfile: React.FC = () => {
     const handleSave = async () => {
         try {
             setLoading(true);
-            // Mock API call - replace with actual implementation
+            
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // Update profile
+            
             setProfile(prev => ({
                 ...prev!,
                 ...editedProfile
@@ -165,7 +164,7 @@ const MyProfile: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-5xl mx-auto">
-                {/* Header */}
+                
                 <div className="mb-6 flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">Hồ sơ cá nhân</h1>
@@ -186,9 +185,9 @@ const MyProfile: React.FC = () => {
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left column - Basic info and stats */}
+                    
                     <div className="space-y-6">
-                        {/* MyProfile picture and basic info */}
+                        
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <div className="flex flex-col items-center">
                                 <div className="relative mb-4">
@@ -247,7 +246,7 @@ const MyProfile: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Stats */}
+                        
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="font-semibold text-gray-800 mb-4">Thống kê</h3>
                             <div className="grid grid-cols-2 gap-4">
@@ -270,7 +269,7 @@ const MyProfile: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Contact info */}
+                        
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="font-semibold text-gray-800 mb-4">Thông tin liên hệ</h3>
                             <div className="space-y-3">
@@ -304,9 +303,9 @@ const MyProfile: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Right column - Detailed info */}
+                    
                     <div className="lg:col-span-2 space-y-6">
-                        {/* About */}
+                        
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="font-semibold text-gray-800 mb-4">Giới thiệu</h3>
                             {isEditing ? (
@@ -320,7 +319,7 @@ const MyProfile: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Education */}
+                        
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="font-semibold text-gray-800 mb-4">Học vấn</h3>
                             <div className="space-y-4">
@@ -401,7 +400,7 @@ const MyProfile: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Certifications */}
+                        
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="font-semibold text-gray-800 mb-4">Chứng chỉ</h3>
                             <div className="space-y-4">
@@ -476,7 +475,7 @@ const MyProfile: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Languages and Achievements */}
+                        
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white rounded-xl shadow-md p-6">
                                 <h3 className="font-semibold text-gray-800 mb-4">Ngôn ngữ</h3>
@@ -554,7 +553,7 @@ const MyProfile: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Save button */}
+                
                 {isEditing && (
                     <div className="fixed bottom-6 right-6 flex gap-3">
                         <Button

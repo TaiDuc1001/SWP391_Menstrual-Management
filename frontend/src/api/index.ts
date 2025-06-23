@@ -3,10 +3,10 @@
  * Import all API functionality from this single entry point
  */
 
-// Axios instance
+
 export {default as api} from './axios';
 
-// All services
+
 export {
     userService,
     appointmentService,
@@ -17,7 +17,7 @@ export {
     doctorService
 } from './services';
 
-// All service types
+
 export type {
     User,
     UserFilters,
@@ -35,19 +35,19 @@ export type {
     DoctorFilters
 } from './services';
 
-// All hooks
+
 export {
     useTableState,
     useBulkActions
 } from './hooks';
 
-// Hook types
+
 export type {
     SortConfig,
     UseTableStateOptions
 } from './hooks';
 
-// Common API response types
+
 export interface ApiResponse<T = any> {
     data: T;
     message?: string;
@@ -68,7 +68,7 @@ export interface ApiError {
     code?: string;
 }
 
-// Common filter types
+
 export interface BaseFilters {
     page?: number;
     limit?: number;
@@ -87,7 +87,7 @@ export interface StatusFilters {
     statuses?: string[];
 }
 
-// Common API utility functions
+
 export const createQueryString = (params: Record<string, any>): string => {
     const searchParams = new URLSearchParams();
 

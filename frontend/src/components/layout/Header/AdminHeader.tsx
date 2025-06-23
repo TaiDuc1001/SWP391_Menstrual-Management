@@ -38,15 +38,6 @@ const AdminHeader: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => 
                 <img src={logo} alt="Logo"
                      className="h-12 w-auto mr-10 drop-shadow-lg hover:scale-105 transition-transform duration-200"/>
                 <div className="h-10 w-px bg-blue-100 mx-2 hidden md:block"/>
-                {/*<nav className="navbar">*/}
-                {/*    <ul className="flex gap-3 md:gap-6">*/}
-                {/*        {isAuthenticated && (*/}
-                {/*            <li>*/}
-                {/*                <Link to="/dashboard" className="font-poppins font-semibold text-base md:text-lg px-6 py-2 rounded-full transition-all duration-200 hover:bg-blue-200/60 hover:text-blue-600 focus:bg-blue-300/80 focus:text-blue-700 shadow-sm hover:shadow-blue-100">Dashboard</Link>*/}
-                {/*            </li>*/}
-                {/*        )}*/}
-                {/*    </ul>*/}
-                {/*</nav>*/}
             </div>
             <div className="flex items-center gap-4 relative" ref={profileRef}>
                 <span className="relative">

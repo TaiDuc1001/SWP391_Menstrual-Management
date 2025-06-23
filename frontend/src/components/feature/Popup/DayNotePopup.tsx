@@ -38,7 +38,6 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave}) => {
 
     return (
         <Popup open={open} onClose={onClose} className="max-w-xs w-full p-6 relative">
-            {/* Close button in the top-right corner */}
             <button
                 className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors text-2xl z-10 focus:outline-none focus:ring-2 focus:ring-pink-400 rounded-full bg-white shadow-md w-10 h-10 flex items-center justify-center"
                 onClick={onClose}

@@ -2,7 +2,6 @@ import React from 'react';
 import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 
 const DoctorDashboard: React.FC = () => {
-    // Dummy data for demonstration
     const stats = {
         totalPatients: 256,
         todayAppointments: 8,
@@ -34,7 +33,7 @@ const DoctorDashboard: React.FC = () => {
 
     return (
         <div className="p-6 bg-gray-50">
-            {/* Stats Overview */}
+            
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="text-gray-500 text-sm font-medium">Total Patients</h3>
@@ -55,7 +54,7 @@ const DoctorDashboard: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Upcoming Appointments */}
+                
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Upcoming Appointments</h2>
                     <div className="space-y-4">
@@ -77,7 +76,7 @@ const DoctorDashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Recent Patients */}
+                
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Patients</h2>
                     <div className="space-y-4">
@@ -93,7 +92,7 @@ const DoctorDashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Weekly Appointments Chart */}
+                
                 <div className="bg-white p-6 rounded-lg shadow-sm lg:col-span-2">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Weekly Appointments</h2>
                     <div style={{width: '100%', height: 400}}>

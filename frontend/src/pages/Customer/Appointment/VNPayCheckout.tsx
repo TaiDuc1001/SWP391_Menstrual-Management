@@ -48,7 +48,6 @@ const VNPayCheckout: React.FC = () => {
                 service: 'Appointment'
             });
             
-            // Open VNPay payment page in new tab
             window.open(paymentUrl, '_blank');
             setPaying(false);
         } catch (err) {

@@ -40,13 +40,11 @@ const Checkout: React.FC = () => {
     const handleScanPayment = async () => {
         setPaying(true);
         try {
-            // Call the new scan endpoint that simulates payment success/failure
             const response = await api.put(`/appointments/payment/scan/${appointmentId}`);
             if (response.data.appointmentStatus === 'CONFIRMED') {
                 alert('Payment successful! Your appointment is now confirmed.');
                 navigate('/customer/appointments');
             } else {
-                // Payment failed
                 alert('Payment failed! Your appointment has been cancelled.');
                 navigate('/customer/appointments');
             }
@@ -105,7 +103,6 @@ const Checkout: React.FC = () => {
                         Complete Your Payment
                     </h2>
 
-                    {/* Appointment Information */}
                     <div className="mb-8 p-6 bg-gray-50 rounded-lg">
                         <h3 className="text-lg font-semibold text-gray-700 mb-4">Appointment Details</h3>
                         <div className="grid grid-cols-2 gap-4">
@@ -131,7 +128,6 @@ const Checkout: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    {/* QR Code Section */}
                     <div className="text-center mb-8">
                         <h3 className="text-lg font-semibold text-gray-700 mb-4">Scan QR Code to Pay</h3>
                         <div className="flex justify-center mb-4">
@@ -156,7 +152,6 @@ const Checkout: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-4 justify-center">
                         <button
                             onClick={handleScanPayment}
@@ -173,7 +168,6 @@ const Checkout: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Instructions */}
                     <div className="mt-8 p-4 bg-blue-50 rounded-lg">
                         <h4 className="font-semibold text-blue-800 mb-2">Demo Instructions:</h4>
                         <ul className="text-sm text-blue-700 space-y-1">

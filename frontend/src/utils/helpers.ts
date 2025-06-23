@@ -2,7 +2,7 @@
  * Common utility functions for data formatting and manipulation
  */
 
-// Date utilities
+
 export const formatDate = (date: string | Date, format: 'short' | 'long' | 'time' = 'short'): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
 
@@ -39,7 +39,7 @@ export const formatDateTime = (date: string | Date): string => {
     return `${formatDate(dateObj, 'short')} ${formatDate(dateObj, 'time')}`;
 };
 
-// String utilities
+
 export const capitalize = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
@@ -56,7 +56,7 @@ export const formatName = (firstName?: string, lastName?: string): string => {
     return `${firstName} ${lastName}`;
 };
 
-// Number utilities
+
 export const formatCurrency = (amount: number, currency = 'USD'): string => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -68,7 +68,7 @@ export const formatNumber = (num: number): string => {
     return new Intl.NumberFormat().format(num);
 };
 
-// Array utilities
+
 export const groupBy = <T>(array: T[], key: keyof T): { [key: string]: T[] } => {
     return array.reduce((groups, item) => {
         const group = (groups[item[key] as string] || []);
@@ -93,7 +93,7 @@ export const filterBy = <T>(array: T[], key: keyof T, value: any): T[] => {
     return array.filter(item => item[key] === value);
 };
 
-// Validation utilities
+
 export const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -112,7 +112,7 @@ export const isEmpty = (value: any): boolean => {
     return false;
 };
 
-// URL utilities
+
 export const createQueryString = (params: Record<string, any>): string => {
     const searchParams = new URLSearchParams();
 
@@ -129,7 +129,7 @@ export const createQueryString = (params: Record<string, any>): string => {
     return searchParams.toString();
 };
 
-// Local storage utilities
+
 export const storage = {
     get: (key: string): any => {
         try {
@@ -166,7 +166,7 @@ export const storage = {
     }
 };
 
-// Debounce utility
+
 export const debounce = <T extends (...args: any[]) => any>(
     func: T,
     delay: number
@@ -179,7 +179,7 @@ export const debounce = <T extends (...args: any[]) => any>(
     };
 };
 
-// Async utilities
+
 export const sleep = (ms: number): Promise<void> => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };

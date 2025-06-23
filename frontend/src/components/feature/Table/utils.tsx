@@ -27,7 +27,7 @@ export const getStatusBadgeClass = (status: string, variant: 'admin' | 'customer
     }
 };
 
-// Date formatting utilities
+
 export const formatDate = (date: string | Date, format: 'short' | 'long' = 'short') => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
 
@@ -42,7 +42,7 @@ export const formatDate = (date: string | Date, format: 'short' | 'long' = 'shor
     return dateObj.toLocaleDateString('en-GB');
 };
 
-// Common action generators (these are actually used)
+
 export const createViewAction = <T extends Record<string, any>>(onClick: (row: T) => void): TableAction<T> => ({
     icon: <i className="fas fa-eye table-action-view"></i>,
     label: 'View',
@@ -62,7 +62,7 @@ export const createDeleteAction = <T extends Record<string, any>>(onClick: (row:
     variant: 'danger'
 });
 
-// Bulk action utilities (keep if used)
+
 export const createBulkActions = <T extends Record<string, any>>(actions: {
     onDelete?: (ids: number[]) => void;
     onExport?: (ids: number[]) => void;
@@ -105,7 +105,7 @@ export const createBulkActions = <T extends Record<string, any>>(actions: {
     return bulkActions;
 };
 
-// Search utilities
+
 export const searchInObject = <T extends Record<string, any>>(obj: T, searchTerm: string): boolean => {
     const searchLower = searchTerm.toLowerCase();
 

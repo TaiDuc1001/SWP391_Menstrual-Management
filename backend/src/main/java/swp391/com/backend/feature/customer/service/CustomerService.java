@@ -23,7 +23,7 @@ public class CustomerService {
 
     public Customer updateCustomer(Long id, Customer customerDetails) {
         Customer customer = findCustomerById(id).toBuilder()
-                .id(id) // Ensure the ID is set to the one being updated
+                .id(id)
                 .name(customerDetails.getName())
                 .address(customerDetails.getAddress())
                 .gender(customerDetails.getGender())
@@ -32,7 +32,6 @@ public class CustomerService {
                 .cccd(customerDetails.getCccd())
                 .build();
 
-        // Update other fields as necessary
         return customerRepository.save(customer);
     }
 }

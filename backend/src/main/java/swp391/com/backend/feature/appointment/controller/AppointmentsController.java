@@ -80,7 +80,6 @@ public class AppointmentsController {
 
         Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
         
-        // Redirect to frontend payment return page with status
         String frontendUrl = "http://localhost:3000/customer/payment-return";
         if (queryParams.containsKey("vnp_ResponseCode")) {
             frontendUrl += "?status=" + queryParams.get("vnp_ResponseCode");

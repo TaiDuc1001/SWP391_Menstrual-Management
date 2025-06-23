@@ -69,7 +69,6 @@ const TestPanels: React.FC = () => {
                 </h1>
             </div>
             <div className="bg-white rounded shadow w-full p-4">
-                {/* Tabs */}
                 <div className="flex border-b mb-4">
                     {tabs.map((tab, idx) => (
                         <button
@@ -81,7 +80,6 @@ const TestPanels: React.FC = () => {
                         </button>
                     ))}
                 </div>
-                {/* Search and create */}
                 <div className="flex justify-between items-center mb-4">
                     <div className="relative w-[400px]">
                         <input
@@ -99,7 +97,6 @@ const TestPanels: React.FC = () => {
                         Create new service
                     </NewServiceButton>
                 </div>
-                {/* BaseTable */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
@@ -135,7 +132,6 @@ const TestPanels: React.FC = () => {
                     </table>
                 </div>
 
-                {/* Pagination */}
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
                     <span>Displaying 1-4 of {totalServices} services</span>
                     <div className="flex items-center gap-1">

@@ -2,7 +2,7 @@
  * Common utility functions to reduce code duplication
  */
 
-// CSS class utilities
+
 export const cn = (...classes: (string | undefined | null | false)[]): string => {
     return classes.filter(Boolean).join(' ');
 };
@@ -11,7 +11,7 @@ export const conditionalClass = (condition: boolean, trueClass: string, falseCla
     return condition ? trueClass : falseClass;
 };
 
-// Button variant utilities
+
 export const getButtonClasses = (variant: string = 'primary', size: string = 'medium'): string => {
     const baseClasses = 'inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
 
@@ -36,7 +36,7 @@ export const getButtonClasses = (variant: string = 'primary', size: string = 'me
     );
 };
 
-// Status utilities
+
 export const getStatusVariant = (status: string): string => {
     const normalizedStatus = status.toLowerCase();
 
@@ -62,7 +62,7 @@ export const getStatusVariant = (status: string): string => {
     }
 };
 
-// Common repeated style patterns
+
 export const cardClasses = {
     base: 'card-base',
     hover: 'card-hover',
@@ -83,12 +83,12 @@ export const gradientClasses = {
     background: 'gradient-background'
 };
 
-// Navigation utilities
+
 export const getNavLinkClasses = (isActive: boolean): string => {
     return isActive ? 'nav-link-active' : 'nav-link';
 };
 
-// Common layout classes
+
 export const layoutClasses = {
     pageContainer: 'page-container',
     pageContent: 'page-content',
@@ -97,7 +97,7 @@ export const layoutClasses = {
     sectionSubtitle: 'section-subtitle'
 };
 
-// Common animation classes
+
 export const animationClasses = {
     fadeIn: 'animate-fade-in',
     slideIn: 'transform transition-transform duration-300',
@@ -105,7 +105,7 @@ export const animationClasses = {
     bounce: 'animate-bounce'
 };
 
-// Responsive grid utilities
+
 export const gridClasses = {
     responsive: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
     twoColumn: 'grid grid-cols-1 lg:grid-cols-2 gap-6',
@@ -113,7 +113,7 @@ export const gridClasses = {
     fourColumn: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'
 };
 
-// Common flex utilities
+
 export const flexClasses = {
     center: 'flex items-center justify-center',
     between: 'flex items-center justify-between',
@@ -123,7 +123,7 @@ export const flexClasses = {
     columnCenter: 'flex flex-col items-center justify-center'
 };
 
-// Common spacing utilities
+
 export const spacingClasses = {
     sectionPadding: 'py-12 px-4 sm:px-6 lg:px-8',
     cardPadding: 'p-6',
@@ -131,7 +131,7 @@ export const spacingClasses = {
     inputPadding: 'px-4 py-2'
 };
 
-// Text utilities
+
 export const textClasses = {
     heading: 'text-3xl font-bold text-gray-900',
     subheading: 'text-xl font-semibold text-gray-800',

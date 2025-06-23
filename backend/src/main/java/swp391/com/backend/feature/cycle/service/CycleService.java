@@ -15,7 +15,6 @@ public class CycleService {
     private final CycleRepository cycleRepository;
 
     public Cycle createCycle(Cycle cycle) {
-        // Ensure the cycle is new by setting ID to null
         cycle.setId(null);
         return cycleRepository.save(cycle);
     }

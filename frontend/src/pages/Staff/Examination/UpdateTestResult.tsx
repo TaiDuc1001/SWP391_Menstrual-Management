@@ -284,7 +284,8 @@ const UpdateTestResult: React.FC = () => {
                     </div>
                 </div>
                 </div>
-            </div> {modalOpen && selectedRequest && (                <FormUpdateTestResult
+            </div> {modalOpen && selectedRequest && (
+                <FormUpdateTestResult
                     open={modalOpen}
                     onClose={handleCloseModal}
                     request={selectedRequest}
@@ -292,7 +293,7 @@ const UpdateTestResult: React.FC = () => {
                 />
             )}
 
-            {/* Modal chi tiết kết quả xét nghiệm */}
+            
             {isDetailModalOpen && selectedExamination && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -324,7 +325,7 @@ const UpdateTestResult: React.FC = () => {
                         </div>
 
                         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                            {/* Thông tin cơ bản */}
+                            
                             <div className="grid grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <span className="text-sm text-gray-600">Test date: </span>
@@ -344,7 +345,7 @@ const UpdateTestResult: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Bảng kết quả chi tiết */}
+                            
                             <div>
                                 <h3 className="text-lg font-semibold mb-4 text-gray-800">Detailed result table</h3>
                                 <div className="overflow-x-auto border rounded-lg">
@@ -380,7 +381,7 @@ const UpdateTestResult: React.FC = () => {
                                         </tbody>
                                     </table>
                                 </div>
-                                </div>                            {/* Medical Assessment Section */}
+                                </div>                            
                             <div className="mt-6">
                                 <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                     <span className="text-blue-500">🩺</span>

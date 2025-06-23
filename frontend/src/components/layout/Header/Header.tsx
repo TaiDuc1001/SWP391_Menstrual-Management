@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
         };
     }, [dropdownOpen, showNoti]);
 
-    const userName = "Jane Doe"; // Replace with actual user name from props or context if available
+    const userName = "Jane Doe";
 
     return (
         <header
