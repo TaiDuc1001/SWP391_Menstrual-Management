@@ -6,6 +6,8 @@ export {contentManagementService} from './contentManagementService';
 export {approvalService} from './approvalService';
 export {doctorService} from './doctorService';
 export {examinationService} from './examinationService';
+export * from './cycleService';
+export * from './aiService';
 
 export type {User, UserFilters} from './userService';
 export type {Appointment, AppointmentFilters} from './appointmentService';
