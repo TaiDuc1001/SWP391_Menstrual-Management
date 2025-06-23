@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { cycleService, CycleData } from '../services/cycleService';
+import { cycleService, CycleData, CycleCreationRequest } from '../services/cycleService';
 import { aiService, AIRecommendationRequest } from '../services/aiService';
 
 export const useCycles = () => {
@@ -16,6 +16,22 @@ export const useCycles = () => {
         } catch (err) {
             setError('Failed to fetch cycles');
             console.error('Error fetching cycles:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const createCycle = async (cycleData: CycleCreationRequest) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const newCycle = await cycleService.createCycle(cycleData);
+            setCycles(prev => [...prev, newCycle]);
+            return newCycle;
+        } catch (err) {
+            setError('Failed to create cycle');
+            console.error('Error creating cycle:', err);
+            throw err;
         } finally {
             setLoading(false);
         }
@@ -45,6 +61,7 @@ export const useCycles = () => {
         loading,
         error,
         refetch: fetchCycles,
+        createCycle,
         getClosestCycle
     };
 };
