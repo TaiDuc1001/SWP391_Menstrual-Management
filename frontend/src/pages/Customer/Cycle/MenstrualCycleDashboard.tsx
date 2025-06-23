@@ -20,7 +20,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
-    const navigate = useNavigate();    const { cycles, loading: cyclesLoading, refetch, createCycle } = useCycles();
+    const navigate = useNavigate();    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
     const { recommendations, loading: aiLoading, generateRecommendations } = useAIRecommendations();
 
     useEffect(() => {
@@ -63,41 +63,31 @@ const MenstrualCycleDashboard: React.FC = () => {
         }
         return predictions;
     };    const getDayTypeForCalendar = (day: number | null) => {
-        if (!day || !cycles || cycles.length === 0) return '';
+        if (!day) return '';
         
         const currentDate = new Date(currentYear, currentMonth, day);
         
-        for (const cycle of cycles) {
-            const cycleStart = new Date(cycle.cycleStartDate);
-            const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration - 1) * 24 * 60 * 60 * 1000);
-            
-            if (currentDate >= cycleStart && currentDate <= periodEnd) {
-                return 'period';
+        if (cycles && cycles.length > 0) {
+            for (const cycle of cycles) {
+                const cycleStart = new Date(cycle.cycleStartDate);
+                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                
+                if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
+                    return 'period';
+                }
+                
+                const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+                const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                
+                if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                    return 'ovulation';
+                }
+                
+                if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                    return 'fertile';
+                }
             }
-            
-            const ovulationDay = 14;
-            const ovulationDate = new Date(cycleStart.getTime() + (ovulationDay - 1) * 24 * 60 * 60 * 1000);
-            const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-            const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-            
-            if (currentDate.getTime() === ovulationDate.getTime()) {
-                return 'ovulation';
-            }
-            
-            if (currentDate >= fertileStart && currentDate <= fertileEnd) {
-                return 'fertile';
-            }
-        }
-        
-        const predictions = getPredictedCycles();
-        const pred = predictions.find(p => p.start.getMonth() === currentMonth && p.start.getFullYear() === currentYear);
-        if (!pred) return '';
-        
-        if (currentDate >= pred.start && currentDate <= pred.end) return 'period';
-        
-        if (currentDate >= pred.fertileStart && currentDate <= pred.fertileEnd) {
-            if (currentDate.getTime() === pred.ovulation.getTime()) return 'ovulation';
-            return 'fertile';
         }
         
         return '';
@@ -122,6 +112,18 @@ const MenstrualCycleDashboard: React.FC = () => {
     }, [cycles.length, hasGeneratedRecommendations, aiLoading]);    const handleGenerateRecommendations = () => {
         if (cycles.length > 0) {
             generateRecommendations(cycles, symptoms);
+        }
+    };
+
+    const handleClearAllCycles = async () => {
+        if (window.confirm('Are you sure you want to delete all cycle declarations? This action cannot be undone.')) {
+            try {
+                await deleteAllCycles();
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 1200);
+            } catch (error) {
+                console.error('Error deleting cycles:', error);
+            }
         }
     };
 

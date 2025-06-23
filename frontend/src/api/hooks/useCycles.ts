@@ -50,6 +50,19 @@ export const useCycles = () => {
         } finally {
             setLoading(false);
         }
+    };    const deleteAllCycles = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            await cycleService.deleteAllCycles();
+            setCycles([]);
+        } catch (err) {
+            setError('Failed to delete cycles');
+            console.error('Error deleting cycles:', err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -62,6 +75,7 @@ export const useCycles = () => {
         error,
         refetch: fetchCycles,
         createCycle,
+        deleteAllCycles,
         getClosestCycle
     };
 };

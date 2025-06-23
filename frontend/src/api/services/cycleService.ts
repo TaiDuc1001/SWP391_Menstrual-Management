@@ -39,6 +39,14 @@ export const cycleService = {
         return response.data;
     },
 
+    async deleteCycle(id: number): Promise<void> {
+        await api.delete(`/cycles/${id}`);
+    },
+
+    async deleteAllCycles(): Promise<void> {
+        await api.delete('/cycles');
+    },
+
     async getNextPrediction(): Promise<CycleData> {
         const response = await api.post('/cycles/next-prediction');
         return response.data;
