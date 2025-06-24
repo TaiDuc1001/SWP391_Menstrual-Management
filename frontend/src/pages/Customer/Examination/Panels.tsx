@@ -86,9 +86,7 @@ const Panels: React.FC = () => {
                     buttonLabel={<><span style={{fontSize: '1.2em'}}>&larr;</span> Back</>}
                     onButtonClick={() => navigate(-1)}
                 />
-            </div>
-            
-            <div className="mb-4 flex space-x-4 w-4/5 mx-auto" style={{maxWidth: '100%'}}>
+            </div>            <div className="mb-4 flex space-x-4 w-full max-w-6xl mx-auto px-4">
                 <SearchInput
                     value={search}
                     onChange={(value) => {
@@ -96,7 +94,7 @@ const Panels: React.FC = () => {
                         setCurrentPage(1);
                     }}
                     placeholder="Search by disease name, package name, symptoms..."
-                    className="flex-1"
+                    className="flex-grow"
                 />
                 <DropdownSelect
                     value={type}
