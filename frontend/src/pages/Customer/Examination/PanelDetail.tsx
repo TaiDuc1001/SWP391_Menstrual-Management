@@ -54,25 +54,12 @@ const PanelDetail: React.FC = () => {
                     </div>
                     <div className="mb-2 text-gray-600">{panel.description}</div>
                     <div className="mb-2 text-gray-600">Type: {panel.panelType}</div>
-                    <div className="mb-2 text-gray-600">Tag: {panel.panelTag}</div>
-                    <div className="flex gap-4 mt-6">
+                    <div className="mb-2 text-gray-600">Tag: {panel.panelTag}</div>                    <div className="flex gap-4 mt-6">
                         <ActionButton
                             variant="primary"
                             actionType="book"
-                            onClick={async () => {
-                                try {
-                                    const today = new Date();
-                                    const date = today.toISOString().split('T')[0];
-                                    const slot = 'ONE';
-                                    await api.post('/examinations', {
-                                        aPanel: panel,
-                                        date,
-                                        slot
-                                    });
-                                    alert('Booking successful!');
-                                } catch (err) {
-                                    alert('Booking failed!');
-                                }
+                            onClick={() => {
+                                navigate('/customer/sti-tests/book', {state: {panelId: panel.id}});
                             }}
                         >
                             Book
