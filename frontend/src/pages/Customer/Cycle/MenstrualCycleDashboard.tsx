@@ -145,6 +145,10 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 onClick={() => setShowCyclePopup(true)}>Declare Cycle
                             </button>
                             <button
+                                className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-purple-600 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
+                                onClick={handleClearAllCycles}>Predict Cycle
+                            </button>
+                            <button
                                 className="bg-white border border-purple-400 text-purple-600 px-3 py-2 rounded-lg font-semibold shadow hover:bg-purple-50 transition-all duration-200 transform hover:scale-105"
                                 onClick={() => setShowReminderPopup(true)}>Settings
                             </button>
