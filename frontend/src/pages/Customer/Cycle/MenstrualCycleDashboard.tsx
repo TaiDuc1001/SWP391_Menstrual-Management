@@ -5,6 +5,7 @@ import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
+import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
 import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
@@ -19,6 +20,8 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
     const [showPredictPopup, setShowPredictPopup] = useState(false);
+    const [showPredictedCalendar, setShowPredictedCalendar] = useState(false);
+    const [selectedPredictMonth, setSelectedPredictMonth] = useState('');
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
@@ -407,10 +410,18 @@ const MenstrualCycleDashboard: React.FC = () => {
                         open={showPredictPopup}
                         onClose={() => setShowPredictPopup(false)}
                         onSave={(selectedMonth) => {
+                            setSelectedPredictMonth(selectedMonth);
                             setShowPredictPopup(false);
-                            setShowSuccess(true);
-                            setTimeout(() => setShowSuccess(false), 1200);
+                            setShowPredictedCalendar(true);
                         }}
+                    />
+                    <PredictedCalendarPopup
+                        open={showPredictedCalendar}
+                        onClose={() => {
+                            setShowPredictedCalendar(false);
+                            setShowPredictPopup(true);
+                        }}
+                        selectedMonth={selectedPredictMonth}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>
