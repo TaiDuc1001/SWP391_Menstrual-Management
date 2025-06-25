@@ -4,6 +4,7 @@ import MenstrualCyclePopup from '../../../components/feature/Popup/MenstrualCycl
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
+import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
 import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
@@ -17,6 +18,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
+    const [showPredictPopup, setShowPredictPopup] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
@@ -146,7 +148,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                             </button>
                             <button
                                 className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-purple-600 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
-                                onClick={handleClearAllCycles}>Predict Cycle
+                                onClick={() => setShowPredictPopup(true)}>Predict Cycle
                             </button>
                             <button
                                 className="bg-white border border-purple-400 text-purple-600 px-3 py-2 rounded-lg font-semibold shadow hover:bg-purple-50 transition-all duration-200 transform hover:scale-105"
@@ -400,6 +402,15 @@ const MenstrualCycleDashboard: React.FC = () => {
                             }
                             return undefined;
                         })()}
+                    />
+                    <PredictCyclePopup
+                        open={showPredictPopup}
+                        onClose={() => setShowPredictPopup(false)}
+                        onSave={(selectedMonth) => {
+                            setShowPredictPopup(false);
+                            setShowSuccess(true);
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>
