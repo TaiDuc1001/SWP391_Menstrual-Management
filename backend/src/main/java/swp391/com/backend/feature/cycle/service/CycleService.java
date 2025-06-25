@@ -34,6 +34,17 @@ public class CycleService {
         return fourClosestCycles;
     }
 
+    public List<Cycle> getFourClosetCycleByCustomer(Long customerId){
+        List<Cycle> cycles = getAllCycles();
+        List<Cycle> fourClosestCycles  = cycles.stream()
+                .filter(cycle -> cycle.getCustomer().getId().equals(customerId))
+                .sorted(Comparator.comparing(Cycle::getCycleStartDate))
+                .limit(4)
+                .toList();
+
+        return fourClosestCycles;
+    }
+
     public Cycle getClosetCycleByDate(){
         LocalDate today = LocalDate.now();
         List<Cycle> cycles = getAllCycles();
@@ -79,6 +90,94 @@ public class CycleService {
                 .ovulationDate(cycle.getCycleStartDate().plusDays(14))
                 .fertilityWindowStart(cycle.getCycleStartDate().plusDays(10))
                 .fertilityWindowEnd(cycle.getCycleStartDate().plusDays(15))
+                .build();
+
+        return predictedCycle;
+    }
+
+    public Cycle cyclePredictionForMonth(int year, int month) {
+        List<Cycle> fourClosestCycles = getFourClosetCycleByDate();
+        
+        if (fourClosestCycles.isEmpty()) {
+            return null;
+        }
+
+        double avgCycleLength = fourClosestCycles.stream()
+                .mapToInt(Cycle::getCycleLength)
+                .average()
+                .orElse(28);
+
+        double avgDuration = fourClosestCycles.stream()
+                .mapToInt(Cycle::getPeriodDuration)
+                .average()
+                .orElse(7);
+
+        Cycle lastCycle = fourClosestCycles.get(fourClosestCycles.size() - 1);
+        LocalDate lastCycleStart = lastCycle.getCycleStartDate();
+        
+        LocalDate targetMonthStart = LocalDate.of(year, month, 1);
+        LocalDate targetMonthEnd = targetMonthStart.plusMonths(1).minusDays(1);
+        
+        LocalDate predictedStartDate = lastCycleStart;
+        while (predictedStartDate.isBefore(targetMonthStart)) {
+            predictedStartDate = predictedStartDate.plusDays((int) Math.round(avgCycleLength));
+        }
+        
+        if (predictedStartDate.isAfter(targetMonthEnd)) {
+            predictedStartDate = predictedStartDate.minusDays((int) Math.round(avgCycleLength));
+        }
+
+        Cycle predictedCycle = Cycle.builder()
+                .cycleStartDate(predictedStartDate)
+                .cycleLength((int) Math.round(avgCycleLength))
+                .periodDuration((int) Math.round(avgDuration))
+                .ovulationDate(predictedStartDate.plusDays(14))
+                .fertilityWindowStart(predictedStartDate.plusDays(10))
+                .fertilityWindowEnd(predictedStartDate.plusDays(15))
+                .build();
+
+        return predictedCycle;
+    }
+
+    public Cycle cyclePredictionForMonth(int year, int month, Long customerId) {
+        List<Cycle> fourClosestCycles = getFourClosetCycleByCustomer(customerId);
+        
+        if (fourClosestCycles.isEmpty()) {
+            return null;
+        }
+
+        double avgCycleLength = fourClosestCycles.stream()
+                .mapToInt(Cycle::getCycleLength)
+                .average()
+                .orElse(28);
+
+        double avgDuration = fourClosestCycles.stream()
+                .mapToInt(Cycle::getPeriodDuration)
+                .average()
+                .orElse(7);
+
+        Cycle lastCycle = fourClosestCycles.get(fourClosestCycles.size() - 1);
+        LocalDate lastCycleStart = lastCycle.getCycleStartDate();
+        
+        LocalDate targetMonthStart = LocalDate.of(year, month, 1);
+        LocalDate targetMonthEnd = targetMonthStart.plusMonths(1).minusDays(1);
+        
+        LocalDate predictedStartDate = lastCycleStart;
+        while (predictedStartDate.isBefore(targetMonthStart)) {
+            predictedStartDate = predictedStartDate.plusDays((int) Math.round(avgCycleLength));
+        }
+        
+        if (predictedStartDate.isAfter(targetMonthEnd)) {
+            predictedStartDate = predictedStartDate.minusDays((int) Math.round(avgCycleLength));
+        }
+
+        Cycle predictedCycle = Cycle.builder()
+                .cycleStartDate(predictedStartDate)
+                .cycleLength((int) Math.round(avgCycleLength))
+                .periodDuration((int) Math.round(avgDuration))
+                .ovulationDate(predictedStartDate.plusDays(14))
+                .fertilityWindowStart(predictedStartDate.plusDays(10))
+                .fertilityWindowEnd(predictedStartDate.plusDays(15))
                 .build();
 
         return predictedCycle;

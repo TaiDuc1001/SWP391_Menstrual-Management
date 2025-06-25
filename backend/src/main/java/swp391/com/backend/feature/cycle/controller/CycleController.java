@@ -55,4 +55,16 @@ public class CycleController {
         Cycle closestCycle = cycleService.getClosetCycleByDate();
         return ResponseEntity.ok(cycleMapper.toDTO(closestCycle));
     }
+
+    @GetMapping("/predict/{year}/{month}")
+    public ResponseEntity<CycleDTO> predictCycleForMonth(
+            @PathVariable int year,
+            @PathVariable int month,
+            @RequestParam(defaultValue = "3") Long customerId) {
+        Cycle predictedCycle = cycleService.cyclePredictionForMonth(year, month, customerId);
+        if (predictedCycle == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(cycleMapper.toDTO(predictedCycle));
+    }
 }
