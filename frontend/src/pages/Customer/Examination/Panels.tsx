@@ -87,17 +87,17 @@ const Panels: React.FC = () => {
     return (
         <>
             <style>{`
-                .tag-dropdown-full-width select,
-                .tag-dropdown-full-width .dropdown-menu,
-                .tag-dropdown-full-width > div,
-                .tag-dropdown-full-width > div > div {
+                .dropdown-full-width select,
+                .dropdown-full-width .dropdown-menu,
+                .dropdown-full-width > div,
+                .dropdown-full-width > div > div {
                     min-width: max-content !important;
                     width: max-content !important;
                     white-space: nowrap !important;
                     overflow: visible !important;
                     max-height: none !important;
                 }
-                .tag-dropdown-full-width .dropdown-menu {
+                .dropdown-full-width .dropdown-menu {
                     overflow-y: visible !important;
                     max-height: none !important;
                 }
@@ -123,7 +123,7 @@ const Panels: React.FC = () => {
                         className="w-full"
                     />
                 </div>
-                <div className="w-28">
+                <div className="min-w-28 flex-shrink-0 dropdown-full-width">
                     <DropdownSelect
                         value={type}
                         onChange={(v: string) => {
@@ -134,7 +134,7 @@ const Panels: React.FC = () => {
                         placeholder="Type"
                     />
                 </div>
-                <div className="min-w-32 flex-shrink-0 tag-dropdown-full-width">
+                <div className="min-w-32 flex-shrink-0 dropdown-full-width">
                     <DropdownSelect
                         value={tag}
                         onChange={(v: string) => {
