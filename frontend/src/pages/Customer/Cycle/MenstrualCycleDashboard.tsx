@@ -146,16 +146,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                         </h2>
                         <div className="flex gap-2">
                             <button
-                                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
-                                onClick={() => setShowCyclePopup(true)}>Declare Cycle
-                            </button>
-                            <button
                                 className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-purple-600 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
                                 onClick={() => setShowPredictPopup(true)}>Predict Cycle
-                            </button>
-                            <button
-                                className="bg-white border border-purple-400 text-purple-600 px-3 py-2 rounded-lg font-semibold shadow hover:bg-purple-50 transition-all duration-200 transform hover:scale-105"
-                                onClick={() => setShowReminderPopup(true)}>Settings
                             </button>
                         </div>
                     </div>
@@ -169,6 +161,12 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     Cycle calendar for {currentMonth + 1}/{currentYear}
                                 </h3>
                                 <div className="flex gap-2">
+                                    {(currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth < now.getMonth())) && (
+                                        <button
+                                            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                                            onClick={() => setShowCyclePopup(true)}>Declare Cycle
+                                        </button>
+                                    )}
                                     <button onClick={() => setCurrentMonth(m => m === 0 ? 11 : m - 1)}
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'<'}</button>
                                     <button onClick={() => setCurrentMonth(m => m === 11 ? 0 : m + 1)}
