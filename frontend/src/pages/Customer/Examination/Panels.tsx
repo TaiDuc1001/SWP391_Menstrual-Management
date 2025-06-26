@@ -16,7 +16,7 @@ const Panels: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
     const [type, setType] = useState('');
-    const [tag, setTag] = useState<string[]>([]);
+    const [tag, setTag] = useState('');
     const [panels, setPanels] = useState<any[]>([]);
 
     useEffect(() => {
@@ -27,7 +27,13 @@ const Panels: React.FC = () => {
     const typeOptions = createTypeOptions(
         Array.from(new Set(panels.map(pkg => pkg.panelType)))
     );
-    const tagOptions = Array.from(new Set(panels.map(pkg => pkg.panelTag))).filter(Boolean);    // Function to sort packages based on priority
+    const tagOptions = [
+        { value: '', label: 'Tag' },
+        ...Array.from(new Set(panels.map(pkg => pkg.panelTag))).filter(Boolean).map(tagValue => ({
+            value: tagValue,
+            label: tagValue
+        }))
+    ];    // Function to sort packages based on priority
     const sortPackagesByPriority = (packages: any[]) => {
         return packages.sort((a, b) => {
             const nameA = a.panelName.toLowerCase();
@@ -65,7 +71,7 @@ const Panels: React.FC = () => {
         });
     };
 
-    const filteredPackages = sortPackagesByPriority(panels.filter(createPackageFilter(search, type, tag)));
+    const filteredPackages = sortPackagesByPriority(panels.filter(createPackageFilter(search, type, tag ? [tag] : [])));
 
     const PACKAGES_PER_PAGE = 4;
     const paginationResult = applyPagination(filteredPackages, {
@@ -81,13 +87,19 @@ const Panels: React.FC = () => {
     return (
         <>
             <style>{`
-                .force-narrow-dropdown > div {
-                    min-width: 7rem !important;
-                    width: 7rem !important;
+                .tag-dropdown-full-width select,
+                .tag-dropdown-full-width .dropdown-menu,
+                .tag-dropdown-full-width > div,
+                .tag-dropdown-full-width > div > div {
+                    min-width: max-content !important;
+                    width: max-content !important;
+                    white-space: nowrap !important;
+                    overflow: visible !important;
+                    max-height: none !important;
                 }
-                .force-narrow-dropdown > div > div {
-                    min-width: 7rem !important;
-                    width: 7rem !important;
+                .tag-dropdown-full-width .dropdown-menu {
+                    overflow-y: visible !important;
+                    max-height: none !important;
                 }
             `}</style>
             <div className="p-6 bg-gray-50 min-h-screen">
@@ -122,14 +134,14 @@ const Panels: React.FC = () => {
                         placeholder="Type"
                     />
                 </div>
-                <div className="w-28 force-narrow-dropdown">
-                    <MultiSelectDropdown
-                        selected={tag}
-                        setSelected={setTag}
-                        options={tagOptions}
-                        showDropdown={false}
-                        setShowDropdown={() => {
+                <div className="min-w-32 flex-shrink-0 tag-dropdown-full-width">
+                    <DropdownSelect
+                        value={tag}
+                        onChange={(v: string) => {
+                            setTag(v);
+                            setCurrentPage(1);
                         }}
+                        options={tagOptions}
                         placeholder="Tag"
                     />
                 </div>
