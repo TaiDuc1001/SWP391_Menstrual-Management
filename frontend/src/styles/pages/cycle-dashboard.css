@@ -1,6 +1,7 @@
 /* Menstrual Cycle Dashboard Styles */
 .cycle-period-day {
-    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-red-600 text-white hover:scale-105 hover:shadow-md;
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 text-white hover:scale-105 hover:shadow-md;
+    background-color: #ff5047;
 }
 
 .cycle-fertile-day {
