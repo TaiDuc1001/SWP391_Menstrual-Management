@@ -12,6 +12,11 @@
     @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 bg-yellow-400 text-gray-900 hover:scale-105 hover:shadow-md;
 }
 
+.cycle-end-day {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 text-white hover:scale-105 hover:shadow-md;
+    background-color: #BD80E1;
+}
+
 .cycle-regular-day {
     @apply w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-300 hover:text-gray-800;
 }

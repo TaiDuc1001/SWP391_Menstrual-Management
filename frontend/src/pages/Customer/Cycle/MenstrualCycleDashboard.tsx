@@ -67,15 +67,20 @@ const MenstrualCycleDashboard: React.FC = () => {
             });
         }
         return predictions;
-    };    const getDayTypeForCalendar = (day: number | null) => {
+    };    
+    const getDayTypeForCalendar = (day: number | null) => {
         if (!day) return '';
         
         const currentDate = new Date(currentYear, currentMonth, day);
         
         if (cycles && cycles.length > 0) {
-            for (const cycle of cycles) {
+            const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
+            
+            for (let i = 0; i < sortedCycles.length; i++) {
+                const cycle = sortedCycles[i];
                 const cycleStart = new Date(cycle.cycleStartDate);
-                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                cycleStart.setDate(cycleStart.getDate() - 1);
+                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration) * 24 * 60 * 60 * 1000);
                 
                 if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
                     return 'period';
@@ -91,6 +96,16 @@ const MenstrualCycleDashboard: React.FC = () => {
                 
                 if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
                     return 'fertile';
+                }
+                
+                if (i < sortedCycles.length - 1) {
+                    const nextCycle = sortedCycles[i + 1];
+                    const nextCycleStart = new Date(nextCycle.cycleStartDate);
+                    const cycleEndDate = new Date(nextCycleStart.getTime() - 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.toDateString() === cycleEndDate.toDateString()) {
+                        return 'end';
+                    }
                 }
             }
         }
@@ -191,6 +206,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     if (type === 'period') style = "cycle-period-day";
                                     if (type === 'fertile') style = "cycle-fertile-day";
                                     if (type === 'ovulation') style = "cycle-ovulation-day";
+                                    if (type === 'end') style = "cycle-end-day";
                                     
                                     if (hasSymptom) style += ' cycle-symptom-border';
                                     
@@ -213,17 +229,15 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     );
                                 })}
                             </div>                            <div className="flex gap-4 mt-2 text-xs items-center">
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days
                                 </div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-yellow-400 rounded-full inline-block"></span> Ovulation day
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day
                                 </div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-teal-400 rounded-full inline-block"></span> Fertile window
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window
                                 </div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Has symptoms
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
+                                </div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#BD80E1'}}></span> End cycle
                                 </div>
                             </div>
                         </div>
