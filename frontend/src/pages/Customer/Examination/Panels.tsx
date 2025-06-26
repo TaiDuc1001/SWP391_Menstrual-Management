@@ -79,42 +79,63 @@ const Panels: React.FC = () => {
     };
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <>
+            <style>{`
+                .force-narrow-dropdown > div {
+                    min-width: 7rem !important;
+                    width: 7rem !important;
+                }
+                .force-narrow-dropdown > div > div {
+                    min-width: 7rem !important;
+                    width: 7rem !important;
+                }
+            `}</style>
+            <div className="p-6 bg-gray-50 min-h-screen">
             <div className="w-4/5 mx-auto">
                 <TitleBar
                     text="Available Packages"
                     buttonLabel={<><span style={{fontSize: '1.2em'}}>&larr;</span> Back</>}
                     onButtonClick={() => navigate(-1)}
                 />
-            </div>            <div className="mb-4 flex space-x-4 w-full max-w-6xl mx-auto px-4">
-                <SearchInput
-                    value={search}
-                    onChange={(value) => {
-                        setSearch(value);
-                        setCurrentPage(1);
-                    }}
-                    placeholder="Search by disease name, package name, symptoms..."
-                    className="flex-grow"
-                />
-                <DropdownSelect
-                    value={type}
-                    onChange={(v: string) => {
-                        setType(v);
-                        setCurrentPage(1);
-                    }}
-                    options={typeOptions}
-                    placeholder="Type"
-                />
-                <MultiSelectDropdown
-                    selected={tag}
-                    setSelected={setTag}
-                    options={tagOptions}
-                    showDropdown={false}
-                    setShowDropdown={() => {
-                    }}
-                    placeholder="Tag"
-                />
-            </div>            <div className="space-y-4 w-4/5 mx-auto">
+            </div>
+            
+            <div className="mb-4 flex space-x-6 w-4/5 mx-auto">
+                <div className="flex-1 max-w-lg">
+                    <SearchInput
+                        value={search}
+                        onChange={(value) => {
+                            setSearch(value);
+                            setCurrentPage(1);
+                        }}
+                        placeholder="Search by disease name, package name, symptoms..."
+                        className="w-full"
+                    />
+                </div>
+                <div className="w-28">
+                    <DropdownSelect
+                        value={type}
+                        onChange={(v: string) => {
+                            setType(v);
+                            setCurrentPage(1);
+                        }}
+                        options={typeOptions}
+                        placeholder="Type"
+                    />
+                </div>
+                <div className="w-28 force-narrow-dropdown">
+                    <MultiSelectDropdown
+                        selected={tag}
+                        setSelected={setTag}
+                        options={tagOptions}
+                        showDropdown={false}
+                        setShowDropdown={() => {
+                        }}
+                        placeholder="Tag"
+                    />
+                </div>
+            </div>
+
+            <div className="space-y-4 w-4/5 mx-auto">
                 {pagedPackages.map(pkg => (                <div key={pkg.id}
                          className="border rounded-lg p-4 flex flex-col md:flex-row justify-between bg-white hover:shadow-lg transition-shadow duration-200 w-full">
                         <div className="flex-1 pr-0 md:pr-4">
@@ -215,6 +236,7 @@ const Panels: React.FC = () => {
                 </div>
             )}
         </div>
+        </>
     );
 };
 
