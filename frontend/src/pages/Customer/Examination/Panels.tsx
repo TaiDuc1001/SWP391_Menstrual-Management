@@ -86,22 +86,6 @@ const Panels: React.FC = () => {
 
     return (
         <>
-            <style>{`
-                .dropdown-full-width select,
-                .dropdown-full-width .dropdown-menu,
-                .dropdown-full-width > div,
-                .dropdown-full-width > div > div {
-                    min-width: max-content !important;
-                    width: max-content !important;
-                    white-space: nowrap !important;
-                    overflow: visible !important;
-                    max-height: none !important;
-                }
-                .dropdown-full-width .dropdown-menu {
-                    overflow-y: visible !important;
-                    max-height: none !important;
-                }
-            `}</style>
             <div className="p-6 bg-gray-50 min-h-screen">
             <div className="w-4/5 mx-auto">
                 <TitleBar

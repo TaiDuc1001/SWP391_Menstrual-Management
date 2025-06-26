@@ -56,6 +56,50 @@
         @apply border rounded p-2 pr-8 appearance-none w-full flex items-center justify-between bg-white;
     }
 
+    .dropdown-full-width {
+        @apply min-w-max whitespace-nowrap;
+    }
+
+    .dropdown-full-width select,
+    .dropdown-full-width .dropdown-menu,
+    .dropdown-full-width > div,
+    .dropdown-full-width > div > div {
+        min-width: max-content !important;
+        width: max-content !important;
+        white-space: nowrap !important;
+    }
+
+    .dropdown-full-width .dropdown-options {
+        @apply min-w-full whitespace-nowrap;
+    }
+
+    /* Dropdown menu styling for scrollable content */
+    .dropdown-menu {
+        max-height: 15rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: #A0AEC0 #F7FAFC;
+    }
+
+    .dropdown-menu::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-track {
+        background-color: #F7FAFC;
+        border-radius: 9999px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-thumb {
+        background-color: #A0AEC0;
+        border-radius: 9999px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-thumb:hover {
+        background-color: #718096;
+    }
+
     .package-card {
         @apply border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50 hover:shadow w-full;
     }

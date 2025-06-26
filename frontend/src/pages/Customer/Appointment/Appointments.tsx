@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import api from '../../../api/axios';
 import {useTableState} from '../../../api/hooks';
 import {useSlotOptions, useStatusOptions} from '../../../utils';
+import {formatAppointmentStatus, createMultiFieldSearch, createDateFilter} from '../../../utils/statusMappings';
 import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 import AppointmentTitleBar from '../../../components/feature/TitleBar/AppointmentTitleBar';
 import AppointmentUtilityBar from '../../../components/feature/UtilityBar/AppointmentUtilityBar';
@@ -42,28 +43,42 @@ const AppointmentHistory: React.FC = () => {
     const filteredRecords = appointments.filter((record: any) => {
         if (hideRows.includes(record.id)) return false;
 
-        const searchMatch = searchTerm ?
-            record.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            record.date.includes(searchTerm) ||
-            record.status?.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+        // Enhanced search using multi-field search
+        const searchFields = ['name', 'doctor', 'date', 'status', 'appointmentStatus', 'id'];
+        const searchMatch = createMultiFieldSearch(searchTerm, searchFields)(record);
 
-        const statusMatch = selectedStatus ? record.appointmentStatus === selectedStatus : true;
-        const slotMatch = selectedSlot ? record.time === selectedSlot : true;
+        // Status filter - match both display status and raw appointment status
+        const statusMatch = selectedStatus ? (
+            record.appointmentStatus === selectedStatus ||
+            record.status === selectedStatus ||
+            record.status.toLowerCase() === selectedStatus.toLowerCase()
+        ) : true;
+        
+        // Slot filter - match time slot with multiple field support
+        const slotMatch = selectedSlot ? (
+            record.time === selectedSlot || 
+            record.slotTime === selectedSlot ||
+            record.timeRange === selectedSlot ||
+            record.slot === selectedSlot
+        ) : true;
 
-        let fromMatch = true;
-        let toMatch = true;
-
+        // Enhanced date filtering
+        const dateFilter = createDateFilter(selectedDateFrom, selectedDateTo, 'date');
+        let dateMatch = true;
+        
+        // Custom date parsing for DD/MM/YYYY format
         if (selectedDateFrom || selectedDateTo) {
             try {
                 const recordDate = parseDate(record.date);
-                fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
-                toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
+                const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
+                const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
+                dateMatch = fromMatch && toMatch;
             } catch {
-                fromMatch = toMatch = true;
+                dateMatch = true; // Include item if date parsing fails
             }
         }
 
-        return searchMatch && statusMatch && slotMatch && fromMatch && toMatch;
+        return searchMatch && statusMatch && slotMatch && dateMatch;
     });
     const {
         data: paginatedData,
@@ -217,16 +232,22 @@ const AppointmentHistory: React.FC = () => {
                     onChange={setSearchTerm}
                     placeholder="Search by doctor name or code"
                 />
-                <DropdownSelect
-                    value={selectedStatus}
-                    onChange={setSelectedStatus}
-                    options={statusOptions}
-                />
-                <DropdownSelect
-                    value={selectedSlot}
-                    onChange={setSelectedSlot}
-                    options={slotOptions}
-                />
+                <div className="dropdown-full-width">
+                    <DropdownSelect
+                        value={selectedStatus}
+                        onChange={setSelectedStatus}
+                        options={statusOptions}
+                        placeholder="Status"
+                    />
+                </div>
+                <div className="dropdown-full-width">
+                    <DropdownSelect
+                        value={selectedSlot}
+                        onChange={setSelectedSlot}
+                        options={slotOptions}
+                        placeholder="Time Slot"
+                    />
+                </div>
                 <DatePickerInput
                     selected={selectedDateFrom}
                     onChange={setSelectedDateFrom}
