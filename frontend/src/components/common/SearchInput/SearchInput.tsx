@@ -24,13 +24,13 @@ const SearchInput: React.FC<SearchInputProps> = ({
                               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 )}
-            </div>
-            <input
+            </div>            <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="form-input pl-10 pr-4 py-2 w-full"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                style={{minWidth: '300px'}}
             />
         </div>
     );

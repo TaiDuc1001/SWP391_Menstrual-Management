@@ -13,14 +13,18 @@ const DropdownBase: React.FC<DropdownBaseProps> = ({className = '', children, on
     <div className={`relative ${minWidth ? minWidth : 'min-w-[8rem]'} ${className}`}>
         <button
             type="button"
-            className="border rounded p-2 pr-8 appearance-none w-full flex items-center justify-between bg-white"
+            className="border rounded p-2 pr-8 appearance-none w-full flex items-center justify-between bg-white hover:border-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
             onClick={onClick}
             tabIndex={0}
         >
-            {children}
+            <span className="truncate text-left">{children}</span>
             <span className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-        <img src={dropDownIcon} alt="Dropdown" className="w-4 h-4 text-gray-400 ml-2"/>
-      </span>
+                <img 
+                    src={dropDownIcon} 
+                    alt="Dropdown" 
+                    className={`w-4 h-4 text-gray-400 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                />
+            </span>
         </button>
     </div>
 );

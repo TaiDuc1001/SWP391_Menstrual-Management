@@ -29,12 +29,25 @@ public class PanelController {
     private final PanelTestTypeService panelTestTypeService;
     private final PanelMapper panelMapper;
     private final ExaminationService examinationService;
-    private final ExaminationMapper examinationMapper;
-
-    @GetMapping
+    private final ExaminationMapper examinationMapper;    @GetMapping
     public ResponseEntity<List<SimplePanelDTO>> getAllPanels(){
-        List<SimplePanelDTO> result =  panelService.getAllPanels().stream()
-                .map(panelMapper::toSimpleDTO)
+        List<Panel> panels = panelService.getAllPanels();
+        List<SimplePanelDTO> result = panels.stream()
+                .map(panel -> {
+                    SimplePanelDTO dto = panelMapper.toSimpleDTO(panel);
+                    // Add test types information for each panel
+                    List<String> testTypesNames = panelTestTypeService.getTestTypesByPanelId(panel.getId())
+                            .stream()
+                            .map(testType -> testType.getName())
+                            .toList();
+                    List<String> testTypesDescriptions = panelTestTypeService.getTestTypesByPanelId(panel.getId())
+                            .stream()
+                            .map(testType -> testType.getDescription())
+                            .toList();
+                    dto.setTestTypesNames(testTypesNames);
+                    dto.setTestTypesDescriptions(testTypesDescriptions);
+                    return dto;
+                })
                 .toList();
         return ResponseEntity.ok(result);
     }

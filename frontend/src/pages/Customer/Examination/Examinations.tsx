@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import api from '../../../api/axios';
 import {useTableState} from '../../../api/hooks';
+import {formatExaminationStatus, createMultiFieldSearch} from '../../../utils/statusMappings';
 
 import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 
@@ -44,20 +45,70 @@ const Examinations: React.FC = () => {
     const navigate = useNavigate();
 
     const parseDate = (dateStr: string): Date => {
-        const [day, month, year] = dateStr.split('-').map(Number);
-        return new Date(year, month - 1, day);
+        // Handle different date formats: DD-MM-YYYY, DD/MM/YYYY, YYYY-MM-DD
+        if (dateStr.includes('-')) {
+            const parts = dateStr.split('-');
+            if (parts[0].length === 4) {
+                // YYYY-MM-DD format
+                const [year, month, day] = parts.map(Number);
+                return new Date(year, month - 1, day);
+            } else {
+                // DD-MM-YYYY format
+                const [day, month, year] = parts.map(Number);
+                return new Date(year, month - 1, day);
+            }
+        } else if (dateStr.includes('/')) {
+            // DD/MM/YYYY format
+            const [day, month, year] = dateStr.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+        // Fallback: try to parse as-is
+        return new Date(dateStr);
     };
 
-    
+    // Enhanced filtering logic with improved search
     const filteredRecords = testRecords.filter((record: any) => {
-        const searchMatch = searchTerm ? record.panels.toLowerCase().includes(searchTerm.toLowerCase()) || record.date.includes(searchTerm) : true;
-        const slotMatch = selectedSlot ? record.slot === selectedSlot : true;
-        const statusMatch = selectedStatus ? record.status === selectedStatus : true;
-        const panelMatch = selectedPanel ? record.panels === selectedPanel : true;
-        const recordDate = parseDate(record.date);
-        const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
-        const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
-        return searchMatch && slotMatch && statusMatch && panelMatch && fromMatch && toMatch;
+        // Enhanced search using multi-field search
+        const searchFields = ['panels', 'date', 'status', 'statusRaw', 'id', 'panelName'];
+        const searchMatch = createMultiFieldSearch(searchTerm, searchFields)(record);
+        
+        // Slot filter - match time slot with multiple field support
+        const slotMatch = selectedSlot ? (
+            record.slot === selectedSlot ||
+            record.time === selectedSlot ||
+            record.slotTime === selectedSlot ||
+            record.timeRange === selectedSlot
+        ) : true;
+        
+        // Status filter - match both display and raw status
+        const statusMatch = selectedStatus ? (
+            record.status === selectedStatus ||
+            record.statusRaw === selectedStatus ||
+            record.status.toLowerCase() === selectedStatus.toLowerCase() ||
+            record.statusRaw?.toLowerCase() === selectedStatus.toLowerCase()
+        ) : true;
+        
+        // Panel filter - match panel name with multiple field support
+        const panelMatch = selectedPanel ? (
+            record.panels === selectedPanel ||
+            record.panelName === selectedPanel ||
+            record.panels?.toLowerCase() === selectedPanel.toLowerCase()
+        ) : true;
+        
+        // Date filters with enhanced parsing
+        let dateMatch = true;
+        if (selectedDateFrom || selectedDateTo) {
+            try {
+                const recordDate = parseDate(record.date);
+                const fromMatch = selectedDateFrom ? recordDate >= selectedDateFrom : true;
+                const toMatch = selectedDateTo ? recordDate <= selectedDateTo : true;
+                dateMatch = fromMatch && toMatch;
+            } catch {
+                dateMatch = true; // Include item if date parsing fails
+            }
+        }
+        
+        return searchMatch && slotMatch && statusMatch && panelMatch && dateMatch;
     }).filter(record => !hideRows.includes(record.id));
 
     
@@ -89,20 +140,23 @@ const Examinations: React.FC = () => {
                     data = [];
                 }
             }
-            setTestRecords(data.map((order: any) => ({
-                id: order.id,
-                date: order.date ? new Date(order.date).toLocaleDateString('en-GB') : '',
-                slot: order.slot ?? '',
-                time: order.timeRange || '', 
-                panels: order.panelName || 'No info',
-                statusRaw: order.examinationStatus || '',
-                status: order.examinationStatus
-                    ? order.examinationStatus.toLowerCase() === 'completed' ? 'Completed'
-                        : order.examinationStatus.toLowerCase() === 'pending' ? 'Pending'
-                            : order.examinationStatus.toLowerCase() === 'in_progress' ? 'In progress'
-                                : order.examinationStatus.charAt(0).toUpperCase() + order.examinationStatus.slice(1).toLowerCase()
-                    : '',
-            })));
+            setTestRecords(data.map((order: any) => {
+                // Format status for display using the centralized function
+                const status = formatExaminationStatus(order.examinationStatus || '');
+
+                return {
+                    id: order.id,
+                    date: order.date ? new Date(order.date).toLocaleDateString('en-GB') : '',
+                    slot: order.slot ?? '',
+                    time: order.timeRange || '', 
+                    panels: order.panelName || 'No info',
+                    statusRaw: order.examinationStatus || '',
+                    status: status,
+                };
+            }));
+        }).catch((error: any) => {
+            console.error('Error fetching examinations:', error);
+            setTestRecords([]);
         });
     }, []);
 
@@ -125,12 +179,15 @@ const Examinations: React.FC = () => {
         api.get('/enumerators/examination-status').then(res => {
             const options = [{value: '', label: 'All status'}];
             (res.data as string[]).forEach(status => {
+                const formattedLabel = formatExaminationStatus(status);
                 options.push({
                     value: status,
-                    label: status.charAt(0) + status.slice(1).toLowerCase().replace('_', ' ')
+                    label: formattedLabel
                 });
             });
             setStatusOptions(options);
+        }).catch(() => {
+            setStatusOptions([{value: '', label: 'All status'}]);
         });
     }, []);
 
@@ -165,21 +222,30 @@ const Examinations: React.FC = () => {
                     onChange={setSearchTerm}
                     placeholder="Search by date, slot, or test panels"
                 />
-                <DropdownSelect
-                    value={selectedSlot}
-                    onChange={setSelectedSlot}
-                    options={slotOptions}
-                />
-                <DropdownSelect
-                    value={selectedPanel}
-                    onChange={setSelectedPanel}
-                    options={panelOptions}
-                />
-                <DropdownSelect
-                    value={selectedStatus}
-                    onChange={setSelectedStatus}
-                    options={statusOptions}
-                />
+                <div className="dropdown-full-width">
+                    <DropdownSelect
+                        value={selectedSlot}
+                        onChange={setSelectedSlot}
+                        options={slotOptions}
+                        placeholder="Time Slot"
+                    />
+                </div>
+                <div className="dropdown-full-width">
+                    <DropdownSelect
+                        value={selectedPanel}
+                        onChange={setSelectedPanel}
+                        options={panelOptions}
+                        placeholder="Panel"
+                    />
+                </div>
+                <div className="dropdown-full-width">
+                    <DropdownSelect
+                        value={selectedStatus}
+                        onChange={setSelectedStatus}
+                        options={statusOptions}
+                        placeholder="Status"
+                    />
+                </div>
                 <DatePickerInput
                     selected={selectedDateFrom}
                     onChange={setSelectedDateFrom}

@@ -8,7 +8,10 @@ import swp391.com.backend.feature.panel.data.Panel;
 
 @Mapper(componentModel = "spring")
 public interface PanelMapper {
+    @Mapping(target = "testTypesNames", ignore = true)
+    @Mapping(target = "testTypesDescriptions", ignore = true)
     SimplePanelDTO toSimpleDTO(Panel panel);
+    
     @Mapping(target = "testTypesNames", ignore = true)
     @Mapping(target = "testTypesDescriptions", ignore = true)
     @Mapping(target = "testTypesNormalRanges", ignore = true)

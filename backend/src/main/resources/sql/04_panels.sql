@@ -87,3 +87,62 @@ INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (16, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (17, 6);
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 6);
+
+-- Add test types for remaining panels (7-18)
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 7); -- HPV Screening Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 7);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 8); -- Basic STD Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 8);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7, 9); -- Hepatitis Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (8, 9);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (16, 9);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (17, 9);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (18, 9);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 10); -- Women's Health Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 10);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (5, 10);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (11, 10);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (12, 10);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13, 11); -- HIV & Syphilis Duo Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (14, 11);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 11);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 11);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 12); -- STD Follow-up Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 12);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 12);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (4, 13); -- Herpes Simplex Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (21, 13);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (5, 14); -- Trichomoniasis Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (23, 14);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 15); -- Comprehensive STD Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (4, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (5, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (8, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (14, 15);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (15, 15);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6, 16); -- HPV & Cervical Cancer Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (19, 16);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13, 17); -- Quick STD Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (14, 17);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2, 17);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 17);
+
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1, 18); -- Chlamydia & Gonorrhea Panel
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (3, 18);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (20, 18);
+INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (22, 18);

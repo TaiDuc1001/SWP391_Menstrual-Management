@@ -167,26 +167,34 @@ const AppointmentBooking: React.FC = () => {
                                         onChange={setSearchTerm}
                                         placeholder="Search for a doctor or specialization"
                                     />
-                                    <DropdownSelect
-                                        value={reviewFilter}
-                                        onChange={setReviewFilter}
-                                        options={reviewOptions}
-                                    />
-                                    <DropdownSelect
-                                        value={specializationFilter}
-                                        onChange={setSpecializationFilter}
-                                        options={specializationOptions}
-                                    />
+                                    <div className="dropdown-full-width">
+                                        <DropdownSelect
+                                            value={reviewFilter}
+                                            onChange={setReviewFilter}
+                                            options={reviewOptions}
+                                            placeholder="Reviews"
+                                        />
+                                    </div>
+                                    <div className="dropdown-full-width">
+                                        <DropdownSelect
+                                            value={specializationFilter}
+                                            onChange={setSpecializationFilter}
+                                            options={specializationOptions}
+                                            placeholder="Specialization"
+                                        />
+                                    </div>
                                 </div>
                                 <div
                                     className="bg-gray-50 rounded-xl p-4 cursor-pointer border border-pink-200 max-h-64 overflow-y-auto">
                                     <div className="flex flex-col gap-2">
                                         {advisors
-                                            .filter(a =>
-                                                (!specializationFilter || a.specialization === specializationFilter) &&
-                                                (a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                                    a.specialization.toLowerCase().includes(searchTerm.toLowerCase()))
-                                            )
+                                            .filter(a => {
+                                                const specializationMatch = !specializationFilter || a.specialization === specializationFilter;
+                                                const searchMatch = !searchTerm || 
+                                                    a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                    a.specialization.toLowerCase().includes(searchTerm.toLowerCase());
+                                                return specializationMatch && searchMatch;
+                                            })
                                             .sort((a, b) => {
                                                 if (reviewFilter === 'high') return b.rating - a.rating;
                                                 if (reviewFilter === 'low') return a.rating - b.rating;
