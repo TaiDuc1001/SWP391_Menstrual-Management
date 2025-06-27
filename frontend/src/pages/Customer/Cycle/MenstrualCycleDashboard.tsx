@@ -78,24 +78,31 @@ const MenstrualCycleDashboard: React.FC = () => {
         const currentDate = new Date(currentYear, currentMonth, day);
         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
-        // Check symptoms for the day
         const symptomData = symptoms[dayKey];
         if (symptomData && symptomData.period === 'Menstruating' && symptomData.flow === 'Heavy') {
             return 'period';
         }
         
-        // Existing cycle-based logic
         if (cycles && cycles.length > 0) {
             const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
             
-            for (let i = 0; i < sortedCycles.length; i++) {
-                const cycle = sortedCycles[i];
-                const cycleStart = new Date(cycle.cycleStartDate);
-                cycleStart.setDate(cycleStart.getDate() - 1);
-                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration) * 24 * 60 * 60 * 1000);
+            const cycleForCurrentMonth = sortedCycles.find(cycle => {
+                const cycleDate = new Date(cycle.cycleStartDate);
+                return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
+            });
+            
+            if (cycleForCurrentMonth) {
+                const cycleStart = new Date(cycleForCurrentMonth.cycleStartDate);
                 
-                if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
-                    return 'period';
+                const isCurrentOrFutureMonth = currentYear > now.getFullYear() || 
+                    (currentYear === now.getFullYear() && currentMonth >= now.getMonth());
+                
+                if (!isCurrentOrFutureMonth) {
+                    const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
+                        return 'period';
+                    }
                 }
                 
                 const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
@@ -108,16 +115,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                 
                 if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
                     return 'fertile';
-                }
-                
-                if (i < sortedCycles.length - 1) {
-                    const nextCycle = sortedCycles[i + 1];
-                    const nextCycleStart = new Date(nextCycle.cycleStartDate);
-                    const cycleEndDate = new Date(nextCycleStart.getTime() - 24 * 60 * 60 * 1000);
-                    
-                    if (currentDate.toDateString() === cycleEndDate.toDateString()) {
-                        return 'end';
-                    }
                 }
             }
         }
@@ -251,7 +248,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     if (type === 'period') style = "cycle-period-day";
                                     if (type === 'fertile') style = "cycle-fertile-day";
                                     if (type === 'ovulation') style = "cycle-ovulation-day";
-                                    if (type === 'end') style = "cycle-end-day";
                                     
                                     if (hasSymptom) style += ' cycle-symptom-border';
                                     
@@ -275,15 +271,13 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 })}
                             </div>
                             <div className="flex gap-4 mt-2 text-xs items-center">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared/noted)
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day (predicted)
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window (predicted)
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
-                                </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#BD80E1'}}></span> End cycle
                                 </div>
                             </div>
                         </div>
