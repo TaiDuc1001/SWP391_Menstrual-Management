@@ -8,7 +8,6 @@ import ManageProfile from '../pages/Doctor/ManageProfile';
 import SetupProfile from '../pages/Doctor/SetupProfile';
 import Appointments from '../pages/Doctor/Appointment/Appointments';
 import ConsultationSchedule from '../pages/Doctor/ConsultationSchedule';
-import QuestionInbox from '../pages/Doctor/QuestionInbox';
 import DoctorProfileGuard from '../components/DoctorProfileGuard';
 
 export const doctorPaths: RouteConfig[] = [
@@ -50,13 +49,6 @@ export const doctorPaths: RouteConfig[] = [
         element: <DoctorProfileGuard><ConsultationSchedule/></DoctorProfileGuard>,
         label: 'Consultation Schedule',
         iconName: 'FaCalendarAlt',
-        showInSidebar: true
-    },
-    {
-        path: '/doctor/question-inbox',
-        element: <DoctorProfileGuard><QuestionInbox/></DoctorProfileGuard>,
-        label: 'Question Inbox',
-        iconName: 'FaEnvelope',
         showInSidebar: true
     },
     {
