@@ -78,9 +78,94 @@ const MenstrualCycleDashboard: React.FC = () => {
         const currentDate = new Date(currentYear, currentMonth, day);
         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
-        const symptomData = symptoms[dayKey];
-        if (symptomData && symptomData.period === 'Menstruating' && symptomData.flow === 'Heavy') {
-            return 'period';
+        const isCurrentMonth = currentYear === now.getFullYear() && currentMonth === now.getMonth();
+        
+        if (isCurrentMonth) {
+            const symptomData = symptoms[dayKey];
+            if (symptomData && symptomData.period === 'Menstruating' && symptomData.flow === 'Heavy') {
+                return 'period';
+            }
+            
+            const hasPeriodDaysInMonth = Object.keys(symptoms).some(key => {
+                if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
+                    const symptom = symptoms[key];
+                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                }
+                return false;
+            });
+            
+            if (hasPeriodDaysInMonth) {
+                const periodDays = Object.keys(symptoms)
+                    .filter(key => {
+                        if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
+                            const symptom = symptoms[key];
+                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                        }
+                        return false;
+                    })
+                    .map(key => new Date(key))
+                    .sort((a, b) => a.getTime() - b.getTime());
+                
+                if (periodDays.length > 0) {
+                    const firstPeriodDay = periodDays[0];
+                    const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                        return 'ovulation';
+                    }
+                    
+                    if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                        return 'fertile';
+                    }
+                }
+            }
+        }
+        
+        const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+        
+        const hasPeriodDaysInPreviousMonth = Object.keys(symptoms).some(key => {
+            if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
+                const symptom = symptoms[key];
+                return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+            }
+            return false;
+        });
+        
+        if (hasPeriodDaysInPreviousMonth) {
+            const periodDaysFromPreviousMonth = Object.keys(symptoms)
+                .filter(key => {
+                    if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
+                        const symptom = symptoms[key];
+                        return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                    }
+                    return false;
+                })
+                .map(key => new Date(key))
+                .sort((a, b) => a.getTime() - b.getTime());
+            
+            if (periodDaysFromPreviousMonth.length > 0) {
+                const firstPeriodDay = periodDaysFromPreviousMonth[0];
+                const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
+                const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                
+                if (ovulationDate.getMonth() === currentMonth && ovulationDate.getFullYear() === currentYear) {
+                    if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                        return 'ovulation';
+                    }
+                }
+                
+                if (fertileStart.getMonth() === currentMonth && fertileStart.getFullYear() === currentYear ||
+                    fertileEnd.getMonth() === currentMonth && fertileEnd.getFullYear() === currentYear ||
+                    (fertileStart.getTime() <= currentDate.getTime() && currentDate.getTime() <= fertileEnd.getTime())) {
+                    if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                        return 'fertile';
+                    }
+                }
+            }
         }
         
         if (cycles && cycles.length > 0) {
@@ -114,87 +199,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                     
                     if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
                         return 'fertile';
-                    }
-                } else {
-                    const hasPeriodDaysInMonth = Object.keys(symptoms).some(key => {
-                        if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
-                            const symptom = symptoms[key];
-                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                        }
-                        return false;
-                    });
-                    
-                    if (hasPeriodDaysInMonth) {
-                        const periodDays = Object.keys(symptoms)
-                            .filter(key => {
-                                if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
-                                    const symptom = symptoms[key];
-                                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                                }
-                                return false;
-                            })
-                            .map(key => new Date(key))
-                            .sort((a, b) => a.getTime() - b.getTime());
-                        
-                        if (periodDays.length > 0) {
-                            const firstPeriodDay = periodDays[0];
-                            const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
-                            const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                            const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                            
-                            if (currentDate.toDateString() === ovulationDate.toDateString()) {
-                                return 'ovulation';
-                            }
-                            
-                            if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                                return 'fertile';
-                            }
-                        }
-                    }
-                }
-            }
-            
-            const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-            const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-            
-            const hasPeriodDaysInPreviousMonth = Object.keys(symptoms).some(key => {
-                if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
-                    const symptom = symptoms[key];
-                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                }
-                return false;
-            });
-            
-            if (hasPeriodDaysInPreviousMonth) {
-                const periodDaysFromPreviousMonth = Object.keys(symptoms)
-                    .filter(key => {
-                        if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
-                            const symptom = symptoms[key];
-                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                        }
-                        return false;
-                    })
-                    .map(key => new Date(key))
-                    .sort((a, b) => a.getTime() - b.getTime());
-                
-                if (periodDaysFromPreviousMonth.length > 0) {
-                    const firstPeriodDay = periodDaysFromPreviousMonth[0];
-                    const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
-                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                    
-                    if (ovulationDate.getMonth() === currentMonth && ovulationDate.getFullYear() === currentYear) {
-                        if (currentDate.toDateString() === ovulationDate.toDateString()) {
-                            return 'ovulation';
-                        }
-                    }
-                    
-                    if (fertileStart.getMonth() === currentMonth && fertileStart.getFullYear() === currentYear ||
-                        fertileEnd.getMonth() === currentMonth && fertileEnd.getFullYear() === currentYear ||
-                        (fertileStart.getTime() <= currentDate.getTime() && currentDate.getTime() <= fertileEnd.getTime())) {
-                        if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                            return 'fertile';
-                        }
                     }
                 }
             }
