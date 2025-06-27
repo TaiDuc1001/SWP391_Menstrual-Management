@@ -1,6 +1,5 @@
 import logo from '../../../assets/icons/logo.svg';
 import dropDownIcon from '../../../assets/icons/drop-down.svg';
-import notificationIcon from '../../../assets/icons/notification.svg';
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import DropDown from './DropDown';
@@ -13,7 +12,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [showNoti, setShowNoti] = useState(false);
     const [userName, setUserName] = useState('User');
     const [userAvatar, setUserAvatar] = useState('');
     const profileRef = useRef<HTMLDivElement>(null);
@@ -77,11 +75,10 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
         function handleClickOutside(event: MouseEvent) {
             if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
                 setDropdownOpen(false);
-                setShowNoti(false);
             }
         }
 
-        if (dropdownOpen || showNoti) {
+        if (dropdownOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -89,7 +86,7 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [dropdownOpen, showNoti]);
+    }, [dropdownOpen]);
 
     return (
         <header
@@ -110,43 +107,8 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
                 </nav>
             </div>
             <div className="flex items-center gap-4 relative" ref={profileRef}>
-                <span className="relative">
-                    <img
-                        src={notificationIcon}
-                        alt="Notifications"
-                        className="w-7 h-7 cursor-pointer hover:scale-110 hover:bg-pink-100/70 rounded-full p-1 transition-all duration-200 shadow hover:shadow-pink-100"
-                        onClick={() => {
-                            setShowNoti((prev) => !prev);
-                            setDropdownOpen(false);
-                        }}
-                    />
-                    {showNoti && (
-                        <div
-                            className="absolute right-0 top-12 z-50 bg-white/95 backdrop-blur-lg border-2 border-pink-200 rounded-3xl shadow-xl py-3 w-72 flex flex-col gap-2 transition-all duration-300 animate-fade-in mt-2 mx-1">
-                            <div
-                                className="px-5 py-2 text-base text-gray-700 font-poppins font-medium border-b border-pink-100">Notifications
-                            </div>
-                            <div
-                                className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">Your
-                                appointment is confirmed!
-                            </div>
-                            <div
-                                className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">New
-                                blog post: Women's Health Tips
-                            </div>
-                            <div
-                                className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">Cycle
-                                tracking reminder
-                            </div>
-                            <button className="mt-2 text-pink-500 hover:underline font-poppins text-sm self-end px-5"
-                                    onClick={() => setShowNoti(false)}>Close
-                            </button>
-                        </div>
-                    )}
-                </span>
                 <span className="flex items-center cursor-pointer group" onClick={() => {
                     setDropdownOpen(false);
-                    setShowNoti(false);
                     const role = localStorage.getItem('role')?.toLowerCase();
                     switch (role) {
                         case 'doctor':
@@ -169,7 +131,6 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
                 </span>
                 <span className="cursor-pointer flex items-center" onClick={() => {
                     setDropdownOpen((open) => !open);
-                    setShowNoti(false);
                 }}>
                     <img src={dropDownIcon} alt="Dropdown" className="w-5 h-5 transition-transform duration-200"
                          style={{transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}}/>

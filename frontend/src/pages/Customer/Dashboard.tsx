@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import plusIcon from '../../assets/icons/plus-white.svg';
 import calendarIcon from '../../assets/icons/calendar.svg';
-import notificationIcon from '../../assets/icons/notification.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
 import pdfIcon from '../../assets/icons/pdf.svg';
 import bloodIcon from '../../assets/icons/blood.svg';
@@ -209,7 +208,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                        <img src={notificationIcon} alt="Reminder" className="w-5 h-5"/> Your menstrual reminder
+                        Your menstrual reminder
                     </div>
                     <div className="flex items-center gap-2 text-pink-600 font-bold text-lg">
                         <span>Only <span className="text-pink-500">{daysToOvulation} days</span> until your next <span

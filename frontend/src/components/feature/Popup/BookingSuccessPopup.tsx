@@ -5,7 +5,6 @@ import greenCheckIcon from '../../../assets/icons/green-check.svg';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import userIcon from '../../../assets/icons/home.svg';
 import clockIcon from '../../../assets/icons/yellow-clock.svg';
-import noteIcon from '../../../assets/icons/notification.svg';
 
 interface BookingSuccessPopupProps {
     open: boolean;
@@ -51,7 +50,6 @@ const BookingSuccessPopup: React.FC<BookingSuccessPopupProps> = ({
                         <span>Time: <span className="font-semibold text-gray-900">{time}</span></span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <img src={noteIcon} alt="note" className="w-5 h-5 text-green-500"/>
                         <span>Note: <span className="font-semibold text-gray-900">{note}</span></span>
                     </div>
                 </div>
