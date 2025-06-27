@@ -140,8 +140,6 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
                                 onChange={e => setRole(e.target.value)}
                             >
                                 <option value="" disabled>Select role</option>
-                                <option value="admin">Admin</option>
-                                <option value="staff">Staff</option>
                                 <option value="customer">Customer</option>
                                 <option value="doctor">Doctor</option>
                             </select>
