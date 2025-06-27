@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { mockDoctorService } from '../api/services/mockDoctorService';
 import { API_CONFIG } from '../config/api';
+import { testProfilePersistence } from '../utils/profilePersistenceTest';
 
 const DebugPage: React.FC = () => {
     const [profileData, setProfileData] = useState<any>(null);
@@ -62,8 +63,9 @@ const DebugPage: React.FC = () => {
                 <div className="space-y-2">
                     <p><strong>Profile Complete:</strong> {isComplete ? 'Yes' : 'No'}</p>
                     <p><strong>Profile ID:</strong> {profileData?.id}</p>
-                    <p><strong>Name:</strong> {profileData?.name}</p>
-                    <p><strong>Email:</strong> {profileData?.email}</p>
+                    <p><strong>Name:</strong> {profileData?.name || 'Not set'}</p>
+                    <p><strong>Specialization:</strong> {profileData?.specialization || 'Not set'}</p>
+                    <p><strong>Price:</strong> ${profileData?.price || 0} USD</p>
                 </div>
             </div>
 
@@ -95,9 +97,6 @@ const DebugPage: React.FC = () => {
                 <a href="/doctor/setup-profile" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                     Setup Profile
                 </a>
-                <a href="/doctor/manage-profile" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                    Manage Profile
-                </a>
                 <a href="/doctor/profile" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
                     View Profile
                 </a>
@@ -109,7 +108,7 @@ const DebugPage: React.FC = () => {
             {/* Testing Utilities */}
             <div className="mt-6 bg-yellow-50 p-4 rounded-lg">
                 <h3 className="font-semibold mb-2">Testing Utilities</h3>
-                <div className="space-x-2">
+                <div className="space-x-2 space-y-2">
                     <button 
                         onClick={() => {
                             mockDoctorService.clearProfile();
@@ -121,7 +120,8 @@ const DebugPage: React.FC = () => {
                     </button>
                     <button 
                         onClick={() => {
-                            mockDoctorService.setCompleteProfile();
+                            const completeProfile = mockDoctorService.getCompleteMockProfile();
+                            mockDoctorService.updateDoctorProfile(completeProfile);
                             window.location.reload();
                         }}
                         className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
@@ -133,6 +133,13 @@ const DebugPage: React.FC = () => {
                         className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
                     >
                         Refresh Data
+                    </button>
+                    <br/>
+                    <button 
+                        onClick={() => testProfilePersistence.runAllTests()}
+                        className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700"
+                    >
+                        🧪 Run Profile Persistence Tests
                     </button>
                 </div>
             </div>

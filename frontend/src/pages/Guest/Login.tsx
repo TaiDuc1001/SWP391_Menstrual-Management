@@ -6,6 +6,7 @@ import eyeIcon from '../../assets/icons/eye.svg';
 import googleIcon from '../../assets/icons/google.svg';
 import facebookIcon from '../../assets/icons/facebook.svg';
 import api from '../../api/axios';
+import { mockDoctorService } from '../../api/services/mockDoctorService';
 
 interface LoginProps {
     onLogin: (role: string) => void;
@@ -25,7 +26,21 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
             const response = await api.post('/accounts/login', {email, password});
             const returnedRole = response.data.role?.toLowerCase();
             
+            // Clear any existing user data before storing new user data
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('doctor_token');
+            
+            // NOTE: We do NOT clear profile data here (mock_doctor_profile_*) 
+            // because we want to preserve user's profile data between sessions
+            // Each user has their own profile storage key based on their user ID
+            
+            // Store new user data
             localStorage.setItem('userProfile', JSON.stringify(response.data));
+            
+            // Initialize profile for doctor users
+            if (returnedRole === 'doctor') {
+                mockDoctorService.initializeProfile();
+            }
             
             onLogin(returnedRole);
             switch (returnedRole) {

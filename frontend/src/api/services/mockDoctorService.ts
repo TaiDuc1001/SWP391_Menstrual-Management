@@ -1,194 +1,262 @@
 import { DoctorProfile } from './doctorService';
 
-const STORAGE_KEY = 'mock_doctor_profile';
+// Get current user ID for user-specific storage
+const getCurrentUserId = (): string => {
+    try {
+        const userProfile = localStorage.getItem('userProfile');
+        if (userProfile) {
+            const parsed = JSON.parse(userProfile);
+            const userId = parsed.id?.toString();
+            if (userId && userId !== 'undefined' && userId !== 'null') {
+                console.log(`Current user ID: ${userId}`);
+                return userId;
+            }
+        }
+    } catch (error) {
+        console.error('Error getting user ID:', error);
+    }
+    
+    // Fallback: try to get from other sources or generate a temporary one
+    const role = localStorage.getItem('role');
+    if (role) {
+        const tempId = `temp_${Date.now()}`;
+        console.log(`Using temporary user ID: ${tempId}`);
+        return tempId;
+    }
+    
+    console.log('Using default user ID');
+    return 'default';
+};
+
+// Get user-specific storage key
+const getStorageKey = (): string => {
+    const userId = getCurrentUserId();
+    return `mock_doctor_profile_${userId}`;
+};
 
 // Get profile from localStorage or use default
 const getStoredProfile = (): DoctorProfile => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const userId = getCurrentUserId();
+    const storageKey = getStorageKey();
+    
+    console.log('Getting stored profile for user:', userId, 'with key:', storageKey);
+    
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
         try {
-            return JSON.parse(stored);
+            const profile = JSON.parse(stored);
+            console.log(`Loading existing profile for user ${userId}:`, profile);
+            return profile;
         } catch (error) {
             console.error('Error parsing stored profile:', error);
         }
     }
     
-    // Default mock data
-    return {
-        id: 1,
+    // Default mock data for new user
+    const defaultProfile = {
+        id: parseInt(userId) || Math.floor(Math.random() * 1000),
         name: "",
-        avatar: "",
-        email: "",
-        phone: "",
         specialization: "",
-        qualification: "",
-        experienceYears: 0,
-        workingHours: {
-            from: "08:00",
-            to: "17:00"
-        },
-        appointmentPrice: 0,
-        rating: 0,
-        totalReviews: 0,
-        totalPatients: 0,
-        description: "",
-        certifications: [],
-        education: [],
-        languages: ["Tiếng Việt"],
-        achievements: [],
+        price: 0,
         isProfileComplete: false
     };
+    
+    console.log(`Creating new profile for user ${userId}:`, defaultProfile);
+    return defaultProfile;
 };
 
 // Save profile to localStorage
 const saveProfile = (profile: DoctorProfile) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    const storageKey = getStorageKey();
+    localStorage.setItem(storageKey, JSON.stringify(profile));
+    console.log(`Saved profile for user ${getCurrentUserId()} to ${storageKey}:`, profile);
 };
 
 // Check if profile is complete
 const checkProfileCompletion = (profile: DoctorProfile): boolean => {
-    const requiredFields = [
-        'name', 'email', 'phone', 'specialization', 
-        'qualification', 'description'
-    ];
+    const requiredFields = ['name', 'specialization'];
     
     const hasRequiredFields = requiredFields.every(field => 
         profile[field as keyof DoctorProfile] && 
-        profile[field as keyof DoctorProfile] !== ''
+        String(profile[field as keyof DoctorProfile]).trim() !== ''
     );
     
-    const hasEducation = profile.education && profile.education.length > 0;
-    const hasExperience = profile.experienceYears > 0;
-    const hasPrice = profile.appointmentPrice > 0;
+    const hasPrice = profile.price > 0;
     
-    return hasRequiredFields && hasEducation && hasExperience && hasPrice;
+    return hasRequiredFields && hasPrice;
 };
 
-// Mock service for testing without backend
+// Calculate profile completion percentage
+const calculateCompletionPercentage = (profile: DoctorProfile): number => {
+    let completed = 0;
+    let total = 3; // name, specialization, price
+    
+    if (profile.name && profile.name.trim() !== '') completed++;
+    if (profile.specialization && profile.specialization.trim() !== '') completed++;
+    if (profile.price > 0) completed++;
+    
+    return Math.round((completed / total) * 100);
+};
+
 export const mockDoctorService = {
-    getDoctorProfile: () => {
-        const profile = getStoredProfile();
-        console.log('Getting stored profile:', profile);
-        return Promise.resolve({
-            data: profile
+    // Initialize profile for current user (should be called after login)
+    initializeProfile: () => {
+        const userId = getCurrentUserId();
+        const storageKey = getStorageKey();
+        console.log(`Initializing profile for user ${userId} with key ${storageKey}`);
+        
+        // Check if profile exists for this user
+        const existing = localStorage.getItem(storageKey);
+        if (!existing) {
+            // Create default profile for new user
+            const defaultProfile = {
+                id: parseInt(userId) || Math.floor(Math.random() * 1000),
+                name: "",
+                specialization: "",
+                price: 0,
+                isProfileComplete: false
+            };
+            saveProfile(defaultProfile);
+            console.log(`Created default profile for new user ${userId}`);
+        } else {
+            // Profile exists, ensure it's properly loaded and completion status is updated
+            try {
+                const profile = JSON.parse(existing);
+                profile.isProfileComplete = checkProfileCompletion(profile);
+                saveProfile(profile);
+                console.log(`Restored existing profile for user ${userId}:`, profile);
+            } catch (error) {
+                console.error('Error restoring existing profile:', error);
+                // If there's an error parsing, create a new default profile
+                const defaultProfile = {
+                    id: parseInt(userId) || Math.floor(Math.random() * 1000),
+                    name: "",
+                    specialization: "",
+                    price: 0,
+                    isProfileComplete: false
+                };
+                saveProfile(defaultProfile);
+                console.log(`Created new default profile after error for user ${userId}`);
+            }
+        }
+    },
+
+    // Get doctor profile
+    getDoctorProfile: async (): Promise<{ data: DoctorProfile }> => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                let profile = getStoredProfile();
+                
+                // Ensure profile completion status is always up-to-date
+                profile.isProfileComplete = checkProfileCompletion(profile);
+                
+                // Save the updated profile back to storage
+                saveProfile(profile);
+                
+                console.log(`Retrieved profile for user ${getCurrentUserId()}:`, profile);
+                resolve({ data: profile });
+            }, 500);
         });
     },
 
-    updateDoctorProfile: (updateData: Partial<DoctorProfile>) => {
-        console.log('Updating profile with:', updateData);
-        
-        // Simulate API delay
+    // Update doctor profile
+    updateDoctorProfile: async (profileData: Partial<DoctorProfile>): Promise<{ data: DoctorProfile }> => {
         return new Promise((resolve) => {
             setTimeout(() => {
                 const currentProfile = getStoredProfile();
-                const updatedProfile = { 
-                    ...currentProfile, 
-                    ...updateData,
-                    id: currentProfile.id // Preserve ID
+                const updatedProfile = {
+                    ...currentProfile,
+                    ...profileData,
+                    id: currentProfile.id // Preserve the original ID
                 };
                 
-                // Check if profile is complete after update
                 updatedProfile.isProfileComplete = checkProfileCompletion(updatedProfile);
-                
-                // Save to localStorage
                 saveProfile(updatedProfile);
                 
-                console.log('Profile saved:', updatedProfile);
-                
-                resolve({
-                    data: updatedProfile
-                });
+                resolve({ data: updatedProfile });
+            }, 800);
+        });
+    },
+
+    // Upload avatar (simplified - just returns a mock URL)
+    uploadAvatar: async (file: File): Promise<{ data: { url: string } }> => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                // Create a mock URL for the uploaded file
+                const mockUrl = URL.createObjectURL(file);
+                resolve({ data: { url: mockUrl } });
             }, 1000);
         });
     },
 
-    uploadAvatar: (file: File) => {
-        console.log('Uploading avatar:', file.name);
-        return Promise.resolve({
-            data: {
-                url: URL.createObjectURL(file) // Create temporary URL for preview
-            }
+    // Check if profile is complete
+    checkProfileComplete: async (): Promise<{ data: { isComplete: boolean; percentage: number } }> => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                let profile = getStoredProfile();
+                
+                // Ensure profile completion status is always up-to-date
+                const isComplete = checkProfileCompletion(profile);
+                const percentage = calculateCompletionPercentage(profile);
+                
+                // Update the profile with current completion status
+                profile.isProfileComplete = isComplete;
+                saveProfile(profile);
+                
+                console.log(`Profile completion check for user ${getCurrentUserId()}: ${isComplete} (${percentage}%)`);
+                
+                resolve({ 
+                    data: { 
+                        isComplete,
+                        percentage
+                    } 
+                });
+            }, 300);
         });
     },
 
-    checkProfileComplete: () => {
-        const profile = getStoredProfile();
-        const isComplete = checkProfileCompletion(profile);
-        console.log('Profile complete check:', isComplete);
-        
-        return Promise.resolve({
-            data: {
-                isComplete
-            }
+    // Get available specializations
+    getSpecializations: async (): Promise<{ data: string[] }> => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({ 
+                    data: [
+                        'Gynecology',
+                        'Urology', 
+                        'Infectious Diseases',
+                        'Sexual Health',
+                        'Reproductive Health',
+                        'Women\'s Health'
+                    ] 
+                });
+            }, 300);
         });
     },
 
-    getSpecializations: () => {
-        return Promise.resolve({
-            data: [
-                'Sản phụ khoa',
-                'Nội tiết - Tuyến vú',
-                'Nội khoa tổng quát',
-                'Tâm lý học',
-                'Dinh dưỡng',
-                'Y học gia đình',
-                'Da liễu',
-                'Tim mạch',
-                'Tiêu hóa',
-                'Hô hấp'
-            ]
-        });
-    },
-
-    // Utility methods for testing
+    // Clear profile (for testing)
     clearProfile: () => {
-        localStorage.removeItem(STORAGE_KEY);
-        console.log('Profile cleared from localStorage');
+        const storageKey = getStorageKey();
+        localStorage.removeItem(storageKey);
+        console.log(`Profile cleared from localStorage for user ${getCurrentUserId()}`);
     },
 
-    setCompleteProfile: () => {
-        const completeProfile: DoctorProfile = {
-            id: 1,
-            name: "TS.BS Nguyễn Thị Hoa",
-            avatar: "",
-            email: "hoa.nguyen@example.com",
-            phone: "0912345678",
-            specialization: "Sản phụ khoa",
-            qualification: "Tiến sĩ Y khoa",
-            experienceYears: 15,
-            workingHours: {
-                from: "08:00",
-                to: "17:00"
-            },
-            appointmentPrice: 500000,
-            rating: 4.8,
-            totalReviews: 256,
-            totalPatients: 1250,
-            description: "Chuyên gia với hơn 15 năm kinh nghiệm trong lĩnh vực sản phụ khoa. Chuyên điều trị các bệnh lý phụ khoa, thai sản và vô sinh hiếm muộn.",
-            certifications: [
-                {
-                    id: 1,
-                    name: "Chứng chỉ hành nghề khám chữa bệnh",
-                    issuedBy: "Bộ Y tế",
-                    year: 2010
-                }
-            ],
-            education: [
-                {
-                    id: 1,
-                    degree: "Tiến sĩ Y khoa",
-                    institution: "Đại học Y Hà Nội",
-                    year: 2015
-                }
-            ],
-            languages: ["Tiếng Việt", "Tiếng Anh"],
-            achievements: [
-                "Giải thưởng Bác sĩ xuất sắc năm 2020"
-            ],
+    // Logout utility - clear current user's profile data
+    logout: () => {
+        const userId = getCurrentUserId();
+        console.log(`Logging out user ${userId}`);
+        // Note: We don't clear the profile on logout to preserve data between sessions
+        // Profile data should persist until user explicitly deletes account or profile
+    },
+
+    // Get a complete mock profile (for testing)
+    getCompleteMockProfile: () => {
+        const userId = getCurrentUserId();
+        return {
+            id: parseInt(userId) || 1,
+            name: "Dr. Sarah Johnson",
+            specialization: "Gynecology",
+            price: 50,
             isProfileComplete: true
         };
-        
-        saveProfile(completeProfile);
-        console.log('Complete profile set');
     }
 };

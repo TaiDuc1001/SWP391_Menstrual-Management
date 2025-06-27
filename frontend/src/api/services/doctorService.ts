@@ -18,36 +18,8 @@ export interface Doctor {
 export interface DoctorProfile {
     id: number;
     name: string;
-    avatar?: string;
-    email: string;
-    phone: string;
     specialization: string;
-    qualification: string;
-    experienceYears: number;
-    workingHours: {
-        from: string;
-        to: string;
-    };
-    appointmentPrice: number;
-    rating: number;
-    totalReviews: number;
-    totalPatients: number;
-    description: string;
-    certifications: {
-        id: number;
-        name: string;
-        issuedBy: string;
-        year: number;
-        file?: string;
-    }[];
-    education: {
-        id: number;
-        degree: string;
-        institution: string;
-        year: number;
-    }[];
-    languages: string[];
-    achievements: string[];
+    price: number;
     isProfileComplete: boolean;
 }
 

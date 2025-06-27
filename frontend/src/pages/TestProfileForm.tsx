@@ -4,192 +4,148 @@ import { mockDoctorService } from '../api/services/mockDoctorService';
 const TestProfileForm: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
-        email: '',
-        phone: '',
         specialization: '',
-        qualification: '',
-        description: ''
+        price: 0
     });
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState('');
+    const [result, setResult] = useState<string>('');
 
-    const handleChange = (field: string, value: string) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [field]: value
+            [name]: name === 'price' ? parseInt(value) || 0 : value
         }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSaving(true);
-        setMessage('');
-
+    const handleSave = async () => {
         try {
-            console.log('Form data to submit:', formData);
-            
             const response = await mockDoctorService.updateDoctorProfile(formData);
-            console.log('Save response:', response);
-            
-            setMessage('✅ Profile saved successfully!');
+            setResult(`Profile saved: ${JSON.stringify(response.data, null, 2)}`);
         } catch (error) {
-            console.error('Save error:', error);
-            setMessage('❌ Error saving profile');
-        } finally {
-            setSaving(false);
+            setResult(`Error: ${error}`);
         }
     };
 
-    const loadProfile = async () => {
+    const handleLoad = async () => {
         try {
             const response = await mockDoctorService.getDoctorProfile();
-            console.log('Loaded profile:', response.data);
-            
+            setResult(`Profile loaded: ${JSON.stringify(response.data, null, 2)}`);
             setFormData({
                 name: response.data.name || '',
-                email: response.data.email || '',
-                phone: response.data.phone || '',
                 specialization: response.data.specialization || '',
-                qualification: response.data.qualification || '',
-                description: response.data.description || ''
+                price: response.data.price || 0
             });
-            
-            setMessage('✅ Profile loaded');
         } catch (error) {
-            console.error('Load error:', error);
-            setMessage('❌ Error loading profile');
+            setResult(`Error: ${error}`);
+        }
+    };
+
+    const handleClear = () => {
+        mockDoctorService.clearProfile();
+        setResult('Profile cleared from localStorage');
+        setFormData({
+            name: '',
+            specialization: '',
+            price: 0
+        });
+    };
+
+    const handleSetComplete = async () => {
+        try {
+            const completeProfile = mockDoctorService.getCompleteMockProfile();
+            const response = await mockDoctorService.updateDoctorProfile(completeProfile);
+            setResult(`Complete profile set: ${JSON.stringify(response.data, null, 2)}`);
+            setFormData({
+                name: completeProfile.name,
+                specialization: completeProfile.specialization,
+                price: completeProfile.price
+            });
+        } catch (error) {
+            setResult(`Error: ${error}`);
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6">Test Profile Form</h2>
+        <div className="p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-xl font-bold mb-4">Test Profile Form</h2>
             
-            {message && (
-                <div className="mb-4 p-3 rounded bg-gray-100">
-                    {message}
-                </div>
-            )}
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4 mb-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Name
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Name:</label>
                     <input
                         type="text"
+                        name="name"
                         value={formData.name}
-                        onChange={(e) => handleChange('name', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        placeholder="Enter your name"
+                        onChange={handleInputChange}
+                        className="w-full p-2 border rounded"
+                        placeholder="Enter doctor name"
                     />
                 </div>
-
+                
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleChange('email', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        placeholder="Enter your email"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone
-                    </label>
-                    <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => handleChange('phone', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        placeholder="Enter your phone"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Specialization
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Specialization:</label>
                     <select
+                        name="specialization"
                         value={formData.specialization}
-                        onChange={(e) => handleChange('specialization', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
+                        onChange={handleInputChange}
+                        className="w-full p-2 border rounded"
                     >
                         <option value="">Select specialization</option>
-                        <option value="Sản phụ khoa">Sản phụ khoa</option>
-                        <option value="Nội khoa">Nội khoa</option>
-                        <option value="Tâm lý học">Tâm lý học</option>
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="Urology">Urology</option>
+                        <option value="Infectious Diseases">Infectious Diseases</option>
+                        <option value="Sexual Health">Sexual Health</option>
                     </select>
                 </div>
-
+                
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Qualification
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Price (USD):</label>
                     <input
-                        type="text"
-                        value={formData.qualification}
-                        onChange={(e) => handleChange('qualification', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        placeholder="Enter your qualification"
+                        type="number"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border rounded"
+                        placeholder="Enter consultation fee"
+                        min="0"
+                        step="5"
                     />
                 </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Description
-                    </label>
-                    <textarea
-                        value={formData.description}
-                        onChange={(e) => handleChange('description', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        rows={4}
-                        placeholder="Enter description"
-                    />
+            </div>
+            
+            <div className="flex gap-2 mb-4">
+                <button
+                    onClick={handleSave}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Save Profile
+                </button>
+                <button
+                    onClick={handleLoad}
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                    Load Profile
+                </button>
+                <button
+                    onClick={handleClear}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                    Clear Profile
+                </button>
+                <button
+                    onClick={handleSetComplete}
+                    className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                >
+                    Set Complete Profile
+                </button>
+            </div>
+            
+            {result && (
+                <div className="mt-4 p-4 bg-gray-100 rounded">
+                    <h3 className="font-bold mb-2">Result:</h3>
+                    <pre className="whitespace-pre-wrap text-sm">{result}</pre>
                 </div>
-
-                <div className="flex space-x-4">
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-                    >
-                        {saving ? 'Saving...' : 'Save Profile'}
-                    </button>
-                    
-                    <button
-                        type="button"
-                        onClick={loadProfile}
-                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                    >
-                        Load Profile
-                    </button>
-                    
-                    <button
-                        type="button"
-                        onClick={() => {
-                            mockDoctorService.clearProfile();
-                            setFormData({
-                                name: '',
-                                email: '',
-                                phone: '',
-                                specialization: '',
-                                qualification: '',
-                                description: ''
-                            });
-                            setMessage('✅ Profile cleared');
-                        }}
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                    >
-                        Clear Profile
-                    </button>
-                </div>
-            </form>
+            )}
         </div>
     );
 };

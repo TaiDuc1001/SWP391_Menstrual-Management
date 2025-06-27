@@ -147,7 +147,22 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
                 <span className="flex items-center cursor-pointer group" onClick={() => {
                     setDropdownOpen(false);
                     setShowNoti(false);
-                    navigate('/customer/profile');
+                    const role = localStorage.getItem('role')?.toLowerCase();
+                    switch (role) {
+                        case 'doctor':
+                            navigate('/doctor/profile');
+                            break;
+                        case 'admin':
+                            navigate('/admin/profile');
+                            break;
+                        case 'staff':
+                            navigate('/staff/profile');
+                            break;
+                        case 'customer':
+                        default:
+                            navigate('/customer/profile');
+                            break;
+                    }
                 }}>
                     <img src={userAvatar || generateAvatarUrl(userName)} alt="MyProfile"
                          className="rounded-full w-10 h-10 border-2 border-pink-300 mx-2 hover:ring-2 hover:ring-pink-200 transition-all duration-200 shadow-md"/>

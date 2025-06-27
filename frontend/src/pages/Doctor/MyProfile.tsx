@@ -1,60 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Button} from '../../components/common/Button';
-import {Badge} from '../../components/common/Badge';
-import uploadIcon from '../../assets/icons/upload.svg';
-import profileIcon from '../../assets/icons/profile.svg';
-import hospitalIcon from '../../assets/icons/hospital.svg';
-import clockIcon from '../../assets/icons/clock.svg';
-import starIcon from '../../assets/icons/Star.svg';
-import {doctorService, DoctorProfile as DoctorProfileType} from '../../api/services/doctorService';
-import {mockDoctorService} from '../../api/services/mockDoctorService';
-import {ProfileCompletion} from '../../components/common/ProgressBar';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../../components/common/Button';
+import { doctorService, DoctorProfile } from '../../api/services/doctorService';
+import { mockDoctorService } from '../../api/services/mockDoctorService';
 
 // Toggle between real API and mock for testing
 const USE_MOCK_API = true;
 
-interface DoctorProfile {
-    id: number;
-    name: string;
-    avatar?: string;
-    email: string;
-    phone: string;
-    specialization: string;
-    qualification: string;
-    experienceYears: number;
-    workingHours: {
-        from: string;
-        to: string;
-    };
-    appointmentPrice: number;
-    rating: number;
-    totalReviews: number;
-    totalPatients: number;
-    description: string;
-    certifications: {
-        id: number;
-        name: string;
-        issuedBy: string;
-        year: number;
-        file?: string;
-    }[];
-    education: {
-        id: number;
-        degree: string;
-        institution: string;
-        year: number;
-    }[];
-    languages: string[];
-    achievements: string[];
-}
-
 const MyProfile: React.FC = () => {
     const navigate = useNavigate();
-    const [profile, setProfile] = useState<DoctorProfileType | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedProfile, setEditedProfile] = useState<Partial<DoctorProfileType>>({});
-    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [profile, setProfile] = useState<DoctorProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -65,67 +20,18 @@ const MyProfile: React.FC = () => {
                 const service = USE_MOCK_API ? mockDoctorService : doctorService;
                 const response = await service.getDoctorProfile();
                 setProfile(response.data);
-                setEditedProfile(response.data);
             } catch (error) {
                 console.error('Error loading profile:', error);
                 // Fallback to mock data for demo
-                const mockProfile: DoctorProfileType = {
+                const mockProfile: DoctorProfile = {
                     id: 1,
-                    name: "TS.BS Nguyễn Thị Hoa",
-                    avatar: "",
-                    email: "hoa.nguyen@example.com",
-                    phone: "0912345678",
-                    specialization: "Sản phụ khoa",
-                    qualification: "Tiến sĩ Y khoa",
-                    experienceYears: 15,
-                    workingHours: {
-                        from: "08:00",
-                        to: "17:00"
-                    },
-                    appointmentPrice: 500000,
-                    rating: 4.8,
-                    totalReviews: 256,
-                    totalPatients: 1250,
-                    description: "Chuyên gia với hơn 15 năm kinh nghiệm trong lĩnh vực sản phụ khoa. Chuyên điều trị các bệnh lý phụ khoa, thai sản và vô sinh hiếm muộn.",
-                    certifications: [
-                        {
-                            id: 1,
-                            name: "Chứng chỉ hành nghề khám chữa bệnh",
-                            issuedBy: "Bộ Y tế",
-                            year: 2010
-                        },
-                        {
-                            id: 2,
-                            name: "Chứng nhận chuyên khoa Sản Phụ khoa",
-                            issuedBy: "Bệnh viện Phụ sản Trung ương",
-                            year: 2012
-                        }
-                    ],
-                    education: [
-                        {
-                            id: 1,
-                            degree: "Tiến sĩ Y khoa",
-                            institution: "Đại học Y Hà Nội",
-                            year: 2015
-                        },
-                        {
-                            id: 2,
-                            degree: "Bác sĩ Chuyên khoa II",
-                            institution: "Đại học Y Hà Nội",
-                            year: 2010
-                        }
-                    ],
-                    languages: ["Tiếng Việt", "Tiếng Anh"],
-                    achievements: [
-                        "Giải thưởng Bác sĩ xuất sắc năm 2020",
-                        "Đã thực hiện hơn 1000 ca phẫu thuật thành công",
-                        "Tham gia nhiều dự án nghiên cứu về sức khỏe phụ nữ"
-                    ],
+                    name: "Dr. Sarah Johnson",
+                    specialization: "Gynecology",
+                    price: 50,
                     isProfileComplete: true
                 };
 
                 setProfile(mockProfile);
-                setEditedProfile(mockProfile);
             } finally {
                 setLoading(false);
             }
@@ -134,506 +40,280 @@ const MyProfile: React.FC = () => {
         loadProfile();
     }, []);
 
-    const handleInputChange = (field: keyof DoctorProfileType, value: any) => {
-        setEditedProfile(prev => ({
-            ...prev,
-            [field]: value
-        }));
-    };
-
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setAvatarFile(file);
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setEditedProfile(prev => ({
-                    ...prev,
-                    avatar: e.target?.result as string
-                }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSave = async () => {
-        try {
-            setLoading(true);
-            
-            const service = USE_MOCK_API ? mockDoctorService : doctorService;
-            
-            // Upload avatar first if changed
-            let avatarUrl = editedProfile.avatar;
-            if (avatarFile) {
-                const avatarResponse = await service.uploadAvatar(avatarFile);
-                avatarUrl = avatarResponse.data.url;
-            }
-
-            // Update profile
-            const profileData = {
-                ...editedProfile,
-                avatar: avatarUrl
-            };
-
-            await service.updateDoctorProfile(profileData);
-            
-            setProfile(prev => ({
-                ...prev!,
-                ...profileData
-            }));
-
-            setSuccessMessage('Thông tin đã được cập nhật thành công');
-            setIsEditing(false);
-
-            setTimeout(() => {
-                setSuccessMessage('');
-            }, 3000);
-        } catch (error: any) {
-            console.error('Error saving profile:', error);
-            alert(error.response?.data?.message || 'Có lỗi xảy ra khi lưu hồ sơ');
-        } finally {
-            setLoading(false);
-        }
+    const calculateCompletionPercentage = (profile: DoctorProfile): number => {
+        let completed = 0;
+        let total = 3;
+        
+        if (profile.name && profile.name.trim() !== '') completed++;
+        if (profile.specialization && profile.specialization.trim() !== '') completed++;
+        if (profile.price > 0) completed++;
+        
+        return Math.round((completed / total) * 100);
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Đang tải thông tin...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                    <p className="text-gray-600 text-lg">Loading your profile...</p>
                 </div>
             </div>
         );
     }
 
     if (!profile) {
-        return <div>Loading...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+                <div className="text-center">
+                    <div className="text-6xl mb-4">🩺</div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Profile Not Found</h2>
+                    <p className="text-gray-600 mb-6">We couldn't load your profile. Please try again.</p>
+                    <Button onClick={() => window.location.reload()}>
+                        Retry
+                    </Button>
+                </div>
+            </div>
+        );
     }
 
+    const completionPercentage = calculateCompletionPercentage(profile);
+
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
-            <div className="max-w-5xl mx-auto">
-                
-                <div className="mb-6 flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-800">Hồ sơ cá nhân</h1>
-                        <p className="text-gray-600">Quản lý thông tin và hồ sơ chuyên môn của bạn</p>
-                    </div>
-                    <Button
-                        variant={isEditing ? "secondary" : "primary"}
-                        onClick={() => setIsEditing(!isEditing)}
-                    >
-                        {isEditing ? 'Hủy chỉnh sửa' : 'Chỉnh sửa hồ sơ'}
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        onClick={() => navigate('/doctor/manage-profile')}
-                    >
-                        Quản lý hồ sơ
-                    </Button>
-                </div>
-
-                {successMessage && (
-                    <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
-                        {successMessage}
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <div className="space-y-6">
-                        
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <div className="flex flex-col items-center">
-                                <div className="relative mb-4">
-                                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200">
-                                        {editedProfile.avatar ? (
-                                            <img
-                                                src={editedProfile.avatar}
-                                                alt="MyProfile"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <img src={profileIcon} alt="" className="w-16 h-16 text-gray-400"/>
-                                            </div>
-                                        )}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+            {/* Header with Background Pattern */}
+            <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">
+                <div className="absolute inset-0 bg-black opacity-10"></div>
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='m36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                }}></div>
+                <div className="relative px-6 py-12">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-6">
+                                {/* Avatar */}
+                                <div className="relative">
+                                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-white/20">
+                                        <div className="text-4xl">👨‍⚕️</div>
                                     </div>
-                                    {isEditing && (
-                                        <label
-                                            className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md cursor-pointer hover:bg-gray-50">
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={handleAvatarChange}
-                                            />
-                                            <img src={uploadIcon} alt="upload" className="w-5 h-5"/>
-                                        </label>
-                                    )}
+                                    <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-lg ${
+                                        profile.isProfileComplete ? 'bg-green-500' : 'bg-yellow-500'
+                                    }`}>
+                                        {completionPercentage}%
+                                    </div>
                                 </div>
-                                {isEditing ? (
-                                    <input
-                                        type="text"
-                                        className="text-xl font-semibold text-center w-full p-2 border rounded"
-                                        value={editedProfile.name}
-                                        onChange={(e) => handleInputChange('name', e.target.value)}
-                                    />
-                                ) : (
-                                    <h2 className="text-xl font-semibold">{profile.name}</h2>
-                                )}
-                                <p className="text-gray-600 mt-1">{profile.qualification}</p>
-                            </div>
-
-                            <div className="mt-6 space-y-3">
-                                <div className="flex items-center gap-3 text-gray-600">
-                                    <img src={hospitalIcon} alt="" className="w-5 h-5"/>
-                                    <span>{profile.specialization}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-gray-600">
-                                    <img src={clockIcon} alt="" className="w-5 h-5"/>
-                                    <span>{profile.workingHours.from} - {profile.workingHours.to}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-gray-600">
-                                    <img src={starIcon} alt="" className="w-5 h-5"/>
-                                    <span>{profile.rating} ★ ({profile.totalReviews} đánh giá)</span>
+                                
+                                {/* Doctor Info */}
+                                <div className="text-white">
+                                    <h1 className="text-3xl font-bold mb-2">{profile.name || 'Doctor Name'}</h1>
+                                    <p className="text-blue-100 text-lg mb-1">{profile.specialization || 'Medical Specialist'}</p>
+                                    <div className="flex items-center space-x-4 text-sm text-blue-200">
+                                        <div className="flex items-center space-x-1">
+                                            <span>💰</span>
+                                            <span>${profile.price > 0 ? profile.price : 'Not set'} USD</span>
+                                        </div>
+                                        <div className="flex items-center space-x-1">
+                                            <span>🏥</span>
+                                            <span>{profile.specialization || 'Medical Specialist'}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Profile Completion */}
-                        <ProfileCompletion profile={profile} className="mb-6" />
-
-                        {/* Statistics */}
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <h3 className="font-semibold text-gray-800 mb-4">Thống kê</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="text-center p-4 bg-pink-50 rounded-lg">
-                                    <div className="text-2xl font-bold text-pink-600">{profile.totalPatients}</div>
-                                    <div className="text-sm text-gray-600">Bệnh nhân</div>
-                                </div>
-                                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                                    <div className="text-2xl font-bold text-blue-600">{profile.experienceYears}</div>
-                                    <div className="text-sm text-gray-600">Năm kinh nghiệm</div>
-                                </div>
-                                <div className="text-center p-4 bg-green-50 rounded-lg">
-                                    <div className="text-2xl font-bold text-green-600">{profile.totalReviews}</div>
-                                    <div className="text-sm text-gray-600">Đánh giá</div>
-                                </div>
-                                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                                    <div className="text-2xl font-bold text-purple-600">{profile.rating}/5</div>
-                                    <div className="text-sm text-gray-600">Điểm đánh giá</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <h3 className="font-semibold text-gray-800 mb-4">Thông tin liên hệ</h3>
+                            
+                            {/* Actions */}
                             <div className="space-y-3">
-                                <div>
-                                    <label className="text-sm text-gray-500">Email</label>
-                                    {isEditing ? (
-                                        <input
-                                            type="email"
-                                            className="w-full p-2 border rounded mt-1"
-                                            value={editedProfile.email}
-                                            onChange={(e) => handleInputChange('email', e.target.value)}
-                                        />
-                                    ) : (
-                                        <p className="text-gray-800">{profile.email}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500">Số điện thoại</label>
-                                    {isEditing ? (
-                                        <input
-                                            type="tel"
-                                            className="w-full p-2 border rounded mt-1"
-                                            value={editedProfile.phone}
-                                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                                        />
-                                    ) : (
-                                        <p className="text-gray-800">{profile.phone}</p>
-                                    )}
-                                </div>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => navigate('/doctor/manage-profile')}
+                                    className="bg-white text-blue-600 hover:bg-blue-50 border-0 shadow-lg"
+                                >
+                                    <span className="mr-2">✏️</span>
+                                    Edit Profile
+                                </Button>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    
-                    <div className="lg:col-span-2 space-y-6">
-                        
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <h3 className="font-semibold text-gray-800 mb-4">Giới thiệu</h3>
-                            {isEditing ? (
-                                <textarea
-                                    className="w-full p-3 border rounded min-h-[150px]"
-                                    value={editedProfile.description}
-                                    onChange={(e) => handleInputChange('description', e.target.value)}
-                                />
-                            ) : (
-                                <p className="text-gray-700 whitespace-pre-wrap">{profile.description}</p>
+            {/* Success Message */}
+            {successMessage && (
+                <div className="max-w-4xl mx-auto px-6 pt-6">
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-700">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-green-500">✓</span>
+                            <span>{successMessage}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Main Content */}
+            <div className="max-w-4xl mx-auto px-6 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column - Stats */}
+                    <div className="lg:col-span-1 space-y-6">
+                        {/* Profile Completion Card */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-semibold text-gray-800">Profile Completion</h3>
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    completionPercentage === 100 
+                                        ? 'bg-green-100 text-green-700' 
+                                        : 'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                    {completionPercentage}%
+                                </span>
+                            </div>
+                            
+                            {/* Progress Ring */}
+                            <div className="flex items-center justify-center mb-4">
+                                <div className="relative w-24 h-24">
+                                    <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
+                                        <path
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none"
+                                            stroke="#e5e7eb"
+                                            strokeWidth="2"
+                                        />
+                                        <path
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none"
+                                            stroke={completionPercentage === 100 ? "#10b981" : "#f59e0b"}
+                                            strokeWidth="2"
+                                            strokeDasharray={`${completionPercentage}, 100`}
+                                            className="transition-all duration-300"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-lg font-bold text-gray-700">{completionPercentage}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {completionPercentage < 100 && (
+                                <div className="text-center">
+                                    <p className="text-sm text-gray-600 mb-3">Complete your profile to unlock all features</p>
+                                    <Button
+                                        variant="primary"
+                                        size="small"
+                                        onClick={() => navigate('/doctor/manage-profile')}
+                                        className="w-full"
+                                    >
+                                        Complete Profile
+                                    </Button>
+                                </div>
                             )}
                         </div>
+                    </div>
 
-                        
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <h3 className="font-semibold text-gray-800 mb-4">Học vấn</h3>
-                            <div className="space-y-4">
-                                {(isEditing ? editedProfile.education : profile.education)?.map((edu, index) => (
-                                    <div key={edu.id}
-                                         className="flex justify-between items-start border-b pb-4 last:border-0">
-                                        <div>
-                                            {isEditing ? (
-                                                <div className="space-y-2">
-                                                    <input
-                                                        type="text"
-                                                        className="w-full p-2 border rounded"
-                                                        value={edu.degree}
-                                                        onChange={(e) => {
-                                                            const updatedEducation = [...(editedProfile.education || [])];
-                                                            updatedEducation[index] = {...edu, degree: e.target.value};
-                                                            handleInputChange('education', updatedEducation);
-                                                        }}
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        className="w-full p-2 border rounded"
-                                                        value={edu.institution}
-                                                        onChange={(e) => {
-                                                            const updatedEducation = [...(editedProfile.education || [])];
-                                                            updatedEducation[index] = {
-                                                                ...edu,
-                                                                institution: e.target.value
-                                                            };
-                                                            handleInputChange('education', updatedEducation);
-                                                        }}
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <div className="font-medium text-gray-800">{edu.degree}</div>
-                                                    <div className="text-gray-600">{edu.institution}</div>
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className="text-gray-500">
-                                            {isEditing ? (
-                                                <input
-                                                    type="number"
-                                                    className="w-24 p-2 border rounded"
-                                                    value={edu.year}
-                                                    onChange={(e) => {
-                                                        const updatedEducation = [...(editedProfile.education || [])];
-                                                        updatedEducation[index] = {
-                                                            ...edu,
-                                                            year: parseInt(e.target.value)
-                                                        };
-                                                        handleInputChange('education', updatedEducation);
-                                                    }}
-                                                />
-                                            ) : (
-                                                edu.year
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                                {isEditing && (
-                                    <Button
-                                        variant="secondary"
-                                        onClick={() => {
-                                            const newEducation = [...(editedProfile.education || []), {
-                                                id: Date.now(),
-                                                degree: '',
-                                                institution: '',
-                                                year: new Date().getFullYear()
-                                            }];
-                                            handleInputChange('education', newEducation);
-                                        }}
-                                    >
-                                        Thêm học vấn
-                                    </Button>
+                    {/* Right Column - Profile Details */}
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Basic Information */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <div className="mb-6">
+                                <h3 className="text-xl font-semibold text-gray-800">Basic Information</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
+                                    <p className="text-lg font-medium text-gray-800 bg-gray-50 rounded-lg px-4 py-3">
+                                        {profile.name || 'Not provided'}
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-500 uppercase tracking-wide">Specialization</label>
+                                    <p className="text-lg font-medium text-gray-800 bg-gray-50 rounded-lg px-4 py-3">
+                                        {profile.specialization || 'Not provided'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pricing Information */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-semibold text-gray-800">Consultation Fee</h3>
+                                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                                    USD Currency
+                                </span>
+                            </div>
+                            
+                            <div className="text-center bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+                                <div className="text-5xl font-bold text-green-600 mb-2">
+                                    ${profile.price > 0 ? profile.price : '0'}
+                                </div>
+                                <p className="text-gray-600">per consultation</p>
+                                {profile.price === 0 && (
+                                    <p className="text-sm text-orange-600 mt-2">⚠️ Please set your consultation fee</p>
                                 )}
                             </div>
                         </div>
 
-                        
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <h3 className="font-semibold text-gray-800 mb-4">Chứng chỉ</h3>
-                            <div className="space-y-4">
-                                {(isEditing ? editedProfile.certifications : profile.certifications)?.map((cert, index) => (
-                                    <div key={cert.id}
-                                         className="flex justify-between items-start border-b pb-4 last:border-0">
-                                        <div>
-                                            {isEditing ? (
-                                                <div className="space-y-2">
-                                                    <input
-                                                        type="text"
-                                                        className="w-full p-2 border rounded"
-                                                        value={cert.name}
-                                                        onChange={(e) => {
-                                                            const updatedCerts = [...(editedProfile.certifications || [])];
-                                                            updatedCerts[index] = {...cert, name: e.target.value};
-                                                            handleInputChange('certifications', updatedCerts);
-                                                        }}
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        className="w-full p-2 border rounded"
-                                                        value={cert.issuedBy}
-                                                        onChange={(e) => {
-                                                            const updatedCerts = [...(editedProfile.certifications || [])];
-                                                            updatedCerts[index] = {...cert, issuedBy: e.target.value};
-                                                            handleInputChange('certifications', updatedCerts);
-                                                        }}
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <div className="font-medium text-gray-800">{cert.name}</div>
-                                                    <div className="text-gray-600">{cert.issuedBy}</div>
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className="text-gray-500">
-                                            {isEditing ? (
-                                                <input
-                                                    type="number"
-                                                    className="w-24 p-2 border rounded"
-                                                    value={cert.year}
-                                                    onChange={(e) => {
-                                                        const updatedCerts = [...(editedProfile.certifications || [])];
-                                                        updatedCerts[index] = {...cert, year: parseInt(e.target.value)};
-                                                        handleInputChange('certifications', updatedCerts);
-                                                    }}
-                                                />
-                                            ) : (
-                                                cert.year
-                                            )}
-                                        </div>
+                        {/* Profile Status */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-6">Profile Status</h3>
+                            
+                            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                <div className="flex items-center space-x-3">
+                                    <div className={`w-4 h-4 rounded-full ${
+                                        profile.isProfileComplete ? 'bg-green-500' : 'bg-yellow-500'
+                                    }`}></div>
+                                    <div>
+                                        <p className="font-medium text-gray-800">
+                                            {profile.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            {profile.isProfileComplete 
+                                                ? 'Your profile is ready for patients' 
+                                                : 'Complete your profile to start accepting patients'
+                                            }
+                                        </p>
                                     </div>
-                                ))}
-                                {isEditing && (
+                                </div>
+                                
+                                {!profile.isProfileComplete && (
                                     <Button
-                                        variant="secondary"
-                                        onClick={() => {
-                                            const newCerts = [...(editedProfile.certifications || []), {
-                                                id: Date.now(),
-                                                name: '',
-                                                issuedBy: '',
-                                                year: new Date().getFullYear()
-                                            }];
-                                            handleInputChange('certifications', newCerts);
-                                        }}
+                                        variant="primary"
+                                        size="small"
+                                        onClick={() => navigate('/doctor/manage-profile')}
                                     >
-                                        Thêm chứng chỉ
+                                        Complete Now
                                     </Button>
                                 )}
-                            </div>
-                        </div>
-
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white rounded-xl shadow-md p-6">
-                                <h3 className="font-semibold text-gray-800 mb-4">Ngôn ngữ</h3>
-                                <div className="space-y-2">
-                                    {(isEditing ? editedProfile.languages : profile.languages)?.map((lang, index) => (
-                                        <div key={index}>
-                                            {isEditing ? (
-                                                <input
-                                                    type="text"
-                                                    className="w-full p-2 border rounded"
-                                                    value={lang}
-                                                    onChange={(e) => {
-                                                        const updatedLangs = [...(editedProfile.languages || [])];
-                                                        updatedLangs[index] = e.target.value;
-                                                        handleInputChange('languages', updatedLangs);
-                                                    }}
-                                                />
-                                            ) : (
-                                                <Badge variant="primary">{lang}</Badge>
-                                            )}
-                                        </div>
-                                    ))}
-                                    {isEditing && (
-                                        <Button
-                                            variant="secondary"
-                                            onClick={() => {
-                                                const newLangs = [...(editedProfile.languages || []), ''];
-                                                handleInputChange('languages', newLangs);
-                                            }}
-                                        >
-                                            Thêm ngôn ngữ
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="bg-white rounded-xl shadow-md p-6">
-                                <h3 className="font-semibold text-gray-800 mb-4">Thành tựu</h3>
-                                <div className="space-y-2">
-                                    {(isEditing ? editedProfile.achievements : profile.achievements)?.map((achievement, index) => (
-                                        <div key={index}>
-                                            {isEditing ? (
-                                                <input
-                                                    type="text"
-                                                    className="w-full p-2 border rounded"
-                                                    value={achievement}
-                                                    onChange={(e) => {
-                                                        const updatedAchievements = [...(editedProfile.achievements || [])];
-                                                        updatedAchievements[index] = e.target.value;
-                                                        handleInputChange('achievements', updatedAchievements);
-                                                    }}
-                                                />
-                                            ) : (
-                                                <div className="flex items-start gap-2">
-                                                    <span className="text-yellow-500">★</span>
-                                                    <span>{achievement}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                    {isEditing && (
-                                        <Button
-                                            variant="secondary"
-                                            onClick={() => {
-                                                const newAchievements = [...(editedProfile.achievements || []), ''];
-                                                handleInputChange('achievements', newAchievements);
-                                            }}
-                                        >
-                                            Thêm thành tựu
-                                        </Button>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                
-                {isEditing && (
-                    <div className="fixed bottom-6 right-6 flex gap-3">
-                        <Button
-                            variant="secondary"
-                            onClick={() => {
-                                setIsEditing(false);
-                                setEditedProfile(profile);
-                            }}
-                        >
-                            Hủy
-                        </Button>
-                        <Button
-                            variant="primary"
-                            onClick={handleSave}
-                            disabled={loading}
-                        >
-                            {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
-                        </Button>
+            {/* Bottom CTA Section */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <div className="max-w-4xl mx-auto px-6 py-12">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold mb-4">Ready to help more patients?</h2>
+                        <p className="text-blue-100 mb-6">
+                            Keep your profile updated to attract more patients and provide better care.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Button
+                                variant="secondary"
+                                onClick={() => navigate('/doctor/manage-profile')}
+                                className="bg-white text-blue-600 hover:bg-blue-50"
+                            >
+                                Update Profile
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => navigate('/doctor/dashboard')}
+                                className="text-white border-white hover:bg-white/10"
+                            >
+                                Go to Dashboard
+                            </Button>
+                        </div>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

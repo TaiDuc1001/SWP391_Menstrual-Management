@@ -29,6 +29,13 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
         const checkProfileStatus = async () => {
             try {
                 const service = USE_MOCK_API ? mockDoctorService : doctorService;
+                
+                // First ensure profile is initialized for current user
+                if (USE_MOCK_API) {
+                    mockDoctorService.initializeProfile();
+                }
+                
+                // Then check if profile is complete
                 const response = await service.checkProfileComplete();
                 setIsProfileComplete(response.data.isComplete);
             } catch (error) {
