@@ -103,18 +103,54 @@ const MenstrualCycleDashboard: React.FC = () => {
                     if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
                         return 'period';
                     }
-                }
-                
-                const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
-                const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                
-                if (currentDate.toDateString() === ovulationDate.toDateString()) {
-                    return 'ovulation';
-                }
-                
-                if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                    return 'fertile';
+                    
+                    const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                        return 'ovulation';
+                    }
+                    
+                    if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                        return 'fertile';
+                    }
+                } else {
+                    const hasPeriodDaysInMonth = Object.keys(symptoms).some(key => {
+                        if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
+                            const symptom = symptoms[key];
+                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                        }
+                        return false;
+                    });
+                    
+                    if (hasPeriodDaysInMonth) {
+                        const periodDays = Object.keys(symptoms)
+                            .filter(key => {
+                                if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
+                                    const symptom = symptoms[key];
+                                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                                }
+                                return false;
+                            })
+                            .map(key => new Date(key))
+                            .sort((a, b) => a.getTime() - b.getTime());
+                        
+                        if (periodDays.length > 0) {
+                            const firstPeriodDay = periodDays[0];
+                            const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
+                            const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                            const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                            
+                            if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                                return 'ovulation';
+                            }
+                            
+                            if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                                return 'fertile';
+                            }
+                        }
+                    }
                 }
             }
         }
