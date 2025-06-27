@@ -4,6 +4,7 @@ import notificationIcon from '../../../assets/icons/notification.svg';
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import DropDown from './DropDown';
+import { getCurrentUserProfile } from '../../../utils/auth';
 
 interface HeaderProps {
     isAuthenticated: boolean;
@@ -13,6 +14,8 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [showNoti, setShowNoti] = useState(false);
+    const [userName, setUserName] = useState('User');
+    const [userAvatar, setUserAvatar] = useState('');
     const profileRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
@@ -31,6 +34,45 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
         }
     };
 
+    const generateAvatarUrl = (name: string) => {
+        const encodedName = encodeURIComponent(name || 'User');
+        return `https://ui-avatars.com/api/?name=${encodedName}&size=40&background=ec4899&color=ffffff&bold=true`;
+    };
+
+    const updateUserInfo = () => {
+        const userProfile = getCurrentUserProfile();
+        if (userProfile?.profile?.name) {
+            setUserName(userProfile.profile.name);
+            setUserAvatar(generateAvatarUrl(userProfile.profile.name));
+        } else if (userProfile?.email) {
+            // Fallback to email if name is not available
+            const emailName = userProfile.email.split('@')[0];
+            setUserName(emailName);
+            setUserAvatar(generateAvatarUrl(emailName));
+        }
+    };
+
+    useEffect(() => {
+        updateUserInfo();
+    }, []);
+
+    // Listen for storage changes to update header when profile is updated
+    useEffect(() => {
+        const handleStorageChange = () => {
+            updateUserInfo();
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        
+        // Also listen for custom event when localStorage is updated in the same tab
+        window.addEventListener('profileUpdated', handleStorageChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('profileUpdated', handleStorageChange);
+        };
+    }, []);
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -48,8 +90,6 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [dropdownOpen, showNoti]);
-
-    const userName = "Jane Doe";
 
     return (
         <header
@@ -70,57 +110,55 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
                 </nav>
             </div>
             <div className="flex items-center gap-4 relative" ref={profileRef}>
-        <span className="relative">
-          <img
-              src={notificationIcon}
-              alt="Notifications"
-              className="w-7 h-7 cursor-pointer hover:scale-110 hover:bg-pink-100/70 rounded-full p-1 transition-all duration-200 shadow hover:shadow-pink-100"
-              onClick={() => {
-                  setShowNoti((prev) => !prev);
-                  setDropdownOpen(false);
-              }}
-          />
-            {showNoti && (
-                <div
-                    className="absolute right-0 top-12 z-50 bg-white/95 backdrop-blur-lg border-2 border-pink-200 rounded-3xl shadow-xl py-3 w-72 flex flex-col gap-2 transition-all duration-300 animate-fade-in mt-2 mx-1">
-                    <div
-                        className="px-5 py-2 text-base text-gray-700 font-poppins font-medium border-b border-pink-100">Notifications
-                    </div>
-                    <div
-                        className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">Your
-                        appointment is confirmed!
-                    </div>
-                    <div
-                        className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">New
-                        blog post: Women's Health Tips
-                    </div>
-                    <div
-                        className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">Cycle
-                        tracking reminder
-                    </div>
-                    <button className="mt-2 text-pink-500 hover:underline font-poppins text-sm self-end px-5"
-                            onClick={() => setShowNoti(false)}>Close
-                    </button>
-                </div>
-            )}
-        </span>
+                <span className="relative">
+                    <img
+                        src={notificationIcon}
+                        alt="Notifications"
+                        className="w-7 h-7 cursor-pointer hover:scale-110 hover:bg-pink-100/70 rounded-full p-1 transition-all duration-200 shadow hover:shadow-pink-100"
+                        onClick={() => {
+                            setShowNoti((prev) => !prev);
+                            setDropdownOpen(false);
+                        }}
+                    />
+                    {showNoti && (
+                        <div
+                            className="absolute right-0 top-12 z-50 bg-white/95 backdrop-blur-lg border-2 border-pink-200 rounded-3xl shadow-xl py-3 w-72 flex flex-col gap-2 transition-all duration-300 animate-fade-in mt-2 mx-1">
+                            <div
+                                className="px-5 py-2 text-base text-gray-700 font-poppins font-medium border-b border-pink-100">Notifications
+                            </div>
+                            <div
+                                className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">Your
+                                appointment is confirmed!
+                            </div>
+                            <div
+                                className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">New
+                                blog post: Women's Health Tips
+                            </div>
+                            <div
+                                className="px-5 py-2 hover:bg-pink-50 rounded-xl cursor-pointer text-gray-700 font-poppins transition-all duration-200">Cycle
+                                tracking reminder
+                            </div>
+                            <button className="mt-2 text-pink-500 hover:underline font-poppins text-sm self-end px-5"
+                                    onClick={() => setShowNoti(false)}>Close
+                            </button>
+                        </div>
+                    )}
+                </span>
                 <span className="flex items-center cursor-pointer group" onClick={() => {
                     setDropdownOpen(false);
                     setShowNoti(false);
                     navigate('/customer/profile');
                 }}>
-          <img src="https://i.pravatar.cc/36?img=3" alt="MyProfile"
-               className="rounded-full w-10 h-10 border-2 border-pink-300 mx-2 hover:ring-2 hover:ring-pink-200 transition-all duration-200 shadow-md"/>
-          <span
-              className="ml-2 font-poppins font-semibold text-gray-700 group-hover:text-pink-500 transition-colors duration-200">{userName}</span>
-        </span>
+                    <img src={userAvatar || generateAvatarUrl(userName)} alt="MyProfile"
+                         className="rounded-full w-10 h-10 border-2 border-pink-300 mx-2 hover:ring-2 hover:ring-pink-200 transition-all duration-200 shadow-md"/>
+                </span>
                 <span className="cursor-pointer flex items-center" onClick={() => {
                     setDropdownOpen((open) => !open);
                     setShowNoti(false);
                 }}>
-          <img src={dropDownIcon} alt="Dropdown" className="w-5 h-5 transition-transform duration-200"
-               style={{transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}}/>
-        </span>
+                    <img src={dropDownIcon} alt="Dropdown" className="w-5 h-5 transition-transform duration-200"
+                         style={{transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'}}/>
+                </span>
                 {dropdownOpen && (
                     <div className="absolute right-0 top-14 z-50">
                         <DropDown onAuthToggle={onAuthToggle} closeDropdown={() => setDropdownOpen(false)}/>
@@ -132,4 +170,3 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
 };
 
 export default Header;
-

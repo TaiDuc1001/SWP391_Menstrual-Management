@@ -32,15 +32,45 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             return;
         }
         try {
-            await api.post('/accounts/register', {email, password, role}, {
+            const response = await api.post('/accounts/register', {email, password, role}, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
+            
+            // Ensure the response has the correct structure for user profile
+            const userData = {
+                id: response.data.id,
+                email: response.data.email || email,
+                role: response.data.role || role,
+                profile: response.data.profile || null // This might be null for new registrations
+            };
+            
+            // Store user data in localStorage
+            localStorage.setItem('userProfile', JSON.stringify(userData));
+            localStorage.setItem('role', role);
+            
             onSignUp();
-            navigate('/customer/dashboard');
+            
+            // Redirect to complete profile page for customers to fill in required information
+            if (role.toLowerCase() === 'customer') {
+                navigate('/customer/complete-profile');
+            } else {
+                navigate('/customer/dashboard');
+            }
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed');
+            console.error('Registration error:', err);
+            
+            // Handle specific error cases
+            if (err.response?.status === 409 || err.response?.data?.message?.includes('email')) {
+                setError('Email already exists. Please use a different email or try logging in.');
+            } else if (err.response?.status === 400) {
+                setError(err.response?.data?.message || 'Invalid registration data. Please check your information.');
+            } else if (err.response?.status === 500) {
+                setError('Server error. Please try again later.');
+            } else {
+                setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            }
         }
     };
 
