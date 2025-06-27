@@ -153,6 +153,51 @@ const MenstrualCycleDashboard: React.FC = () => {
                     }
                 }
             }
+            
+            const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+            
+            const hasPeriodDaysInPreviousMonth = Object.keys(symptoms).some(key => {
+                if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
+                    const symptom = symptoms[key];
+                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                }
+                return false;
+            });
+            
+            if (hasPeriodDaysInPreviousMonth) {
+                const periodDaysFromPreviousMonth = Object.keys(symptoms)
+                    .filter(key => {
+                        if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
+                            const symptom = symptoms[key];
+                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                        }
+                        return false;
+                    })
+                    .map(key => new Date(key))
+                    .sort((a, b) => a.getTime() - b.getTime());
+                
+                if (periodDaysFromPreviousMonth.length > 0) {
+                    const firstPeriodDay = periodDaysFromPreviousMonth[0];
+                    const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                    
+                    if (ovulationDate.getMonth() === currentMonth && ovulationDate.getFullYear() === currentYear) {
+                        if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                            return 'ovulation';
+                        }
+                    }
+                    
+                    if (fertileStart.getMonth() === currentMonth && fertileStart.getFullYear() === currentYear ||
+                        fertileEnd.getMonth() === currentMonth && fertileEnd.getFullYear() === currentYear ||
+                        (fertileStart.getTime() <= currentDate.getTime() && currentDate.getTime() <= fertileEnd.getTime())) {
+                        if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                            return 'fertile';
+                        }
+                    }
+                }
+            }
         }
         
         return '';
