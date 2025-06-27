@@ -28,10 +28,12 @@ function App() {
         localStorage.removeItem('userProfile');
     };
 
-    const handleSignUp = () => {
+    const handleSignUp = (userRole?: string) => {
+        const savedRole = localStorage.getItem('role');
+        const finalRole = (userRole || savedRole || 'customer').toLowerCase();
         setIsAuthenticated(true);
-        setRole('customer');
-        localStorage.setItem('role', 'customer');
+        setRole(finalRole);
+        localStorage.setItem('role', finalRole);
     };
     return (
         <Router>

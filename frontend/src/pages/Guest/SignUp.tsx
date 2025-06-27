@@ -9,7 +9,7 @@ import google from '../../assets/icons/google.svg';
 import facebook from '../../assets/icons/facebook.svg';
 
 interface SignUpProps {
-    onSignUp: () => void;
+    onSignUp: (role?: string) => void;
 }
 
 const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
@@ -50,12 +50,15 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             localStorage.setItem('userProfile', JSON.stringify(userData));
             localStorage.setItem('role', role);
             
-            onSignUp();
+            onSignUp(role);
             
-            // Redirect to complete profile page for customers to fill in required information
+            // Redirect based on role
             if (role.toLowerCase() === 'customer') {
                 navigate('/customer/complete-profile');
+            } else if (role.toLowerCase() === 'doctor') {
+                navigate('/doctor/dashboard');
             } else {
+                // Fallback for any other roles (shouldn't happen with current registration restrictions)
                 navigate('/customer/dashboard');
             }
         } catch (err: any) {

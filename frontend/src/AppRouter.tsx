@@ -12,7 +12,7 @@ interface AppRouterProps {
     isAuthenticated: boolean;
     onAuthToggle: () => void;
     handleLogin: (role: string) => void;
-    handleSignUp: () => void;
+    handleSignUp: (role?: string) => void;
     role: string | null;
 }
 
