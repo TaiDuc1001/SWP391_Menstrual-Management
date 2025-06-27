@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {Button} from '../../components/common/Button';
 import {Badge} from '../../components/common/Badge';
 import uploadIcon from '../../assets/icons/upload.svg';
@@ -6,6 +7,12 @@ import profileIcon from '../../assets/icons/profile.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
 import clockIcon from '../../assets/icons/clock.svg';
 import starIcon from '../../assets/icons/Star.svg';
+import {doctorService, DoctorProfile as DoctorProfileType} from '../../api/services/doctorService';
+import {mockDoctorService} from '../../api/services/mockDoctorService';
+import {ProfileCompletion} from '../../components/common/ProgressBar';
+
+// Toggle between real API and mock for testing
+const USE_MOCK_API = true;
 
 interface DoctorProfile {
     id: number;
@@ -43,73 +50,91 @@ interface DoctorProfile {
 }
 
 const MyProfile: React.FC = () => {
-    const [profile, setProfile] = useState<DoctorProfile | null>(null);
+    const navigate = useNavigate();
+    const [profile, setProfile] = useState<DoctorProfileType | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [editedProfile, setEditedProfile] = useState<Partial<DoctorProfile>>({});
+    const [editedProfile, setEditedProfile] = useState<Partial<DoctorProfileType>>({});
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
-        const mockProfile: DoctorProfile = {
-            id: 1,
-            name: "TS.BS Nguyễn Thị Hoa",
-            avatar: "",
-            email: "hoa.nguyen@example.com",
-            phone: "0912345678",
-            specialization: "Sản phụ khoa",
-            qualification: "Tiến sĩ Y khoa",
-            experienceYears: 15,
-            workingHours: {
-                from: "08:00",
-                to: "17:00"
-            },
-            appointmentPrice: 500000,
-            rating: 4.8,
-            totalReviews: 256,
-            totalPatients: 1250,
-            description: "Chuyên gia với hơn 15 năm kinh nghiệm trong lĩnh vực sản phụ khoa. Chuyên điều trị các bệnh lý phụ khoa, thai sản và vô sinh hiếm muộn.",
-            certifications: [
-                {
+        const loadProfile = async () => {
+            try {
+                setLoading(true);
+                const service = USE_MOCK_API ? mockDoctorService : doctorService;
+                const response = await service.getDoctorProfile();
+                setProfile(response.data);
+                setEditedProfile(response.data);
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                // Fallback to mock data for demo
+                const mockProfile: DoctorProfileType = {
                     id: 1,
-                    name: "Chứng chỉ hành nghề khám chữa bệnh",
-                    issuedBy: "Bộ Y tế",
-                    year: 2010
-                },
-                {
-                    id: 2,
-                    name: "Chứng nhận chuyên khoa Sản Phụ khoa",
-                    issuedBy: "Bệnh viện Phụ sản Trung ương",
-                    year: 2012
-                }
-            ],
-            education: [
-                {
-                    id: 1,
-                    degree: "Tiến sĩ Y khoa",
-                    institution: "Đại học Y Hà Nội",
-                    year: 2015
-                },
-                {
-                    id: 2,
-                    degree: "Bác sĩ Chuyên khoa II",
-                    institution: "Đại học Y Hà Nội",
-                    year: 2010
-                }
-            ],
-            languages: ["Tiếng Việt", "Tiếng Anh"],
-            achievements: [
-                "Giải thưởng Bác sĩ xuất sắc năm 2020",
-                "Đã thực hiện hơn 1000 ca phẫu thuật thành công",
-                "Tham gia nhiều dự án nghiên cứu về sức khỏe phụ nữ"
-            ]
+                    name: "TS.BS Nguyễn Thị Hoa",
+                    avatar: "",
+                    email: "hoa.nguyen@example.com",
+                    phone: "0912345678",
+                    specialization: "Sản phụ khoa",
+                    qualification: "Tiến sĩ Y khoa",
+                    experienceYears: 15,
+                    workingHours: {
+                        from: "08:00",
+                        to: "17:00"
+                    },
+                    appointmentPrice: 500000,
+                    rating: 4.8,
+                    totalReviews: 256,
+                    totalPatients: 1250,
+                    description: "Chuyên gia với hơn 15 năm kinh nghiệm trong lĩnh vực sản phụ khoa. Chuyên điều trị các bệnh lý phụ khoa, thai sản và vô sinh hiếm muộn.",
+                    certifications: [
+                        {
+                            id: 1,
+                            name: "Chứng chỉ hành nghề khám chữa bệnh",
+                            issuedBy: "Bộ Y tế",
+                            year: 2010
+                        },
+                        {
+                            id: 2,
+                            name: "Chứng nhận chuyên khoa Sản Phụ khoa",
+                            issuedBy: "Bệnh viện Phụ sản Trung ương",
+                            year: 2012
+                        }
+                    ],
+                    education: [
+                        {
+                            id: 1,
+                            degree: "Tiến sĩ Y khoa",
+                            institution: "Đại học Y Hà Nội",
+                            year: 2015
+                        },
+                        {
+                            id: 2,
+                            degree: "Bác sĩ Chuyên khoa II",
+                            institution: "Đại học Y Hà Nội",
+                            year: 2010
+                        }
+                    ],
+                    languages: ["Tiếng Việt", "Tiếng Anh"],
+                    achievements: [
+                        "Giải thưởng Bác sĩ xuất sắc năm 2020",
+                        "Đã thực hiện hơn 1000 ca phẫu thuật thành công",
+                        "Tham gia nhiều dự án nghiên cứu về sức khỏe phụ nữ"
+                    ],
+                    isProfileComplete: true
+                };
+
+                setProfile(mockProfile);
+                setEditedProfile(mockProfile);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        setProfile(mockProfile);
-        setEditedProfile(mockProfile);
+        loadProfile();
     }, []);
 
-    const handleInputChange = (field: keyof DoctorProfile, value: any) => {
+    const handleInputChange = (field: keyof DoctorProfileType, value: any) => {
         setEditedProfile(prev => ({
             ...prev,
             [field]: value
@@ -136,12 +161,26 @@ const MyProfile: React.FC = () => {
         try {
             setLoading(true);
             
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const service = USE_MOCK_API ? mockDoctorService : doctorService;
+            
+            // Upload avatar first if changed
+            let avatarUrl = editedProfile.avatar;
+            if (avatarFile) {
+                const avatarResponse = await service.uploadAvatar(avatarFile);
+                avatarUrl = avatarResponse.data.url;
+            }
 
+            // Update profile
+            const profileData = {
+                ...editedProfile,
+                avatar: avatarUrl
+            };
+
+            await service.updateDoctorProfile(profileData);
             
             setProfile(prev => ({
                 ...prev!,
-                ...editedProfile
+                ...profileData
             }));
 
             setSuccessMessage('Thông tin đã được cập nhật thành công');
@@ -150,12 +189,24 @@ const MyProfile: React.FC = () => {
             setTimeout(() => {
                 setSuccessMessage('');
             }, 3000);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving profile:', error);
+            alert(error.response?.data?.message || 'Có lỗi xảy ra khi lưu hồ sơ');
         } finally {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Đang tải thông tin...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (!profile) {
         return <div>Loading...</div>;
@@ -175,6 +226,12 @@ const MyProfile: React.FC = () => {
                         onClick={() => setIsEditing(!isEditing)}
                     >
                         {isEditing ? 'Hủy chỉnh sửa' : 'Chỉnh sửa hồ sơ'}
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={() => navigate('/doctor/manage-profile')}
+                    >
+                        Quản lý hồ sơ
                     </Button>
                 </div>
 
@@ -246,7 +303,10 @@ const MyProfile: React.FC = () => {
                             </div>
                         </div>
 
-                        
+                        {/* Profile Completion */}
+                        <ProfileCompletion profile={profile} className="mb-6" />
+
+                        {/* Statistics */}
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="font-semibold text-gray-800 mb-4">Thống kê</h3>
                             <div className="grid grid-cols-2 gap-4">
