@@ -214,9 +214,20 @@ const MenstrualCycleDashboard: React.FC = () => {
         return saved ? JSON.parse(saved) : {};
     });
 
+    const [dayNotes, setDayNotes] = useState<{
+        [key: string]: string
+    }>(() => {
+        const saved = localStorage.getItem('menstrual_day_notes');
+        return saved ? JSON.parse(saved) : {};
+    });
+
     useEffect(() => {
         localStorage.setItem('menstrual_symptoms', JSON.stringify(symptoms));
     }, [symptoms]);
+
+    useEffect(() => {
+        localStorage.setItem('menstrual_day_notes', JSON.stringify(dayNotes));
+    }, [dayNotes]);
 
     useEffect(() => {
         // Clear period days for June 2025 (month 5, since months are 0-indexed)
@@ -324,10 +335,12 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         type = getDayTypeForCalendar(day);
                                     }
                                     let hasSymptom = false;
+                                    let hasNote = false;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
+                                        hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
                                     }
                                     let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
@@ -335,6 +348,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     if (type === 'ovulation') style = "cycle-ovulation-day";
                                     
                                     if (hasSymptom) style += ' cycle-symptom-border';
+                                    if (hasNote) style += ' cycle-note-indicator';
                                     
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
@@ -342,7 +356,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                 <div
                                                     className={style}
                                                     onClick={() => {
-                                                        if (day && new Date(currentYear, currentMonth, day) < new Date()) {
+                                                        if (day) {
                                                             setSelectedDay(day);
                                                             setShowDayNote(true);
                                                         }
@@ -363,6 +377,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window (predicted)
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
+                                </div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
                                 </div>
                             </div>
                         </div>
@@ -527,6 +543,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                             if (selectedDay) {
                                 const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
                                 
+                                // Update symptoms
                                 if (data.symptom === 'None') {
                                     setSymptoms(prev => {
                                         const newState = {...prev};
@@ -534,8 +551,20 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         return newState;
                                     });
                                 } else {
-                                    setSymptoms(prev => ({...prev, [key]: data}));
+                                    setSymptoms(prev => ({...prev, [key]: {symptom: data.symptom, period: data.period, flow: data.flow}}));
                                 }
+                                
+                                // Update notes
+                                if (data.note.trim() === '') {
+                                    setDayNotes(prev => {
+                                        const newState = {...prev};
+                                        delete newState[key];
+                                        return newState;
+                                    });
+                                } else {
+                                    setDayNotes(prev => ({...prev, [key]: data.note}));
+                                }
+                                
                                 setHasGeneratedRecommendations(false);
                             }
                             setTimeout(() => setShowSuccess(false), 1200);
@@ -546,6 +575,13 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 return symptoms[dayKey];
                             }
                             return undefined;
+                        })()}
+                        defaultNote={(() => {
+                            if (selectedDay) {
+                                const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                                return dayNotes[dayKey] || '';
+                            }
+                            return '';
                         })()}
                     />
                     <PredictCyclePopup

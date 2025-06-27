@@ -4,8 +4,9 @@ import Popup from './ExitPopup';
 interface DayNotePopupProps {
     open: boolean;
     onClose: () => void;
-    onSave?: (data: { symptom: string; period: string; flow: string }) => void;
+    onSave?: (data: { symptom: string; period: string; flow: string; note: string }) => void;
     defaultValue?: { symptom: string; period: string; flow: string };
+    defaultNote?: string;
 }
 
 const symptomOptions = [
@@ -26,10 +27,11 @@ const flowOptions = [
     'Heavy'
 ];
 
-const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defaultValue}) => {
+const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defaultValue, defaultNote}) => {
     const [symptom, setSymptom] = useState('');
     const [period, setPeriod] = useState('');
     const [flow, setFlow] = useState('');
+    const [note, setNote] = useState('');
 
     // Reset form when popup opens or defaultValue changes
     useEffect(() => {
@@ -37,8 +39,9 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defau
             setSymptom(defaultValue?.symptom || '');
             setPeriod(defaultValue?.period || '');
             setFlow(defaultValue?.flow || '');
+            setNote(defaultNote || '');
         }
-    }, [open, defaultValue]);
+    }, [open, defaultValue, defaultNote]);
 
     // Clear form when popup closes
     useEffect(() => {
@@ -46,12 +49,13 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defau
             setSymptom('');
             setPeriod('');
             setFlow('');
+            setNote('');
         }
     }, [open]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (onSave) onSave({symptom, period, flow});
+        if (onSave) onSave({symptom, period, flow, note});
         onClose();
     };
 
@@ -92,6 +96,16 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defau
                         <option value="">Select</option>
                         {flowOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
+                </div>
+                <div>
+                    <label className="block text-gray-700 mb-1">Personal Note</label>
+                    <textarea 
+                        className="w-full border rounded px-3 py-2 focus:outline-pink-400 resize-none" 
+                        rows={3}
+                        value={note}
+                        onChange={e => setNote(e.target.value)}
+                        placeholder="Add your personal notes for this day..."
+                    />
                 </div>
                 <button type="submit"
                         className="w-full bg-pink-500 text-white py-2 rounded font-semibold hover:bg-pink-600 transition mt-2">Save

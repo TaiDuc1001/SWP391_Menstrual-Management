@@ -24,3 +24,18 @@
 .cycle-symptom-border {
     @apply border-2 border-indigo-400;
 }
+
+.cycle-note-indicator {
+    position: relative;
+}
+
+.cycle-note-indicator::after {
+    content: '📝';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: 8px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 1px;
+}
