@@ -7,7 +7,6 @@ import MyProfile from '../pages/Doctor/MyProfile';
 import ManageProfile from '../pages/Doctor/ManageProfile';
 import SetupProfile from '../pages/Doctor/SetupProfile';
 import Appointments from '../pages/Doctor/Appointment/Appointments';
-import ConsultationSchedule from '../pages/Doctor/ConsultationSchedule';
 import DoctorProfileGuard from '../components/DoctorProfileGuard';
 
 export const doctorPaths: RouteConfig[] = [
@@ -41,15 +40,8 @@ export const doctorPaths: RouteConfig[] = [
     },
     {
         path: '/doctor/appointments/:id'
-    }, {
+    },    {
         path: '/doctor/appointments/:id/customer'
-    },
-    {
-        path: '/doctor/consultation-schedule',
-        element: <DoctorProfileGuard><ConsultationSchedule/></DoctorProfileGuard>,
-        label: 'Consultation Schedule',
-        iconName: 'FaCalendarAlt',
-        showInSidebar: true
     },
     {
         path: '/doctor/profile',
