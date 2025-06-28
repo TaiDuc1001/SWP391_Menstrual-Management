@@ -60,11 +60,28 @@ export const doctorService = {
 
     // Profile management APIs
     getDoctorProfile: () => {
-        return api.get('/doctors/profile');
+        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        const accountId = userProfile.id;
+        console.log('getDoctorProfile - userProfile:', userProfile);
+        console.log('getDoctorProfile - accountId:', accountId);
+        if (!accountId) {
+            console.error('No accountId found in userProfile:', userProfile);
+            throw new Error('User account ID not found. Please login again.');
+        }
+        return api.get(`/doctors/profile?accountId=${accountId}`);
     },
 
     updateDoctorProfile: (profile: Partial<DoctorProfile>) => {
-        return api.put('/doctors/profile', profile);
+        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        const accountId = userProfile.id;
+        console.log('updateDoctorProfile - userProfile:', userProfile);
+        console.log('updateDoctorProfile - accountId:', accountId);
+        console.log('updateDoctorProfile - profile data:', profile);
+        if (!accountId) {
+            console.error('No accountId found in userProfile:', userProfile);
+            throw new Error('User account ID not found. Please login again.');
+        }
+        return api.put(`/doctors/profile?accountId=${accountId}`, profile);
     },
 
     uploadAvatar: (file: File) => {
@@ -78,7 +95,15 @@ export const doctorService = {
     },
 
     checkProfileComplete: () => {
-        return api.get('/doctors/profile/check-complete');
+        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        const accountId = userProfile.id;
+        console.log('checkProfileComplete - userProfile:', userProfile);
+        console.log('checkProfileComplete - accountId:', accountId);
+        if (!accountId) {
+            console.error('No accountId found in userProfile:', userProfile);
+            throw new Error('User account ID not found. Please login again.');
+        }
+        return api.get(`/doctors/profile/check-complete?accountId=${accountId}`);
     },
 
     // Specialization options

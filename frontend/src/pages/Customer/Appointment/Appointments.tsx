@@ -13,7 +13,6 @@ import {SearchInput} from '../../../components';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
 import AppointmentDetailPopup from '../../../components/feature/Popup/AppointmentDetailPopup';
-import TestResultPopup from '../../../components/feature/Popup/TestResultPopup';
 
 const plusIcon = plusWhiteIcon;
 
@@ -29,7 +28,6 @@ const AppointmentHistory: React.FC = () => {
     const [hideRows, setHideRows] = useState<number[]>([]);
     const [showDetailPopup, setShowDetailPopup] = useState(false);
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
-    const [showResultPopup, setShowResultPopup] = useState(false);
     const navigate = useNavigate();
 
     const {slotOptions, slotMap} = useSlotOptions();
@@ -292,9 +290,6 @@ const AppointmentHistory: React.FC = () => {
                 appointment={selectedAppointment}
             />
         )}
-            {showResultPopup && (
-                <TestResultPopup onClose={() => setShowResultPopup(false)}/>
-            )}
         </div>
     );
 };

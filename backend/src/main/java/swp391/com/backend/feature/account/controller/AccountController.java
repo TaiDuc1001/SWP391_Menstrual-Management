@@ -102,6 +102,7 @@ public class AccountController {
             case DOCTOR:
                 Doctor newDoctor = new Doctor();
                 newDoctor.setAccount(account);
+                // Since @MapsId is used, the doctor ID will be automatically set to account ID
                 Doctor doctor = doctorService.createDoctor(newDoctor);
                 break;
             default:

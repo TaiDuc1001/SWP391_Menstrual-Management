@@ -13,69 +13,16 @@ interface Post {
     content?: string;
 }
 
-const MOCK_POSTS: Post[] = [
-    {
-        id: 1,
-        title: 'Guide to Tracking Menstrual Cycle',
-        category: 'Health',
-        author: 'Dr. Nguyen Van A',
-        status: 'published',
-        createdAt: '2025-06-14',
-        views: 1250,
-        content: `
-      <h2>The Importance of Tracking the Menstrual Cycle</h2>
-      <p>Tracking your menstrual cycle is an important part of women's reproductive health care. This helps you:</p>
-      <ul>
-        <li>Understand your body's patterns</li>
-        <li>Predict the start date of the next period</li>
-        <li>Detect abnormalities early</li>
-        <li>Plan important activities</li>
-      </ul>
-      <h2>Tracking Methods</h2>
-      <p>There are many ways to track your menstrual cycle, from manual recording to using mobile apps. The important thing is to choose a suitable method and maintain it regularly.</p>
-    `
-    },
-    {
-        id: 2,
-        title: 'Top 10 Foods Good for Women\'s Health',
-        category: 'Nutrition',
-        author: 'Dr. Tran Thi B',
-        status: 'published',
-        createdAt: '2025-06-13',
-        views: 890,
-        content: `
-      <h2>Nutrition for Women</h2>
-      <p>A balanced and healthy diet is very important for women\'s health. Here are foods that should be included in your daily menu:</p>
-      <ol>
-        <li>Salmon - rich in omega-3</li>
-        <li>Green vegetables - provide folate</li>
-        <li>Yogurt - good for digestion</li>
-        <li>Blueberries - antioxidants</li>
-        <li>Soybeans - plant-based protein</li>
-      </ol>
-    `
-    },
-    {
-        id: 3,
-        title: 'Signs You Should See a Doctor',
-        category: 'Consultation',
-        author: 'Dr. Le C',
-        status: 'draft',
-        createdAt: '2025-06-12',
-        views: 0,
-        content: `
-      <h2>When Should You See a Doctor?</h2>
-      <p>There are some abnormal signs that women should pay attention to and see a doctor immediately:</p>
-      <ul>
-        <li>Irregular menstrual cycles</li>
-        <li>Severe abdominal pain</li>
-        <li>Abnormal bleeding</li>
-        <li>Unusual changes in menstrual flow</li>
-      </ul>
-      <p><strong>Note:</strong> This is a draft, more details need to be added.</p>
-    `
-    }
-];
+interface Post {
+    id: number;
+    title: string;
+    category: string;
+    author: string;
+    status: 'published' | 'draft' | 'pending';
+    createdAt: string;
+    views: number;
+    content?: string;
+}
 
 const CATEGORIES = ['All', 'Health', 'Nutrition', 'Consultation', 'News', 'Guide'];
 const STATUS_FILTERS = ['All', 'published', 'draft', 'pending'];
@@ -84,7 +31,7 @@ const Blogs: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedStatus, setSelectedStatus] = useState('All');
-    const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
+    const [posts, setPosts] = useState<Post[]>([]);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
     const filteredPosts = posts.filter(post => {

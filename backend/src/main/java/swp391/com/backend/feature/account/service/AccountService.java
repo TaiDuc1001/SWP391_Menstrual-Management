@@ -33,17 +33,22 @@ public class AccountService {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        return switch(account.getRole().toString()) {
-            case "ADMIN" -> adminRepository.findById(account.getId())
-                    .orElseThrow(() -> new RuntimeException("Admin not found"));
-            case "CUSTOMER" -> customerRepository.findById(account.getId())
-                    .orElseThrow(() -> new RuntimeException("Customer not found"));
-            case "DOCTOR" -> doctorRepository.findById(account.getId())
-                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
-            case "STAFF" -> staffRepository.findById(account.getId())
-                    .orElseThrow(() -> new RuntimeException("Staff not found"));
-            default -> throw new IllegalStateException("Unexpected value: " + account.getRole().toString());
-        };
+        switch(account.getRole().toString()) {
+            case "ADMIN":
+                return adminRepository.findById(account.getId())
+                        .orElseThrow(() -> new RuntimeException("Admin not found"));
+            case "CUSTOMER":
+                return customerRepository.findById(account.getId())
+                        .orElseThrow(() -> new RuntimeException("Customer not found"));
+            case "DOCTOR":
+                return doctorRepository.findById(account.getId())
+                        .orElseThrow(() -> new RuntimeException("Doctor not found"));
+            case "STAFF":
+                return staffRepository.findById(account.getId())
+                        .orElseThrow(() -> new RuntimeException("Staff not found"));
+            default:
+                throw new IllegalStateException("Unexpected value: " + account.getRole().toString());
+        }
     }
 
     public Account deleteAccount(Long id) {

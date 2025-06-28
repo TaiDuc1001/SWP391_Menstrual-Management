@@ -2,10 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { doctorService, DoctorProfile } from '../../api/services/doctorService';
-import { mockDoctorService } from '../../api/services/mockDoctorService';
-
-// Toggle between real API and mock for testing
-const USE_MOCK_API = true;
 
 const MyProfile: React.FC = () => {
     const navigate = useNavigate();
@@ -17,21 +13,11 @@ const MyProfile: React.FC = () => {
         const loadProfile = async () => {
             try {
                 setLoading(true);
-                const service = USE_MOCK_API ? mockDoctorService : doctorService;
-                const response = await service.getDoctorProfile();
+                const response = await doctorService.getDoctorProfile();
                 setProfile(response.data);
             } catch (error) {
                 console.error('Error loading profile:', error);
-                // Fallback to mock data for demo
-                const mockProfile: DoctorProfile = {
-                    id: 1,
-                    name: "Dr. Sarah Johnson",
-                    specialization: "Gynecology",
-                    price: 50,
-                    isProfileComplete: true
-                };
-
-                setProfile(mockProfile);
+                setProfile(null);
             } finally {
                 setLoading(false);
             }

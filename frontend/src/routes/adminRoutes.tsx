@@ -6,7 +6,6 @@ import Dashboard from '../pages/Admin/Dashboard';
 import Accounts from '../pages/Admin/Account/Accounts';
 import Blogs from '../pages/Admin/Blog/Blogs';
 import Examinations from '../pages/Admin/Examination/Examinations';
-import TestPanels from '../pages/Admin/TestPanel/TestPanels';
 import Reports from '../pages/Admin/Statistic/Reports';
 
 export const adminPaths: RouteConfig[] = [
@@ -47,8 +46,6 @@ export const adminPaths: RouteConfig[] = [
         path: '/admin/examinations/:id'
     },
     {
-        path: '/admin/examinations/:id/result'
-    }, {
         path: '/admin/blogs',
         element: <Blogs/>,
         label: 'Blogs',
@@ -58,15 +55,6 @@ export const adminPaths: RouteConfig[] = [
     {
         path: '/admin/blogs/:id'
     }, {
-        path: '/admin/panels',
-        element: <TestPanels/>,
-        label: 'Test Panels',
-        iconName: 'FaCogs',
-        showInSidebar: true
-    }, {
-        path: '/admin/panels/:id'
-    },
-    {
         path: '/admin/reports',
         element: <Reports/>,
         label: 'Reports',

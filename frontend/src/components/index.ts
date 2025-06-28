@@ -35,8 +35,6 @@ export {default as Footer} from './layout/Footer/Footer';
 export {default as PublicLayout} from './layout/Layouts/PublicLayout';
 
 
-export {default as TestResultPopup} from './feature/Popup/TestResultPopup';
-
 // Profile Management
 export { default as DoctorProfileGuard } from './DoctorProfileGuard';
 export * from './common/ProgressBar';

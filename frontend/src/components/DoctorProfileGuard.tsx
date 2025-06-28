@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { doctorService } from '../api/services/doctorService';
-import { mockDoctorService } from '../api/services/mockDoctorService';
-
-// Toggle between real API and mock for testing
-const USE_MOCK_API = true;
 
 interface DoctorProfileGuardProps {
     children: React.ReactNode;
@@ -28,15 +24,8 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
-                const service = USE_MOCK_API ? mockDoctorService : doctorService;
-                
-                // First ensure profile is initialized for current user
-                if (USE_MOCK_API) {
-                    mockDoctorService.initializeProfile();
-                }
-                
                 // Then check if profile is complete
-                const response = await service.checkProfileComplete();
+                const response = await doctorService.checkProfileComplete();
                 setIsProfileComplete(response.data.isComplete);
             } catch (error) {
                 console.error('Error checking profile status:', error);

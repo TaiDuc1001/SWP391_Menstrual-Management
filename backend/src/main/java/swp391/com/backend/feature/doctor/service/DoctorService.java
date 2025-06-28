@@ -27,11 +27,35 @@ public class DoctorService {
     }
 
     public Doctor updateDoctor(Long id, Doctor doctorDetails) {
-        Doctor doctor = findDoctorById(id).toBuilder()
-                .name(doctorDetails.getName())
-                .specialization(doctorDetails.getSpecialization())
-                .price(doctorDetails.getPrice())
-                .build();
-        return doctorRepository.save(doctor);
+        try {
+            Doctor doctor = findDoctorById(id).toBuilder()
+                    .name(doctorDetails.getName())
+                    .specialization(doctorDetails.getSpecialization())
+                    .price(doctorDetails.getPrice())
+                    .build();
+            return doctorRepository.save(doctor);
+        } catch (EntityNotFoundException e) {
+            // If doctor doesn't exist, create a new one with the given ID
+            Doctor newDoctor = doctorDetails.toBuilder()
+                    .id(id)
+                    .build();
+            return doctorRepository.save(newDoctor);
+        }
+    }
+
+    public Doctor createOrUpdateDoctor(Long accountId, Doctor doctorDetails) {
+        return doctorRepository.findById(accountId)
+                .map(existingDoctor -> existingDoctor.toBuilder()
+                        .name(doctorDetails.getName())
+                        .specialization(doctorDetails.getSpecialization())
+                        .price(doctorDetails.getPrice())
+                        .build())
+                .map(doctorRepository::save)
+                .orElseGet(() -> {
+                    Doctor newDoctor = doctorDetails.toBuilder()
+                            .id(accountId)
+                            .build();
+                    return doctorRepository.save(newDoctor);
+                });
     }
 }

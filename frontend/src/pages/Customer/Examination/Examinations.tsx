@@ -6,12 +6,10 @@ import {formatExaminationStatus, createMultiFieldSearch} from '../../../utils/st
 
 import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 
-import TestingTitleBar from '../../../components/feature/TitleBar/TestingTitleBar';
 import {SearchInput, UtilityBar} from '../../../components';
 import ExaminationsTable from '../../../components/feature/Table/Customer/Examinations';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import DatePickerInput from '../../../components/feature/Filter/DatePickerInput';
-import TestResultPopup from '../../../components/feature/Popup/TestResultPopup';
 
 const plusIcon = plusWhiteIcon;
 
@@ -26,7 +24,6 @@ const Examinations: React.FC = () => {
     const [selectedStatus, setSelectedStatus] = useState('');
 
     const [hideRows, setHideRows] = useState<number[]>([]);
-    const [showResultPopup, setShowResultPopup] = useState(false);
     const [currentExaminationId, setCurrentExaminationId] = useState<number | null>(null);
     const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([{
         value: '',
@@ -210,12 +207,6 @@ const Examinations: React.FC = () => {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            <TestingTitleBar
-                title="Testing history"
-                onNewOrder={() => {
-                    navigate('/customer/sti-tests/packages');
-                }}
-                newOrderIcon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}/>
             <UtilityBar>
                 <SearchInput
                     value={searchTerm}
@@ -273,7 +264,6 @@ const Examinations: React.FC = () => {
                 onViewRows={(ids: number[]) => {
                     if (ids && ids.length > 0) {
                         setCurrentExaminationId(ids[0]);
-                        setShowResultPopup(true);
                     }
                 }}
                 onViewExaminationDetail={handleViewExaminationDetail}
@@ -286,12 +276,6 @@ const Examinations: React.FC = () => {
                 sortConfig={sortConfig}
                 onSort={handleSort}
             />
-            {showResultPopup && currentExaminationId !== null && (
-                <TestResultPopup onClose={() => {
-                    setShowResultPopup(false);
-                    setCurrentExaminationId(null);
-                }} examinationId={currentExaminationId}/>
-            )}
         </div>
     );
 };
