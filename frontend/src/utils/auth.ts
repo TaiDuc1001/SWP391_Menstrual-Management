@@ -5,6 +5,11 @@ export interface UserProfile {
     profile: {
         id: number;
         name: string;
+        phoneNumber?: string;
+        dateOfBirth?: string;
+        address?: string;
+        gender?: boolean;
+        cccd?: string;
     } | null;
 }
 

@@ -9,7 +9,7 @@ import google from '../../assets/icons/google.svg';
 import facebook from '../../assets/icons/facebook.svg';
 
 interface SignUpProps {
-    onSignUp: () => void;
+    onSignUp: (role?: string) => void;
 }
 
 const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
@@ -32,15 +32,48 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             return;
         }
         try {
-            await api.post('/accounts/register', {email, password, role}, {
+            const response = await api.post('/accounts/register', {email, password, role}, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            onSignUp();
-            navigate('/customer/dashboard');
+            
+            // Ensure the response has the correct structure for user profile
+            const userData = {
+                id: response.data.id,
+                email: response.data.email || email,
+                role: response.data.role || role,
+                profile: response.data.profile || null // This might be null for new registrations
+            };
+            
+            // Store user data in localStorage
+            localStorage.setItem('userProfile', JSON.stringify(userData));
+            localStorage.setItem('role', role);
+            
+            onSignUp(role);
+            
+            // Redirect based on role
+            if (role.toLowerCase() === 'customer') {
+                navigate('/customer/complete-profile');
+            } else if (role.toLowerCase() === 'doctor') {
+                navigate('/doctor/dashboard');
+            } else {
+                // Fallback for any other roles (shouldn't happen with current registration restrictions)
+                navigate('/customer/dashboard');
+            }
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed');
+            console.error('Registration error:', err);
+            
+            // Handle specific error cases
+            if (err.response?.status === 409 || err.response?.data?.message?.includes('email')) {
+                setError('Email already exists. Please use a different email or try logging in.');
+            } else if (err.response?.status === 400) {
+                setError(err.response?.data?.message || 'Invalid registration data. Please check your information.');
+            } else if (err.response?.status === 500) {
+                setError('Server error. Please try again later.');
+            } else {
+                setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            }
         }
     };
 
@@ -110,8 +143,6 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
                                 onChange={e => setRole(e.target.value)}
                             >
                                 <option value="" disabled>Select role</option>
-                                <option value="admin">Admin</option>
-                                <option value="staff">Staff</option>
                                 <option value="customer">Customer</option>
                                 <option value="doctor">Doctor</option>
                             </select>

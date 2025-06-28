@@ -74,8 +74,6 @@ const AdminHeader: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => 
                 <span className="flex items-center cursor-pointer group">
                     <img src="https://i.pravatar.cc/36?img=3" alt="MyProfile"
                          className="rounded-full w-10 h-10 border-2 border-blue-300 mx-2 hover:ring-2 hover:ring-blue-200 transition-all duration-200 shadow-md"/>
-                    <span
-                        className="ml-2 font-poppins font-semibold text-gray-700 group-hover:text-blue-500 transition-colors duration-200">{userName}</span>
                 </span>
                 <button
                     onClick={() => {
