@@ -10,7 +10,6 @@ import swp391.com.backend.feature.customer.data.CustomerRepository;
 import swp391.com.backend.feature.doctor.data.DoctorRepository;
 import swp391.com.backend.feature.staff.data.StaffRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,15 +23,6 @@ public class AccountService {
 
     public Account createAccount(Account account) {
         return accountRepository.save(account);
-    }
-
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
-
-    public Account getAccountById(Long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
     public Account login(String email, String password) {

@@ -6,13 +6,10 @@ import swp391.com.backend.feature.account.dto.AccountDTO;
 import swp391.com.backend.feature.account.data.Account;
 import swp391.com.backend.feature.account.dto.request.AccountCreateRequest;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
     @Mapping(target = "profile", ignore = true)
     AccountDTO toDTO(Account entity);
-    List<AccountDTO> toDTOs(List<Account> entities);
     Account toEntity(AccountDTO dto);
     Account toEntity(AccountCreateRequest request);
 }
