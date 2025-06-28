@@ -43,19 +43,26 @@ const Panels: React.FC = () => {
             
             // Priority order: health checkups and pregnancy first, HIV last
             const getOrderPriority = (name: string, type: string) => {
-                // Khám thai và sức khỏe lên đầu
-                if (name.includes('thai') || name.includes('pregnancy') || 
-                    name.includes('khám') || name.includes('health') || 
-                    type.includes('general') || type.includes('basic')) return 1;
+                // Health checkups and pregnancy first
+                if (
+                    name.includes('pregnancy') ||
+                    name.includes('health') ||
+                    name.includes('checkup') ||
+                    type.includes('general') ||
+                    type.includes('basic')
+                ) return 1;
                 
-                // Các gói xét nghiệm STI khác ở giữa
-                if (name.includes('giang mai') || name.includes('syphilis') ||
-                    name.includes('chlamydia') || name.includes('gonorrhea')) return 2;
+                // Other STI panels in the middle
+                if (
+                    name.includes('syphilis') ||
+                    name.includes('chlamydia') ||
+                    name.includes('gonorrhea')
+                ) return 2;
                 
-                // HIV xuống cuối cùng
+                // HIV last
                 if (name.includes('hiv')) return 999;
                 
-                // Các gói khác
+                // Others
                 return 500;
             };
             
@@ -177,7 +184,7 @@ const Panels: React.FC = () => {
                                 </span>
                                 {pkg.price && (
                                     <span className="font-bold text-pink-600 text-base">
-                                        {pkg.price.toLocaleString()} VND
+                                        {pkg.price.toLocaleString()} USD
                                     </span>
                                 )}
                             </div>
