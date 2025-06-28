@@ -4,9 +4,10 @@ import {Navigate} from 'react-router-dom';
 
 import Dashboard from '../pages/Doctor/Dashboard';
 import MyProfile from '../pages/Doctor/MyProfile';
+import ManageProfile from '../pages/Doctor/ManageProfile';
+import SetupProfile from '../pages/Doctor/SetupProfile';
 import Appointments from '../pages/Doctor/Appointment/Appointments';
-import ConsultationSchedule from '../pages/Doctor/ConsultationSchedule';
-import QuestionInbox from '../pages/Doctor/QuestionInbox';
+import DoctorProfileGuard from '../components/DoctorProfileGuard';
 
 export const doctorPaths: RouteConfig[] = [
     {
@@ -15,40 +16,36 @@ export const doctorPaths: RouteConfig[] = [
         showInSidebar: false
     },
     {
+        path: '/doctor/setup-profile',
+        element: <SetupProfile/>,
+        showInSidebar: false
+    },
+    {
+        path: '/doctor/manage-profile',
+        element: <ManageProfile/>,
+        showInSidebar: false
+    },
+    {
         path: '/doctor/dashboard',
-        element: <Dashboard/>,
+        element: <DoctorProfileGuard><Dashboard/></DoctorProfileGuard>,
         label: 'Dashboard',
         iconName: 'FaHome',
         showInSidebar: true
     }, {
         path: '/doctor/appointments',
-        element: <Appointments/>,
+        element: <DoctorProfileGuard><Appointments/></DoctorProfileGuard>,
         label: 'Appointments',
         iconName: 'FaUserMd',
         showInSidebar: true
     },
     {
         path: '/doctor/appointments/:id'
-    }, {
+    },    {
         path: '/doctor/appointments/:id/customer'
     },
     {
-        path: '/doctor/consultation-schedule',
-        element: <ConsultationSchedule/>,
-        label: 'Consultation Schedule',
-        iconName: 'FaCalendarAlt',
-        showInSidebar: true
-    },
-    {
-        path: '/doctor/question-inbox',
-        element: <QuestionInbox/>,
-        label: 'Question Inbox',
-        iconName: 'FaEnvelope',
-        showInSidebar: true
-    },
-    {
         path: '/doctor/profile',
-        element: <MyProfile/>,
+        element: <DoctorProfileGuard><MyProfile/></DoctorProfileGuard>,
         label: 'My Profile',
         iconName: 'FaUser',
         showInSidebar: true

@@ -15,6 +15,14 @@ export interface Doctor {
     appointments?: number;
 }
 
+export interface DoctorProfile {
+    id: number;
+    name: string;
+    specialization: string;
+    price: number;
+    isProfileComplete: boolean;
+}
+
 export interface DoctorFilters {
     specialization?: string;
     experience?: number;
@@ -48,5 +56,53 @@ export const doctorService = {
 
     deleteDoctor: (id: number) => {
         return api.delete(`/doctors/${id}`);
+    },
+
+    // Profile management APIs
+    getDoctorProfile: () => {
+        return api.get('/doctors/profile');
+    },
+
+    updateDoctorProfile: (profile: Partial<DoctorProfile>) => {
+        return api.put('/doctors/profile', profile);
+    },
+
+    uploadAvatar: (file: File) => {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        return api.post('/doctors/avatar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    },
+
+    checkProfileComplete: () => {
+        return api.get('/doctors/profile/check-complete');
+    },
+
+    // Specialization options
+    getSpecializations: () => {
+        return api.get('/doctors/specializations');
+    },
+
+    // Authentication token management
+    setAuthToken: (token: string) => {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        localStorage.setItem('doctor_token', token);
+    },
+
+    removeAuthToken: () => {
+        delete api.defaults.headers.common['Authorization'];
+        localStorage.removeItem('doctor_token');
+    },
+
+    // Initialize auth from localStorage
+    initAuth: () => {
+        const token = localStorage.getItem('doctor_token');
+        if (token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        }
+        return !!token;
     }
 };

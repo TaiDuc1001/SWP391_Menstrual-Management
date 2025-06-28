@@ -24,8 +24,19 @@ function App() {
     const handleAuthToggle = () => {
         setIsAuthenticated(false);
         setRole(null);
+        
+        // Clear authentication-related data
         localStorage.removeItem('role');
         localStorage.removeItem('userProfile');
+        localStorage.removeItem('doctor_token');
+        
+        // NOTE: We intentionally DO NOT clear profile data (mock_doctor_profile_*) 
+        // to preserve user's profile information between login sessions
+        // This is the expected behavior - profile data should persist
+        
+        // Also clear the old shared keys if they exist (for backward compatibility)
+        localStorage.removeItem('mock_doctor_profile');
+        localStorage.removeItem('menstrual_symptoms');
     };
 
     const handleSignUp = (userRole?: string) => {

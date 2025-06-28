@@ -207,10 +207,30 @@ const MenstrualCycleDashboard: React.FC = () => {
         return '';
     };
 
+    // Get user-specific storage key for symptoms
+    const getCurrentUserId = (): string => {
+        try {
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                const parsed = JSON.parse(userProfile);
+                return parsed.id?.toString() || 'default';
+            }
+        } catch (error) {
+            console.error('Error getting user ID:', error);
+        }
+        return 'default';
+    };
+
+    const getSymptomsStorageKey = (): string => {
+        const userId = getCurrentUserId();
+        return `menstrual_symptoms_${userId}`;
+    };
+
     const [symptoms, setSymptoms] = useState<{
         [key: string]: { symptom: string; period: string; flow: string }
     }>(() => {
-        const saved = localStorage.getItem('menstrual_symptoms');
+        const storageKey = getSymptomsStorageKey();
+        const saved = localStorage.getItem(storageKey);
         return saved ? JSON.parse(saved) : {};
     });
 
@@ -222,7 +242,8 @@ const MenstrualCycleDashboard: React.FC = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('menstrual_symptoms', JSON.stringify(symptoms));
+        const storageKey = getSymptomsStorageKey();
+        localStorage.setItem(storageKey, JSON.stringify(symptoms));
     }, [symptoms]);
 
     useEffect(() => {

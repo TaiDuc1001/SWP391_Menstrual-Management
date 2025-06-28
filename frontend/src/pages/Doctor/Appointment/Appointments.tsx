@@ -77,7 +77,6 @@ const Appointments: React.FC = () => {
     const fetchAppointments = async () => {
         try {
             const response = await api.get('/appointments/doctor');
-            console.log('All appointments:', response.data); 
             const filteredAppointments = response.data.filter(
                 (apt: Appointment) =>
                     (apt.appointmentStatus === 'BOOKED' ||
@@ -87,7 +86,6 @@ const Appointments: React.FC = () => {
                         apt.appointmentStatus === 'WAITING' ||
                         apt.appointmentStatus === 'IN_PROGRESS')
             );
-            console.log('Filtered appointments:', filteredAppointments); 
             setAppointments(filteredAppointments);
         } catch (error) {
             console.error('Error fetching appointments:', error);
