@@ -9,7 +9,7 @@ import swp391.com.backend.feature.account.data.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountDTO {
-    private Long id;
+    private Integer id;
     private String email;
     private Role role;
     private ActorDTO profile;
