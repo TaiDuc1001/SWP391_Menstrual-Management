@@ -65,6 +65,21 @@ export const useCycles = () => {
         }
     };
 
+    const predictCycleForMonth = async (year: number, month: number) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const prediction = await cycleService.predictCycleForMonth(year, month);
+            return prediction;
+        } catch (err) {
+            setError('Failed to predict cycle for month');
+            console.error('Error predicting cycle for month:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchCycles();
     }, []);
@@ -76,7 +91,8 @@ export const useCycles = () => {
         refetch: fetchCycles,
         createCycle,
         deleteAllCycles,
-        getClosestCycle
+        getClosestCycle,
+        predictCycleForMonth
     };
 };
 

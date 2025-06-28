@@ -50,5 +50,15 @@ export const cycleService = {
     async getNextPrediction(): Promise<CycleData> {
         const response = await api.post('/cycles/next-prediction');
         return response.data;
+    },
+
+    async predictCycleForMonth(year: number, month: number): Promise<CycleData | null> {
+        try {
+            const response = await api.get(`/cycles/predict/${year}/${month}?customerId=3`);
+            return response.data;
+        } catch (error) {
+            console.error('Error predicting cycle for month:', error);
+            return null;
+        }
     }
 };

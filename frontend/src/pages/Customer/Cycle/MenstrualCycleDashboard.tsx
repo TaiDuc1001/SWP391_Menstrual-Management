@@ -4,6 +4,8 @@ import MenstrualCyclePopup from '../../../components/feature/Popup/MenstrualCycl
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
+import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
+import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
 import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
@@ -17,10 +19,14 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
+    const [showPredictPopup, setShowPredictPopup] = useState(false);
+    const [showPredictedCalendar, setShowPredictedCalendar] = useState(false);
+    const [selectedPredictMonth, setSelectedPredictMonth] = useState('');
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
-    const navigate = useNavigate();    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
+    const navigate = useNavigate();
+    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
     const { recommendations, loading: aiLoading, generateRecommendations } = useAIRecommendations();
 
     useEffect(() => {
@@ -40,7 +46,9 @@ const MenstrualCycleDashboard: React.FC = () => {
         for (let day = 1; day <= daysInMonth; day++) days.push(day);
         return days;
     };
-    const days = getDaysInMonth(currentMonth, currentYear);      const getPredictedCycles = () => {
+    const days = getDaysInMonth(currentMonth, currentYear);
+
+    const getPredictedCycles = () => {
         if (!cycles || cycles.length === 0) return [];
         
         const lastCycle = cycles[cycles.length - 1];
@@ -62,30 +70,136 @@ const MenstrualCycleDashboard: React.FC = () => {
             });
         }
         return predictions;
-    };    const getDayTypeForCalendar = (day: number | null) => {
+    };    
+    
+    const getDayTypeForCalendar = (day: number | null) => {
         if (!day) return '';
         
         const currentDate = new Date(currentYear, currentMonth, day);
+        const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
-        if (cycles && cycles.length > 0) {
-            for (const cycle of cycles) {
-                const cycleStart = new Date(cycle.cycleStartDate);
-                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration - 1) * 24 * 60 * 60 * 1000);
-                
-                if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
-                    return 'period';
+        const isCurrentMonth = currentYear === now.getFullYear() && currentMonth === now.getMonth();
+        
+        if (isCurrentMonth) {
+            const symptomData = symptoms[dayKey];
+            if (symptomData && symptomData.period === 'Menstruating' && symptomData.flow === 'Heavy') {
+                return 'period';
+            }
+            
+            const hasPeriodDaysInMonth = Object.keys(symptoms).some(key => {
+                if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
+                    const symptom = symptoms[key];
+                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
                 }
+                return false;
+            });
+            
+            if (hasPeriodDaysInMonth) {
+                const periodDays = Object.keys(symptoms)
+                    .filter(key => {
+                        if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
+                            const symptom = symptoms[key];
+                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                        }
+                        return false;
+                    })
+                    .map(key => new Date(key))
+                    .sort((a, b) => a.getTime() - b.getTime());
                 
-                const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+                if (periodDays.length > 0) {
+                    const firstPeriodDay = periodDays[0];
+                    const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                        return 'ovulation';
+                    }
+                    
+                    if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                        return 'fertile';
+                    }
+                }
+            }
+        }
+        
+        const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+        
+        const hasPeriodDaysInPreviousMonth = Object.keys(symptoms).some(key => {
+            if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
+                const symptom = symptoms[key];
+                return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+            }
+            return false;
+        });
+        
+        if (hasPeriodDaysInPreviousMonth) {
+            const periodDaysFromPreviousMonth = Object.keys(symptoms)
+                .filter(key => {
+                    if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
+                        const symptom = symptoms[key];
+                        return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
+                    }
+                    return false;
+                })
+                .map(key => new Date(key))
+                .sort((a, b) => a.getTime() - b.getTime());
+            
+            if (periodDaysFromPreviousMonth.length > 0) {
+                const firstPeriodDay = periodDaysFromPreviousMonth[0];
+                const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
                 const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
                 const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
                 
-                if (currentDate.toDateString() === ovulationDate.toDateString()) {
-                    return 'ovulation';
+                if (ovulationDate.getMonth() === currentMonth && ovulationDate.getFullYear() === currentYear) {
+                    if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                        return 'ovulation';
+                    }
                 }
                 
-                if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                    return 'fertile';
+                if (fertileStart.getMonth() === currentMonth && fertileStart.getFullYear() === currentYear ||
+                    fertileEnd.getMonth() === currentMonth && fertileEnd.getFullYear() === currentYear ||
+                    (fertileStart.getTime() <= currentDate.getTime() && currentDate.getTime() <= fertileEnd.getTime())) {
+                    if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                        return 'fertile';
+                    }
+                }
+            }
+        }
+        
+        if (cycles && cycles.length > 0) {
+            const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
+            
+            const cycleForCurrentMonth = sortedCycles.find(cycle => {
+                const cycleDate = new Date(cycle.cycleStartDate);
+                return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
+            });
+            
+            if (cycleForCurrentMonth) {
+                const cycleStart = new Date(cycleForCurrentMonth.cycleStartDate);
+                
+                const isCurrentOrFutureMonth = currentYear > now.getFullYear() || 
+                    (currentYear === now.getFullYear() && currentMonth >= now.getMonth());
+                
+                if (!isCurrentOrFutureMonth) {
+                    const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
+                        return 'period';
+                    }
+                    
+                    const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+                    
+                    if (currentDate.toDateString() === ovulationDate.toDateString()) {
+                        return 'ovulation';
+                    }
+                    
+                    if (currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
+                        return 'fertile';
+                    }
                 }
             }
         }
@@ -100,16 +214,58 @@ const MenstrualCycleDashboard: React.FC = () => {
         return saved ? JSON.parse(saved) : {};
     });
 
+    const [dayNotes, setDayNotes] = useState<{
+        [key: string]: string
+    }>(() => {
+        const saved = localStorage.getItem('menstrual_day_notes');
+        return saved ? JSON.parse(saved) : {};
+    });
+
     useEffect(() => {
         localStorage.setItem('menstrual_symptoms', JSON.stringify(symptoms));
     }, [symptoms]);
 
-    const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);    useEffect(() => {
+    useEffect(() => {
+        localStorage.setItem('menstrual_day_notes', JSON.stringify(dayNotes));
+    }, [dayNotes]);
+
+    useEffect(() => {
+        // Clear period days for June 2025 (month 5, since months are 0-indexed)
+        const targetYear = 2025;
+        const targetMonth = 5; // June
+        const daysInJune = getDaysInMonth(targetMonth, targetYear);
+        
+        const newSymptoms = { ...symptoms };
+        let hasChanges = false;
+        
+        daysInJune.forEach(day => {
+            if (day) {
+                const dayKey = `${targetYear}-${String(targetMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const symptomData = newSymptoms[dayKey];
+                if (symptomData && symptomData.period === 'Menstruating' && symptomData.flow === 'Heavy') {
+                    delete newSymptoms[dayKey];
+                    hasChanges = true;
+                }
+            }
+        });
+
+        if (hasChanges) {
+            setSymptoms(newSymptoms);
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 1200);
+        }
+    }, []); // Empty dependency array to run only once on mount
+
+    const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
+    
+    useEffect(() => {
         if (cycles.length > 0 && !hasGeneratedRecommendations && !aiLoading) {
             generateRecommendations(cycles, symptoms);
             setHasGeneratedRecommendations(true);
         }
-    }, [cycles.length, hasGeneratedRecommendations, aiLoading]);    const handleGenerateRecommendations = () => {
+    }, [cycles.length, hasGeneratedRecommendations, aiLoading]);
+    
+    const handleGenerateRecommendations = () => {
         if (cycles.length > 0) {
             generateRecommendations(cycles, symptoms);
         }
@@ -141,12 +297,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                         </h2>
                         <div className="flex gap-2">
                             <button
-                                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
-                                onClick={() => setShowCyclePopup(true)}>Declare Cycle
-                            </button>
-                            <button
-                                className="bg-white border border-purple-400 text-purple-600 px-3 py-2 rounded-lg font-semibold shadow hover:bg-purple-50 transition-all duration-200 transform hover:scale-105"
-                                onClick={() => setShowReminderPopup(true)}>Settings
+                                className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-purple-600 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
+                                onClick={() => setShowPredictPopup(true)}>Predict Cycle
                             </button>
                         </div>
                     </div>
@@ -160,6 +312,12 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     Cycle calendar for {currentMonth + 1}/{currentYear}
                                 </h3>
                                 <div className="flex gap-2">
+                                    {(currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth < now.getMonth())) && (
+                                        <button
+                                            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                                            onClick={() => setShowCyclePopup(true)}>Declare Cycle
+                                        </button>
+                                    )}
                                     <button onClick={() => setCurrentMonth(m => m === 0 ? 11 : m - 1)}
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'<'}</button>
                                     <button onClick={() => setCurrentMonth(m => m === 11 ? 0 : m + 1)}
@@ -170,22 +328,27 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
                                          className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
-                                ))}                                {days.map((day, idx) => {                                    let type = '';
+                                ))}
+                                {days.map((day, idx) => {
+                                    let type = '';
                                     if (cycles && cycles.length > 0) {
                                         type = getDayTypeForCalendar(day);
                                     }
-                                      let hasSymptom = false;
+                                    let hasSymptom = false;
+                                    let hasNote = false;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
+                                        hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
                                     }
-                                      let style = "cycle-regular-day";
+                                    let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
                                     if (type === 'fertile') style = "cycle-fertile-day";
                                     if (type === 'ovulation') style = "cycle-ovulation-day";
                                     
                                     if (hasSymptom) style += ' cycle-symptom-border';
+                                    if (hasNote) style += ' cycle-note-indicator';
                                     
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
@@ -193,7 +356,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                 <div
                                                     className={style}
                                                     onClick={() => {
-                                                        if (day && new Date(currentYear, currentMonth, day) < new Date()) {
+                                                        if (day) {
                                                             setSelectedDay(day);
                                                             setShowDayNote(true);
                                                         }
@@ -205,18 +368,17 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         </div>
                                     );
                                 })}
-                            </div>                            <div className="flex gap-4 mt-2 text-xs items-center">
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-red-600 rounded-full inline-block"></span> Period days
+                            </div>
+                            <div className="flex gap-4 mt-2 text-xs items-center">
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared/noted)
                                 </div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-yellow-400 rounded-full inline-block"></span> Ovulation day
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day (predicted)
                                 </div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-teal-400 rounded-full inline-block"></span> Fertile window
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window (predicted)
                                 </div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block"></span> Has symptoms
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
+                                </div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
                                 </div>
                             </div>
                         </div>
@@ -272,7 +434,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         <th className="py-1 font-medium">Cycle (days)</th>
                                     </tr>
                                     </thead>
-                                    <tbody>                                        {historyData.map((row: CycleData, idx: number) => (
+                                    <tbody>
+                                        {historyData.map((row: CycleData, idx: number) => (
                                         <tr key={idx}
                                             className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
                                             <td className="py-1">
@@ -292,8 +455,10 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>                        <div
-                            className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 col-span-2 flex flex-col gap-2">                            <h3 className="font-semibold text-lg text-purple-800 mb-2 flex items-center gap-2">
+                        </div>
+                        <div
+                            className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 col-span-2 flex flex-col gap-2">
+                            <h3 className="font-semibold text-lg text-purple-800 mb-2 flex items-center gap-2">
                                 <span
                                     className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                 AI Recommendations
@@ -337,7 +502,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                    </div>                    <MenstrualCyclePopup
+                    </div>
+                    <MenstrualCyclePopup
                         open={showCyclePopup}
                         onClose={() => setShowCyclePopup(false)}
                         onSave={async (data) => {
@@ -367,7 +533,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                             setShowSuccess(true);
                             setTimeout(() => setShowSuccess(false), 1200);
                         }}
-                    />                    <DayNotePopup
+                    />
+                    <DayNotePopup
                         open={showDayNote}
                         onClose={() => setShowDayNote(false)} 
                         onSave={(data) => {
@@ -376,6 +543,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                             if (selectedDay) {
                                 const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
                                 
+                                // Update symptoms
                                 if (data.symptom === 'None') {
                                     setSymptoms(prev => {
                                         const newState = {...prev};
@@ -383,8 +551,20 @@ const MenstrualCycleDashboard: React.FC = () => {
                                         return newState;
                                     });
                                 } else {
-                                    setSymptoms(prev => ({...prev, [key]: data}));
+                                    setSymptoms(prev => ({...prev, [key]: {symptom: data.symptom, period: data.period, flow: data.flow}}));
                                 }
+                                
+                                // Update notes
+                                if (data.note.trim() === '') {
+                                    setDayNotes(prev => {
+                                        const newState = {...prev};
+                                        delete newState[key];
+                                        return newState;
+                                    });
+                                } else {
+                                    setDayNotes(prev => ({...prev, [key]: data.note}));
+                                }
+                                
                                 setHasGeneratedRecommendations(false);
                             }
                             setTimeout(() => setShowSuccess(false), 1200);
@@ -396,6 +576,30 @@ const MenstrualCycleDashboard: React.FC = () => {
                             }
                             return undefined;
                         })()}
+                        defaultNote={(() => {
+                            if (selectedDay) {
+                                const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                                return dayNotes[dayKey] || '';
+                            }
+                            return '';
+                        })()}
+                    />
+                    <PredictCyclePopup
+                        open={showPredictPopup}
+                        onClose={() => setShowPredictPopup(false)}
+                        onSave={(selectedMonth) => {
+                            setSelectedPredictMonth(selectedMonth);
+                            setShowPredictPopup(false);
+                            setShowPredictedCalendar(true);
+                        }}
+                    />
+                    <PredictedCalendarPopup
+                        open={showPredictedCalendar}
+                        onClose={() => {
+                            setShowPredictedCalendar(false);
+                            setShowPredictPopup(true);
+                        }}
+                        selectedMonth={selectedPredictMonth}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>
