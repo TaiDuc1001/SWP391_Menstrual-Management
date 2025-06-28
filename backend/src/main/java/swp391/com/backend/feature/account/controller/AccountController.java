@@ -1,9 +1,12 @@
 package swp391.com.backend.feature.account.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swp391.com.backend.feature.account.assembler.AccountAssembler;
 import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.account.dto.AccountDTO;
 import swp391.com.backend.feature.account.dto.request.AccountCreateRequest;
@@ -28,7 +31,10 @@ import swp391.com.backend.feature.staff.dto.StaffDTO;
 import swp391.com.backend.feature.staff.mapper.StaffMapper;
 import swp391.com.backend.feature.account.data.Role;
 
+import java.util.List;
 import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -43,6 +49,23 @@ public class AccountController {
     private final StaffMapper staffMapper;
     private final CustomerService customerService;
     private final DoctorService doctorService;
+    private final AccountAssembler accountAssembler;
+
+    @GetMapping
+    public ResponseEntity<CollectionModel<EntityModel<AccountDTO>>> getAllAccounts() {
+        List<Account> accounts = accountService.getAllAccounts();
+        List<AccountDTO> accountDTOs = accountMapper.toDTOs(accounts);
+        CollectionModel<EntityModel<AccountDTO>> collectionModel = accountAssembler.toCollectionModel(accountDTOs);
+        return ResponseEntity.ok(collectionModel);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EntityModel<AccountDTO>> getAccount(@PathVariable long id) {
+        Account account = accountService.getAccountById(id);
+        AccountDTO dto = accountMapper.toDTO(account);
+        EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
+        return ResponseEntity.ok(entityModel);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {

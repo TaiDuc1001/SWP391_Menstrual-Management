@@ -15,6 +15,13 @@ public class CustomerController {
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
+        Customer customer = customerService.getCustomerById(id);
+        CustomerDTO customerDTO = customerMapper.toDTO(customer);
+        return ResponseEntity.ok(customerDTO);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id,@RequestBody CustomerDTO customerDTO) {
         Customer customerDetails = customerMapper.toEntity(customerDTO);
