@@ -31,6 +31,7 @@ import swp391.com.backend.feature.staff.dto.StaffDTO;
 import swp391.com.backend.feature.staff.mapper.StaffMapper;
 import swp391.com.backend.feature.account.data.Role;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
 
@@ -102,13 +103,14 @@ public class AccountController {
                 dto.setProfile(null);
                 break;
         }
-        return ResponseEntity.ok(dto);
+        EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
+        return ResponseEntity.ok(entityModel);
     }
 
 
 
     @PostMapping("/register")
-    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountCreateRequest request) {
+    public ResponseEntity<EntityModel<AccountDTO>> createAccount(@RequestBody AccountCreateRequest request) {
         request.setRole(request.getRole().toUpperCase());
         Role role = Role.valueOf(request.getRole());
         Account newAccount = accountMapper.toEntity(request);
@@ -131,6 +133,7 @@ public class AccountController {
                 throw new IllegalArgumentException("Invalid role for registration: " + request.getRole());
         }
         AccountDTO dto = accountMapper.toDTO(account);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(entityModel);
     }
 }
