@@ -107,8 +107,6 @@ public class AccountController {
         return ResponseEntity.ok(entityModel);
     }
 
-
-
     @PostMapping("/register")
     public ResponseEntity<EntityModel<AccountDTO>> createAccount(@RequestBody AccountCreateRequest request) {
         request.setRole(request.getRole().toUpperCase());

@@ -19,7 +19,8 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountDTO
     public EntityModel<AccountDTO> toModel(AccountDTO entity) {
         EntityModel<AccountDTO> model = EntityModel.of(entity,
                 linkTo(AccountController.class).slash(entity.getId()).withSelfRel(),
-                linkTo(AccountController.class).withRel("allAccounts"));
+                linkTo(AccountController.class).withRel("allAccounts"),
+                linkTo(AccountController.class).slash("register").withRel("register"));
 
         if(entity.getRole() == Role.CUSTOMER) {
             model.add(linkTo(methodOn(CustomerController.class).getCustomerById(entity.getId())).withRel("customer"));
