@@ -34,4 +34,9 @@ public class CustomerService {
 
         return customerRepository.save(customer);
     }
+
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
+    }
 }
