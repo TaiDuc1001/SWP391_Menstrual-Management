@@ -14,12 +14,6 @@ import PanelDetailModal from '../../../components/feature/Modal/PanelDetailModal
 import ConfirmDialog from '../../../components/common/Dialog/ConfirmDialog';
 import { useNotification } from '../../../context/NotificationContext';
 
-const tabs = [
-    {label: 'Service Management'},
-    {label: 'Consultation Packages'},
-    {label: 'Promotions'},
-];
-
 const getStatusBadge = (status: string) => {
     if (status === 'ACTIVE' || status === 'Active') {
         return <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">Active</span>;
@@ -91,7 +85,6 @@ const getPanelTagColor = (tag: string) => {
 };
 
 const TestPanels: React.FC = () => {
-    const [activeTab, setActiveTab] = useState(0);
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
@@ -246,17 +239,6 @@ const TestPanels: React.FC = () => {
                 </h1>
             </div>
             <div className="bg-white rounded shadow w-full p-4">
-                <div className="flex border-b mb-4">
-                    {tabs.map((tab, idx) => (
-                        <button
-                            key={tab.label}
-                            className={`px-6 py-2 font-medium border-b-2 transition ${activeTab === idx ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600'}`}
-                            onClick={() => setActiveTab(idx)}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
                 <div className="flex justify-between items-center mb-4">
                     <div className="relative w-[400px]">
                         <input

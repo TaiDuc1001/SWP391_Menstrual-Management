@@ -94,7 +94,7 @@ const PanelDetailModal: React.FC<PanelDetailModalProps> = ({
                     {/* Basic Information */}
                     <div className="space-y-4">
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <h3 className="text-lg font-semibold mb-3 text-gray-800">Basic Information</h3>
+                            <h3 className="text-xl font-extrabold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2 uppercase tracking-wide">Basic Information</h3>
                             
                             <div className="space-y-3">
                                 <div>
@@ -118,10 +118,13 @@ const PanelDetailModal: React.FC<PanelDetailModalProps> = ({
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    {/* Categories and Test Types */}
+                    <div className="space-y-4">
                         {/* Categories */}
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <h3 className="text-lg font-semibold mb-3 text-gray-800">Categories</h3>
+                            <h3 className="text-xl font-extrabold text-purple-700 mb-4 border-b-2 border-purple-200 pb-2 uppercase tracking-wide">Categories</h3>
                             
                             <div className="space-y-3">
                                 <div>
@@ -139,12 +142,10 @@ const PanelDetailModal: React.FC<PanelDetailModalProps> = ({
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Test Types */}
-                    <div className="space-y-4">
+                        {/* Test Types */}
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <h3 className="text-lg font-semibold mb-3 text-gray-800">
+                            <h3 className="text-xl font-extrabold text-green-700 mb-4 border-b-2 border-green-200 pb-2 uppercase tracking-wide">
                                 Test Types ({panel.testTypes.length})
                             </h3>
                             
@@ -181,7 +182,7 @@ const PanelDetailModal: React.FC<PanelDetailModalProps> = ({
                 {/* Timestamps */}
                 {(panel.createdAt || panel.updatedAt) && (
                     <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h3 className="text-lg font-semibold mb-3 text-gray-800">Timestamps</h3>
+                        <h3 className="text-xl font-extrabold text-gray-700 mb-4 border-b-2 border-gray-200 pb-2 uppercase tracking-wide">Timestamps</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             {panel.createdAt && (
                                 <div>
