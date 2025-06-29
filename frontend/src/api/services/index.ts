@@ -7,6 +7,7 @@ export {approvalService} from './approvalService';
 export {doctorService} from './doctorService';
 export {examinationService} from './examinationService';
 export {accountService} from './accountService';
+export {blogService} from './blogService';
 export * from './cycleService';
 export * from './aiService';
 export * from './cycleSymptomService';
@@ -20,3 +21,12 @@ export type {ApprovalRequest, ApprovalFilters} from './approvalService';
 export type {Doctor, DoctorFilters} from './doctorService';
 export type {ExaminationDetail, ExaminationFilters, TestResult} from './examinationService';
 export type {Account, AccountForUI, CreateAccountRequest, UpdateAccountRequest} from './accountService';
+export type {
+    SimpleBlogDTO, 
+    BlogDTO, 
+    BlogCreateRequest, 
+    BlogUpdateRequest, 
+    BlogFilterRequest, 
+    BlogPaginatedResponse,
+    BlogCategory
+} from './blogService';

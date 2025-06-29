@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter as Router} from 'react-router-dom';
 import AppRouter from './AppRouter';
+import { NotificationProvider } from './context/NotificationContext';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -48,13 +49,15 @@ function App() {
     };
     return (
         <Router>
-            <AppRouter
-                isAuthenticated={isAuthenticated}
-                onAuthToggle={handleAuthToggle}
-                handleLogin={handleLogin}
-                handleSignUp={handleSignUp}
-                role={role}
-            />
+            <NotificationProvider>
+                <AppRouter
+                    isAuthenticated={isAuthenticated}
+                    onAuthToggle={handleAuthToggle}
+                    handleLogin={handleLogin}
+                    handleSignUp={handleSignUp}
+                    role={role}
+                />
+            </NotificationProvider>
         </Router>
     );
 }

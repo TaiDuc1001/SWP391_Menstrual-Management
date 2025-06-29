@@ -15,7 +15,8 @@ export {
     contentManagementService,
     approvalService,
     doctorService,
-    accountService
+    accountService,
+    blogService
 } from './services';
 
 
@@ -37,7 +38,14 @@ export type {
     Account,
     AccountForUI,
     CreateAccountRequest,
-    UpdateAccountRequest
+    UpdateAccountRequest,
+    SimpleBlogDTO,
+    BlogDTO,
+    BlogCreateRequest,
+    BlogUpdateRequest,
+    BlogFilterRequest,
+    BlogPaginatedResponse,
+    BlogCategory
 } from './services';
 
 

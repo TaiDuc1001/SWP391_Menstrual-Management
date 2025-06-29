@@ -35,14 +35,22 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({post, onClose}) => {
                                 <h3 className="text-2xl font-bold text-gray-900 mb-2" id="modal-title">
                                     {post.title}
                                 </h3>
-                                <div className="flex items-center text-sm text-gray-500 space-x-4 mb-4">
-                                    <span>Author: {post.author}</span>
+                                <div className="flex items-center text-sm text-gray-500 space-x-4 mb-4 flex-wrap">
+                                    <span>Author: <span className="font-medium">{post.author}</span></span>
                                     <span>•</span>
-                                    <span>Category: {post.category}</span>
+                                    <span>Category: <span className="font-medium">{post.category}</span></span>
                                     <span>•</span>
-                                    <span>Published: {post.createdAt}</span>
+                                    <span>Created: <span className="font-medium">{post.createdAt}</span></span>
                                     <span>•</span>
-                                    <span>{post.views.toLocaleString()} views</span>
+                                    <span><span className="font-medium">{post.views.toLocaleString()}</span> views</span>
+                                    <span>•</span>
+                                    <span className={`px-2 py-1 text-xs rounded-full ${
+                                        post.status === 'published' ? 'bg-green-100 text-green-800' :
+                                        post.status === 'draft' ? 'bg-gray-100 text-gray-800' :
+                                        'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                        {post.status}
+                                    </span>
                                 </div>
                             </div>
                             <button
