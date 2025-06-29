@@ -129,133 +129,6 @@ const MenstrualCycleDashboard: React.FC = () => {
         if (!day) return '';
         
         const currentDate = new Date(currentYear, currentMonth, day);
-        const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        const isCurrentMonth = currentYear === now.getFullYear() && currentMonth === now.getMonth();
-        
-        if (isCurrentMonth) {
-            const symptomData = symptoms[dayKey];
-            if (symptomData && symptomData.period === 'Menstruating' && symptomData.flow === 'Heavy') {
-                return 'period';
-            }
-            
-            const hasPeriodDaysInMonth = Object.keys(symptoms).some(key => {
-                if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
-                    const symptom = symptoms[key];
-                    return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                }
-                return false;
-            });
-            
-            if (hasPeriodDaysInMonth) {
-                const periodDays = Object.keys(symptoms)
-                    .filter(key => {
-                        if (key.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`)) {
-                            const symptom = symptoms[key];
-                            return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                        }
-                        return false;
-                    })
-                    .map(key => new Date(key))
-                    .sort((a, b) => a.getTime() - b.getTime());
-                
-                if (periodDays.length > 0) {
-                    const firstPeriodDay = periodDays[0];
-                    
-                    const correspondingCycle = cycles?.find(cycle => {
-                        const cycleDate = new Date(cycle.cycleStartDate);
-                        return Math.abs(cycleDate.getTime() - firstPeriodDay.getTime()) < 7 * 24 * 60 * 60 * 1000;
-                    });
-                    
-                    const hasSpecialDaysData = correspondingCycle ? hasSpecialDaysForCycle(correspondingCycle.cycleStartDate) : { hasOvulation: false, hasFertile: false };
-                    
-                    if (correspondingCycle && hasSpecialDaysData.hasOvulation && isDateInSpecialDays(currentDate, correspondingCycle.cycleStartDate, 'ovulation')) {
-                        return 'ovulation';
-                    }
-                    
-                    if (correspondingCycle && hasSpecialDaysData.hasFertile && isDateInSpecialDays(currentDate, correspondingCycle.cycleStartDate, 'fertile')) {
-                        return 'fertile';
-                    }
-                    
-                    if (!correspondingCycle || !hasSpecialDaysData.hasOvulation || !hasSpecialDaysData.hasFertile) {
-                        const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
-                        const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                        const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                        
-                        if ((!correspondingCycle || !hasSpecialDaysData.hasOvulation) && currentDate.toDateString() === ovulationDate.toDateString()) {
-                            return 'ovulation';
-                        }
-                        
-                        if ((!correspondingCycle || !hasSpecialDaysData.hasFertile) && currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                            return 'fertile';
-                        }
-                    }
-                }
-            }
-        }
-        
-        const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-        const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-        
-        const hasPeriodDaysInPreviousMonth = Object.keys(symptoms).some(key => {
-            if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
-                const symptom = symptoms[key];
-                return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-            }
-            return false;
-        });
-        
-        if (hasPeriodDaysInPreviousMonth) {
-            const periodDaysFromPreviousMonth = Object.keys(symptoms)
-                .filter(key => {
-                    if (key.startsWith(`${previousYear}-${String(previousMonth + 1).padStart(2, '0')}-`)) {
-                        const symptom = symptoms[key];
-                        return symptom && symptom.period === 'Menstruating' && symptom.flow === 'Heavy';
-                    }
-                    return false;
-                })
-                .map(key => new Date(key))
-                .sort((a, b) => a.getTime() - b.getTime());
-            
-            if (periodDaysFromPreviousMonth.length > 0) {
-                const firstPeriodDay = periodDaysFromPreviousMonth[0];
-                
-                const correspondingCycle = cycles?.find(cycle => {
-                    const cycleDate = new Date(cycle.cycleStartDate);
-                    return Math.abs(cycleDate.getTime() - firstPeriodDay.getTime()) < 7 * 24 * 60 * 60 * 1000;
-                });
-                
-                const hasSpecialDaysData = correspondingCycle ? hasSpecialDaysForCycle(correspondingCycle.cycleStartDate) : { hasOvulation: false, hasFertile: false };
-                
-                if (correspondingCycle && hasSpecialDaysData.hasOvulation && isDateInSpecialDays(currentDate, correspondingCycle.cycleStartDate, 'ovulation')) {
-                    return 'ovulation';
-                }
-                
-                if (correspondingCycle && hasSpecialDaysData.hasFertile && isDateInSpecialDays(currentDate, correspondingCycle.cycleStartDate, 'fertile')) {
-                    return 'fertile';
-                }
-                
-                if (!correspondingCycle || !hasSpecialDaysData.hasOvulation || !hasSpecialDaysData.hasFertile) {
-                    const ovulationDate = new Date(firstPeriodDay.getTime() + 14 * 24 * 60 * 60 * 1000);
-                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                    
-                    if (ovulationDate.getMonth() === currentMonth && ovulationDate.getFullYear() === currentYear) {
-                        if ((!correspondingCycle || !hasSpecialDaysData.hasOvulation) && currentDate.toDateString() === ovulationDate.toDateString()) {
-                            return 'ovulation';
-                        }
-                    }
-                    
-                    if (fertileStart.getMonth() === currentMonth && fertileStart.getFullYear() === currentYear ||
-                        fertileEnd.getMonth() === currentMonth && fertileEnd.getFullYear() === currentYear ||
-                        (fertileStart.getTime() <= currentDate.getTime() && currentDate.getTime() <= fertileEnd.getTime())) {
-                        if ((!correspondingCycle || !hasSpecialDaysData.hasFertile) && currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                            return 'fertile';
-                        }
-                    }
-                }
-            }
-        }
         
         if (cycles && cycles.length > 0) {
             const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
@@ -476,7 +349,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 })}
                             </div>
                             <div className="flex gap-4 mt-2 text-xs items-center">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared/noted)
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day (predicted)
                                 </div>
