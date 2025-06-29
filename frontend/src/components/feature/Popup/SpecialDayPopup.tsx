@@ -96,13 +96,6 @@ const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (onSave) {
-            onSave({ 
-                periodDays: '',
-                ovulationDays: formatDateRange(ovulationStartDate, ovulationEndDate),
-                fertileWindow: formatDateRange(fertileStartDate, fertileEndDate)
-            });
-        }
         onClose();
     };    return (
         <div className={`fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-40 ${open ? '' : 'hidden'}`}>
