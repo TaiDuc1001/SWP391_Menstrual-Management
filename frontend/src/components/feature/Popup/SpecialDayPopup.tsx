@@ -7,7 +7,7 @@ import pen from '../../../assets/icons/pen.svg';
 interface SpecialDayPopupProps {
     open: boolean;
     onClose: () => void;
-    onSave?: (data: { periodDays: string; ovulationDays: string; fertileWindow: string }) => void;
+    onSave?: (data: { ovulationDays: string; fertileWindow: string }) => void;
 }
 
 const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave }) => {
@@ -96,6 +96,17 @@ const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        const ovulationDays = formatDateRange(ovulationStartDate, ovulationEndDate);
+        const fertileWindow = formatDateRange(fertileStartDate, fertileEndDate);
+        
+        if (onSave) {
+            onSave({
+                ovulationDays,
+                fertileWindow
+            });
+        }
+        
         onClose();
     };    return (
         <div className={`fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-40 ${open ? '' : 'hidden'}`}>
