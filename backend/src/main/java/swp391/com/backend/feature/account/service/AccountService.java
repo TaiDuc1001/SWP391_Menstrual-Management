@@ -2,6 +2,7 @@ package swp391.com.backend.feature.account.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swp391.com.backend.feature.account.data.Account;
 import swp391.com.backend.feature.account.data.AccountRepository;
 import swp391.com.backend.feature.account.data.Actor;
@@ -16,6 +17,8 @@ import swp391.com.backend.feature.doctor.data.DoctorRepository;
 import swp391.com.backend.feature.staff.data.Staff;
 import swp391.com.backend.feature.staff.data.StaffRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +30,9 @@ public class AccountService {
     private final CustomerRepository customerRepository;
     private final AdminRepository adminRepository;
     private final StaffRepository staffRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public Account createAccount(Account account) {
         return accountRepository.save(account);
@@ -54,9 +60,12 @@ public class AccountService {
     }
 
     public Account deleteAccount(Long id) {
+        System.out.println("Attempting to delete account with id: " + id);
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        System.out.println("Account found: " + account);
         accountRepository.delete(account);
+        System.out.println("Account deleted successfully.");
         return account;
     }
 
@@ -208,26 +217,132 @@ public class AccountService {
         return getAccountWithProfile(account.getId());
     }
 
+    @Transactional
     public AccountManagementDTO updateAccountWithProfile(Long id, String email, String password, Role role, String name, String phoneNumber, Boolean status) {
         Account account = findAccountById(id);
+        Role oldRole = account.getRole();
         
         // Check if email already exists for another account
         if (!account.getEmail().equals(email) && accountRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists: " + email);
         }
         
-        // Update account
+        // Update account first
         account.setEmail(email);
         if (password != null && !password.isEmpty()) {
             account.setPassword(password); // In real app, this should be hashed
         }
         account.setRole(role);
         account.setStatus(status);
-        account = accountRepository.save(account);
+        account = accountRepository.saveAndFlush(account);
         
-        // Update profile based on role
+        // Handle profile changes based on role
+        if (oldRole != role) {
+            // Role changed - need to handle profile transition
+            handleRoleTransitionSafely(id, oldRole, role, name, phoneNumber);
+        } else {
+            // Same role - just update existing profile
+            updateExistingProfile(id, role, name, phoneNumber);
+        }
+        
+        return getAccountWithProfile(id);
+    }
+
+    private void handleRoleTransitionSafely(Long accountId, Role oldRole, Role newRole, String name, String phoneNumber) {
+        // First delete old profile using a separate transaction
+        deleteOldProfile(accountId, oldRole);
+        
+        // Detach any remaining entities from current session to avoid merge conflicts
+        entityManager.flush();
+        entityManager.clear();
+        
+        // Re-fetch the account to ensure we have a clean reference
+        Account freshAccount = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        
+        // Create new profile with proper account reference
+        createNewProfileWithAccount(freshAccount, newRole, name, phoneNumber);
+    }
+
+    private void deleteOldProfile(Long accountId, Role oldRole) {
         try {
-            Actor actor = getActorByAccountId(id);
+            switch (oldRole) {
+                case CUSTOMER:
+                    Customer customer = customerRepository.findById(accountId).orElse(null);
+                    if (customer != null) {
+                        customer.setAccount(null); // Remove account reference to prevent cascade deletion
+                        customerRepository.save(customer);
+                        customerRepository.deleteById(accountId);
+                    }
+                    break;
+                case DOCTOR:
+                    Doctor doctor = doctorRepository.findById(accountId).orElse(null);
+                    if (doctor != null) {
+                        doctor.setAccount(null); // Remove account reference to prevent cascade deletion
+                        doctorRepository.save(doctor);
+                        doctorRepository.deleteById(accountId);
+                    }
+                    break;
+                case STAFF:
+                    Staff staff = staffRepository.findById(accountId).orElse(null);
+                    if (staff != null) {
+                        staff.setAccount(null); // Remove account reference to prevent cascade deletion
+                        staffRepository.save(staff);
+                        staffRepository.deleteById(accountId);
+                    }
+                    break;
+                case ADMIN:
+                    Admin admin = adminRepository.findById(accountId).orElse(null);
+                    if (admin != null) {
+                        admin.setAccount(null); // Remove account reference to prevent cascade deletion
+                        adminRepository.save(admin);
+                        adminRepository.deleteById(accountId);
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            // Profile might not exist, that's okay
+        }
+    }
+
+    private void createNewProfileWithAccount(Account account, Role newRole, String name, String phoneNumber) {
+        // Create profile entities with proper Account reference to avoid hibernate issues
+        switch (newRole) {
+            case CUSTOMER:
+                Customer customer = Customer.builder()
+                        .account(account)
+                        .name(name)
+                        .phoneNumber(phoneNumber)
+                        .build();
+                customerRepository.save(customer);
+                break;
+            case DOCTOR:
+                Doctor doctor = Doctor.builder()
+                        .account(account)
+                        .name(name)
+                        .build();
+                doctorRepository.save(doctor);
+                break;
+            case STAFF:
+                Staff staff = Staff.builder()
+                        .account(account)
+                        .name(name)
+                        .build();
+                staffRepository.save(staff);
+                break;
+            case ADMIN:
+                Admin admin = Admin.builder()
+                        .account(account)
+                        .name(name)
+                        .build();
+                adminRepository.save(admin);
+                break;
+        }
+    }
+
+    private void updateExistingProfile(Long accountId, Role role, String name, String phoneNumber) {
+        try {
+            Actor actor = getActorByAccountId(accountId);
             switch (role) {
                 case CUSTOMER:
                     Customer customer = (Customer) actor;
@@ -256,7 +371,5 @@ public class AccountService {
         } catch (Exception e) {
             // Profile might not exist yet, that's okay
         }
-        
-        return getAccountWithProfile(id);
     }
 }
