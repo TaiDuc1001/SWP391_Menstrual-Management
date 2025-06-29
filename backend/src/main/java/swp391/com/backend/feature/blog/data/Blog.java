@@ -1,15 +1,21 @@
 package swp391.com.backend.feature.blog.data;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.feature.admin.data.Admin;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "blogs")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Blog {
     @Id
@@ -30,5 +36,14 @@ public class Blog {
 
     private LocalDateTime publishDate;
 
+    @Enumerated(EnumType.ORDINAL)
     private BlogCategory category;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
