@@ -3,12 +3,14 @@ import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 import searchIcon from '../../../assets/icons/search.svg';
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
+import eyeIcon from '../../../assets/icons/eye.svg';
 import NewServiceButton from '../../../components/common/Button/AdminCreateButton';
 import { usePanels } from '../../../api/hooks/usePanels';
 import { useTestTypes } from '../../../api/hooks/useTestTypes';
 import { Panel, CreatePanelRequest, UpdatePanelRequest, CreateTestTypeRequest } from '../../../api/services/panelService';
 import PanelModal from '../../../components/feature/Modal/PanelModal';
 import TestTypeModal from '../../../components/feature/Modal/TestTypeModal';
+import PanelDetailModal from '../../../components/feature/Modal/PanelDetailModal';
 import ConfirmDialog from '../../../components/common/Dialog/ConfirmDialog';
 import { useNotification } from '../../../context/NotificationContext';
 
@@ -98,9 +100,11 @@ const TestPanels: React.FC = () => {
     const [isPanelModalOpen, setIsPanelModalOpen] = useState(false);
     const [isTestTypeModalOpen, setIsTestTypeModalOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
     const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
     const [panelToDelete, setPanelToDelete] = useState<Panel | null>(null);
+    const [panelForDetail, setPanelForDetail] = useState<Panel | null>(null);
     
     // API hooks
     const { 
@@ -142,6 +146,11 @@ const TestPanels: React.FC = () => {
         setModalMode('edit');
         setSelectedPanel(panel);
         setIsPanelModalOpen(true);
+    };
+
+    const handleViewDetail = (panel: Panel) => {
+        setPanelForDetail(panel);
+        setIsDetailModalOpen(true);
     };
 
     const handleDeletePanel = (panel: Panel) => {
@@ -290,25 +299,22 @@ const TestPanels: React.FC = () => {
                         <tr className="bg-gray-50 text-gray-700">
                             <th className="p-2 text-left">Panel Name</th>
                             <th className="p-2 text-left">Description</th>
-                            <th className="p-2 text-center">Duration (min)</th>
                             <th className="p-2 text-center">Response Time (h)</th>
                             <th className="p-2 text-center">Price</th>
                             <th className="p-2 text-center">Type</th>
-                            <th className="p-2 text-center">Tag</th>
-                            <th className="p-2 text-center">Test Types</th>
                             <th className="p-2 text-center">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
                         {panelsLoading ? (
                             <tr>
-                                <td colSpan={9} className="p-4 text-center">
+                                <td colSpan={6} className="p-4 text-center">
                                     Loading panels...
                                 </td>
                             </tr>
                         ) : panels.length === 0 ? (
                             <tr>
-                                <td colSpan={9} className="p-4 text-center text-gray-500">
+                                <td colSpan={6} className="p-4 text-center text-gray-500">
                                     No panels found
                                 </td>
                             </tr>
@@ -319,7 +325,6 @@ const TestPanels: React.FC = () => {
                                     <td className="p-2 max-w-xs truncate" title={panel.description}>
                                         {panel.description}
                                     </td>
-                                    <td className="p-2 text-center">{panel.duration}</td>
                                     <td className="p-2 text-center">{panel.responseTime}</td>
                                     <td className="p-2 text-center text-blue-600 font-semibold">
                                         {formatPrice(panel.price)}
@@ -330,18 +335,15 @@ const TestPanels: React.FC = () => {
                                         </span>
                                     </td>
                                     <td className="p-2 text-center">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPanelTagColor(panel.panelTag)}`}>
-                                            {formatPanelTag(panel.panelTag)}
-                                        </span>
-                                    </td>
-                                    <td className="p-2 text-center">
-                                        <span className="text-xs text-gray-600">
-                                            {panel.testTypes.length} test(s)
-                                        </span>
-                                    </td>
-                                    <td className="p-2 text-center">
                                         <button 
-                                            className="inline-block mr-4" 
+                                            className="inline-block mr-2" 
+                                            title="Xem chi tiết"
+                                            onClick={() => handleViewDetail(panel)}
+                                        >
+                                            <img src={eyeIcon} alt="view detail" className="w-4 h-4"/>
+                                        </button>
+                                        <button 
+                                            className="inline-block mr-2" 
                                             title="Edit"
                                             onClick={() => handleEditPanel(panel)}
                                         >
@@ -407,6 +409,13 @@ const TestPanels: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Panel Detail Modal */}
+            <PanelDetailModal
+                isOpen={isDetailModalOpen}
+                onClose={() => setIsDetailModalOpen(false)}
+                panel={panelForDetail}
+            />
 
             {/* Panel Modal */}
             <PanelModal
