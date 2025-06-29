@@ -21,19 +21,21 @@ export interface AccountForUI {
     avatar: string;
 }
 
-const roleMapping: Record<string, string> = {
-    'CUSTOMER': 'Customer',
-    'DOCTOR': 'Consultant',
-    'STAFF': 'Staff',
-    'ADMIN': 'Manager'
-};
+export interface CreateAccountRequest {
+    email: string;
+    password: string;
+    role: 'CUSTOMER' | 'DOCTOR' | 'STAFF' | 'ADMIN';
+    name: string;
+    phoneNumber: string;
+    status: boolean;
+}
 
 const mapAccountToUI = (account: Account): AccountForUI => ({
     id: account.id,
     name: account.name,
     email: account.email,
     password: '********',
-    role: roleMapping[account.role] || account.role,
+    role: account.role,
     phone: account.phoneNumber || 'N/A',
     status: account.status ? 'Active' : 'Inactive',
     avatar: account.avatar || ''
@@ -46,6 +48,16 @@ export const accountService = {
             return response.data.map(mapAccountToUI);
         } catch (error) {
             console.error('Error fetching accounts:', error);
+            throw error;
+        }
+    },
+
+    createAccount: async (accountData: CreateAccountRequest): Promise<Account> => {
+        try {
+            const response = await api.post<Account>('/accounts/admin', accountData);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating account:', error);
             throw error;
         }
     }

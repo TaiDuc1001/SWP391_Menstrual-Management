@@ -7,11 +7,12 @@ import refreshIcon from "../../../assets/icons/refresh.svg";
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
 import userAvt from '../../../assets/icons/avatar.svg';
-import { accountService, AccountForUI } from '../../../api';
+import { accountService, AccountForUI, CreateAccountRequest } from '../../../api';
+import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 
 
 const roles = ['Customer', 'Consultant', 'Staff', 'Manager'];
-const statuses = ['Active', 'Inactive', 'Pending', 'Locked'];
+const statuses = ['Active', 'Locked'];
 
 const plusIcon = plusWhiteIcon;
 
@@ -26,6 +27,8 @@ const Accounts: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const roleRef = useRef<HTMLDivElement>(null);
     const statusRef = useRef<HTMLDivElement>(null);
 
@@ -45,6 +48,20 @@ const Accounts: React.FC = () => {
 
     const handleRefresh = async () => {
         await fetchAccounts();
+    };
+
+    const handleCreateUser = async (userData: CreateAccountRequest) => {
+        try {
+            setIsCreating(true);
+            await accountService.createAccount(userData);
+            await fetchAccounts(); // Refresh the list
+            setShowCreateModal(false);
+        } catch (error) {
+            console.error('Error creating user:', error);
+            throw error; // Re-throw to let modal handle the error
+        } finally {
+            setIsCreating(false);
+        }
     };
 
     useEffect(() => {
@@ -91,13 +108,13 @@ const Accounts: React.FC = () => {
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
-            case 'Customer':
+            case 'CUSTOMER':
                 return 'bg-green-100 text-green-600';
-            case 'Consultant':
+            case 'DOCTOR':
                 return 'bg-yellow-100 text-yellow-600';
-            case 'Staff':
+            case 'STAFF':
                 return 'bg-blue-100 text-blue-600';
-            case 'Manager':
+            case 'ADMIN':
                 return 'bg-purple-100 text-purple-600';
             default:
                 return 'bg-gray-100 text-gray-600';
@@ -124,7 +141,10 @@ const Accounts: React.FC = () => {
 
             <div className="bg-white p-4 rounded shadow w-full mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-black">User management</h1>
-                <NewUserButton icon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}>
+                <NewUserButton 
+                    icon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}
+                    onClick={() => setShowCreateModal(true)}
+                >
                     Create new user
                 </NewUserButton>
             </div>
@@ -310,6 +330,12 @@ const Accounts: React.FC = () => {
                 </div>
             </div>
 
+            <CreateUserModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSubmit={handleCreateUser}
+                loading={isCreating}
+            />
         </div>
     );
 };
