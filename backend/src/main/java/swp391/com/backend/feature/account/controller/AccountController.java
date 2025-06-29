@@ -183,15 +183,4 @@ public class AccountController {
             return ResponseEntity.notFound().build();
         }
     }
-    
-    @PutMapping("/admin/{id}/toggle-status")
-    public ResponseEntity<?> toggleAccountStatus(@PathVariable Long id) {
-        try {
-            Account account = accountService.toggleAccountStatus(id);
-            AccountManagementDTO accountDto = accountService.getAccountWithProfile(id);
-            return ResponseEntity.ok(accountDto);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

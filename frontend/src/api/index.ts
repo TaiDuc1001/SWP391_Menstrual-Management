@@ -14,7 +14,8 @@ export {
     stiTestService,
     contentManagementService,
     approvalService,
-    doctorService
+    doctorService,
+    accountService
 } from './services';
 
 
@@ -32,7 +33,11 @@ export type {
     ApprovalRequest,
     ApprovalFilters,
     Doctor,
-    DoctorFilters
+    DoctorFilters,
+    Account,
+    AccountForUI,
+    CreateAccountRequest,
+    UpdateAccountRequest
 } from './services';
 
 

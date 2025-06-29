@@ -1,9 +1,11 @@
 package swp391.com.backend.feature.examination.data;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import swp391.com.backend.feature.schedule.data.Slot;
 import swp391.com.backend.feature.examination.data.Examination;
 import swp391.com.backend.feature.examination.data.ExaminationStatus;
@@ -31,5 +33,15 @@ public interface ExaminationRepository extends JpaRepository<Examination, Long> 
 
     @Query("SELECT e.slot FROM Examination e WHERE e.date = :date AND e.examinationStatus NOT IN (swp391.com.backend.feature.examination.data.ExaminationStatus.CANCELLED, swp391.com.backend.feature.examination.data.ExaminationStatus.COMPLETED)")
     List<Slot> findBookedSlotsByDate(@Param("date") LocalDate date);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Examination e SET e.staff = null WHERE e.staff.id = :staffId")
+    void updateStaffToNullByStaffId(@Param("staffId") Long staffId);
+    
+    @Modifying
+    @Transactional
+    @Query("UPDATE Examination e SET e.customer = null WHERE e.customer.id = :customerId")
+    void updateCustomerToNullByCustomerId(@Param("customerId") Long customerId);
 
 }

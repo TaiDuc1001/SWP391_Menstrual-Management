@@ -7,63 +7,20 @@ import refreshIcon from "../../../assets/icons/refresh.svg";
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
 import userAvt from '../../../assets/icons/avatar.svg';
+import { accountService, AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../../api';
+import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
+import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
 
 
-const roles = ['Customer', 'Consultant', 'Staff', 'Manager'];
-const statuses = ['Active', 'Inactive', 'Pending', 'Locked'];
-
+const roles = ['CUSTOMER', 'DOCTOR', 'STAFF', 'ADMIN'];
+const statuses = ['Active', 'Locked'];
 
 const plusIcon = plusWhiteIcon;
 
-const users = [
-    {
-        id: 1,
-        name: 'Mai Nguyen',
-        email: 'mainguyen@gmail.com',
-        password: '********',
-        role: 'Customer',
-        phone: '0988 123 456',
-        status: 'Active',
-        avatar: userAvt,
-    },
-    {
-        id: 2,
-        name: 'An Tran',
-        email: 'antran@gmail.com',
-        password: '********',
-        role: 'Consultant',
-        phone: '0912 987 654',
-        status: 'Active',
-        avatar: userAvt,
-    },
-    {
-        id: 3,
-        name: 'Hang Le',
-        email: 'hangle@gmail.com',
-        password: '********',
-        role: 'Staff',
-        phone: '0902 456 123',
-        status: 'Locked',
-        avatar: userAvt,
-    },
-    {
-        id: 4,
-        name: 'Quang Do',
-        email: 'quangdo@gmail.com',
-        password: '********',
-        role: 'Manager',
-        phone: '0978 654 321',
-        status: 'Active',
-        avatar: userAvt,
-    },
-];
-
-
-const handleRefresh = () => {
-};
-
-
 const Accounts: React.FC = () => {
+    const [users, setUsers] = useState<AccountForUI[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [showRoleDropdown, setShowRoleDropdown] = useState(false);
@@ -71,8 +28,97 @@ const Accounts: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<AccountForUI | null>(null);
+    const [isCreating, setIsCreating] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const roleRef = useRef<HTMLDivElement>(null);
     const statusRef = useRef<HTMLDivElement>(null);
+
+    const fetchAccounts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const accounts = await accountService.getAllAccounts();
+            setUsers(accounts);
+        } catch (err) {
+            setError('Failed to fetch accounts');
+            console.error('Error fetching accounts:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRefresh = async () => {
+        setLoading(true);
+        await fetchAccounts();
+        // Reset filters and pagination
+        setSelectedRole(null);
+        setSelectedStatus(null);
+        setSearchTerm('');
+        setCurrentPage(1);
+    };
+
+    const handleCreateUser = async (userData: CreateAccountRequest) => {
+        try {
+            setIsCreating(true);
+            await accountService.createAccount(userData);
+            await fetchAccounts(); // Refresh the list
+            setShowCreateModal(false);
+        } catch (error) {
+            console.error('Error creating user:', error);
+            throw error; // Re-throw to let modal handle the error
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
+    const handleUpdateUser = async (userData: UpdateAccountRequest) => {
+        if (!selectedUser) return;
+        
+        try {
+            setIsUpdating(true);
+            await accountService.updateAccount(selectedUser.id, userData);
+            await fetchAccounts(); // Refresh the list
+            setShowUpdateModal(false);
+            setSelectedUser(null);
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw error; // Re-throw to let modal handle the error
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleDeleteUser = async (user: AccountForUI) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản ${user.name}? Hành động này không thể hoàn tác.`)) {
+            return;
+        }
+
+        try {
+            setIsDeleting(true);
+            await accountService.deleteAccount(user.id);
+            await fetchAccounts(); // Refresh the list
+            alert(`Tài khoản ${user.name} đã được xóa thành công.`);
+        } catch (error: any) {
+            console.error('Error deleting user:', error);
+            const errorMessage = error.message || 'Xóa tài khoản thất bại. Vui lòng thử lại.';
+            alert(errorMessage);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleEditUser = (user: AccountForUI) => {
+        setSelectedUser(user);
+        setShowUpdateModal(true);
+    };
+
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -87,32 +133,61 @@ const Accounts: React.FC = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const totalUsers = 1245;
     const pageSize = 10;
-    const totalPages = Math.ceil(totalUsers / pageSize);
 
     const handleSelectRow = (id: number) => {
         setSelectedRows((prev) =>
             prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
         );
     };
+    
+    const filteredUsers = users.filter((user: AccountForUI) =>
+        (!selectedRole || user.role === selectedRole) &&
+        (!selectedStatus || user.status === selectedStatus) &&
+        (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
+    const totalUsers = filteredUsers.length;
+    const totalPages = Math.ceil(totalUsers / pageSize);
+    
+    // Calculate paginated users
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    
     const handleSelectAll = () => {
-        if (selectedRows.length === filteredUsers.length) {
+        if (selectedRows.length === paginatedUsers.length) {
             setSelectedRows([]);
         } else {
-            setSelectedRows(filteredUsers.map((u) => u.id));
+            setSelectedRows(paginatedUsers.map((u: AccountForUI) => u.id));
+        }
+    };
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedRole, selectedStatus, searchTerm]);
+
+    const getRoleDisplayName = (role: string) => {
+        switch (role) {
+            case 'CUSTOMER': return 'Customer';
+            case 'DOCTOR': return 'Doctor';
+            case 'STAFF': return 'Staff';
+            case 'ADMIN': return 'Admin';
+            default: return role;
         }
     };
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
-            case 'Customer':
+            case 'CUSTOMER':
                 return 'bg-green-100 text-green-600';
-            case 'Consultant':
+            case 'DOCTOR':
                 return 'bg-yellow-100 text-yellow-600';
-            case 'Staff':
+            case 'STAFF':
                 return 'bg-blue-100 text-blue-600';
-            case 'Manager':
+            case 'ADMIN':
                 return 'bg-purple-100 text-purple-600';
             default:
                 return 'bg-gray-100 text-gray-600';
@@ -133,23 +208,25 @@ const Accounts: React.FC = () => {
         }
     };
 
-    const filteredUsers = users.filter(user =>
-        (!selectedRole || user.role === selectedRole) &&
-        (!selectedStatus || user.status === selectedStatus) &&
-        (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
 
             <div className="bg-white p-4 rounded shadow w-full mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-black">User management</h1>
-                <NewUserButton icon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}>
+                <NewUserButton 
+                    icon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}
+                    onClick={() => setShowCreateModal(true)}
+                >
                     Create new user
                 </NewUserButton>
             </div>
+
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
 
             <div className="mb-4 flex space-x-4 w-full">
 
@@ -174,7 +251,7 @@ const Accounts: React.FC = () => {
                             setShowStatusDropdown(false);
                         }}
                     >
-                        {selectedRole || 'All roles'}
+                        {selectedRole ? getRoleDisplayName(selectedRole) : 'All roles'}
                         <img src={dropDownIcon} alt="dropdown" className="w-4 h-4"/>
                     </button>
                     {showRoleDropdown && (
@@ -197,7 +274,7 @@ const Accounts: React.FC = () => {
                                         setShowRoleDropdown(false);
                                     }}
                                 >
-                                    {role}
+                                    {getRoleDisplayName(role)}
                                 </div>
                             ))}
                         </div>
@@ -246,10 +323,17 @@ const Accounts: React.FC = () => {
                 <div className="relative">
                     <button
                         onClick={handleRefresh}
-                        className="flex items-center px-4 py-2 border rounded bg-white hover:bg-gray-100 transition"
+                        disabled={loading}
+                        className={`flex items-center px-4 py-2 border rounded bg-white transition ${
+                            loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+                        }`}
                     >
-                        <img src={refreshIcon} alt="Refresh" className="w-4 h-4 mr-2"/>
-                        Refresh
+                        <img 
+                            src={refreshIcon} 
+                            alt="Refresh" 
+                            className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`}
+                        />
+                        {loading ? 'Refreshing...' : 'Refresh'}
                     </button>
                 </div>
             </div>
@@ -274,16 +358,20 @@ const Accounts: React.FC = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {filteredUsers.length === 0 ? (
+                    {loading ? (
                         <tr>
-                            <td colSpan={9} className="p-4 text-center text-gray-500">No users found</td>
+                            <td colSpan={8} className="p-4 text-center text-gray-500">Loading...</td>
+                        </tr>
+                    ) : paginatedUsers.length === 0 ? (
+                        <tr>
+                            <td colSpan={8} className="p-4 text-center text-gray-500">No users found</td>
                         </tr>
                     ) : (
-                        filteredUsers.map((user, idx) => (
+                        paginatedUsers.map((user: AccountForUI, idx: number) => (
                             <tr key={user.id} className="hover:bg-gray-50">
-                                <td className="p-2 border text-center">{idx + 1}</td>
+                                <td className="p-2 border text-center">{startIndex + idx + 1}</td>
                                 <td className="p-2 border flex items-center gap-2">
-                                    <img src={user.avatar} alt="avatar" className="w-7 h-7 rounded-full border"/>
+                                    <img src={user.avatar || userAvt} alt="avatar" className="w-7 h-7 rounded-full border"/>
                                     <span>{user.name}</span>
                                 </td>
                                 <td className="p-2 border">{user.email}</td>
@@ -295,10 +383,24 @@ const Accounts: React.FC = () => {
                                 <td className="p-2 border text-center">{user.phone}</td>
                                 <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
                                 <td className="p-2 border text-center">
-                                    <button title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4 mr-4"/>
-                                    </button>
-                                    <button title="Delete"><img src={deleteIcon} alt="delete" className="w-4 h-4"/>
-                                    </button>
+                                    <div className="flex justify-center items-center gap-1">
+                                        <button 
+                                            title="Edit User"
+                                            onClick={() => handleEditUser(user)}
+                                            className="hover:opacity-70 transition p-1"
+                                            disabled={isUpdating || isDeleting}
+                                        >
+                                            <img src={editIcon} alt="edit" className="w-4 h-4"/>
+                                        </button>
+                                        <button 
+                                            title="Delete User"
+                                            onClick={() => handleDeleteUser(user)}
+                                            className="hover:opacity-70 transition p-1 text-red-600"
+                                            disabled={isUpdating || isDeleting}
+                                        >
+                                            <img src={deleteIcon} alt="delete user" className="w-4 h-4"/>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))
@@ -306,22 +408,104 @@ const Accounts: React.FC = () => {
                     </tbody>
                 </table>
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>Displaying 1-4 of {totalUsers.toLocaleString()} users</span>
+                    <span>Displaying {Math.min(startIndex + 1, totalUsers)}-{Math.min(endIndex, totalUsers)} of {totalUsers.toLocaleString()} users</span>
                     <div className="flex items-center gap-1">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}
-                                className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-white border'}`}>{'<'}</button>
-                        {[...Array(3)].map((_, i) => (
-                            <button key={i}
-                                    className={`px-2 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white border'}`}>{i + 1}</button>
-                        ))}
-                        <span>...</span>
-                        <button className="px-2 py-1 rounded bg-white border">{totalPages}</button>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}
-                                className={`px-2 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-white border'}`}>{'>'}</button>
+                        <button 
+                            disabled={currentPage === 1} 
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                            className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white border hover:bg-gray-50'}`}
+                        >
+                            {'<'}
+                        </button>
+                        
+                        {/* Page numbers */}
+                        {(() => {
+                            const pages = [];
+                            const maxVisiblePages = 5;
+                            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                            
+                            // Adjust startPage if we're near the end
+                            if (endPage - startPage + 1 < maxVisiblePages) {
+                                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                            }
+                            
+                            // Show first page if not in range
+                            if (startPage > 1) {
+                                pages.push(
+                                    <button 
+                                        key={1}
+                                        onClick={() => setCurrentPage(1)}
+                                        className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
+                                    >
+                                        1
+                                    </button>
+                                );
+                                if (startPage > 2) {
+                                    pages.push(<span key="ellipsis1" className="px-1">...</span>);
+                                }
+                            }
+                            
+                            // Show page numbers in range
+                            for (let i = startPage; i <= endPage; i++) {
+                                pages.push(
+                                    <button 
+                                        key={i}
+                                        onClick={() => setCurrentPage(i)}
+                                        className={`px-2 py-1 rounded ${currentPage === i ? 'bg-blue-600 text-white' : 'bg-white border hover:bg-gray-50'}`}
+                                    >
+                                        {i}
+                                    </button>
+                                );
+                            }
+                            
+                            // Show last page if not in range
+                            if (endPage < totalPages) {
+                                if (endPage < totalPages - 1) {
+                                    pages.push(<span key="ellipsis2" className="px-1">...</span>);
+                                }
+                                pages.push(
+                                    <button 
+                                        key={totalPages}
+                                        onClick={() => setCurrentPage(totalPages)}
+                                        className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
+                                    >
+                                        {totalPages}
+                                    </button>
+                                );
+                            }
+                            
+                            return pages;
+                        })()}
+                        
+                        <button 
+                            disabled={currentPage === totalPages || totalPages === 0} 
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            className={`px-2 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white border hover:bg-gray-50'}`}
+                        >
+                            {'>'}
+                        </button>
                     </div>
                 </div>
             </div>
 
+            <CreateUserModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSubmit={handleCreateUser}
+                loading={isCreating}
+            />
+
+            <UpdateUserModal
+                isOpen={showUpdateModal}
+                onClose={() => {
+                    setShowUpdateModal(false);
+                    setSelectedUser(null);
+                }}
+                onSubmit={handleUpdateUser}
+                loading={isUpdating}
+                user={selectedUser}
+            />
         </div>
     );
 };
