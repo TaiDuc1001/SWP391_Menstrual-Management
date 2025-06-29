@@ -16,7 +16,7 @@ export interface Panel {
     price: number;
     responseTime: number;
     duration: number;
-    panelType: 'COMPREHENSIVE' | 'BASIC' | 'ADVANCED';
+    panelType: 'COMPREHENSIVE' | 'PREVENTIVE' | 'SPECIALIZED';
     panelTag: 'RECOMMENDED' | 'POPULAR' | 'NEW' | 'STANDARD';
     testTypes: TestType[];
     createdAt: string;
@@ -29,7 +29,7 @@ export interface CreatePanelRequest {
     price: number;
     responseTime: number;
     duration: number;
-    panelType: 'COMPREHENSIVE' | 'BASIC' | 'ADVANCED';
+    panelType: 'COMPREHENSIVE' | 'PREVENTIVE' | 'SPECIALIZED';
     panelTag: 'RECOMMENDED' | 'POPULAR' | 'NEW' | 'STANDARD';
     testTypeIds: number[];
 }
@@ -40,7 +40,7 @@ export interface UpdatePanelRequest {
     price: number;
     responseTime: number;
     duration: number;
-    panelType: 'COMPREHENSIVE' | 'BASIC' | 'ADVANCED';
+    panelType: 'COMPREHENSIVE' | 'PREVENTIVE' | 'SPECIALIZED';
     panelTag: 'RECOMMENDED' | 'POPULAR' | 'NEW' | 'STANDARD';
     testTypeIds: number[];
 }

@@ -32,10 +32,10 @@ const formatPanelType = (type: string) => {
     switch (type) {
         case 'COMPREHENSIVE':
             return 'Comprehensive';
-        case 'BASIC':
-            return 'Basic';
-        case 'ADVANCED':
-            return 'Advanced';
+        case 'PREVENTIVE':
+            return 'Preventive';
+        case 'SPECIALIZED':
+            return 'Specialized';
         default:
             return type;
     }
@@ -60,9 +60,9 @@ const getPanelTypeColor = (type: string) => {
     switch (type) {
         case 'COMPREHENSIVE':
             return 'bg-purple-100 text-purple-800';
-        case 'BASIC':
+        case 'PREVENTIVE':
             return 'bg-blue-100 text-blue-800';
-        case 'ADVANCED':
+        case 'SPECIALIZED':
             return 'bg-green-100 text-green-800';
         default:
             return 'bg-gray-100 text-gray-800';
