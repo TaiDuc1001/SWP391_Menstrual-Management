@@ -12,7 +12,7 @@ import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
 
 
-const roles = ['Customer', 'Doctor', 'Staff', 'Admin'];
+const roles = ['CUSTOMER', 'DOCTOR', 'STAFF', 'ADMIN'];
 const statuses = ['Active', 'Locked'];
 
 const plusIcon = plusWhiteIcon;
@@ -52,7 +52,13 @@ const Accounts: React.FC = () => {
     };
 
     const handleRefresh = async () => {
+        setLoading(true);
         await fetchAccounts();
+        // Reset filters and pagination
+        setSelectedRole(null);
+        setSelectedStatus(null);
+        setSearchTerm('');
+        setCurrentPage(1);
     };
 
     const handleCreateUser = async (userData: CreateAccountRequest) => {
@@ -127,9 +133,7 @@ const Accounts: React.FC = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const totalUsers = users.length;
     const pageSize = 10;
-    const totalPages = Math.ceil(totalUsers / pageSize);
 
     const handleSelectRow = (id: number) => {
         setSelectedRows((prev) =>
@@ -143,12 +147,35 @@ const Accounts: React.FC = () => {
         (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+    const totalUsers = filteredUsers.length;
+    const totalPages = Math.ceil(totalUsers / pageSize);
+    
+    // Calculate paginated users
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
     
     const handleSelectAll = () => {
-        if (selectedRows.length === filteredUsers.length) {
+        if (selectedRows.length === paginatedUsers.length) {
             setSelectedRows([]);
         } else {
-            setSelectedRows(filteredUsers.map((u: AccountForUI) => u.id));
+            setSelectedRows(paginatedUsers.map((u: AccountForUI) => u.id));
+        }
+    };
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedRole, selectedStatus, searchTerm]);
+
+    const getRoleDisplayName = (role: string) => {
+        switch (role) {
+            case 'CUSTOMER': return 'Customer';
+            case 'DOCTOR': return 'Doctor';
+            case 'STAFF': return 'Staff';
+            case 'ADMIN': return 'Admin';
+            default: return role;
         }
     };
 
@@ -224,7 +251,7 @@ const Accounts: React.FC = () => {
                             setShowStatusDropdown(false);
                         }}
                     >
-                        {selectedRole || 'All roles'}
+                        {selectedRole ? getRoleDisplayName(selectedRole) : 'All roles'}
                         <img src={dropDownIcon} alt="dropdown" className="w-4 h-4"/>
                     </button>
                     {showRoleDropdown && (
@@ -247,7 +274,7 @@ const Accounts: React.FC = () => {
                                         setShowRoleDropdown(false);
                                     }}
                                 >
-                                    {role}
+                                    {getRoleDisplayName(role)}
                                 </div>
                             ))}
                         </div>
@@ -296,10 +323,17 @@ const Accounts: React.FC = () => {
                 <div className="relative">
                     <button
                         onClick={handleRefresh}
-                        className="flex items-center px-4 py-2 border rounded bg-white hover:bg-gray-100 transition"
+                        disabled={loading}
+                        className={`flex items-center px-4 py-2 border rounded bg-white transition ${
+                            loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+                        }`}
                     >
-                        <img src={refreshIcon} alt="Refresh" className="w-4 h-4 mr-2"/>
-                        Refresh
+                        <img 
+                            src={refreshIcon} 
+                            alt="Refresh" 
+                            className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`}
+                        />
+                        {loading ? 'Refreshing...' : 'Refresh'}
                     </button>
                 </div>
             </div>
@@ -328,14 +362,14 @@ const Accounts: React.FC = () => {
                         <tr>
                             <td colSpan={8} className="p-4 text-center text-gray-500">Loading...</td>
                         </tr>
-                    ) : filteredUsers.length === 0 ? (
+                    ) : paginatedUsers.length === 0 ? (
                         <tr>
                             <td colSpan={8} className="p-4 text-center text-gray-500">No users found</td>
                         </tr>
                     ) : (
-                        filteredUsers.map((user: AccountForUI, idx: number) => (
+                        paginatedUsers.map((user: AccountForUI, idx: number) => (
                             <tr key={user.id} className="hover:bg-gray-50">
-                                <td className="p-2 border text-center">{idx + 1}</td>
+                                <td className="p-2 border text-center">{startIndex + idx + 1}</td>
                                 <td className="p-2 border flex items-center gap-2">
                                     <img src={user.avatar || userAvt} alt="avatar" className="w-7 h-7 rounded-full border"/>
                                     <span>{user.name}</span>
@@ -374,18 +408,83 @@ const Accounts: React.FC = () => {
                     </tbody>
                 </table>
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>Displaying 1-4 of {totalUsers.toLocaleString()} users</span>
+                    <span>Displaying {Math.min(startIndex + 1, totalUsers)}-{Math.min(endIndex, totalUsers)} of {totalUsers.toLocaleString()} users</span>
                     <div className="flex items-center gap-1">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}
-                                className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-white border'}`}>{'<'}</button>
-                        {[...Array(3)].map((_, i) => (
-                            <button key={i}
-                                    className={`px-2 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white border'}`}>{i + 1}</button>
-                        ))}
-                        <span>...</span>
-                        <button className="px-2 py-1 rounded bg-white border">{totalPages}</button>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}
-                                className={`px-2 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-white border'}`}>{'>'}</button>
+                        <button 
+                            disabled={currentPage === 1} 
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                            className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white border hover:bg-gray-50'}`}
+                        >
+                            {'<'}
+                        </button>
+                        
+                        {/* Page numbers */}
+                        {(() => {
+                            const pages = [];
+                            const maxVisiblePages = 5;
+                            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                            
+                            // Adjust startPage if we're near the end
+                            if (endPage - startPage + 1 < maxVisiblePages) {
+                                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                            }
+                            
+                            // Show first page if not in range
+                            if (startPage > 1) {
+                                pages.push(
+                                    <button 
+                                        key={1}
+                                        onClick={() => setCurrentPage(1)}
+                                        className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
+                                    >
+                                        1
+                                    </button>
+                                );
+                                if (startPage > 2) {
+                                    pages.push(<span key="ellipsis1" className="px-1">...</span>);
+                                }
+                            }
+                            
+                            // Show page numbers in range
+                            for (let i = startPage; i <= endPage; i++) {
+                                pages.push(
+                                    <button 
+                                        key={i}
+                                        onClick={() => setCurrentPage(i)}
+                                        className={`px-2 py-1 rounded ${currentPage === i ? 'bg-blue-600 text-white' : 'bg-white border hover:bg-gray-50'}`}
+                                    >
+                                        {i}
+                                    </button>
+                                );
+                            }
+                            
+                            // Show last page if not in range
+                            if (endPage < totalPages) {
+                                if (endPage < totalPages - 1) {
+                                    pages.push(<span key="ellipsis2" className="px-1">...</span>);
+                                }
+                                pages.push(
+                                    <button 
+                                        key={totalPages}
+                                        onClick={() => setCurrentPage(totalPages)}
+                                        className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
+                                    >
+                                        {totalPages}
+                                    </button>
+                                );
+                            }
+                            
+                            return pages;
+                        })()}
+                        
+                        <button 
+                            disabled={currentPage === totalPages || totalPages === 0} 
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            className={`px-2 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white border hover:bg-gray-50'}`}
+                        >
+                            {'>'}
+                        </button>
                     </div>
                 </div>
             </div>
