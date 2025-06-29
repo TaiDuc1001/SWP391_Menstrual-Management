@@ -9,10 +9,10 @@ interface CreateUserModalProps {
 }
 
 const roleOptions = [
-    { value: 'CUSTOMER', label: 'Customer', icon: '👤' },
-    { value: 'DOCTOR', label: 'Doctor', icon: '👩‍⚕️' },
-    { value: 'STAFF', label: 'Staff', icon: '👨‍💼' },
-    { value: 'ADMIN', label: 'Admin', icon: '⚙️' }
+    { value: 'CUSTOMER', label: 'Customer' },
+    { value: 'DOCTOR', label: 'Doctor' },
+    { value: 'STAFF', label: 'Staff' },
+    { value: 'ADMIN', label: 'Admin' }
 ];
 
 const CreateUserModal: React.FC<CreateUserModalProps> = ({ 
@@ -254,7 +254,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                             disabled={loading}
                         >
                             <div className="flex items-center">
-                                <span className="mr-2 text-lg">{selectedRole?.icon}</span>
                                 <span className="text-gray-900">{selectedRole?.label}</span>
                             </div>
                             <svg
@@ -282,7 +281,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                 : 'text-gray-900'
                                         }`}
                                     >
-                                        <span className="mr-3 text-lg">{option.icon}</span>
                                         <span>{option.label}</span>
                                         {formData.role === option.value && (
                                             <svg
