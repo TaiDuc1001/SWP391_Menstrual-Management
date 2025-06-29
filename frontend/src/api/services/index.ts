@@ -19,4 +19,4 @@ export type {Content, ContentFilters} from './contentManagementService';
 export type {ApprovalRequest, ApprovalFilters} from './approvalService';
 export type {Doctor, DoctorFilters} from './doctorService';
 export type {ExaminationDetail, ExaminationFilters, TestResult} from './examinationService';
-export type {Account, AccountForUI, CreateAccountRequest} from './accountService';
+export type {Account, AccountForUI, CreateAccountRequest, UpdateAccountRequest} from './accountService';

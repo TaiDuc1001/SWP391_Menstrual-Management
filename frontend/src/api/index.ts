@@ -36,7 +36,8 @@ export type {
     DoctorFilters,
     Account,
     AccountForUI,
-    CreateAccountRequest
+    CreateAccountRequest,
+    UpdateAccountRequest
 } from './services';
 
 

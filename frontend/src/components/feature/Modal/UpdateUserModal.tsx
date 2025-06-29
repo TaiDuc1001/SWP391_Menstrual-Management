@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { CreateAccountRequest } from '../../../api/services/accountService';
+import { UpdateAccountRequest, AccountForUI } from '../../../api/services/accountService';
 
-interface CreateUserModalProps {
+interface UpdateUserModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (userData: CreateAccountRequest) => Promise<void>;
+    onSubmit: (userData: UpdateAccountRequest) => Promise<void>;
     loading?: boolean;
+    user: AccountForUI | null;
 }
 
 const roleOptions = [
-    { value: 'CUSTOMER', label: 'Customer', icon: '👤' },
-    { value: 'DOCTOR', label: 'Doctor', icon: '👩‍⚕️' },
-    { value: 'STAFF', label: 'Staff', icon: '👨‍💼' },
-    { value: 'ADMIN', label: 'Admin', icon: '⚙️' }
+    { value: 'CUSTOMER', label: 'Customer' },
+    { value: 'DOCTOR', label: 'Doctor' },
+    { value: 'STAFF', label: 'Staff' },
+    { value: 'ADMIN', label: 'Admin' }
 ];
 
-const CreateUserModal: React.FC<CreateUserModalProps> = ({ 
+const UpdateUserModal: React.FC<UpdateUserModalProps> = ({ 
     isOpen, 
     onClose, 
     onSubmit, 
-    loading = false 
+    loading = false,
+    user 
 }) => {
-    const [formData, setFormData] = useState<CreateAccountRequest>({
+    const [formData, setFormData] = useState<UpdateAccountRequest>({
         email: '',
         password: '',
         role: 'CUSTOMER',
@@ -30,23 +32,30 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         status: true
     });
 
-    const [errors, setErrors] = useState<Partial<CreateAccountRequest>>({});
+    const [errors, setErrors] = useState<Partial<UpdateAccountRequest>>({});
     const [serverError, setServerError] = useState<string | null>(null);
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
+    useEffect(() => {
+        if (user && isOpen) {
+            setFormData({
+                email: user.email,
+                password: '', // Don't pre-fill password
+                role: user.role as UpdateAccountRequest['role'],
+                name: user.name,
+                phoneNumber: user.phone === 'N/A' ? '' : user.phone,
+                status: user.status === 'Active'
+            });
+        }
+    }, [user, isOpen]);
+
     const validateForm = (): boolean => {
-        const newErrors: Partial<CreateAccountRequest> = {};
+        const newErrors: Partial<UpdateAccountRequest> = {};
 
         if (!formData.email) {
             newErrors.email = 'Email is required';
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Email is invalid';
-        }
-
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
         }
 
         if (!formData.name) {
@@ -57,6 +66,11 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             newErrors.phoneNumber = 'Phone number is required';
         } else if (!/^\d{10,11}$/.test(formData.phoneNumber)) {
             newErrors.phoneNumber = 'Phone number must be 10-11 digits';
+        }
+
+        // Password is optional for updates
+        if (formData.password && formData.password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters';
         }
 
         setErrors(newErrors);
@@ -73,11 +87,23 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         setServerError(null); // Clear previous server errors
 
         try {
-            await onSubmit(formData);
+            // Prepare data for submission - remove empty password
+            const submitData = { ...formData };
+            if (!submitData.password || submitData.password.trim() === '') {
+                // Don't send password field if it's empty
+                delete (submitData as any).password;
+            }
+            
+            console.log('Updating user with data:', submitData);
+            console.log('User ID:', user?.id);
+            console.log('Original user data:', user);
+            
+            await onSubmit(submitData);
             handleClose();
         } catch (error: any) {
-            console.error('Error creating user:', error);
-            const errorMessage = error.message || 'Failed to create user. Please try again.';
+            console.error('Error updating user:', error);
+            console.error('Error details:', error);
+            const errorMessage = error.message || 'Failed to update user. Please try again.';
             setServerError(errorMessage);
             
             // If it's an email duplicate error, also highlight the email field
@@ -107,7 +133,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         onClose();
     };
 
-    const handleInputChange = (field: keyof CreateAccountRequest, value: string | boolean) => {
+    const handleInputChange = (field: keyof UpdateAccountRequest, value: string | boolean) => {
         setFormData(prev => ({
             ...prev,
             [field]: value
@@ -127,7 +153,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         }
     };
 
-    const handleRoleSelect = (role: CreateAccountRequest['role']) => {
+    const handleRoleSelect = (role: UpdateAccountRequest['role']) => {
         handleInputChange('role', role);
         setIsRoleDropdownOpen(false);
     };
@@ -158,7 +184,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Create New User</h2>
+                    <h2 className="text-xl font-bold text-gray-900">Update User</h2>
                     <button
                         onClick={handleClose}
                         className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -211,7 +237,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Password *
+                            Password (leave blank to keep current)
                         </label>
                         <input
                             type="password"
@@ -220,7 +246,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                 errors.password ? 'border-red-500' : 'border-gray-300'
                             }`}
-                            placeholder="Enter password"
+                            placeholder="Enter new password"
                             disabled={loading}
                         />
                         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
@@ -254,7 +280,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                             disabled={loading}
                         >
                             <div className="flex items-center">
-                                <span className="mr-2 text-lg">{selectedRole?.icon}</span>
                                 <span className="text-gray-900">{selectedRole?.label}</span>
                             </div>
                             <svg
@@ -275,14 +300,13 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                     <button
                                         key={option.value}
                                         type="button"
-                                        onClick={() => handleRoleSelect(option.value as CreateAccountRequest['role'])}
+                                        onClick={() => handleRoleSelect(option.value as UpdateAccountRequest['role'])}
                                         className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none flex items-center transition-colors duration-150 ${
                                             formData.role === option.value 
                                                 ? 'bg-blue-100 text-blue-900' 
                                                 : 'text-gray-900'
                                         }`}
                                     >
-                                        <span className="mr-3 text-lg">{option.icon}</span>
                                         <span>{option.label}</span>
                                         {formData.role === option.value && (
                                             <svg
@@ -327,7 +351,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                             disabled={loading}
                         >
-                            {loading ? 'Creating...' : 'Create User'}
+                            {loading ? 'Updating...' : 'Update User'}
                         </button>
                     </div>
                 </form>
@@ -336,4 +360,4 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     );
 };
 
-export default CreateUserModal;
+export default UpdateUserModal;

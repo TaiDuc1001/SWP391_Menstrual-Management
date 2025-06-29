@@ -7,11 +7,12 @@ import refreshIcon from "../../../assets/icons/refresh.svg";
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
 import userAvt from '../../../assets/icons/avatar.svg';
-import { accountService, AccountForUI, CreateAccountRequest } from '../../../api';
+import { accountService, AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../../api';
 import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
+import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
 
 
-const roles = ['Customer', 'Consultant', 'Staff', 'Manager'];
+const roles = ['Customer', 'Doctor', 'Staff', 'Admin'];
 const statuses = ['Active', 'Locked'];
 
 const plusIcon = plusWhiteIcon;
@@ -28,7 +29,11 @@ const Accounts: React.FC = () => {
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<AccountForUI | null>(null);
     const [isCreating, setIsCreating] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const roleRef = useRef<HTMLDivElement>(null);
     const statusRef = useRef<HTMLDivElement>(null);
 
@@ -62,6 +67,47 @@ const Accounts: React.FC = () => {
         } finally {
             setIsCreating(false);
         }
+    };
+
+    const handleUpdateUser = async (userData: UpdateAccountRequest) => {
+        if (!selectedUser) return;
+        
+        try {
+            setIsUpdating(true);
+            await accountService.updateAccount(selectedUser.id, userData);
+            await fetchAccounts(); // Refresh the list
+            setShowUpdateModal(false);
+            setSelectedUser(null);
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw error; // Re-throw to let modal handle the error
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleDeleteUser = async (user: AccountForUI) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản ${user.name}? Hành động này không thể hoàn tác.`)) {
+            return;
+        }
+
+        try {
+            setIsDeleting(true);
+            await accountService.deleteAccount(user.id);
+            await fetchAccounts(); // Refresh the list
+            alert(`Tài khoản ${user.name} đã được xóa thành công.`);
+        } catch (error: any) {
+            console.error('Error deleting user:', error);
+            const errorMessage = error.message || 'Xóa tài khoản thất bại. Vui lòng thử lại.';
+            alert(errorMessage);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleEditUser = (user: AccountForUI) => {
+        setSelectedUser(user);
+        setShowUpdateModal(true);
     };
 
     useEffect(() => {
@@ -303,10 +349,24 @@ const Accounts: React.FC = () => {
                                 <td className="p-2 border text-center">{user.phone}</td>
                                 <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
                                 <td className="p-2 border text-center">
-                                    <button title="Edit"><img src={editIcon} alt="edit" className="w-4 h-4 mr-4"/>
-                                    </button>
-                                    <button title="Delete"><img src={deleteIcon} alt="delete" className="w-4 h-4"/>
-                                    </button>
+                                    <div className="flex justify-center items-center gap-1">
+                                        <button 
+                                            title="Edit User"
+                                            onClick={() => handleEditUser(user)}
+                                            className="hover:opacity-70 transition p-1"
+                                            disabled={isUpdating || isDeleting}
+                                        >
+                                            <img src={editIcon} alt="edit" className="w-4 h-4"/>
+                                        </button>
+                                        <button 
+                                            title="Delete User"
+                                            onClick={() => handleDeleteUser(user)}
+                                            className="hover:opacity-70 transition p-1 text-red-600"
+                                            disabled={isUpdating || isDeleting}
+                                        >
+                                            <img src={deleteIcon} alt="delete user" className="w-4 h-4"/>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))
@@ -335,6 +395,17 @@ const Accounts: React.FC = () => {
                 onClose={() => setShowCreateModal(false)}
                 onSubmit={handleCreateUser}
                 loading={isCreating}
+            />
+
+            <UpdateUserModal
+                isOpen={showUpdateModal}
+                onClose={() => {
+                    setShowUpdateModal(false);
+                    setSelectedUser(null);
+                }}
+                onSubmit={handleUpdateUser}
+                loading={isUpdating}
+                user={selectedUser}
             />
         </div>
     );
