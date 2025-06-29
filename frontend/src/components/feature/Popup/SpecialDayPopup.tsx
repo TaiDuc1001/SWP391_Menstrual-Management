@@ -8,9 +8,11 @@ interface SpecialDayPopupProps {
     open: boolean;
     onClose: () => void;
     onSave?: (data: { ovulationDays: string; fertileWindow: string }) => void;
+    defaultMonth?: number;
+    defaultYear?: number;
 }
 
-const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave }) => {
+const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave, defaultMonth, defaultYear }) => {
     const [ovulationStartDate, setOvulationStartDate] = useState<Date | null>(null);
     const [ovulationEndDate, setOvulationEndDate] = useState<Date | null>(null);
     const [fertileStartDate, setFertileStartDate] = useState<Date | null>(null);
@@ -157,6 +159,7 @@ const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave
                                 open={activeDatePicker === 'ovulation'}
                                 onClickOutside={() => setActiveDatePicker(null)}
                                 customInput={<div style={{ display: 'none' }} />}
+                                openToDate={defaultMonth !== undefined && defaultYear !== undefined ? new Date(defaultYear, defaultMonth, 1) : new Date()}
                                 children={<CustomDatePickerFooter type="ovulation" />}
                             />
                         </div>
@@ -193,6 +196,7 @@ const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave
                                 open={activeDatePicker === 'fertile'}
                                 onClickOutside={() => setActiveDatePicker(null)}
                                 customInput={<div style={{ display: 'none' }} />}
+                                openToDate={defaultMonth !== undefined && defaultYear !== undefined ? new Date(defaultYear, defaultMonth, 1) : new Date()}
                                 children={<CustomDatePickerFooter type="fertile" />}
                             />
                         </div>

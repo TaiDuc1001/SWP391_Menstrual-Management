@@ -10,9 +10,11 @@ interface MenstrualCyclePopupProps {
     editRow?: { id?: number; startDate?: string; endDate?: string; duration?: number; cycle?: number } | null;
     isPreviousMonth?: boolean;
     onSpecialDayClick?: () => void;
+    defaultMonth?: number;
+    defaultYear?: number;
 }
 
-const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, onSpecialDayClick}) => {
+const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, onSpecialDayClick, defaultMonth, defaultYear}) => {
     
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState(5);
@@ -28,11 +30,17 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
             setDuration(editRow.duration || 5);
             setCycleLength(editRow.cycle || 28);
         } else {
-            setStartDate('');
+            if (defaultMonth !== undefined && defaultYear !== undefined) {
+                const defaultDate = new Date(defaultYear, defaultMonth, 1);
+                const formattedDate = `${defaultDate.getFullYear()}-${String(defaultDate.getMonth() + 1).padStart(2, '0')}-01`;
+                setStartDate(formattedDate);
+            } else {
+                setStartDate('');
+            }
             setDuration(5);
             setCycleLength(28);
         }
-    }, [editRow, open]);
+    }, [editRow, open, defaultMonth, defaultYear]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

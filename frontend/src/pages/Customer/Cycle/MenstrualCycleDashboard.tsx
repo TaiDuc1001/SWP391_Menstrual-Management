@@ -618,6 +618,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                         open={showCyclePopup}
                         onClose={() => setShowCyclePopup(false)}
                         isPreviousMonth={currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth < now.getMonth())}
+                        defaultMonth={currentMonth}
+                        defaultYear={currentYear}
                         onSpecialDayClick={() => {
                             setShowSpecialDayPopup(true);
                         }}
@@ -644,6 +646,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                     <SpecialDayPopup
                         open={showSpecialDayPopup}
                         onClose={() => setShowSpecialDayPopup(false)}
+                        defaultMonth={currentMonth}
+                        defaultYear={currentYear}
                         onSave={(data) => {
                             if (currentCycleStartDate) {
                                 setSpecialDays(prev => ({
