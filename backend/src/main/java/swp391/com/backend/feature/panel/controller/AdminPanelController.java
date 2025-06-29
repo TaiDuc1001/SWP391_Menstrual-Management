@@ -72,6 +72,32 @@ public class AdminPanelController {
     }
 
     /**
+     * GET /api/admin/panels/all - Lấy tất cả panels không cần phân trang
+     */
+    @GetMapping("/all")
+    public ResponseEntity<Map<String, Object>> getAllPanels() {
+        List<Panel> allPanels = panelService.getAllPanels();
+        
+        List<AdminPanelDTO> panels = allPanels.stream()
+                .map(panel -> {
+                    AdminPanelDTO dto = panelMapper.toAdminDTO(panel);
+                    // Get test types for each panel
+                    dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(panel.getId())
+                            .stream()
+                            .map(testTypeMapper::toDTO)
+                            .toList());
+                    return dto;
+                })
+                .toList();
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalItems", panels.size());
+        response.put("panels", panels);
+        
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * GET /api/admin/panels/{id} - Lấy chi tiết panel
      */
     @GetMapping("/{id}")
