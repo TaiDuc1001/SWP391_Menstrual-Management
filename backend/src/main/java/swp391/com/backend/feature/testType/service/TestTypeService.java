@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.feature.testType.data.TestType;
 import swp391.com.backend.feature.testType.data.TestTypeRepository;
+import swp391.com.backend.feature.testType.dto.CreateTestTypeRequest;
 
 import java.util.List;
 
@@ -17,6 +18,16 @@ public class TestTypeService {
     }
 
     public TestType createTest(TestType testType) {
+        return testTypeRepository.save(testType);
+    }
+    
+    public TestType createTestType(CreateTestTypeRequest request) {
+        TestType testType = new TestType();
+        testType.setName(request.getName());
+        testType.setDescription(request.getDescription());
+        testType.setNormalRange(request.getNormalRange());
+        testType.setUnit(request.getUnit());
+        
         return testTypeRepository.save(testType);
     }
 
