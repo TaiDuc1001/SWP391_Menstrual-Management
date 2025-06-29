@@ -7,63 +7,18 @@ import refreshIcon from "../../../assets/icons/refresh.svg";
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
 import userAvt from '../../../assets/icons/avatar.svg';
+import { accountService, AccountForUI } from '../../../api';
 
 
 const roles = ['Customer', 'Consultant', 'Staff', 'Manager'];
 const statuses = ['Active', 'Inactive', 'Pending', 'Locked'];
 
-
 const plusIcon = plusWhiteIcon;
 
-const users = [
-    {
-        id: 1,
-        name: 'Mai Nguyen',
-        email: 'mainguyen@gmail.com',
-        password: '********',
-        role: 'Customer',
-        phone: '0988 123 456',
-        status: 'Active',
-        avatar: userAvt,
-    },
-    {
-        id: 2,
-        name: 'An Tran',
-        email: 'antran@gmail.com',
-        password: '********',
-        role: 'Consultant',
-        phone: '0912 987 654',
-        status: 'Active',
-        avatar: userAvt,
-    },
-    {
-        id: 3,
-        name: 'Hang Le',
-        email: 'hangle@gmail.com',
-        password: '********',
-        role: 'Staff',
-        phone: '0902 456 123',
-        status: 'Locked',
-        avatar: userAvt,
-    },
-    {
-        id: 4,
-        name: 'Quang Do',
-        email: 'quangdo@gmail.com',
-        password: '********',
-        role: 'Manager',
-        phone: '0978 654 321',
-        status: 'Active',
-        avatar: userAvt,
-    },
-];
-
-
-const handleRefresh = () => {
-};
-
-
 const Accounts: React.FC = () => {
+    const [users, setUsers] = useState<AccountForUI[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [showRoleDropdown, setShowRoleDropdown] = useState(false);
@@ -73,6 +28,28 @@ const Accounts: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const roleRef = useRef<HTMLDivElement>(null);
     const statusRef = useRef<HTMLDivElement>(null);
+
+    const fetchAccounts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const accounts = await accountService.getAllAccounts();
+            setUsers(accounts);
+        } catch (err) {
+            setError('Failed to fetch accounts');
+            console.error('Error fetching accounts:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRefresh = async () => {
+        await fetchAccounts();
+    };
+
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -87,7 +64,7 @@ const Accounts: React.FC = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const totalUsers = 1245;
+    const totalUsers = users.length;
     const pageSize = 10;
     const totalPages = Math.ceil(totalUsers / pageSize);
 
@@ -96,11 +73,19 @@ const Accounts: React.FC = () => {
             prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
         );
     };
+    
+    const filteredUsers = users.filter((user: AccountForUI) =>
+        (!selectedRole || user.role === selectedRole) &&
+        (!selectedStatus || user.status === selectedStatus) &&
+        (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    
     const handleSelectAll = () => {
         if (selectedRows.length === filteredUsers.length) {
             setSelectedRows([]);
         } else {
-            setSelectedRows(filteredUsers.map((u) => u.id));
+            setSelectedRows(filteredUsers.map((u: AccountForUI) => u.id));
         }
     };
 
@@ -133,13 +118,6 @@ const Accounts: React.FC = () => {
         }
     };
 
-    const filteredUsers = users.filter(user =>
-        (!selectedRole || user.role === selectedRole) &&
-        (!selectedStatus || user.status === selectedStatus) &&
-        (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -150,6 +128,12 @@ const Accounts: React.FC = () => {
                     Create new user
                 </NewUserButton>
             </div>
+
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
 
             <div className="mb-4 flex space-x-4 w-full">
 
@@ -274,16 +258,20 @@ const Accounts: React.FC = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {filteredUsers.length === 0 ? (
+                    {loading ? (
                         <tr>
-                            <td colSpan={9} className="p-4 text-center text-gray-500">No users found</td>
+                            <td colSpan={8} className="p-4 text-center text-gray-500">Loading...</td>
+                        </tr>
+                    ) : filteredUsers.length === 0 ? (
+                        <tr>
+                            <td colSpan={8} className="p-4 text-center text-gray-500">No users found</td>
                         </tr>
                     ) : (
-                        filteredUsers.map((user, idx) => (
+                        filteredUsers.map((user: AccountForUI, idx: number) => (
                             <tr key={user.id} className="hover:bg-gray-50">
                                 <td className="p-2 border text-center">{idx + 1}</td>
                                 <td className="p-2 border flex items-center gap-2">
-                                    <img src={user.avatar} alt="avatar" className="w-7 h-7 rounded-full border"/>
+                                    <img src={user.avatar || userAvt} alt="avatar" className="w-7 h-7 rounded-full border"/>
                                     <span>{user.name}</span>
                                 </td>
                                 <td className="p-2 border">{user.email}</td>
