@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import MenstrualCyclePopup from '../../../components/feature/Popup/MenstrualCyclePopup';
+import SpecialDayPopup from '../../../components/feature/Popup/SpecialDayPopup';
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
@@ -16,6 +17,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [currentMonth, setCurrentMonth] = useState(now.getMonth());
     const [currentYear, setCurrentYear] = useState(now.getFullYear());
     const [showCyclePopup, setShowCyclePopup] = useState(false);
+    const [showSpecialDayPopup, setShowSpecialDayPopup] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
@@ -506,6 +508,10 @@ const MenstrualCycleDashboard: React.FC = () => {
                     <MenstrualCyclePopup
                         open={showCyclePopup}
                         onClose={() => setShowCyclePopup(false)}
+                        isPreviousMonth={currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth < now.getMonth())}
+                        onSpecialDayClick={() => {
+                            setShowSpecialDayPopup(true);
+                        }}
                         onSave={async (data) => {
                             try {
                                 const [day, month, year] = data.startDate.split('/');
@@ -523,6 +529,16 @@ const MenstrualCycleDashboard: React.FC = () => {
                             } catch (error) {
                                 console.error('Error creating cycle:', error);
                             }
+                        }}
+                    />
+                    <SpecialDayPopup
+                        open={showSpecialDayPopup}
+                        onClose={() => setShowSpecialDayPopup(false)}
+                        onSave={(data) => {
+                            setShowSpecialDayPopup(false);
+                            setShowCyclePopup(false);
+                            setShowSuccess(true);
+                            setTimeout(() => setShowSuccess(false), 1200);
                         }}
                     />
                     <ReminderSettingsPopup

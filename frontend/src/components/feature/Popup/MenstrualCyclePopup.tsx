@@ -8,9 +8,11 @@ interface MenstrualCyclePopupProps {
     onClose: () => void;
     onSave?: (data: { startDate: string; duration: number; cycleLength: number }) => void;
     editRow?: { id?: number; startDate?: string; endDate?: string; duration?: number; cycle?: number } | null;
+    isPreviousMonth?: boolean;
+    onSpecialDayClick?: () => void;
 }
 
-const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow}) => {
+const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, onSpecialDayClick}) => {
     
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState(5);
@@ -40,7 +42,9 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
             const [year, month, day] = startDate.split('-');
             formattedStartDate = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
         }
-        if (onSave) onSave({startDate: formattedStartDate, duration, cycleLength});
+        
+        const defaultCycleLength = isPreviousMonth ? 28 : cycleLength;
+        if (onSave) onSave({startDate: formattedStartDate, duration, cycleLength: defaultCycleLength});
         onClose();
     };
     return (
@@ -58,22 +62,26 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
             <span className="inline-block w-7 h-7 bg-pink-100 rounded-full flex items-center justify-center">
               <img src={pen} alt="Pen" className="w-4 h-4"/>
             </span>
-                        Menstrual Cycle Declaration
+                        {isPreviousMonth ? 'Khai Báo Chu Kỳ Kinh' : 'Menstrual Cycle Declaration'}
                     </div>
                     <div className="mb-5">
-                        <label className="block text-gray-700 mb-2 font-medium">Start date of period</label>
+                        <label className="block text-gray-700 mb-2 font-medium">
+                            {isPreviousMonth ? 'Ngày bắt đầu kỳ kinh' : 'Start date of period'}
+                        </label>
                         <input
                             type="date"
                             className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400"
                             value={startDate}
                             onChange={e => setStartDate(e.target.value)}
                             required
-                            placeholder="dd/mm/yyyy"
+                            placeholder={isPreviousMonth ? "dd/mm/yyyy" : "dd/mm/yyyy"}
                             pattern="\d{4}-\d{2}-\d{2}"
                         />
                     </div>
                     <div className="mb-5">
-                        <label className="block text-gray-700 mb-2 font-medium">Number of period days</label>
+                        <label className="block text-gray-700 mb-2 font-medium">
+                            {isPreviousMonth ? 'Số ngày hành kinh' : 'Number of period days'}
+                        </label>
                         <input
                             type="number"
                             min={1}
@@ -84,22 +92,36 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
                             required
                         />
                     </div>
-                    <div className="mb-8">
-                        <label className="block text-gray-700 mb-2 font-medium">Cycle length</label>
-                        <input
-                            type="number"
-                            min={20}
-                            max={40}
-                            className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base"
-                            value={cycleLength}
-                            onChange={e => setCycleLength(Number(e.target.value))}
-                            required
-                        />
-                    </div>
+                    {!isPreviousMonth && (
+                        <div className="mb-8">
+                            <label className="block text-gray-700 mb-2 font-medium">Cycle length</label>
+                            <input
+                                type="number"
+                                min={20}
+                                max={40}
+                                className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base"
+                                value={cycleLength}
+                                onChange={e => setCycleLength(Number(e.target.value))}
+                                required
+                            />
+                        </div>
+                    )}
+                    {isPreviousMonth && (
+                        <div className="mb-8">
+                            <button
+                                type="button"
+                                className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-6 py-3 transition-all text-base shadow w-full"
+                                onClick={onSpecialDayClick}
+                            >
+                                Special day
+                            </button>
+                        </div>
+                    )}
                     <div className="flex justify-end">
                         <button type="submit"
                                 className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-8 py-2 transition-all text-base shadow"
-                                style={{minWidth: 140}}>Save cycle
+                                style={{minWidth: 140}}>
+                            {isPreviousMonth ? 'Lưu chu kỳ' : 'Save cycle'}
                         </button>
                     </div>
                 </form>
