@@ -6,7 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.account.dto.AccountDTO;
+import swp391.com.backend.feature.account.dto.AccountManagementDTO;
 import swp391.com.backend.feature.account.dto.request.AccountCreateRequest;
+import swp391.com.backend.feature.account.dto.request.AdminAccountCreateRequest;
+import swp391.com.backend.feature.account.dto.request.AdminAccountUpdateRequest;
 import swp391.com.backend.feature.account.dto.request.LoginRequest;
 import swp391.com.backend.feature.account.mapper.AccountMapper;
 import swp391.com.backend.feature.account.data.Account;
@@ -28,6 +31,7 @@ import swp391.com.backend.feature.staff.dto.StaffDTO;
 import swp391.com.backend.feature.staff.mapper.StaffMapper;
 import swp391.com.backend.feature.account.data.Role;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -109,5 +113,85 @@ public class AccountController {
         }
         AccountDTO dto = accountMapper.toDTO(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    // Admin CRUD operations for account management
+    
+    @GetMapping("/admin")
+    public ResponseEntity<List<AccountManagementDTO>> getAllAccountsForAdmin() {
+        List<AccountManagementDTO> accounts = accountService.getAllAccountsWithProfiles();
+        return ResponseEntity.ok(accounts);
+    }
+    
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<AccountManagementDTO> getAccountByIdForAdmin(@PathVariable Long id) {
+        try {
+            AccountManagementDTO account = accountService.getAccountWithProfile(id);
+            return ResponseEntity.ok(account);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @GetMapping("/admin/role/{role}")
+    public ResponseEntity<List<AccountManagementDTO>> getAccountsByRoleForAdmin(@PathVariable Role role) {
+        List<AccountManagementDTO> accounts = accountService.getAccountsByRoleWithProfiles(role);
+        return ResponseEntity.ok(accounts);
+    }
+    
+    @PostMapping("/admin")
+    public ResponseEntity<?> createAccountByAdmin(@RequestBody AdminAccountCreateRequest request) {
+        try {
+            AccountManagementDTO account = accountService.createAccountWithProfile(
+                request.getEmail(),
+                request.getPassword(),
+                request.getRole(),
+                request.getName(),
+                request.getPhoneNumber(),
+                request.getStatus()
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(account);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<?> updateAccountByAdmin(@PathVariable Long id, @RequestBody AdminAccountUpdateRequest request) {
+        try {
+            AccountManagementDTO account = accountService.updateAccountWithProfile(
+                id,
+                request.getEmail(),
+                request.getPassword(),
+                request.getRole(),
+                request.getName(),
+                request.getPhoneNumber(),
+                request.getStatus()
+            );
+            return ResponseEntity.ok(account);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<?> deleteAccountByAdmin(@PathVariable Long id) {
+        try {
+            Account deletedAccount = accountService.deleteAccount(id);
+            return ResponseEntity.ok(Map.of("message", "Account deleted successfully", "email", deletedAccount.getEmail()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @PutMapping("/admin/{id}/toggle-status")
+    public ResponseEntity<?> toggleAccountStatus(@PathVariable Long id) {
+        try {
+            Account account = accountService.toggleAccountStatus(id);
+            AccountManagementDTO accountDto = accountService.getAccountWithProfile(id);
+            return ResponseEntity.ok(accountDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
