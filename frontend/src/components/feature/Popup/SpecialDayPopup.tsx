@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import '../../../styles/components/datepicker.css';
 import pen from '../../../assets/icons/pen.svg';
 
 interface SpecialDayPopupProps {
@@ -8,13 +11,109 @@ interface SpecialDayPopupProps {
 }
 
 const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave }) => {
-    const [periodDays, setPeriodDays] = useState('');
-    const [ovulationDays, setOvulationDays] = useState('');
-    const [fertileWindow, setFertileWindow] = useState('');
+    const [periodStartDate, setPeriodStartDate] = useState<Date | null>(null);
+    const [periodEndDate, setPeriodEndDate] = useState<Date | null>(null);
+    const [ovulationStartDate, setOvulationStartDate] = useState<Date | null>(null);
+    const [ovulationEndDate, setOvulationEndDate] = useState<Date | null>(null);
+    const [fertileStartDate, setFertileStartDate] = useState<Date | null>(null);
+    const [fertileEndDate, setFertileEndDate] = useState<Date | null>(null);
+    
+    const [activeDatePicker, setActiveDatePicker] = useState<'period' | 'ovulation' | 'fertile' | null>(null);
+    
+    const periodPickerRef = useRef<DatePicker>(null);
+    const ovulationPickerRef = useRef<DatePicker>(null);
+    const fertilePickerRef = useRef<DatePicker>(null);
+
+    const formatDateRange = (startDate: Date | null, endDate: Date | null): string => {
+        if (!startDate) return '';
+        
+        const formatDate = (date: Date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+        
+        if (!endDate || startDate.getTime() === endDate.getTime()) {
+            return formatDate(startDate);
+        }
+        
+        return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+    };
+
+    const handleDatePickerSave = (type: 'period' | 'ovulation' | 'fertile') => {
+        setActiveDatePicker(null);
+        if (type === 'period' && periodPickerRef.current) {
+            periodPickerRef.current.setOpen(false);
+        } else if (type === 'ovulation' && ovulationPickerRef.current) {
+            ovulationPickerRef.current.setOpen(false);
+        } else if (type === 'fertile' && fertilePickerRef.current) {
+            fertilePickerRef.current.setOpen(false);
+        }
+    };
+
+    const handleDatePickerClear = (type: 'period' | 'ovulation' | 'fertile') => {
+        if (type === 'period') {
+            setPeriodStartDate(null);
+            setPeriodEndDate(null);
+        } else if (type === 'ovulation') {
+            setOvulationStartDate(null);
+            setOvulationEndDate(null);
+        } else if (type === 'fertile') {
+            setFertileStartDate(null);
+            setFertileEndDate(null);
+        }
+    };
+
+    const handleDatePickerToday = (type: 'period' | 'ovulation' | 'fertile') => {
+        const today = new Date();
+        if (type === 'period') {
+            setPeriodStartDate(today);
+            setPeriodEndDate(today);
+        } else if (type === 'ovulation') {
+            setOvulationStartDate(today);
+            setOvulationEndDate(today);
+        } else if (type === 'fertile') {
+            setFertileStartDate(today);
+            setFertileEndDate(today);
+        }
+    };
+
+    const CustomDatePickerFooter = ({ type }: { type: 'period' | 'ovulation' | 'fertile' }) => (
+        <div className="flex justify-between items-center px-3 py-2 border-t bg-gray-50">
+            <button
+                type="button"
+                onClick={() => handleDatePickerClear(type)}
+                className="text-blue-500 hover:text-blue-700 text-sm px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+            >
+                Clear
+            </button>
+            <button
+                type="button"
+                onClick={() => handleDatePickerSave(type)}
+                className="bg-pink-500 hover:bg-pink-600 text-white text-sm px-4 py-1 rounded transition-colors"
+            >
+                Save
+            </button>
+            <button
+                type="button"
+                onClick={() => handleDatePickerToday(type)}
+                className="text-blue-500 hover:text-blue-700 text-sm px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+            >
+                Today
+            </button>
+        </div>
+    );
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (onSave) onSave({ periodDays, ovulationDays, fertileWindow });
+        if (onSave) {
+            onSave({ 
+                periodDays: formatDateRange(periodStartDate, periodEndDate),
+                ovulationDays: formatDateRange(ovulationStartDate, ovulationEndDate),
+                fertileWindow: formatDateRange(fertileStartDate, fertileEndDate)
+            });
+        }
         onClose();
     };    return (
         <div className={`fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-40 ${open ? '' : 'hidden'}`}>
@@ -37,38 +136,110 @@ const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave
                     
                     <div>
                         <label className="block text-gray-700 mb-2 font-medium">Period Days</label>
-                        <input
-                            type="date"
-                            className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400"
-                            value={periodDays}
-                            onChange={e => setPeriodDays(e.target.value)}
-                            placeholder="dd/mm/yyyy"
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type="text"
+                                className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400 cursor-pointer"
+                                value={formatDateRange(periodStartDate, periodEndDate)}
+                                placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                                readOnly
+                                onClick={() => {
+                                    setActiveDatePicker('period');
+                                    if (periodPickerRef.current) {
+                                        periodPickerRef.current.setOpen(true);
+                                    }
+                                }}
+                            />
+                            <DatePicker
+                                ref={periodPickerRef}
+                                selected={periodStartDate}
+                                onChange={(dates) => {
+                                    const [start, end] = dates as [Date | null, Date | null];
+                                    setPeriodStartDate(start);
+                                    setPeriodEndDate(end);
+                                }}
+                                startDate={periodStartDate}
+                                endDate={periodEndDate}
+                                selectsRange
+                                inline={false}
+                                open={activeDatePicker === 'period'}
+                                onClickOutside={() => setActiveDatePicker(null)}
+                                customInput={<div style={{ display: 'none' }} />}
+                                children={<CustomDatePickerFooter type="period" />}
+                            />
+                        </div>
                     </div>
 
                     <div>
                         <label className="block text-gray-700 mb-2 font-medium">Ovulation Days</label>
-                        <input
-                            type="date"
-                            className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400"
-                            value={ovulationDays}
-                            onChange={e => setOvulationDays(e.target.value)}
-                            placeholder="dd/mm/yyyy"
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type="text"
+                                className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400 cursor-pointer"
+                                value={formatDateRange(ovulationStartDate, ovulationEndDate)}
+                                placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                                readOnly
+                                onClick={() => {
+                                    setActiveDatePicker('ovulation');
+                                    if (ovulationPickerRef.current) {
+                                        ovulationPickerRef.current.setOpen(true);
+                                    }
+                                }}
+                            />
+                            <DatePicker
+                                ref={ovulationPickerRef}
+                                selected={ovulationStartDate}
+                                onChange={(dates) => {
+                                    const [start, end] = dates as [Date | null, Date | null];
+                                    setOvulationStartDate(start);
+                                    setOvulationEndDate(end);
+                                }}
+                                startDate={ovulationStartDate}
+                                endDate={ovulationEndDate}
+                                selectsRange
+                                inline={false}
+                                open={activeDatePicker === 'ovulation'}
+                                onClickOutside={() => setActiveDatePicker(null)}
+                                customInput={<div style={{ display: 'none' }} />}
+                                children={<CustomDatePickerFooter type="ovulation" />}
+                            />
+                        </div>
                     </div>
 
                     <div>
                         <label className="block text-gray-700 mb-2 font-medium">Fertile Window</label>
-                        <input
-                            type="date"
-                            className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400"
-                            value={fertileWindow}
-                            onChange={e => setFertileWindow(e.target.value)}
-                            placeholder="dd/mm/yyyy"
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type="text"
+                                className="w-full border border-gray-300 rounded px-4 py-3 focus:outline-pink-400 text-base placeholder-gray-400 cursor-pointer"
+                                value={formatDateRange(fertileStartDate, fertileEndDate)}
+                                placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                                readOnly
+                                onClick={() => {
+                                    setActiveDatePicker('fertile');
+                                    if (fertilePickerRef.current) {
+                                        fertilePickerRef.current.setOpen(true);
+                                    }
+                                }}
+                            />
+                            <DatePicker
+                                ref={fertilePickerRef}
+                                selected={fertileStartDate}
+                                onChange={(dates) => {
+                                    const [start, end] = dates as [Date | null, Date | null];
+                                    setFertileStartDate(start);
+                                    setFertileEndDate(end);
+                                }}
+                                startDate={fertileStartDate}
+                                endDate={fertileEndDate}
+                                selectsRange
+                                inline={false}
+                                open={activeDatePicker === 'fertile'}
+                                onClickOutside={() => setActiveDatePicker(null)}
+                                customInput={<div style={{ display: 'none' }} />}
+                                children={<CustomDatePickerFooter type="fertile" />}
+                            />
+                        </div>
                     </div>
 
                     <div className="flex justify-end mt-4">
