@@ -269,36 +269,31 @@ const MenstrualCycleDashboard: React.FC = () => {
                 const cycleStart = new Date(cycleForCurrentMonth.cycleStartDate);
                 const { hasOvulation, hasFertile } = hasSpecialDaysForCycle(cycleForCurrentMonth.cycleStartDate);
                 
-                const isCurrentOrFutureMonth = currentYear > now.getFullYear() || 
-                    (currentYear === now.getFullYear() && currentMonth >= now.getMonth());
+                const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
                 
-                if (!isCurrentOrFutureMonth) {
-                    const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
+                    return 'period';
+                }
+                
+                if (hasOvulation && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'ovulation')) {
+                    return 'ovulation';
+                }
+                
+                if (hasFertile && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'fertile')) {
+                    return 'fertile';
+                }
+                
+                if (!hasOvulation || !hasFertile) {
+                    const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
                     
-                    if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
-                        return 'period';
-                    }
-                    
-                    if (hasOvulation && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'ovulation')) {
+                    if (!hasOvulation && currentDate.toDateString() === ovulationDate.toDateString()) {
                         return 'ovulation';
                     }
                     
-                    if (hasFertile && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'fertile')) {
+                    if (!hasFertile && currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
                         return 'fertile';
-                    }
-                    
-                    if (!hasOvulation || !hasFertile) {
-                        const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
-                        const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                        const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                        
-                        if (!hasOvulation && currentDate.toDateString() === ovulationDate.toDateString()) {
-                            return 'ovulation';
-                        }
-                        
-                        if (!hasFertile && currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                            return 'fertile';
-                        }
                     }
                 }
             }
@@ -423,7 +418,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     Cycle calendar for {currentMonth + 1}/{currentYear}
                                 </h3>
                                 <div className="flex gap-2">
-                                    {(currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth < now.getMonth())) && (
+                                    {(currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth <= now.getMonth())) && (
                                         <button
                                             className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold shadow hover:from-pink-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
                                             onClick={() => setShowCyclePopup(true)}>Declare Cycle
@@ -617,7 +612,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                     <MenstrualCyclePopup
                         open={showCyclePopup}
                         onClose={() => setShowCyclePopup(false)}
-                        isPreviousMonth={currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth < now.getMonth())}
+                        isPreviousMonth={currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth <= now.getMonth())}
                         defaultMonth={currentMonth}
                         defaultYear={currentYear}
                         onSpecialDayClick={() => {
