@@ -8,7 +8,6 @@ export {doctorService} from './doctorService';
 export {examinationService} from './examinationService';
 export {accountService} from './accountService';
 export {blogService} from './blogService';
-export {panelService} from './panelService';
 export * from './cycleService';
 export * from './aiService';
 export * from './cycleSymptomService';
@@ -31,11 +30,3 @@ export type {
     BlogPaginatedResponse,
     BlogCategory
 } from './blogService';
-export type {
-    Panel, 
-    TestType, 
-    CreatePanelRequest, 
-    UpdatePanelRequest, 
-    CreateTestTypeRequest, 
-    PanelFilters
-} from './panelService';

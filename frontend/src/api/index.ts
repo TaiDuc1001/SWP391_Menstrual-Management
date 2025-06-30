@@ -16,8 +16,7 @@ export {
     approvalService,
     doctorService,
     accountService,
-    blogService,
-    panelService
+    blogService
 } from './services';
 
 
@@ -46,21 +45,13 @@ export type {
     BlogUpdateRequest,
     BlogFilterRequest,
     BlogPaginatedResponse,
-    BlogCategory,
-    Panel,
-    TestType,
-    CreatePanelRequest,
-    UpdatePanelRequest,
-    CreateTestTypeRequest,
-    PanelFilters
+    BlogCategory
 } from './services';
 
 
 export {
     useTableState,
-    useBulkActions,
-    usePanels,
-    useTestTypes
+    useBulkActions
 } from './hooks';
 
 
