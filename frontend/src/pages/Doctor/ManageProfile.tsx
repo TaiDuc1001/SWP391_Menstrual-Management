@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
-import { doctorService, DoctorProfile } from '../../api/services/doctorService';
-import { mockDoctorService } from '../../api/services/mockDoctorService';
+import { DoctorProfile } from '../../api/services/doctorService';
+import { useDoctorProfile } from '../../api/hooks/useDoctorProfile';
 import { SimpleNotification, useSimpleNotification } from '../../components/common/SimpleNotification';
 
-// Toggle between real API and mock for testing
-const USE_MOCK_API = true;
+const USE_MOCK_API = false;
 
 interface ManageProfileProps {
     isFirstTime?: boolean;
@@ -45,45 +44,41 @@ const calculateCompletion = (profile: Partial<DoctorProfile>): number => {
 const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) => {
     const navigate = useNavigate();
     const { notification, showNotification, hideNotification } = useSimpleNotification();
+    const { profile: loadedProfile, loading, updateProfile } = useDoctorProfile(USE_MOCK_API);
     
-    // State management
     const [profile, setProfile] = useState<Partial<DoctorProfile>>({
         name: '',
         specialization: '',
         price: undefined
     });
-    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [specializations, setSpecializations] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Service selector
-    const getService = useCallback(() => 
-        USE_MOCK_API ? mockDoctorService : doctorService, []);
-
-    // Load profile and specializations
     useEffect(() => {
-        const loadData = async () => {
-            const service = getService();
-            
-            try {
-                // Load profile if not first time
-                if (!isFirstTime) {
-                    const profileResponse = await service.getDoctorProfile();
-                    setProfile(profileResponse.data);
-                }
-                
-                // Load specializations
-                const specializationsResponse = await service.getSpecializations();
-                setSpecializations(specializationsResponse.data);
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showNotification('Error loading data', 'error');
-            }
-        };
+        if (loadedProfile && !isFirstTime) {
+            setProfile(loadedProfile);
+        }
+    }, [loadedProfile, isFirstTime]);
 
-        loadData();
-    }, [isFirstTime, getService, showNotification]);
+    useEffect(() => {
+        setSpecializations([
+            'Gynecology',
+            'Urology', 
+            'Endocrinology',
+            'Psychiatry',
+            'Nutrition',
+            'Family Medicine',
+            'Dermatology',
+            'Cardiology',
+            'Gastroenterology',
+            'Pulmonology',
+            'Infectious Diseases',
+            'Sexual Health',
+            'Reproductive Health',
+            'Women\'s Health'
+        ]);
+    }, []);
 
     // Handle input changes
     const handleInputChange = useCallback((field: keyof DoctorProfile, value: any) => {
@@ -107,14 +102,13 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
 
         setIsSubmitting(true);
         try {
-            const service = getService();
             const profileData = {
                 name: profile.name!,
                 specialization: profile.specialization!,
                 price: profile.price!
             };
 
-            await service.updateDoctorProfile(profileData);
+            await updateProfile(profileData);
             showNotification('Profile saved successfully!', 'success');
             
             setTimeout(() => {
@@ -294,17 +288,17 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                                         <span className="flex items-center space-x-2">
                                             <span>💰</span>
-                                            <span>Consultation Fee (USD) *</span>
+                                            <span>Consultation Fee (VND) *</span>
                                         </span>
                                     </label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg font-semibold">
-                                            $
+                                            ₫
                                         </div>
                                         <input
                                             type="number"
                                             min="0"
-                                            step="5"
+                                            step="10000"
                                             className={`w-full pl-8 pr-4 py-4 text-lg border-2 rounded-xl transition-all duration-200 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 ${
                                                 errors.price 
                                                     ? 'border-red-300 bg-red-50' 
@@ -314,7 +308,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                             }`}
                                             value={profile.price && profile.price > 0 ? profile.price : ''}
                                             onChange={(e) => handleInputChange('price', e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
-                                            placeholder="50"
+                                            placeholder="500000"
                                         />
                                         {profile.price && profile.price > 0 && !errors.price && (
                                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
@@ -352,7 +346,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                         <div>
                                             <span className="text-gray-600">Fee: </span>
                                             <span className="font-medium text-green-600">
-                                                ${profile.price || 0} USD
+                                                {profile.price ? profile.price.toLocaleString('vi-VN') : '0'} VND
                                             </span>
                                         </div>
                                         <div className="pt-2 border-t border-purple-200">

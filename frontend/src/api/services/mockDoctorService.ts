@@ -1,6 +1,9 @@
 import { DoctorProfile } from './doctorService';
 
-// Get current user ID for user-specific storage
+let cachedProfile: DoctorProfile | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 30000; // 30 seconds
+
 const getCurrentUserId = (): string => {
     try {
         const userProfile = localStorage.getItem('userProfile');
@@ -8,7 +11,6 @@ const getCurrentUserId = (): string => {
             const parsed = JSON.parse(userProfile);
             const userId = parsed.id?.toString();
             if (userId && userId !== 'undefined' && userId !== 'null') {
-                console.log(`Current user ID: ${userId}`);
                 return userId;
             }
         }
@@ -16,43 +18,34 @@ const getCurrentUserId = (): string => {
         console.error('Error getting user ID:', error);
     }
     
-    // Fallback: try to get from other sources or generate a temporary one
     const role = localStorage.getItem('role');
     if (role) {
         const tempId = `temp_${Date.now()}`;
-        console.log(`Using temporary user ID: ${tempId}`);
         return tempId;
     }
     
-    console.log('Using default user ID');
     return 'default';
 };
 
-// Get user-specific storage key
 const getStorageKey = (): string => {
     const userId = getCurrentUserId();
     return `mock_doctor_profile_${userId}`;
 };
 
-// Get profile from localStorage or use default
 const getStoredProfile = (): DoctorProfile => {
     const userId = getCurrentUserId();
     const storageKey = getStorageKey();
-    
-    console.log('Getting stored profile for user:', userId, 'with key:', storageKey);
     
     const stored = localStorage.getItem(storageKey);
     if (stored) {
         try {
             const profile = JSON.parse(stored);
-            console.log(`Loading existing profile for user ${userId}:`, profile);
             return profile;
         } catch (error) {
             console.error('Error parsing stored profile:', error);
         }
     }
     
-    // Default mock data for new user
     const defaultProfile = {
         id: parseInt(userId) || Math.floor(Math.random() * 1000),
         name: "",
@@ -61,15 +54,12 @@ const getStoredProfile = (): DoctorProfile => {
         isProfileComplete: false
     };
     
-    console.log(`Creating new profile for user ${userId}:`, defaultProfile);
     return defaultProfile;
 };
 
-// Save profile to localStorage
 const saveProfile = (profile: DoctorProfile) => {
     const storageKey = getStorageKey();
     localStorage.setItem(storageKey, JSON.stringify(profile));
-    console.log(`Saved profile for user ${getCurrentUserId()} to ${storageKey}:`, profile);
 };
 
 // Check if profile is complete
@@ -144,18 +134,26 @@ export const mockDoctorService = {
     // Get doctor profile
     getDoctorProfile: async (): Promise<{ data: DoctorProfile }> => {
         return new Promise((resolve) => {
+            const now = Date.now();
+            if (cachedProfile && (now - cacheTimestamp) < CACHE_DURATION) {
+                console.log('Returning cached profile - no API call made');
+                resolve({ data: cachedProfile });
+                return;
+            }
+            
+            console.log('Making new API call to get doctor profile');
             setTimeout(() => {
                 let profile = getStoredProfile();
                 
-                // Ensure profile completion status is always up-to-date
                 profile.isProfileComplete = checkProfileCompletion(profile);
-                
-                // Save the updated profile back to storage
                 saveProfile(profile);
                 
-                console.log(`Retrieved profile for user ${getCurrentUserId()}:`, profile);
+                cachedProfile = profile;
+                cacheTimestamp = now;
+                
+                console.log(`API call completed - profile retrieved and cached`);
                 resolve({ data: profile });
-            }, 500);
+            }, 200);
         });
     },
 
@@ -172,6 +170,10 @@ export const mockDoctorService = {
                 
                 updatedProfile.isProfileComplete = checkProfileCompletion(updatedProfile);
                 saveProfile(updatedProfile);
+                
+                // Clear cache since profile was updated
+                cachedProfile = null;
+                cacheTimestamp = 0;
                 
                 resolve({ data: updatedProfile });
             }, 800);
@@ -255,7 +257,7 @@ export const mockDoctorService = {
             id: parseInt(userId) || 1,
             name: "Dr. Sarah Johnson",
             specialization: "Gynecology",
-            price: 50,
+            price: 500000,
             isProfileComplete: true
         };
     }
