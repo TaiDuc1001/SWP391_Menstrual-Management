@@ -17,6 +17,8 @@ import swp391.com.backend.feature.examination.service.ExaminationService;
 import swp391.com.backend.feature.customer.service.CustomerService;
 import swp391.com.backend.feature.panel.service.PanelService;
 import swp391.com.backend.feature.panelTestType.service.PanelTestTypeService;
+import swp391.com.backend.feature.panel.dto.UpdatePanelRequest;
+import swp391.com.backend.feature.panel.dto.UpdatePanelResponse;
 
 import java.util.List;
 
@@ -100,5 +102,22 @@ public class PanelController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(examinationMapper.toCreateResponse(createdExamination));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UpdatePanelResponse> updatePanel(@PathVariable Long id, @RequestBody UpdatePanelRequest request) {
+        Panel updatedPanel = panelMapper.fromUpdateRequest(request);
+        Panel savedPanel = panelService.updatePanel(id, updatedPanel, request.getTestTypeIds());
+        UpdatePanelResponse response = new UpdatePanelResponse();
+        response.setId(savedPanel.getId());
+        response.setPanelName(savedPanel.getPanelName());
+        response.setDescription(savedPanel.getDescription());
+        response.setPrice(savedPanel.getPrice());
+        response.setResponseTime(savedPanel.getResponseTime());
+        response.setDuration(savedPanel.getDuration());
+        response.setPanelType(savedPanel.getPanelType());
+        response.setPanelTag(savedPanel.getPanelTag());
+        response.setTestTypeIds(request.getTestTypeIds());
+        return ResponseEntity.ok(response);
     }
 }

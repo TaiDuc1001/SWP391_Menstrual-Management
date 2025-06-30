@@ -24,7 +24,6 @@ const getStatusBadge = (status: string) => {
     }
     return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Inactive</span>;
 };
-// This function formats the price to Vietnamese currency format
 const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
@@ -185,7 +184,7 @@ const TestPanels: React.FC = () => {
                     message: 'Panel created successfully'
                 });
             } else if (selectedPanel) {
-                await updatePanel(selectedPanel.id, data as UpdatePanelRequest);
+                await updatePanel(Number(selectedPanel.id), data as UpdatePanelRequest);
                 addNotification({
                     type: 'success',
                     title: 'Success',
@@ -313,7 +312,7 @@ const TestPanels: React.FC = () => {
                                 </td>
                             </tr>
                         ) : (
-                            panels.map((panel) => (
+                            panels.map((panel: Panel) => (
                                 <tr key={panel.id} className="border-b last:border-b-0">
                                     <td className="p-2 whitespace-nowrap font-medium">{panel.panelName}</td>
                                     <td className="p-2 max-w-xs truncate" title={panel.description}>
@@ -336,7 +335,7 @@ const TestPanels: React.FC = () => {
                                     </td>
                                     <td className="p-2 text-center">
                                         <span className="text-xs text-gray-600">
-                                            {panel.testTypes.length} test(s)
+                                            {(panel.testTypeIds ? panel.testTypeIds.length : 0)} test(s)
                                         </span>
                                     </td>
                                     <td className="p-2 text-center">
