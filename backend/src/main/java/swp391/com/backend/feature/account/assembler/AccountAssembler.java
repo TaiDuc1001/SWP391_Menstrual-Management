@@ -18,20 +18,20 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountDTO
     @Override
     public EntityModel<AccountDTO> toModel(AccountDTO entity) {
         EntityModel<AccountDTO> model = EntityModel.of(entity,
-                linkTo(AccountController.class).slash(entity.getId()).withSelfRel(),
-                linkTo(AccountController.class).withRel("allAccounts"),
-                linkTo(AccountController.class).slash("register").withRel("register"));
-
+                linkTo(AccountController.class).slash(entity.getId()).withSelfRel().withType("GET,PUT,DELETE"),
+                linkTo(AccountController.class).withRel("allAccounts").withType("GET,POST"));
         if(entity.getRole() == Role.CUSTOMER) {
-            model.add(linkTo(methodOn(CustomerController.class).getCustomerById(entity.getId())).withRel("customer"));
+            model.add(linkTo(methodOn(CustomerController.class).getCustomerById(entity.getId())).withRel("customer").withType("GET,PUT,DELETE"));
         } else if(entity.getRole() == Role.DOCTOR) {
-            model.add(linkTo(methodOn(DoctorController.class).getDoctorById(entity.getId())).withRel("doctor"));
+            model.add(linkTo(methodOn(DoctorController.class).getDoctorById(entity.getId())).withRel("doctor").withType("GET,PUT,DELETE"));
         }
         return model;
     }
 
     @Override
     public CollectionModel<EntityModel<AccountDTO>> toCollectionModel(Iterable<? extends AccountDTO> entities) {
-        return RepresentationModelAssembler.super.toCollectionModel(entities);
+        CollectionModel<EntityModel<AccountDTO>> collectionModel = RepresentationModelAssembler.super.toCollectionModel(entities);
+        collectionModel.add(linkTo(AccountController.class).withSelfRel().withType("GET,POST"));
+        return collectionModel;
     }
 }

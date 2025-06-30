@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import swp391.com.backend.feature.account.data.Account;
 import swp391.com.backend.feature.account.data.AccountRepository;
 import swp391.com.backend.feature.account.data.Actor;
+import swp391.com.backend.feature.account.data.Role;
 import swp391.com.backend.feature.admin.data.AdminRepository;
 import swp391.com.backend.feature.customer.data.CustomerRepository;
 import swp391.com.backend.feature.doctor.data.DoctorRepository;
@@ -61,5 +62,9 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         accountRepository.delete(account);
         return account;
+    }
+
+    public List<Account> getAccountsByRole(Role role) {
+        return accountRepository.findByRole(role);
     }
 }

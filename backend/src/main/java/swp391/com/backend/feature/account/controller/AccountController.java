@@ -32,6 +32,7 @@ import swp391.com.backend.feature.staff.mapper.StaffMapper;
 import swp391.com.backend.feature.account.data.Role;
 
 import javax.swing.text.html.parser.Entity;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,15 @@ public class AccountController {
         AccountDTO dto = accountMapper.toDTO(account);
         EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
         return ResponseEntity.ok(entityModel);
+    }
+
+    @GetMapping("/role/{string}")
+    public ResponseEntity<CollectionModel<EntityModel<AccountDTO>>> getAccountsByRole(@PathVariable String string) {
+        Role role = Role.valueOf(string.toUpperCase());
+        List<Account> accounts = accountService.getAccountsByRole(role);
+        List<AccountDTO> accountDTOs = accountMapper.toDTOs(accounts);
+        CollectionModel<EntityModel<AccountDTO>> entityModels = accountAssembler.toCollectionModel(accountDTOs);
+        return ResponseEntity.ok(entityModels);
     }
 
     @PostMapping("/login")
@@ -107,7 +117,7 @@ public class AccountController {
         return ResponseEntity.ok(entityModel);
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<EntityModel<AccountDTO>> createAccount(@RequestBody AccountCreateRequest request) {
         request.setRole(request.getRole().toUpperCase());
         Role role = Role.valueOf(request.getRole());
