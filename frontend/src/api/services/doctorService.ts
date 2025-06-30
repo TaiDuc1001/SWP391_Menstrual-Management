@@ -59,12 +59,12 @@ export const doctorService = {
     },
 
     // Profile management APIs
-    getDoctorProfile: () => {
-        return api.get('/doctors/profile');
+    getDoctorProfile: (id: number) => {
+        return api.get(`/doctors/${id}`);
     },
 
-    updateDoctorProfile: (profile: Partial<DoctorProfile>) => {
-        return api.put('/doctors/profile', profile);
+    updateDoctorProfile: (id: number, profile: Partial<DoctorProfile>) => {
+        return api.put(`/doctors/${id}`, profile);
     },
 
     uploadAvatar: (file: File) => {

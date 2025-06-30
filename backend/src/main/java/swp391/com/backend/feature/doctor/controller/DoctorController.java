@@ -39,4 +39,15 @@ public class DoctorController {
         DoctorDTO updatedDoctorDTO = doctorMapper.toDTO(updatedDoctor);
         return ResponseEntity.ok(updatedDoctorDTO);
     }
+
+    @GetMapping("/specializations")
+    public ResponseEntity<List<String>> getSpecializations() {
+        List<Doctor> doctors = doctorService.getAllDoctors();
+        List<String> specializations = doctors.stream()
+            .map(Doctor::getSpecialization)
+            .filter(s -> s != null && !s.trim().isEmpty())
+            .distinct()
+            .toList();
+        return ResponseEntity.ok(specializations);
+    }
 }

@@ -153,13 +153,7 @@ const Checkout: React.FC = () => {
                     </div>
 
                     <div className="flex gap-4 justify-center">
-                        <button
-                            onClick={handleScanPayment}
-                            disabled={paying}
-                            className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-50"
-                        >
-                            {paying ? 'Processing...' : 'Scan (Demo Payment)'}
-                        </button>
+                        
                         <button
                             onClick={handleCancelPayment}
                             className="px-8 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all duration-300"

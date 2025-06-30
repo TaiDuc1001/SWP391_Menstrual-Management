@@ -169,17 +169,6 @@ const VNPayExaminationCheckout: React.FC = () => {
                             </div>
                         </button>
 
-                        <div className="text-center text-gray-500 text-sm">
-                            OR
-                        </div>
-
-                        <button
-                            onClick={handleDemoPayment}
-                            disabled={paying}
-                            className="w-full px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-50"
-                        >
-                            {paying ? 'Processing...' : 'Demo Payment (For Testing)'}
-                        </button>
                     </div>
 
                     <div className="flex gap-4 justify-center mb-8">
