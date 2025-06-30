@@ -51,6 +51,29 @@ const MenstrualCycleDashboard: React.FC = () => {
     };
     const days = getDaysInMonth(currentMonth, currentYear);
 
+    const getCycleAnnotation = (day: number | null) => {
+        if (!day || !cycles || cycles.length === 0) return null;
+        
+        const currentDate = new Date(currentYear, currentMonth, day);
+        const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
+        
+        const cycleIndex = sortedCycles.findIndex(cycle => {
+            const cycleDate = new Date(cycle.cycleStartDate);
+            return cycleDate.getDate() === currentDate.getDate() &&
+                   cycleDate.getMonth() === currentDate.getMonth() &&
+                   cycleDate.getFullYear() === currentDate.getFullYear();
+        });
+        
+        if (cycleIndex !== -1) {
+            return {
+                type: 'start',
+                cycleNumber: cycleIndex + 1
+            };
+        }
+        
+        return null;
+    };
+
     const parseSpecialDayRange = (dateRange: string): Date[] => {
         if (!dateRange) return [];
         
@@ -303,7 +326,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${JSON.stringify(specialDays)}`}>
+                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${JSON.stringify(specialDays)}-${cycles?.length || 0}-${cycles?.map(c => c.cycleStartDate).join(',') || ''}`}>
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
                                          className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
@@ -315,11 +338,13 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     }
                                     let hasSymptom = false;
                                     let hasNote = false;
+                                    let cycleAnnotation = null;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
                                         hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
+                                        cycleAnnotation = getCycleAnnotation(day);
                                     }
                                     let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
@@ -332,23 +357,32 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     return (
                                         <div key={idx} className="flex justify-center items-center h-10">
                                             {day ? (
-                                                <div
-                                                    className={style}
-                                                    onClick={() => {
-                                                        if (day) {
-                                                            setSelectedDay(day);
-                                                            setShowDayNote(true);
-                                                        }
-                                                    }}
-                                                >
-                                                    {day}
+                                                <div className="relative">
+                                                    <div
+                                                        className={style}
+                                                        onClick={() => {
+                                                            if (day) {
+                                                                setSelectedDay(day);
+                                                                setShowDayNote(true);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {day}
+                                                    </div>                                    {cycleAnnotation && (
+                                        <div 
+                                            className="absolute cycle-annotation cycle-start-annotation z-10"
+                                            title={`Start Cycle ${cycleAnnotation.cycleNumber}`}
+                                        >
+                                            S{cycleAnnotation.cycleNumber}
+                                        </div>
+                                    )}
                                                 </div>
                                             ) : <div className="w-10 h-10"></div>}
                                         </div>
                                     );
                                 })}
                             </div>
-                            <div className="flex gap-4 mt-2 text-xs items-center">
+                            <div className="flex gap-4 mt-2 text-xs items-center flex-wrap">
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day (predicted)
@@ -358,6 +392,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
+                                </div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-2 inline-block bg-gray-600 rounded text-white text-[8px] px-1">S</span> Cycle start
                                 </div>
                             </div>
                         </div>

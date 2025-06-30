@@ -39,3 +39,28 @@
     border-radius: 50%;
     padding: 1px;
 }
+
+.cycle-annotation {
+    font-size: 9px !important;
+    line-height: 9px !important;
+    padding: 1px 3px !important;
+    border-radius: 2px !important;
+    font-weight: 700 !important;
+    min-width: fit-content !important;
+    white-space: nowrap !important;
+    position: absolute !important;
+}
+
+.cycle-start-annotation {
+    background: #374151 !important;
+    color: white !important;
+    top: -3px !important;
+    left: -3px !important;
+}
+
+.cycle-end-annotation {
+    background: #374151 !important;
+    color: white !important;
+    top: -3px !important;
+    right: -3px !important;
+}
