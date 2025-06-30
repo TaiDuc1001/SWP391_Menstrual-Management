@@ -16,8 +16,8 @@ export interface Panel {
     price: number;
     responseTime: number;
     duration: number;
-    panelType: 'COMPREHENSIVE' | 'BASIC' | 'ADVANCED';
-    panelTag: 'RECOMMENDED' | 'POPULAR' | 'NEW' | 'STANDARD';
+    panelType: 'COMPREHENSIVE' | 'SPECIALIZED' | 'PREVENTIVE';
+    panelTag: 'RECOMMENDED' | 'BEST_VALUE' | 'BUDGET_FRIENDLY' | 'POPULAR' | 'EXPRESS' | 'NEW';
     testTypes: TestType[];
     createdAt: string;
     updatedAt: string;
@@ -29,8 +29,8 @@ export interface CreatePanelRequest {
     price: number;
     responseTime: number;
     duration: number;
-    panelType: 'COMPREHENSIVE' | 'BASIC' | 'ADVANCED';
-    panelTag: 'RECOMMENDED' | 'POPULAR' | 'NEW' | 'STANDARD';
+    panelType: 'COMPREHENSIVE' | 'SPECIALIZED' | 'PREVENTIVE';
+    panelTag: 'RECOMMENDED' | 'BEST_VALUE' | 'BUDGET_FRIENDLY' | 'POPULAR' | 'EXPRESS' | 'NEW';
     testTypeIds: number[];
 }
 
@@ -40,8 +40,8 @@ export interface UpdatePanelRequest {
     price: number;
     responseTime: number;
     duration: number;
-    panelType: 'COMPREHENSIVE' | 'BASIC' | 'ADVANCED';
-    panelTag: 'RECOMMENDED' | 'POPULAR' | 'NEW' | 'STANDARD';
+    panelType: 'COMPREHENSIVE' | 'SPECIALIZED' | 'PREVENTIVE';
+    panelTag: 'RECOMMENDED' | 'BEST_VALUE' | 'BUDGET_FRIENDLY' | 'POPULAR' | 'EXPRESS' | 'NEW';
     testTypeIds: number[];
 }
 

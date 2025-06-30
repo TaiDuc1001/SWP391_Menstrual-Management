@@ -36,10 +36,10 @@ const formatPanelType = (type: string) => {
     switch (type) {
         case 'COMPREHENSIVE':
             return 'Comprehensive';
-        case 'BASIC':
-            return 'Basic';
-        case 'ADVANCED':
-            return 'Advanced';
+        case 'SPECIALIZED':
+            return 'Specialized';
+        case 'PREVENTIVE':
+            return 'Preventive';
         default:
             return type;
     }
@@ -49,12 +49,16 @@ const formatPanelTag = (tag: string) => {
     switch (tag) {
         case 'RECOMMENDED':
             return 'Recommended';
+        case 'BEST_VALUE':
+            return 'Best Value';
+        case 'BUDGET_FRIENDLY':
+            return 'Budget Friendly';
         case 'POPULAR':
             return 'Popular';
+        case 'EXPRESS':
+            return 'Express';
         case 'NEW':
             return 'New';
-        case 'STANDARD':
-            return 'Standard';
         default:
             return tag;
     }
@@ -64,9 +68,9 @@ const getPanelTypeColor = (type: string) => {
     switch (type) {
         case 'COMPREHENSIVE':
             return 'bg-purple-100 text-purple-800';
-        case 'BASIC':
+        case 'SPECIALIZED':
             return 'bg-blue-100 text-blue-800';
-        case 'ADVANCED':
+        case 'PREVENTIVE':
             return 'bg-green-100 text-green-800';
         default:
             return 'bg-gray-100 text-gray-800';
@@ -77,12 +81,16 @@ const getPanelTagColor = (tag: string) => {
     switch (tag) {
         case 'RECOMMENDED':
             return 'bg-yellow-100 text-yellow-800';
+        case 'BEST_VALUE':
+            return 'bg-green-100 text-green-800';
+        case 'BUDGET_FRIENDLY':
+            return 'bg-blue-100 text-blue-800';
         case 'POPULAR':
             return 'bg-red-100 text-red-800';
+        case 'EXPRESS':
+            return 'bg-orange-100 text-orange-800';
         case 'NEW':
-            return 'bg-green-100 text-green-800';
-        case 'STANDARD':
-            return 'bg-gray-100 text-gray-800';
+            return 'bg-purple-100 text-purple-800';
         default:
             return 'bg-gray-100 text-gray-800';
     }

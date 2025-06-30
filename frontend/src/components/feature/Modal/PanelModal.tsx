@@ -276,8 +276,8 @@ const PanelModal: React.FC<PanelModalProps> = ({
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="COMPREHENSIVE">Comprehensive</option>
-                                <option value="BASIC">Basic</option>
-                                <option value="ADVANCED">Advanced</option>
+                                <option value="SPECIALIZED">Specialized</option>
+                                <option value="PREVENTIVE">Preventive</option>
                             </select>
                         </div>
                     </div>
@@ -294,9 +294,11 @@ const PanelModal: React.FC<PanelModalProps> = ({
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="RECOMMENDED">Recommended</option>
+                            <option value="BEST_VALUE">Best Value</option>
+                            <option value="BUDGET_FRIENDLY">Budget Friendly</option>
                             <option value="POPULAR">Popular</option>
+                            <option value="EXPRESS">Express</option>
                             <option value="NEW">New</option>
-                            <option value="STANDARD">Standard</option>
                         </select>
                     </div>
 
