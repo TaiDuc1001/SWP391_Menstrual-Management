@@ -34,7 +34,7 @@ public class AccountService {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         if(!account.getStatus()){
-            throw new RuntimeException("Account is disabled");
+           return null;
         }
         return account;
     }

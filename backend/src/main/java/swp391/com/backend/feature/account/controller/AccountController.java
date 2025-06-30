@@ -61,8 +61,13 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<AccountDTO>> getAccount(@PathVariable long id) {
+    public ResponseEntity<? /*EntityModel<AccountDTO>*/> getAccount(@PathVariable long id) {
         Account account = accountService.getAccountById(id);
+        if(account == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(EntityModel.of(Map.of("message", "Account not found")));
+        }
         AccountDTO dto = accountMapper.toDTO(account);
         EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
         return ResponseEntity.ok(entityModel);
