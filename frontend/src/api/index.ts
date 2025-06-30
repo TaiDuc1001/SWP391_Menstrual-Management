@@ -17,6 +17,7 @@ export {
     doctorService,
     accountService,
     blogService,
+    publicBlogService,
     panelService
 } from './services';
 
@@ -60,7 +61,8 @@ export {
     useTableState,
     useBulkActions,
     usePanels,
-    useTestTypes
+    useTestTypes,
+    usePublicBlogs
 } from './hooks';
 
 
