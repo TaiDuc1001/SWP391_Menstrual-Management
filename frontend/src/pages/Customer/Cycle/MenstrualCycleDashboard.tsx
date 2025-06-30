@@ -30,7 +30,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
-    const { recommendations, loading: aiLoading, generateRecommendations } = useAIRecommendations();
+    const { recommendations, healthConcerns, needsSTITesting, healthIssueDescription, loading: aiLoading, generateRecommendations } = useAIRecommendations();
 
     useEffect(() => {
         if (location.state && location.state.openCyclePopup) {
@@ -283,14 +283,16 @@ const MenstrualCycleDashboard: React.FC = () => {
     
     useEffect(() => {
         if (cycles.length > 0 && !hasGeneratedRecommendations && !aiLoading) {
-            generateRecommendations(cycles, symptoms);
+            generateRecommendations(cycles, symptoms, false);
             setHasGeneratedRecommendations(true);
         }
     }, [cycles.length, hasGeneratedRecommendations, aiLoading]);
     
     const handleGenerateRecommendations = () => {
         if (cycles.length > 0) {
-            generateRecommendations(cycles, symptoms);
+            console.log('Refresh button clicked - cycles data:', cycles);
+            console.log('Refresh button clicked - symptoms from localStorage:', symptoms);
+            generateRecommendations(cycles, symptoms, true);
         }
     };
 
@@ -389,7 +391,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         }}
                                                     >
                                                         {day}
-                                                    </div>                                    {cycleAnnotation && (
+                                                    </div>
+                                                    {cycleAnnotation && (
                                         <div 
                                             className="absolute cycle-annotation cycle-start-annotation z-10"
                                             title={`Start Cycle ${cycleAnnotation.cycleNumber}`}
@@ -535,6 +538,31 @@ const MenstrualCycleDashboard: React.FC = () => {
                             {recommendations.length === 0 && (
                                 <div className="mt-2 text-xs text-gray-600 bg-yellow-50 p-2 rounded">
                                     <span className="font-semibold">Note:</span> AI recommendations are temporarily unavailable. Showing default health tips.
+                                </div>
+                            )}
+                            
+                            {/* Health Concerns Alert */}
+                            {healthConcerns && (
+                                <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg shadow-sm">
+                                    <div className="flex items-start gap-2">
+                                        <span className="text-orange-500 text-sm flex-shrink-0">⚠️</span>
+                                        <div className="flex-1">
+                                            <div className="text-xs font-semibold text-orange-700 mb-1">Health Concern Detected</div>
+                                            {healthIssueDescription && (
+                                                <div className="text-xs text-orange-600 mt-1">{healthIssueDescription}</div>
+                                            )}
+                                            {needsSTITesting && (
+                                                <div className="mt-2">
+                                                    <button
+                                                        onClick={() => navigate('/customer/sti-tests/packages')}
+                                                        className="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-md font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                                                    >
+                                                        🩺 Book STI Testing
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

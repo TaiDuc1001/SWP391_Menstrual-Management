@@ -1,0 +1,67 @@
+.health-alert {
+    @apply mt-3 p-3 border rounded-lg transition-all duration-200;
+}
+
+.health-alert--warning {
+    @apply bg-orange-50 border-orange-200 shadow-sm;
+}
+
+.health-alert--critical {
+    @apply bg-red-50 border-red-200 shadow-sm;
+}
+
+.health-alert__icon {
+    @apply text-sm flex-shrink-0;
+}
+
+.health-alert__icon--warning {
+    @apply text-orange-500;
+}
+
+.health-alert__icon--critical {
+    @apply text-red-500;
+}
+
+.health-alert__content {
+    @apply flex-1;
+}
+
+.health-alert__title {
+    @apply text-xs font-semibold mb-1;
+}
+
+.health-alert__title--warning {
+    @apply text-orange-700;
+}
+
+.health-alert__title--critical {
+    @apply text-red-700;
+}
+
+.health-alert__description {
+    @apply text-xs mt-1;
+}
+
+.health-alert__description--warning {
+    @apply text-orange-600;
+}
+
+.health-alert__description--critical {
+    @apply text-red-600;
+}
+
+.health-alert__action {
+    @apply mt-2;
+}
+
+.health-alert__button {
+    @apply text-xs px-3 py-1.5 rounded-md font-semibold transition-all duration-200 shadow-sm;
+}
+
+.health-alert__button--sti {
+    @apply bg-orange-500 hover:bg-orange-600 text-white;
+}
+
+.health-alert__button--critical {
+    @apply bg-red-500 hover:bg-red-600 text-white;
+}

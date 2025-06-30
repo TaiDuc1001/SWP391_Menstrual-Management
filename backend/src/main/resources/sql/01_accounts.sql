@@ -3,6 +3,7 @@ INSERT INTO accounts (id, email, password, status, role) VALUES (1, 'doctor@doct
 INSERT INTO accounts (id, email, password, status, role) VALUES (2, 'staff@staff', '123', 1, 'STAFF');
 INSERT INTO accounts (id, email, password, status, role) VALUES (3, 'cus@cus', '123', 1, 'CUSTOMER');
 INSERT INTO accounts (id, email, password, status, role) VALUES (4, 'admin@admin', '123', 1, 'ADMIN');
+INSERT INTO accounts (id, email, password, status, role) VALUES (5, 'health-issue@customer', '123', 1, 'CUSTOMER');
 -- INSERT INTO accounts (id, email, password, status, role) VALUES (5, 'mai.nguyen@example.com', '123', 1, 'CUSTOMER');
 -- INSERT INTO accounts (id, email, password, status, role) VALUES (6, 'hung.tran@example.com', '123', 1, 'DOCTOR');
 -- INSERT INTO accounts (id, email, password, status, role) VALUES (7, 'hoa.le@example.com', '123', 1, 'DOCTOR');
@@ -21,6 +22,7 @@ INSERT INTO accounts (id, email, password, status, role) VALUES (4, 'admin@admin
 -- INSERT INTO accounts (id, email, password, status, role) VALUES (20, 'hieu.pham@example.com', '123', 1, 'CUSTOMER');
 
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (3, 'Customer test account', '1990-01-01', 1, '0123456789', '123456789012', '123 Test Street, Test City');
+INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (5, 'Maria Problematic', '1992-05-15', 0, '0987654321', '987654321123', '456 Health Issue Street, Concern City');
 -- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (5, 'Nguyen Thi Mai', '1985-03-15', 0, '0912345678', '123456789013', '123 Le Loi, Hanoi');
 -- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (19, 'Tran Van Hung', '1990-07-22', 1, '0987654321', '987654321098', '456 Nguyen Trai, Ho Chi Minh City');
 -- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (20, 'Le Thi Hoa', '1978-11-30', 0, '0932123456', '456789123456', '789 Tran Hung Dao, Da Nang');
