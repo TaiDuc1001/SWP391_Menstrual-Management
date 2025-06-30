@@ -18,7 +18,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class AppointmentAssembler implements RepresentationModelAssembler<AppointmentDTO, EntityModel<AppointmentDTO>> {
     @Override
     public CollectionModel<EntityModel<AppointmentDTO>> toCollectionModel(Iterable<? extends AppointmentDTO> entities) {
-        return RepresentationModelAssembler.super.toCollectionModel(entities);
+        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = RepresentationModelAssembler.super.toCollectionModel(entities);
+        collectionModel.add(linkTo(AppointmentsController.class).withSelfRel().withType("GET,POST"));
+        return collectionModel;
     }
 
     @Override
