@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { doctorService, DoctorProfile } from '../../api/services/doctorService';
 import { mockDoctorService } from '../../api/services/mockDoctorService';
+import { API_CONFIG } from '../../config/api';
 import { SimpleNotification, useSimpleNotification } from '../../components/common/SimpleNotification';
-
-// Toggle between real API and mock for testing
-const USE_MOCK_API = true;
 
 interface ManageProfileProps {
     isFirstTime?: boolean;
@@ -59,20 +57,22 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
 
     // Service selector
     const getService = useCallback(() => 
-        USE_MOCK_API ? mockDoctorService : doctorService, []);
+        API_CONFIG.USE_MOCK_API ? mockDoctorService : doctorService, []);
 
     // Load profile and specializations
     useEffect(() => {
         const loadData = async () => {
             const service = getService();
-            
             try {
+                // Get accountId from localStorage
+                const userProfile = localStorage.getItem('userProfile');
+                const accountId = userProfile ? JSON.parse(userProfile).id : undefined;
+                if (!accountId) throw new Error('Missing account id');
                 // Load profile if not first time
                 if (!isFirstTime) {
-                    const profileResponse = await service.getDoctorProfile();
+                    const profileResponse = await service.getDoctorProfile(accountId);
                     setProfile(profileResponse.data);
                 }
-                
                 // Load specializations
                 const specializationsResponse = await service.getSpecializations();
                 setSpecializations(specializationsResponse.data);
@@ -81,7 +81,6 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                 showNotification('Error loading data', 'error');
             }
         };
-
         loadData();
     }, [isFirstTime, getService, showNotification]);
 
@@ -98,24 +97,75 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
     // Handle form submission
     const handleSubmit = async () => {
         const validationErrors = validateProfile(profile);
-        
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             showNotification('Please fix the errors before submitting', 'error');
             return;
         }
-
         setIsSubmitting(true);
         try {
             const service = getService();
+            // Get accountId from localStorage
+            const userProfile = localStorage.getItem('userProfile');
+            const accountId = userProfile ? JSON.parse(userProfile).id : undefined;
+            if (!accountId) throw new Error('Missing account id');
+            
             const profileData = {
+                ...profile,
                 name: profile.name!,
                 specialization: profile.specialization!,
-                price: profile.price!
+                price: profile.price!,
+                accountId: accountId, // Add accountId for creation
+                id: profile.id || undefined
             };
-
-            await service.updateDoctorProfile(profileData);
-            showNotification('Profile saved successfully!', 'success');
+            
+            // Debug log
+            console.log('Submitting profileData:', profileData);
+            
+            let response;
+            
+            try {
+                if (isFirstTime || !profileData.id) {
+                    // Try to get existing profile first
+                    try {
+                        // If we can get the profile, it exists, so we should update it
+                        const existingProfile = await service.getDoctorProfile(accountId);
+                        profileData.id = existingProfile.data.id;
+                        response = await service.updateDoctorProfile(profileData);
+                        showNotification('Profile updated successfully!', 'success');
+                    } catch (err: any) {
+                        // If profile doesn't exist (404), create a new one
+                        if (err.response && err.response.status === 404) {
+                            response = await service.createDoctor(profileData);
+                            showNotification('Profile created successfully!', 'success');
+                        } else {
+                            // Re-throw other errors
+                            throw err;
+                        }
+                    }
+                } else {
+                    // Update existing profile
+                    response = await service.updateDoctorProfile(profileData);
+                    showNotification('Profile updated successfully!', 'success');
+                }
+            } catch (err: any) {
+                // Handle specific error for profile already exists
+                if (err.response && err.response.data && err.response.data.message && 
+                    err.response.data.message.includes('already exists')) {
+                    // Try to get the existing profile and update it instead
+                    const existingProfile = await service.getDoctorProfile(accountId);
+                    profileData.id = existingProfile.data.id;
+                    response = await service.updateDoctorProfile(profileData);
+                    showNotification('Profile updated successfully!', 'success');
+                } else {
+                    throw err;
+                }
+            }
+            
+            // Update local state with the response data
+            if (response && response.data) {
+                setProfile(response.data);
+            }
             
             setTimeout(() => {
                 navigate(isFirstTime ? '/doctor/dashboard' : '/doctor/profile');

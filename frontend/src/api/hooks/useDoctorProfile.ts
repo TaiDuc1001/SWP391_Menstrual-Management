@@ -10,7 +10,18 @@ export const useDoctorProfile = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await doctorService.getDoctorProfile();
+            
+            // Get accountId from localStorage
+            const userProfile = localStorage.getItem('userProfile');
+            const accountId = userProfile ? JSON.parse(userProfile).id : undefined;
+            
+            if (!accountId) {
+                setError('User profile not found. Please log in again.');
+                setLoading(false);
+                return;
+            }
+            
+            const response = await doctorService.getDoctorProfile(accountId);
             setProfile(response.data);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to load profile');
@@ -23,6 +34,31 @@ export const useDoctorProfile = () => {
     const updateProfile = async (profileData: Partial<DoctorProfile>) => {
         try {
             setError(null);
+            
+            // Ensure we have an id for the update
+            if (!profileData.id && profile) {
+                profileData.id = profile.id;
+            }
+            
+            // If still no id, try to get from current profile
+            if (!profileData.id) {
+                const userProfile = localStorage.getItem('userProfile');
+                const accountId = userProfile ? JSON.parse(userProfile).id : undefined;
+                
+                if (accountId) {
+                    try {
+                        const currentProfile = await doctorService.getDoctorProfile(accountId);
+                        profileData.id = currentProfile.data.id;
+                    } catch (err) {
+                        console.error('Failed to get current profile for ID:', err);
+                    }
+                }
+            }
+            
+            if (!profileData.id) {
+                throw new Error('Missing doctor id for profile update');
+            }
+            
             const response = await doctorService.updateDoctorProfile(profileData);
             setProfile(response.data);
             return response.data;

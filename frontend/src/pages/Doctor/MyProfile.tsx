@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { doctorService, DoctorProfile } from '../../api/services/doctorService';
 import { mockDoctorService } from '../../api/services/mockDoctorService';
-
-// Toggle between real API and mock for testing
-const USE_MOCK_API = true;
+import { API_CONFIG } from '../../config/api';
 
 const MyProfile: React.FC = () => {
     const navigate = useNavigate();
@@ -17,8 +15,17 @@ const MyProfile: React.FC = () => {
         const loadProfile = async () => {
             try {
                 setLoading(true);
-                const service = USE_MOCK_API ? mockDoctorService : doctorService;
-                const response = await service.getDoctorProfile();
+                const service = API_CONFIG.USE_MOCK_API ? mockDoctorService : doctorService;
+                
+                // Lấy accountId từ localStorage
+                const userProfile = localStorage.getItem('userProfile');
+                const accountId = userProfile ? JSON.parse(userProfile).id : undefined;
+                
+                if (!accountId) {
+                    throw new Error('User profile not found. Please log in again.');
+                }
+                
+                const response = await service.getDoctorProfile(accountId);
                 setProfile(response.data);
             } catch (error) {
                 console.error('Error loading profile:', error);

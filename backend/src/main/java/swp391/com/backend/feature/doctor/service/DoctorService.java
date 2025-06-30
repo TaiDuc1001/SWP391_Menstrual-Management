@@ -34,4 +34,13 @@ public class DoctorService {
                 .build();
         return doctorRepository.save(doctor);
     }
+
+    public Doctor findDoctorByAccountId(Long accountId) {
+        return doctorRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found for account id: " + accountId));
+    }
+    
+    public boolean existsByAccountId(Long accountId) {
+        return doctorRepository.findByAccountId(accountId).isPresent();
+    }
 }
