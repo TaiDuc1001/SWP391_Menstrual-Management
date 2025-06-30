@@ -24,7 +24,7 @@ const getStatusBadge = (status: string) => {
     }
     return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Inactive</span>;
 };
-
+// This function formats the price to Vietnamese currency format
 const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
