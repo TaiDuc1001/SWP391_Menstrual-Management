@@ -365,7 +365,7 @@ const ExaminationDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        {examination.testResults && examination.testResults.length > 0 && (
+                        {examination.examinationStatus.toLowerCase() === 'completed' && examination.testResults && examination.testResults.length > 0 && (
                             <div className="bg-white rounded-2xl shadow-sm p-6">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Test Results</h2>
 
@@ -416,7 +416,7 @@ const ExaminationDetail: React.FC = () => {
                                 </div>
                             </div>
                         )}
-                        {examination.testResults && examination.testResults.length > 0 && (
+                        {examination.examinationStatus.toLowerCase() === 'completed' && examination.testResults && examination.testResults.length > 0 && (
                             <div className="bg-white rounded-2xl shadow-sm p-6">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                                     <span className="text-blue-500">🩺</span>
@@ -490,7 +490,6 @@ const ExaminationDetail: React.FC = () => {
                                         );
                                     })()
                                 )}
-
                             </div>
                         )}
 
