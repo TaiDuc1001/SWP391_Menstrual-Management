@@ -453,6 +453,20 @@ const ExaminationDetail: React.FC = () => {
                                             <div className="whitespace-pre-line text-gray-800 leading-relaxed">
                                                 {examination.overallNote}
                                             </div>
+                                            {examination.testResults.some(tr => tr.diagnosis === true) && (
+                                                <div className="mt-4 pt-4 border-t border-orange-200">
+                                                    <button
+                                                        onClick={() => navigate('/customer/appointments/book')}
+                                                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                                    >
+                                                        <span>📅</span>
+                                                        Schedule Consultation
+                                                    </button>
+                                                    <p className="text-sm text-orange-700 mt-2 text-center">
+                                                        Immediate medical consultation recommended
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ) : (
@@ -485,6 +499,20 @@ const ExaminationDetail: React.FC = () => {
                                                     <div className="whitespace-pre-line text-gray-800 leading-relaxed">
                                                         {generatedAssessment}
                                                     </div>
+                                                    {hasPositive && (
+                                                        <div className="mt-4 pt-4 border-t border-orange-200">
+                                                            <button
+                                                                onClick={() => navigate('/customer/appointments/book')}
+                                                                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                                            >
+                                                                <span>📅</span>
+                                                                Schedule Consultation
+                                                            </button>
+                                                            <p className="text-sm text-orange-700 mt-2 text-center">
+                                                                Immediate medical consultation recommended
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
