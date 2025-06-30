@@ -30,7 +30,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
-    const { recommendations, loading: aiLoading, generateRecommendations } = useAIRecommendations();
+    const { recommendations, healthConcerns, needsSTITesting, healthIssueDescription, loading: aiLoading, generateRecommendations } = useAIRecommendations();
 
     useEffect(() => {
         if (location.state && location.state.openCyclePopup) {
@@ -283,14 +283,16 @@ const MenstrualCycleDashboard: React.FC = () => {
     
     useEffect(() => {
         if (cycles.length > 0 && !hasGeneratedRecommendations && !aiLoading) {
-            generateRecommendations(cycles, symptoms);
+            generateRecommendations(cycles, symptoms, false);
             setHasGeneratedRecommendations(true);
         }
     }, [cycles.length, hasGeneratedRecommendations, aiLoading]);
     
     const handleGenerateRecommendations = () => {
         if (cycles.length > 0) {
-            generateRecommendations(cycles, symptoms);
+            console.log('Refresh button clicked - cycles data:', cycles);
+            console.log('Refresh button clicked - symptoms from localStorage:', symptoms);
+            generateRecommendations(cycles, symptoms, true);
         }
     };
 
@@ -359,13 +361,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     }
                                     let hasSymptom = false;
                                     let hasNote = false;
-                                    let cycleAnnotation = null;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
                                         hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
-                                        cycleAnnotation = getCycleAnnotation(day);
                                     }
                                     let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
@@ -389,14 +389,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         }}
                                                     >
                                                         {day}
-                                                    </div>                                    {cycleAnnotation && (
-                                        <div 
-                                            className="absolute cycle-annotation cycle-start-annotation z-10"
-                                            title={`Start Cycle ${cycleAnnotation.cycleNumber}`}
-                                        >
-                                            S{cycleAnnotation.cycleNumber}
-                                        </div>
-                                    )}
+                                                    </div>
                                                 </div>
                                             ) : <div className="w-10 h-10"></div>}
                                         </div>
@@ -413,8 +406,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
-                                </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-2 inline-block bg-gray-600 rounded text-white text-[8px] px-1">S</span> Cycle start
                                 </div>
                             </div>
                         </div>
@@ -535,6 +526,31 @@ const MenstrualCycleDashboard: React.FC = () => {
                             {recommendations.length === 0 && (
                                 <div className="mt-2 text-xs text-gray-600 bg-yellow-50 p-2 rounded">
                                     <span className="font-semibold">Note:</span> AI recommendations are temporarily unavailable. Showing default health tips.
+                                </div>
+                            )}
+                            
+                            {/* Health Concerns Alert */}
+                            {healthConcerns && (
+                                <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg shadow-sm">
+                                    <div className="flex items-start gap-2">
+                                        <span className="text-orange-500 text-sm flex-shrink-0">⚠️</span>
+                                        <div className="flex-1">
+                                            <div className="text-xs font-semibold text-orange-700 mb-1">Health Concern Detected</div>
+                                            {healthIssueDescription && (
+                                                <div className="text-xs text-orange-600 mt-1">{healthIssueDescription}</div>
+                                            )}
+                                            {needsSTITesting && (
+                                                <div className="mt-2">
+                                                    <button
+                                                        onClick={() => navigate('/customer/sti-tests/packages')}
+                                                        className="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-md font-semibold transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                                                    >
+                                                        🩺 Book STI Testing
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
