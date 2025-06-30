@@ -361,13 +361,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     }
                                     let hasSymptom = false;
                                     let hasNote = false;
-                                    let cycleAnnotation = null;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
                                         hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
-                                        cycleAnnotation = getCycleAnnotation(day);
                                     }
                                     let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
@@ -392,14 +390,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                     >
                                                         {day}
                                                     </div>
-                                                    {cycleAnnotation && (
-                                        <div 
-                                            className="absolute cycle-annotation cycle-start-annotation z-10"
-                                            title={`Start Cycle ${cycleAnnotation.cycleNumber}`}
-                                        >
-                                            S{cycleAnnotation.cycleNumber}
-                                        </div>
-                                    )}
                                                 </div>
                                             ) : <div className="w-10 h-10"></div>}
                                         </div>
@@ -416,8 +406,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
-                                </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-2 inline-block bg-gray-600 rounded text-white text-[8px] px-1">S</span> Cycle start
                                 </div>
                             </div>
                         </div>
