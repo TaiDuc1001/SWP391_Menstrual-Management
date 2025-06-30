@@ -8,6 +8,7 @@ export {doctorService} from './doctorService';
 export {examinationService} from './examinationService';
 export {accountService} from './accountService';
 export {blogService} from './blogService';
+export {publicBlogService} from './publicBlogService';
 export {panelService} from './panelService';
 export * from './cycleService';
 export * from './aiService';
