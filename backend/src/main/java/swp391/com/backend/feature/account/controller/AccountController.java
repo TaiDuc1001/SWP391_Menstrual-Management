@@ -144,4 +144,5 @@ public class AccountController {
         EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(entityModel);
     }
+
 }
