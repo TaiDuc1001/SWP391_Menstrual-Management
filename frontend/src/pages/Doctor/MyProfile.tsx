@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { doctorService, DoctorProfile } from '../../api/services/doctorService';
-import { formatCurrency } from '../../utils/helpers';
+import { mockDoctorService } from '../../api/services/mockDoctorService';
+
+// Toggle between real API and mock for testing
+const USE_MOCK_API = true;
 
 const MyProfile: React.FC = () => {
     const navigate = useNavigate();
@@ -14,11 +17,21 @@ const MyProfile: React.FC = () => {
         const loadProfile = async () => {
             try {
                 setLoading(true);
-                // Replace 1 with actual doctor id from auth/session
-                const response = await doctorService.getDoctorProfile(profile?.id || 1);
+                const service = USE_MOCK_API ? mockDoctorService : doctorService;
+                const response = await service.getDoctorProfile();
                 setProfile(response.data);
             } catch (error) {
-                setProfile(null);
+                console.error('Error loading profile:', error);
+                // Fallback to mock data for demo
+                const mockProfile: DoctorProfile = {
+                    id: 1,
+                    name: "Dr. Sarah Johnson",
+                    specialization: "Gynecology",
+                    price: 50,
+                    isProfileComplete: true
+                };
+
+                setProfile(mockProfile);
             } finally {
                 setLoading(false);
             }
@@ -97,7 +110,7 @@ const MyProfile: React.FC = () => {
                                     <div className="flex items-center space-x-4 text-sm text-blue-200">
                                         <div className="flex items-center space-x-1">
                                             <span>💰</span>
-                                            <span>{profile.price > 0 ? profile.price : 'Not set'} VND</span>
+                                            <span>${profile.price > 0 ? profile.price : 'Not set'} USD</span>
                                         </div>
                                         <div className="flex items-center space-x-1">
                                             <span>🏥</span>
@@ -223,13 +236,13 @@ const MyProfile: React.FC = () => {
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-xl font-semibold text-gray-800">Consultation Fee</h3>
                                 <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                                    VND Currency
+                                    USD Currency
                                 </span>
                             </div>
                             
                             <div className="text-center bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
                                 <div className="text-5xl font-bold text-green-600 mb-2">
-                                    {profile.price > 0 ? formatCurrency(profile.price, 'VND') : formatCurrency(0, 'VND')}
+                                    ${profile.price > 0 ? profile.price : '0'}
                                 </div>
                                 <p className="text-gray-600">per consultation</p>
                                 {profile.price === 0 && (

@@ -1,59 +1,107 @@
-import { useState } from 'react';
-import api from '../axios';
-import { Panel, CreatePanelRequest, UpdatePanelRequest } from '../services/panelService';
+import { useState, useEffect } from 'react';
+import { panelService, Panel, CreatePanelRequest, UpdatePanelRequest, PanelFilters } from '../services/panelService';
 
 export const usePanels = () => {
     const [panels, setPanels] = useState<Panel[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalItems, setTotalItems] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
 
-    const fetchPanels = async (filters: any = {}) => {
-        setLoading(true);
-        setError(null);
+    const fetchPanels = async (filters?: PanelFilters) => {
         try {
-            const res = await api.get('/panels');
-            let data = res.data || [];
-            if (filters.keyword) {
-                const keyword = filters.keyword.toLowerCase();
-                data = data.filter((panel: Panel) =>
-                    panel.panelName.toLowerCase().includes(keyword) ||
-                    panel.description.toLowerCase().includes(keyword) ||
-                    (panel.panelType && panel.panelType.toLowerCase().includes(keyword)) ||
-                    (panel.panelTag && panel.panelTag.toLowerCase().includes(keyword))
-                );
+            setLoading(true);
+            setError(null);
+            
+            let result;
+            if (filters && (filters.keyword || filters.panelType || filters.panelTag)) {
+                result = await panelService.searchPanels(filters);
+            } else if (filters && (filters.page !== undefined || filters.size !== undefined)) {
+                result = await panelService.getPanelsWithPagination(filters);
+            } else {
+                const allPanels = await panelService.getAllPanels();
+                result = {
+                    panels: allPanels,
+                    totalItems: allPanels.length,
+                    totalPages: 1,
+                    currentPage: 0
+                };
             }
-            setTotalItems(data.length);
-            const page = filters.page || 0;
-            const size = filters.size || 10;
-            setTotalPages(Math.max(1, Math.ceil(data.length / size)));
-            const paged = data.slice(page * size, (page + 1) * size);
-            setPanels(paged);
+            
+            setPanels(result.panels);
+            setTotalItems(result.totalItems);
+            setTotalPages(result.totalPages);
+            setCurrentPage(result.currentPage);
         } catch (err: any) {
-            setError('Failed to fetch panels');
-            setPanels([]);
-            setTotalItems(0);
-            setTotalPages(1);
+            setError(err.response?.data?.message || 'Failed to fetch panels');
+            console.error('Error fetching panels:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    const createPanel = async (data: CreatePanelRequest) => {
-        await api.post('/admin/panels', data);
-        await fetchPanels();
+    const createPanel = async (request: CreatePanelRequest): Promise<Panel | null> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const newPanel = await panelService.createPanel(request);
+            await fetchPanels(); // Refresh list
+            return newPanel;
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to create panel');
+            console.error('Error creating panel:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const updatePanel = async (id: number, data: UpdatePanelRequest) => {
-        await api.put(`/panels/${id}`, data);
-        await fetchPanels();
+    const updatePanel = async (id: number, request: UpdatePanelRequest): Promise<Panel | null> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const updatedPanel = await panelService.updatePanel(id, request);
+            await fetchPanels(); // Refresh list
+            return updatedPanel;
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to update panel');
+            console.error('Error updating panel:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const deletePanel = async (id: string) => {
-        await api.delete(`/admin/panels/${id}`);
-        await fetchPanels();
-        return true;
+    const deletePanel = async (id: number): Promise<boolean> => {
+        try {
+            setLoading(true);
+            setError(null);
+            await panelService.deletePanel(id);
+            await fetchPanels(); // Refresh list
+            return true;
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to delete panel');
+            console.error('Error deleting panel:', err);
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getPanelById = async (id: number): Promise<Panel | null> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const panel = await panelService.getPanelById(id);
+            return panel;
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to fetch panel details');
+            console.error('Error fetching panel details:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
     };
 
     return {
@@ -62,9 +110,12 @@ export const usePanels = () => {
         error,
         totalItems,
         totalPages,
+        currentPage,
         fetchPanels,
         createPanel,
         updatePanel,
-        deletePanel
+        deletePanel,
+        getPanelById,
+        setError
     };
 };

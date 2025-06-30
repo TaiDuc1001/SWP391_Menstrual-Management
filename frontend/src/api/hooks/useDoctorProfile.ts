@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { doctorService, DoctorProfile } from '../services/doctorService';
-import { getCurrentUserProfile } from '../../utils/auth';
 
 export const useDoctorProfile = () => {
     const [profile, setProfile] = useState<DoctorProfile | null>(null);
@@ -11,10 +10,7 @@ export const useDoctorProfile = () => {
         try {
             setLoading(true);
             setError(null);
-            const user = getCurrentUserProfile();
-            const doctorId = user?.profile?.id;
-            if (!doctorId) throw new Error('No doctor id');
-            const response = await doctorService.getDoctorProfile(doctorId);
+            const response = await doctorService.getDoctorProfile();
             setProfile(response.data);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to load profile');
@@ -27,10 +23,7 @@ export const useDoctorProfile = () => {
     const updateProfile = async (profileData: Partial<DoctorProfile>) => {
         try {
             setError(null);
-            const user = getCurrentUserProfile();
-            const doctorId = user?.profile?.id;
-            if (!doctorId) throw new Error('No doctor id');
-            const response = await doctorService.updateDoctorProfile(doctorId, profileData);
+            const response = await doctorService.updateDoctorProfile(profileData);
             setProfile(response.data);
             return response.data;
         } catch (err: any) {

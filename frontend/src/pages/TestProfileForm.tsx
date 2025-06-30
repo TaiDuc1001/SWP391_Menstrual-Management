@@ -99,7 +99,7 @@ const TestProfileForm: React.FC = () => {
                 </div>
                 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Price (VND):</label>
+                    <label className="block text-sm font-medium mb-1">Price (USD):</label>
                     <input
                         type="number"
                         name="price"

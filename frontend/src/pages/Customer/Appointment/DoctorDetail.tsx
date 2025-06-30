@@ -72,7 +72,7 @@ const DoctorDetail: React.FC = () => {
                             <div className="doctor-detail-field">Experience: <span
                                 className="doctor-detail-field-value">{doctor.experience} years</span></div>
                             <div className="doctor-detail-field">Price: <span
-                                className="doctor-detail-field-value">{doctor.price}</span></div>
+                                className="doctor-detail-field-value">${doctor.price}</span></div>
                             {(doctor.rating || doctor.reviews || doctor.appointments) && (
                                 <div className="doctor-detail-stats">
                                     {doctor.rating && <span className="doctor-detail-rating">{doctor.rating} ★</span>}

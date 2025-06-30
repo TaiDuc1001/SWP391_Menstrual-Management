@@ -1,12 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { doctorService, DoctorProfile } from '../../api/services/doctorService';
 import { mockDoctorService } from '../../api/services/mockDoctorService';
 import { SimpleNotification, useSimpleNotification } from '../../components/common/SimpleNotification';
-import { getCurrentUserProfile } from '../../utils/auth';
 
-const USE_MOCK_API = false;
+// Toggle between real API and mock for testing
+const USE_MOCK_API = true;
 
 interface ManageProfileProps {
     isFirstTime?: boolean;
@@ -56,41 +56,34 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [specializations, setSpecializations] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [hasLoaded, setHasLoaded] = useState(false);
 
     // Service selector
     const getService = useCallback(() => 
         USE_MOCK_API ? mockDoctorService : doctorService, []);
 
-    // Cache specializations in a ref to prevent repeated requests on re-render or effect re-run
-    const specializationsCache = React.useRef<string[] | null>(null);
-
     // Load profile and specializations
-    const handleLoadData = async () => {
-        if (hasLoaded) return;
-        setLoading(true);
-        const service = getService();
-        try {
-            if (!isFirstTime) {
-                const user = getCurrentUserProfile();
-                const doctorId = user?.profile?.id;
-                if (!doctorId) throw new Error('No doctor id');
-                const profileResponse = await service.getDoctorProfile(doctorId);
-                setProfile(profileResponse.data);
-            }
-            if (!specializationsCache.current) {
+    useEffect(() => {
+        const loadData = async () => {
+            const service = getService();
+            
+            try {
+                // Load profile if not first time
+                if (!isFirstTime) {
+                    const profileResponse = await service.getDoctorProfile();
+                    setProfile(profileResponse.data);
+                }
+                
+                // Load specializations
                 const specializationsResponse = await service.getSpecializations();
-                specializationsCache.current = specializationsResponse.data;
+                setSpecializations(specializationsResponse.data);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showNotification('Error loading data', 'error');
             }
-            setSpecializations(specializationsCache.current || []);
-            setHasLoaded(true);
-        } catch (error) {
-            console.error('Error loading data:', error);
-            showNotification('Error loading data', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
+
+        loadData();
+    }, [isFirstTime, getService, showNotification]);
 
     // Handle input changes
     const handleInputChange = useCallback((field: keyof DoctorProfile, value: any) => {
@@ -100,10 +93,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
-        if (!hasLoaded) {
-            handleLoadData();
-        }
-    }, [errors, hasLoaded]);
+    }, [errors]);
 
     // Handle form submission
     const handleSubmit = async () => {
@@ -118,16 +108,13 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
         setIsSubmitting(true);
         try {
             const service = getService();
-            const user = getCurrentUserProfile();
-            const doctorId = user?.profile?.id;
-            if (!doctorId) throw new Error('No doctor id');
             const profileData = {
                 name: profile.name!,
                 specialization: profile.specialization!,
                 price: profile.price!
             };
 
-            await service.updateDoctorProfile(doctorId, profileData);
+            await service.updateDoctorProfile(profileData);
             showNotification('Profile saved successfully!', 'success');
             
             setTimeout(() => {
@@ -242,7 +229,6 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                             }`}
                                             value={profile.name || ''}
                                             onChange={(e) => handleInputChange('name', e.target.value)}
-                                            onFocus={handleLoadData}
                                             placeholder="Dr. John Smith"
                                         />
                                         {profile.name?.trim() && !errors.name && (
@@ -278,7 +264,6 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                             }`}
                                             value={profile.specialization || ''}
                                             onChange={(e) => handleInputChange('specialization', e.target.value)}
-                                            onFocus={handleLoadData}
                                         >
                                             <option value="">Choose your specialization...</option>
                                             {specializations.map((spec) => (
@@ -302,15 +287,20 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                 </div>
                             </div>
 
+                            {/* Right Column */}
                             <div className="space-y-6">
+                                {/* Consultation Fee */}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                                         <span className="flex items-center space-x-2">
                                             <span>💰</span>
-                                            <span>Consultation Fee (VND) *</span>
+                                            <span>Consultation Fee (USD) *</span>
                                         </span>
                                     </label>
                                     <div className="relative">
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg font-semibold">
+                                            $
+                                        </div>
                                         <input
                                             type="number"
                                             min="0"
@@ -324,7 +314,6 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                             }`}
                                             value={profile.price && profile.price > 0 ? profile.price : ''}
                                             onChange={(e) => handleInputChange('price', e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
-                                            onFocus={handleLoadData}
                                             placeholder="50"
                                         />
                                         {profile.price && profile.price > 0 && !errors.price && (
@@ -363,7 +352,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                         <div>
                                             <span className="text-gray-600">Fee: </span>
                                             <span className="font-medium text-green-600">
-                                                {profile.price || 0} VND
+                                                ${profile.price || 0} USD
                                             </span>
                                         </div>
                                         <div className="pt-2 border-t border-purple-200">
