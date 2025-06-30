@@ -1,71 +1,34 @@
-import { useState, useEffect } from 'react';
-import { doctorService, DoctorProfile } from '../services/doctorService';
+import { useEffect, useState } from 'react';
+import { DoctorProfile } from '../services/doctorService';
+import { doctorProfileService } from '../services/doctorProfileService';
 
-export const useDoctorProfile = () => {
+export const useDoctorProfile = (useMockAPI: boolean = false) => {
     const [profile, setProfile] = useState<DoctorProfile | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
-    const loadProfile = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await doctorService.getDoctorProfile();
-            setProfile(response.data);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to load profile');
-            console.error('Error loading profile:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        const unsubscribe = doctorProfileService.subscribe((newProfile, isLoading) => {
+            setProfile(newProfile);
+            setLoading(isLoading);
+        });
+
+        doctorProfileService.loadProfile(useMockAPI);
+
+        return unsubscribe;
+    }, [useMockAPI]);
 
     const updateProfile = async (profileData: Partial<DoctorProfile>) => {
-        try {
-            setError(null);
-            const response = await doctorService.updateDoctorProfile(profileData);
-            setProfile(response.data);
-            return response.data;
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update profile');
-            throw err;
-        }
-    };
-
-    const uploadAvatar = async (file: File) => {
-        try {
-            setError(null);
-            const response = await doctorService.uploadAvatar(file);
-            return response.data.url;
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to upload avatar');
-            throw err;
-        }
+        return await doctorProfileService.updateProfile(profileData, useMockAPI);
     };
 
     const checkProfileComplete = async () => {
-        try {
-            const response = await doctorService.checkProfileComplete();
-            return response.data.isComplete;
-        } catch (err: any) {
-            console.error('Error checking profile status:', err);
-            return false;
-        }
+        return await doctorProfileService.checkProfileComplete(useMockAPI);
     };
-
-    useEffect(() => {
-        loadProfile();
-    }, []);
 
     return {
         profile,
         loading,
-        error,
-        loadProfile,
         updateProfile,
-        uploadAvatar,
         checkProfileComplete
     };
 };
-
-export default useDoctorProfile;

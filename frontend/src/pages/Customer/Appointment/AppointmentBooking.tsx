@@ -220,7 +220,7 @@ const AppointmentBooking: React.FC = () => {
                                                                 <span
                                                                     className="ml-2 text-xs text-gray-400">({a.appointments} appointments given)</span>
                                                                 <span
-                                                                    className="ml-2 text-xs text-pink-500 font-bold">{a.price ? `${a.price}k` : ''}</span>
+                                                                    className="ml-2 text-xs text-pink-500 font-bold">{a.price ? `${a.price}đ` : ''}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -232,7 +232,7 @@ const AppointmentBooking: React.FC = () => {
                                                             className="ml-2 px-2 py-1 text-xs rounded bg-blue-100 text-blue-600 hover:bg-blue-200 font-semibold transition"
                                                             onClick={e => {
                                                                 e.stopPropagation();
-                                                                navigate(`/doctors/${a.id}`);
+                                                                navigate(`/customer/doctors/${a.id}`);
                                                             }}
                                                         >Learn more
                                                         </button>

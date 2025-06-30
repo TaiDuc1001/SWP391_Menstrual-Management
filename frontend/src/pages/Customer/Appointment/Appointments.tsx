@@ -170,7 +170,7 @@ const AppointmentHistory: React.FC = () => {
                 };
             });
             setAppointments(mapped);
-            alert('Meeting is starting! You can now join the meeting.');
+            // alert('Meeting is starting! You can now join the meeting.');
         } catch (error) {
             console.error('Error confirming appointment:', error);
             alert('Failed to confirm appointment');

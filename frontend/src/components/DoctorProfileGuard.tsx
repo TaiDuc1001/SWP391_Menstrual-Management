@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { doctorService } from '../api/services/doctorService';
-import { mockDoctorService } from '../api/services/mockDoctorService';
+import { useDoctorProfile } from '../api/hooks/useDoctorProfile';
 
 // Toggle between real API and mock for testing
-const USE_MOCK_API = true;
+const USE_MOCK_API = false;
 
 interface DoctorProfileGuardProps {
     children: React.ReactNode;
@@ -14,6 +13,7 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     const [isLoading, setIsLoading] = useState(true);
     const [isProfileComplete, setIsProfileComplete] = useState(false);
     const location = useLocation();
+    const { checkProfileComplete } = useDoctorProfile(USE_MOCK_API);
 
     // Allow access to profile management routes without checking
     const allowedRoutes = [
@@ -28,16 +28,9 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
-                const service = USE_MOCK_API ? mockDoctorService : doctorService;
-                
-                // First ensure profile is initialized for current user
-                if (USE_MOCK_API) {
-                    mockDoctorService.initializeProfile();
-                }
-                
-                // Then check if profile is complete
-                const response = await service.checkProfileComplete();
-                setIsProfileComplete(response.data.isComplete);
+                console.log('DoctorProfileGuard: Checking profile completion status...');
+                const result = await checkProfileComplete();
+                setIsProfileComplete(result.isComplete);
             } catch (error) {
                 console.error('Error checking profile status:', error);
                 // If API fails, assume profile is incomplete to be safe
@@ -54,7 +47,7 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
             setIsLoading(false);
             setIsProfileComplete(true); // Allow access to profile routes
         }
-    }, [isAllowedRoute]);
+    }, [isAllowedRoute, checkProfileComplete]);
 
     if (isLoading) {
         return (
