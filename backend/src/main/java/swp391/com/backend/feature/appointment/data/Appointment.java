@@ -34,10 +34,8 @@ public class Appointment {
     private Slot slot;
     private String url;
     private AppointmentStatus appointmentStatus;
-
     private String doctorNote;
     private String customerNote;
-
     @Lob
     private String feedback;
 

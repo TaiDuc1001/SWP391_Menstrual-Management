@@ -1,8 +1,11 @@
 package swp391.com.backend.feature.appointment.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import swp391.com.backend.feature.appointment.assembler.AppointmentAssembler;
 import swp391.com.backend.feature.appointment.dto.AppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.SimpleAppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.AppointmentCreateRequest;
@@ -27,15 +30,16 @@ public class AppointmentsController {
     private final AppointmentMapper appointmentMapper;
     private final DoctorService doctorService;
     private final CustomerService customerService;
+    private final AppointmentAssembler appointmentAssembler;
 
     @GetMapping
-    public ResponseEntity<List<SimpleAppointmentDTO>> getAllAppointments() {
-        List<SimpleAppointmentDTO> results = appointmentsService.getAllAppointments()
-                .stream()
-                .map(appointmentMapper::toSimpleDTO)
-                .toList();
-        return ResponseEntity.ok(results);
+    public ResponseEntity<CollectionModel<EntityModel<AppointmentDTO>>> getAllAppointments() {
+        List<Appointment> results = appointmentsService.getAllAppointments();
+        List<AppointmentDTO> dtos = appointmentMapper.toDTOs(results);
+        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = appointmentAssembler.toCollectionModel(dtos);
+        return ResponseEntity.ok(collectionModel);
     }
+
     @GetMapping("/doctor")
     public ResponseEntity<List<SimpleAppointmentDTO>> getAppointmentsForDoctor() {
         List<SimpleAppointmentDTO> results = appointmentsService.getAppointmentsForDoctor()
@@ -97,7 +101,7 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 
-    @PutMapping("/confirm/{id}")
+    @PatchMapping("/confirm/{id}")
     public ResponseEntity<AppointmentDTO> confirmAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED) {
@@ -109,7 +113,7 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 
-    @PutMapping("/finish/{id}")
+    @PatchMapping("/finish/{id}")
     public ResponseEntity<AppointmentDTO> finishAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         if (appointment.getAppointmentStatus() != AppointmentStatus.IN_PROGRESS) {

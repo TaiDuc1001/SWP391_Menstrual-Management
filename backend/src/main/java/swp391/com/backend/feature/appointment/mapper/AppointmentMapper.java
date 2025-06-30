@@ -6,6 +6,8 @@ import swp391.com.backend.feature.appointment.dto.AppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.SimpleAppointmentDTO;
 import swp391.com.backend.feature.appointment.data.Appointment;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface AppointmentMapper {
     @Mapping(source = "doctor.name", target = "doctorName")
@@ -22,4 +24,12 @@ public interface AppointmentMapper {
     @Mapping(source = "doctor.name", target = "doctorName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
     AppointmentDTO toDTO(Appointment entity);
+
+    @Mapping(source = "customer.id", target = "customerId")
+    @Mapping(source = "customer.name", target = "customerName")
+    @Mapping(source = "customer.phoneNumber", target = "phoneNumber")
+    @Mapping(source = "doctor.id", target = "doctorId")
+    @Mapping(source = "doctor.name", target = "doctorName")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
+    List<AppointmentDTO> toDTOs(List<Appointment> entities);
 }
