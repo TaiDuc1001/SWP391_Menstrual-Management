@@ -3,6 +3,7 @@ import plusWhiteIcon from '../../../assets/icons/plus-white.svg';
 import searchIcon from '../../../assets/icons/search.svg';
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
+import eyeIcon from '../../../assets/icons/eye.svg';
 import NewServiceButton from '../../../components/common/Button/AdminCreateButton';
 import { usePanels } from '../../../api/hooks/usePanels';
 import { useTestTypes } from '../../../api/hooks/useTestTypes';
@@ -14,8 +15,6 @@ import { useNotification } from '../../../context/NotificationContext';
 
 const tabs = [
     {label: 'Service Management'},
-    {label: 'Consultation Packages'},
-    {label: 'Promotions'},
 ];
 
 const getStatusBadge = (status: string) => {
@@ -100,15 +99,17 @@ const TestPanels: React.FC = () => {
     const [activeTab, setActiveTab] = useState(0);
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
+    const pageSize = 7;
     
     // Modal states
     const [isPanelModalOpen, setIsPanelModalOpen] = useState(false);
     const [isTestTypeModalOpen, setIsTestTypeModalOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
     const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
     const [panelToDelete, setPanelToDelete] = useState<Panel | null>(null);
+    const [panelForDetails, setPanelForDetails] = useState<Panel | null>(null);
     
     // API hooks
     const { 
@@ -155,6 +156,17 @@ const TestPanels: React.FC = () => {
     const handleDeletePanel = (panel: Panel) => {
         setPanelToDelete(panel);
         setIsDeleteConfirmOpen(true);
+    };
+
+    const handleViewDetails = (panel: Panel) => {
+        setPanelForDetails(panel);
+        setIsDetailsModalOpen(true);
+    };
+
+    const handleBackdropClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            setIsDetailsModalOpen(false);
+        }
     };
 
     const confirmDeletePanel = async () => {
@@ -245,17 +257,6 @@ const TestPanels: React.FC = () => {
                 </h1>
             </div>
             <div className="bg-white rounded shadow w-full p-4">
-                <div className="flex border-b mb-4">
-                    {tabs.map((tab, idx) => (
-                        <button
-                            key={tab.label}
-                            className={`px-6 py-2 font-medium border-b-2 transition ${activeTab === idx ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600'}`}
-                            onClick={() => setActiveTab(idx)}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
                 <div className="flex justify-between items-center mb-4">
                     <div className="relative w-[400px]">
                         <input
@@ -298,25 +299,22 @@ const TestPanels: React.FC = () => {
                         <tr className="bg-gray-50 text-gray-700">
                             <th className="p-2 text-left">Panel Name</th>
                             <th className="p-2 text-left">Description</th>
-                            <th className="p-2 text-center">Duration (min)</th>
                             <th className="p-2 text-center">Response Time (h)</th>
                             <th className="p-2 text-center">Price</th>
                             <th className="p-2 text-center">Type</th>
-                            <th className="p-2 text-center">Tag</th>
-                            <th className="p-2 text-center">Test Types</th>
                             <th className="p-2 text-center">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
                         {panelsLoading ? (
                             <tr>
-                                <td colSpan={9} className="p-4 text-center">
+                                <td colSpan={6} className="p-4 text-center">
                                     Loading panels...
                                 </td>
                             </tr>
                         ) : panels.length === 0 ? (
                             <tr>
-                                <td colSpan={9} className="p-4 text-center text-gray-500">
+                                <td colSpan={6} className="p-4 text-center text-gray-500">
                                     No panels found
                                 </td>
                             </tr>
@@ -327,7 +325,6 @@ const TestPanels: React.FC = () => {
                                     <td className="p-2 max-w-xs truncate" title={panel.description}>
                                         {panel.description}
                                     </td>
-                                    <td className="p-2 text-center">{panel.duration}</td>
                                     <td className="p-2 text-center">{panel.responseTime}</td>
                                     <td className="p-2 text-center text-blue-600 font-semibold">
                                         {formatPrice(panel.price)}
@@ -338,18 +335,15 @@ const TestPanels: React.FC = () => {
                                         </span>
                                     </td>
                                     <td className="p-2 text-center">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPanelTagColor(panel.panelTag)}`}>
-                                            {formatPanelTag(panel.panelTag)}
-                                        </span>
-                                    </td>
-                                    <td className="p-2 text-center">
-                                        <span className="text-xs text-gray-600">
-                                            {panel.testTypes.length} test(s)
-                                        </span>
-                                    </td>
-                                    <td className="p-2 text-center">
                                         <button 
-                                            className="inline-block mr-4" 
+                                            className="inline-block mr-2" 
+                                            title="View Details"
+                                            onClick={() => handleViewDetails(panel)}
+                                        >
+                                            <img src={eyeIcon} alt="view" className="w-4 h-4"/>
+                                        </button>
+                                        <button 
+                                            className="inline-block mr-2" 
                                             title="Edit"
                                             onClick={() => handleEditPanel(panel)}
                                         >
@@ -443,6 +437,160 @@ const TestPanels: React.FC = () => {
                 onCancel={cancelDeletePanel}
                 type="danger"
             />
+
+            {/* Panel Details Modal */}
+            {isDetailsModalOpen && panelForDetails && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                    onClick={handleBackdropClick}
+                >
+                    <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[95vh] flex flex-col">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-1">Panel Details</h2>
+                                <p className="text-sm text-gray-600">Comprehensive information about {panelForDetails.panelName}</p>
+                            </div>
+                            <button
+                                onClick={() => setIsDetailsModalOpen(false)}
+                                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-2 transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-1 p-6 overflow-y-auto">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Left Column */}
+                                <div className="space-y-6">
+                                    {/* Basic Information */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Basic Information
+                                        </h3>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Panel Name</label>
+                                                <p className="text-base text-gray-900 font-medium bg-white p-2 rounded border">{panelForDetails.panelName}</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                                                <div className="text-sm text-gray-900 bg-white p-3 rounded border leading-relaxed">
+                                                    {panelForDetails.description}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Technical Details */}
+                                    <div className="bg-blue-50 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Technical Details
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-white rounded-lg p-3 border border-blue-200">
+                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Duration</label>
+                                                <p className="text-lg font-bold text-blue-600">{panelForDetails.duration} <span className="text-sm font-normal text-gray-600">minutes</span></p>
+                                            </div>
+                                            
+                                            <div className="bg-white rounded-lg p-3 border border-blue-200">
+                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Response Time</label>
+                                                <p className="text-lg font-bold text-blue-600">{panelForDetails.responseTime} <span className="text-sm font-normal text-gray-600">hours</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Right Column */}
+                                <div className="space-y-6">
+                                    {/* Pricing & Classification */}
+                                    <div className="bg-green-50 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                            </svg>
+                                            Pricing & Classification
+                                        </h3>
+                                        <div className="space-y-4">
+                                            <div className="bg-white rounded-lg p-3 border border-green-200">
+                                                <label className="block text-sm font-semibold text-gray-700 mb-1">Price</label>
+                                                <p className="text-2xl font-bold text-green-600">{formatPrice(panelForDetails.price)}</p>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="bg-white rounded-lg p-3 border border-green-200">
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Type</label>
+                                                    <span className={`px-3 py-2 rounded-full text-sm font-medium ${getPanelTypeColor(panelForDetails.panelType)} block text-center`}>
+                                                        {formatPanelType(panelForDetails.panelType)}
+                                                    </span>
+                                                </div>
+                                                
+                                                <div className="bg-white rounded-lg p-3 border border-green-200">
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Tag</label>
+                                                    <span className={`px-3 py-2 rounded-full text-sm font-medium ${getPanelTagColor(panelForDetails.panelTag)} block text-center`}>
+                                                        {formatPanelTag(panelForDetails.panelTag)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Test Types */}
+                                    <div className="bg-purple-50 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                            </svg>
+                                            Test Types ({panelForDetails.testTypes.length})
+                                        </h3>
+                                        <div className="bg-white rounded-lg p-4 border border-purple-200 max-h-48 overflow-y-auto">
+                                            {panelForDetails.testTypes.length > 0 ? (
+                                                <ul className="space-y-2">
+                                                    {panelForDetails.testTypes.map((testType, index) => (
+                                                        <li key={index} className="flex items-center text-sm text-gray-700 bg-gray-50 rounded-md p-2">
+                                                            <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 flex-shrink-0"></div>
+                                                            <span className="font-medium">{testType.name}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <div className="text-center text-gray-500 py-4">
+                                                    <svg className="w-12 h-12 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    <p className="text-sm">No test types assigned</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Footer */}
+                        <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={() => setIsDetailsModalOpen(false)}
+                                    className="px-6 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 font-medium shadow-md"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
