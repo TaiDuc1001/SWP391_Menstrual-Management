@@ -12,7 +12,6 @@ import swp391.com.backend.feature.doctor.data.DoctorRepository;
 import swp391.com.backend.feature.staff.data.StaffRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class AccountService {
     private final AdminRepository adminRepository;
     private final StaffRepository staffRepository;
 
-    public Account createAccount(Account account) {
+    public Account saveAccount(Account account) {
         return accountRepository.save(account);
     }
 
@@ -32,8 +31,12 @@ public class AccountService {
     }
 
     public Account getAccountById(Long id) {
-        return accountRepository.findById(id)
+        Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        if(!account.getStatus()){
+            throw new RuntimeException("Account is disabled");
+        }
+        return account;
     }
 
     public Account login(String email, String password) {
@@ -43,7 +46,9 @@ public class AccountService {
     public Actor getActorByAccountId(Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-
+        if(!account.getStatus()){
+            throw new RuntimeException("Account is disabled");
+        }
         return switch(account.getRole().toString()) {
             case "ADMIN" -> adminRepository.findById(account.getId())
                     .orElseThrow(() -> new RuntimeException("Admin not found"));
@@ -60,8 +65,19 @@ public class AccountService {
     public Account deleteAccount(Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+        switch (account.getRole()) {
+            case CUSTOMER -> customerRepository.deleteById(account.getId());
+            case DOCTOR -> doctorRepository.deleteById(account.getId());
+        }
         accountRepository.delete(account);
         return account;
+    }
+
+    public Account disableAccount(Long id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        account.setStatus(false);
+        return accountRepository.save(account);
     }
 
     public List<Account> getAccountsByRole(Role role) {

@@ -32,12 +32,6 @@ public class RoleService {
                 .status(true)
                 .build();
         switch (roleType.toUpperCase()) {
-            case "ADMIN":
-                Admin admin = Admin.builder()
-                        .account(account)
-                        .build();
-                adminService.createAdmin(admin);
-                break;
             case "CUSTOMER":
                 Customer customer = Customer.builder()
                         .account(account)
@@ -49,12 +43,6 @@ public class RoleService {
                         .account(account)
                         .build();
                 doctorService.createDoctor(doctor);
-                break;
-            case "STAFF":
-                Staff staff = Staff.builder()
-                        .account(account)
-                        .build();
-                staffService.createStaff(staff);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid role type: " + roleType);

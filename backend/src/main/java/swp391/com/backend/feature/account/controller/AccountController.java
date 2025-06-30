@@ -10,6 +10,7 @@ import swp391.com.backend.feature.account.assembler.AccountAssembler;
 import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.account.dto.AccountDTO;
 import swp391.com.backend.feature.account.dto.request.AccountCreateRequest;
+import swp391.com.backend.feature.account.dto.request.AccountUpdateRequest;
 import swp391.com.backend.feature.account.dto.request.LoginRequest;
 import swp391.com.backend.feature.account.mapper.AccountMapper;
 import swp391.com.backend.feature.account.data.Account;
@@ -31,8 +32,6 @@ import swp391.com.backend.feature.staff.dto.StaffDTO;
 import swp391.com.backend.feature.staff.mapper.StaffMapper;
 import swp391.com.backend.feature.account.data.Role;
 
-import javax.swing.text.html.parser.Entity;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -124,8 +123,7 @@ public class AccountController {
         Account newAccount = accountMapper.toEntity(request);
         newAccount.setRole(role);
         newAccount.setStatus(true);
-        Account account = accountService.createAccount(newAccount);
-
+        Account account = accountService.saveAccount(newAccount);
         switch(role){
             case CUSTOMER:
                 Customer newCustomer = new Customer();
@@ -145,4 +143,27 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).body(entityModel);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityModel<AccountDTO>> updateAccount(@RequestBody AccountUpdateRequest request, @PathVariable Long id) {
+
+        Account account = accountMapper.toEntity(request);
+        Account oldAccount = accountService.getAccountById(id).toBuilder()
+                .email(account.getEmail())
+                .password(account.getPassword())
+                .status(account.getStatus() == null || account.getStatus())
+                .build();
+        Account updatedAccount = accountService.saveAccount(oldAccount);
+
+        AccountDTO dto = accountMapper.toDTO(updatedAccount);
+        EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
+        return ResponseEntity.ok(entityModel);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EntityModel<AccountDTO>> disableAccount(@PathVariable Long id) {
+        Account disabledAccount = accountService.disableAccount(id);
+        AccountDTO dto = accountMapper.toDTO(disabledAccount);
+        EntityModel<AccountDTO> entityModel = accountAssembler.toModel(dto);
+        return ResponseEntity.ok(entityModel);
+    }
 }

@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import swp391.com.backend.feature.account.dto.AccountDTO;
 import swp391.com.backend.feature.account.data.Account;
 import swp391.com.backend.feature.account.dto.request.AccountCreateRequest;
+import swp391.com.backend.feature.account.dto.request.AccountUpdateRequest;
 
 import java.util.List;
 
@@ -15,5 +16,6 @@ public interface AccountMapper {
     List<AccountDTO> toDTOs(List<Account> entities);
     Account toEntity(AccountDTO dto);
     Account toEntity(AccountCreateRequest request);
+    Account toEntity(AccountUpdateRequest request);
 }
 
