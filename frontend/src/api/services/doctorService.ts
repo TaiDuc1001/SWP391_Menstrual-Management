@@ -43,28 +43,36 @@ export const doctorService = {
     },
 
     getDoctorById: (id: number) => {
-        return api.get(`/doctors/${id}`);
+        return api.get(`/doctors/by-id/${id}`);
     },
 
-    createDoctor: (doctor: Omit<Doctor, 'id'>) => {
-        return api.post('/doctors', doctor);
+    createDoctor: (doctorData: {
+        name: string;
+        specialization: string;
+        price: number;
+        accountId: number;
+    }) => {
+        return api.post('/doctors', doctorData);
     },
 
     updateDoctor: (id: number, doctor: Partial<Doctor>) => {
-        return api.put(`/doctors/${id}`, doctor);
+        return api.put(`/doctors/by-id/${id}`, doctor);
     },
 
     deleteDoctor: (id: number) => {
-        return api.delete(`/doctors/${id}`);
+        return api.delete(`/doctors/by-id/${id}`);
     },
 
     // Profile management APIs
-    getDoctorProfile: () => {
-        return api.get('/doctors/profile');
+    getDoctorProfile: (accountId?: number) => {
+        if (!accountId) throw new Error('Missing account id for profile fetch');
+        return api.get(`/doctors/profile/account/${accountId}`);
     },
 
     updateDoctorProfile: (profile: Partial<DoctorProfile>) => {
-        return api.put('/doctors/profile', profile);
+        // Yêu cầu truyền id trong profile (lấy từ context đăng nhập)
+        if (!profile.id) throw new Error('Missing doctor id for profile update');
+        return api.put(`/doctors/by-id/${profile.id}`, profile);
     },
 
     uploadAvatar: (file: File) => {

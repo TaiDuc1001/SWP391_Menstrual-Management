@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { doctorService } from '../api/services/doctorService';
 import { mockDoctorService } from '../api/services/mockDoctorService';
-
-// Toggle between real API and mock for testing
-const USE_MOCK_API = true;
+import { API_CONFIG } from '../config/api';
 
 interface DoctorProfileGuardProps {
     children: React.ReactNode;
@@ -28,16 +26,47 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
-                const service = USE_MOCK_API ? mockDoctorService : doctorService;
+                const service = API_CONFIG.USE_MOCK_API ? mockDoctorService : doctorService;
                 
-                // First ensure profile is initialized for current user
-                if (USE_MOCK_API) {
-                    mockDoctorService.initializeProfile();
+                // Get accountId from localStorage
+                const userProfile = localStorage.getItem('userProfile');
+                const accountId = userProfile ? JSON.parse(userProfile).id : undefined;
+                
+                if (!accountId) {
+                    console.error('User profile not found in localStorage');
+                    setIsProfileComplete(false);
+                    setIsLoading(false);
+                    return;
                 }
                 
-                // Then check if profile is complete
-                const response = await service.checkProfileComplete();
-                setIsProfileComplete(response.data.isComplete);
+                // First try to fetch the doctor profile
+                try {
+                    await service.getDoctorProfile(accountId);
+                    // If we get here without error, profile exists
+                    setIsProfileComplete(true);
+                } catch (error: any) {
+                    // If 404, profile doesn't exist
+                    if (error.response && error.response.status === 404) {
+                        setIsProfileComplete(false);
+                    } else {
+                        // For other errors, check the completion status
+                        try {
+                            const response = await service.checkProfileComplete();
+                            // Handle both formats (boolean or object with isComplete)
+                            if (typeof response.data === 'boolean') {
+                                setIsProfileComplete(response.data);
+                            } else if (response.data && typeof response.data.isComplete === 'boolean') {
+                                setIsProfileComplete(response.data.isComplete);
+                            } else {
+                                // Default to false if response format is unexpected
+                                setIsProfileComplete(false);
+                            }
+                        } catch (checkError) {
+                            console.error('Error checking profile completion:', checkError);
+                            setIsProfileComplete(false);
+                        }
+                    }
+                }
             } catch (error) {
                 console.error('Error checking profile status:', error);
                 // If API fails, assume profile is incomplete to be safe

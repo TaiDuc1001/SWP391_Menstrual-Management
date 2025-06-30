@@ -60,12 +60,12 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             localStorage.setItem('role', role);
             
             onSignUp(role);
-            
-            // Redirect based on role
-            if (role.toLowerCase() === 'customer') {
+
+            // Nếu là doctor, chuyển hướng đến trang thiết lập hồ sơ
+            if (role.toLowerCase() === 'doctor') {
+                navigate('/doctor/setup-profile');
+            } else if (role.toLowerCase() === 'customer') {
                 navigate('/customer/complete-profile');
-            } else if (role.toLowerCase() === 'doctor') {
-                navigate('/doctor/dashboard');
             } else {
                 // Fallback for any other roles (shouldn't happen with current registration restrictions)
                 navigate('/customer/dashboard');

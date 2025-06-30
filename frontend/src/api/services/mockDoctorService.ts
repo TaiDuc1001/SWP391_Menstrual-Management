@@ -233,6 +233,37 @@ export const mockDoctorService = {
         });
     },
 
+    // Create a new doctor profile
+    createDoctor: async (doctorData: {
+        name: string;
+        specialization: string;
+        price: number;
+        accountId: number;
+    }): Promise<{ data: DoctorProfile }> => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const newProfile: DoctorProfile = {
+                    id: doctorData.accountId || Math.floor(Math.random() * 1000),
+                    name: doctorData.name,
+                    specialization: doctorData.specialization,
+                    price: doctorData.price,
+                    isProfileComplete: checkProfileCompletion({
+                        id: doctorData.accountId,
+                        name: doctorData.name,
+                        specialization: doctorData.specialization,
+                        price: doctorData.price,
+                        isProfileComplete: false
+                    })
+                };
+                
+                saveProfile(newProfile);
+                console.log(`Created new doctor profile:`, newProfile);
+                
+                resolve({ data: newProfile });
+            }, 800);
+        });
+    },
+
     // Clear profile (for testing)
     clearProfile: () => {
         const storageKey = getStorageKey();
