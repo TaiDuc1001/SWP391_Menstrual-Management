@@ -21,7 +21,6 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
-    const [role, setRole] = useState('');
     const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -33,6 +32,8 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             return;
         }
         try {
+            // Default role is customer since we removed role selection
+            const role = 'customer';
             const response = await api.post('/accounts/register', {email, password, role}, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -61,15 +62,8 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             
             onSignUp(role);
             
-            // Redirect based on role
-            if (role.toLowerCase() === 'customer') {
-                navigate('/customer/complete-profile');
-            } else if (role.toLowerCase() === 'doctor') {
-                navigate('/doctor/dashboard');
-            } else {
-                // Fallback for any other roles (shouldn't happen with current registration restrictions)
-                navigate('/customer/dashboard');
-            }
+            // All new registrations go to customer complete profile
+            navigate('/customer/complete-profile');
         } catch (err: any) {
             console.error('Registration error:', err);
             
@@ -134,27 +128,6 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                                   onClick={() => setShowRePassword(v => !v)}><img src={eyeIcon} alt="Show"
                                                                                   className="w-5 h-5"/></span>
-                        </div>
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-xs font-semibold mb-1">Role</label>
-                        <div className="relative">
-                            <select
-                                className="w-full p-2 pl-4 pr-8 rounded border border-gray-300 focus:outline-pink-400 bg-blue-50 appearance-none text-gray-700 font-medium"
-                                style={{
-                                    backgroundImage: `url('data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 20 20' width='20'><path d='M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z'/></svg>')`,
-                                    backgroundRepeat: 'no-repeat',
-                                    backgroundPosition: 'right 0.75rem center',
-                                    backgroundSize: '1.5em 1.5em'
-                                }}
-                                required
-                                value={role}
-                                onChange={e => setRole(e.target.value)}
-                            >
-                                <option value="" disabled>Select role</option>
-                                <option value="customer">Customer</option>
-                                <option value="doctor">Doctor</option>
-                            </select>
                         </div>
                     </div>
                     <div className="mb-6 flex items-center">
