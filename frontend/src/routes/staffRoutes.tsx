@@ -3,8 +3,6 @@ import {Navigate} from 'react-router-dom';
 
 import Dashboard from '../pages/Staff/Dashboard';
 import UpdateTestResult from '../pages/Staff/Examination/UpdateTestResult';
-import CustomerSupport from '../pages/Staff/CustomerSupport';
-import ScheduleConsultation from '../pages/Staff/ScheduleConsultation';
 import MyProfile from '../pages/Staff/MyProfile';
 
 export const staffPaths: RouteConfig[] = [{
@@ -28,19 +26,6 @@ export const staffPaths: RouteConfig[] = [{
         path: '/staff/examinations/:id'
     },
     {
-        path: '/staff/customer-support',
-        element: <CustomerSupport/>,
-        label: 'Customer Support',
-        iconName: 'FaHeadset',
-        showInSidebar: true
-    },
-    {
-        path: '/staff/schedule-consultation',
-        element: <ScheduleConsultation/>,
-        label: 'Schedule Consultation',
-        iconName: 'FaCalendarPlus',
-        showInSidebar: true
-    }, {
         path: '/staff/profile',
         element: <MyProfile/>,
         label: 'My Profile',
