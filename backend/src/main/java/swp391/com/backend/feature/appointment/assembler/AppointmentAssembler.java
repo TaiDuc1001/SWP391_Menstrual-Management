@@ -32,12 +32,12 @@ public class AppointmentAssembler implements RepresentationModelAssembler<Appoin
                 linkTo(CustomerController.class).slash(entity.getCustomerId()).withRel("customer").withType("GET,PUT,DELETE"));
 
         if(entity.getAppointmentStatus() == (AppointmentStatus.CONFIRMED)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("confirm").withTitle("Doctor confirm").withType("GET"));
-            model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("confirm").withTitle("Customer confirm").withType("GET"));
+            model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("confirm").withTitle("Doctor confirm").withType("POST"));
+            model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("confirm").withTitle("Customer confirm").withType("POST"));
         } else if (entity.getAppointmentStatus() == (AppointmentStatus.WAITING_FOR_CUSTOMER)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("confirm").withTitle("Customer confirm").withType("GET"));
+            model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("confirm").withTitle("Customer confirm").withType("POST"));
         } else if (entity.getAppointmentStatus() == (AppointmentStatus.WAITING_FOR_DOCTOR)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("confirm").withTitle("Doctor confirm").withType("GET"));
+            model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("confirm").withTitle("Doctor confirm").withType("POST"));
         } else if (entity.getAppointmentStatus() == (AppointmentStatus.IN_PROGRESS)) {
             model.add(linkTo(methodOn(AppointmentsController.class).finishAppointment(entity.getId())).withRel("finish").withType("PATCH"));
         } else if(entity.getAppointmentStatus() == (AppointmentStatus.BOOKED)) {
