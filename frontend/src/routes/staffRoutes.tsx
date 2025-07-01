@@ -3,7 +3,6 @@ import {Navigate} from 'react-router-dom';
 
 import Dashboard from '../pages/Staff/Dashboard';
 import UpdateTestResult from '../pages/Staff/Examination/UpdateTestResult';
-import ScheduleConsultation from '../pages/Staff/ScheduleConsultation';
 import MyProfile from '../pages/Staff/MyProfile';
 
 export const staffPaths: RouteConfig[] = [{
@@ -27,12 +26,6 @@ export const staffPaths: RouteConfig[] = [{
         path: '/staff/examinations/:id'
     },
     {
-        path: '/staff/schedule-consultation',
-        element: <ScheduleConsultation/>,
-        label: 'Schedule Consultation',
-        iconName: 'FaCalendarPlus',
-        showInSidebar: true
-    }, {
         path: '/staff/profile',
         element: <MyProfile/>,
         label: 'My Profile',
