@@ -1,5 +1,6 @@
 package swp391.com.backend.common.exception;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,28 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleRuntimeException(RuntimeException ex) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad request",
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+    }
+
+    @ExceptionHandler(EntityExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse entityExistsException(EntityExistsException ex) {
+        return new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Resource already exists",
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

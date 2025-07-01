@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.feature.appointment.assembler.AppointmentAssembler;
 import swp391.com.backend.feature.appointment.dto.AppointmentDTO;
-import swp391.com.backend.feature.appointment.dto.SimpleAppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.AppointmentCreateRequest;
 import swp391.com.backend.feature.appointment.dto.PaymentInfoDTO;
 import swp391.com.backend.feature.appointment.mapper.AppointmentMapper;
@@ -40,13 +39,26 @@ public class AppointmentsController {
         return ResponseEntity.ok(collectionModel);
     }
 
-    @GetMapping("/doctor")
-    public ResponseEntity<List<SimpleAppointmentDTO>> getAppointmentsForDoctor() {
-        List<SimpleAppointmentDTO> results = appointmentsService.getAppointmentsForDoctor()
-                .stream()
-                .map(appointmentMapper::toSimpleDTO)
-                .toList();
-        return ResponseEntity.ok(results);
+    @GetMapping("/{id}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        return ResponseEntity.ok(appointmentMapper.toDTO(appointment));
+    }
+
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<CollectionModel<EntityModel<AppointmentDTO>>> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
+        List<Appointment> results = appointmentsService.getAppointmentsByDoctorId(doctorId);
+        List<AppointmentDTO> dtos = appointmentMapper.toDTOs(results);
+        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = appointmentAssembler.toCollectionModel(dtos);
+        return ResponseEntity.ok(collectionModel);
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<CollectionModel<EntityModel<AppointmentDTO>>> getAppointmentsByCustomerId(@PathVariable Long customerId) {
+        List<Appointment> results = appointmentsService.getAppointmentsByCustomerId(customerId);
+        List<AppointmentDTO> dtos = appointmentMapper.toDTOs(results);
+        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = appointmentAssembler.toCollectionModel(dtos);
+        return ResponseEntity.ok(collectionModel);
     }
 
     @GetMapping("/available-slots")
@@ -54,6 +66,7 @@ public class AppointmentsController {
         List<String> availableSlots = appointmentsService.getAvailableSlots(doctorId, date);
         return ResponseEntity.ok(availableSlots);
     }
+
     @PostMapping
     public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentCreateRequest request) {
         Doctor doctor = doctorService.findDoctorById(request.getDoctorId());
@@ -235,11 +248,4 @@ public class AppointmentsController {
         Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
         return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
-        Appointment appointment = appointmentsService.findAppointmentById(id);
-        return ResponseEntity.ok(appointmentMapper.toDTO(appointment));
-    }
-
 }

@@ -1,10 +1,13 @@
 package swp391.com.backend.feature.appointment.service;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.appointment.data.AppointmentRepository;
+import swp391.com.backend.feature.appointment.data.AppointmentStatus;
 import swp391.com.backend.feature.appointment.exception.AppointmentConflictException;
 import swp391.com.backend.feature.doctor.service.DoctorService;
 import swp391.com.backend.feature.doctor.data.Doctor;
@@ -26,29 +29,38 @@ public class AppointmentsService {
         return appointmentRepository.findAll();
     }
 
-    public List<Appointment> getAppointmentsForDoctor() {
-        return appointmentRepository.findAppointmentsForDoctor();
+    public List<Appointment> getAppointmentsByDoctorId(Long id) {
+        List<Appointment> result = appointmentRepository.findAppointmentsByDoctorId(id).stream()
+                .filter(appointment -> !(appointment.getAppointmentStatus() == (AppointmentStatus.BOOKED)))
+                .toList();
+        return result;
+    }
+
+    public List<Appointment> getAppointmentsByCustomerId(Long id) {
+        List<Appointment> result = appointmentRepository.findAppointmentsByCustomerId(id);
+        return result;
     }
 
     public void deleteAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Appointment not found"));
         appointmentRepository.delete(appointment);
     }
+
     @Transactional
     public Appointment createAppointment(Appointment appointment) {
-        validateAppointmentConflict(appointment);
+        validateNewAppointment(appointment);
         return appointmentRepository.save(appointment);
     }
 
     public Appointment updateAppointment(Long id, Appointment appointment) {
         Appointment existingAppointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Appointment not found"));
 
         if (!existingAppointment.getDate().equals(appointment.getDate()) || 
             !existingAppointment.getSlot().equals(appointment.getSlot()) ||
             !existingAppointment.getDoctor().getId().equals(appointment.getDoctor().getId())) {
-            validateAppointmentConflict(appointment);
+            validateNewAppointment(appointment);
         }
 
         existingAppointment.setDate(appointment.getDate());
@@ -58,17 +70,15 @@ public class AppointmentsService {
     }
     public Appointment findAppointmentById(Long id) {
         return appointmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Appointment not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Appointment not found with id: " + id));
     }
-    private void validateAppointmentConflict(Appointment appointment) {
-        boolean conflictExists = appointmentRepository.existsByDoctorAndDateAndSlotAndNotCancelled(
-                appointment.getDoctor(), 
-                appointment.getDate(), 
-                appointment.getSlot()
-        );
-        
-        if (conflictExists) {
-            throw new AppointmentConflictException(
+
+    private void validateNewAppointment(Appointment appointment) {
+        Appointment result = appointmentRepository.findAppointmentByDoctorIdAndSlotAndDate(
+                appointment.getDoctor().getId(), appointment.getSlot(),appointment.getDate());
+
+        if (result != null) {
+            throw new EntityExistsException(
                 String.format("An appointment already exists for doctor %s on %s at %s", 
                     appointment.getDoctor().getName(),
                     appointment.getDate(),
