@@ -465,9 +465,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                         isPreviousMonth={currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth <= now.getMonth())}
                         defaultMonth={currentMonth}
                         defaultYear={currentYear}
-                        onSpecialDayClick={() => {
-                            setShowSpecialDayPopup(true);
-                        }}
                         onSave={async (data) => {
                             try {
                                 const [day, month, year] = data.startDate.split('/');
