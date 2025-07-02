@@ -20,15 +20,16 @@ public class ScheduleService {
     private static final Logger logger = Logger.getLogger(ScheduleService.class.getName());
 
     public List<Slot> findAvailableSlots(Long doctorId, LocalDate date) {
-            List<Slot> bookedSlots = appointmentRepository.findAppointmentByDoctorIdAndDate(doctorId, date).stream()
-                    .map(Appointment::getSlot)
-                    .toList();
+        System.out.println("Finding available slots for doctor ID: " + doctorId + " on date: " + date);
+        List<Slot> bookedSlots = appointmentRepository.findAppointmentsByDoctorIdAndDate(doctorId, date).stream()
+                .map(Appointment::getSlot)
+                .toList();
+        System.out.println("Booked slots: " + bookedSlots);
 
-            List<Slot> scheduledSlots = scheduleRepository.findSchedulesByDoctorIdAndDate(doctorId, date).stream()
-                    .map(Schedule::getSlot)
-                    .filter(slot -> !bookedSlots.contains(slot))
-                    .toList();
-
-            return scheduledSlots;
+        List<Slot> scheduledSlots = scheduleRepository.findSchedulesByDoctorIdAndDate(doctorId, date).stream()
+                .map(Schedule::getSlot)
+                .filter(slot -> !bookedSlots.contains(slot))
+                .toList();
+        return scheduledSlots;
     }
 }

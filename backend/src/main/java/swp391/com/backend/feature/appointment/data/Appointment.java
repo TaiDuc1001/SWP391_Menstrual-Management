@@ -41,6 +41,8 @@ public class Appointment {
 
     private Integer score;
 
+    @Column(columnDefinition = "TINYINT(1)")
     private Boolean customerReady = false;
+    @Column(columnDefinition = "TINYINT(1)")
     private Boolean doctorReady = false;
 }

@@ -142,6 +142,8 @@ public class AppointmentsController {
                 .customer(customer)
                 .appointmentStatus(AppointmentStatus.CONFIRMED)
                 .customerNote(request.getCustomerNote())
+                .customerReady(false)
+                .doctorReady(false)
                 .build();
         Appointment result = appointmentsService.createAppointment(appointment);
         AppointmentDTO dto = appointmentMapper.toDTO(result);

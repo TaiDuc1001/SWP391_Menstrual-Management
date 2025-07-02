@@ -31,8 +31,8 @@ public class AppointmentAssembler implements RepresentationModelAssembler<Appoin
                 linkTo(CustomerController.class).slash(entity.getCustomerId()).withRel("customer").withType("GET,PUT,DELETE"));
 
         if(entity.getAppointmentStatus() == (AppointmentStatus.CONFIRMED)) {
-            if(!entity.getCustomerReady()){ model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("ready").withTitle("Customer ready").withType("PATCH")); }
-            if(!entity.getDoctorReady()){ model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("ready").withTitle("Doctor ready").withType("PATCH")); }
+            if(!entity.getCustomerReady()){ model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getId())).withRel("ready").withTitle("Customer ready").withType("PATCH")); }
+            if(!entity.getDoctorReady()){ model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getId())).withRel("ready").withTitle("Doctor ready").withType("PATCH")); }
         } else if (entity.getAppointmentStatus() == (AppointmentStatus.IN_PROGRESS)) {
             model.add(linkTo(AppointmentsController.class).slash("status").withRel("finish").withType("PATCH"));
         } else if(entity.getAppointmentStatus() == (AppointmentStatus.BOOKED)) {

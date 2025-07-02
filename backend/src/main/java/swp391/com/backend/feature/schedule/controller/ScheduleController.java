@@ -20,7 +20,6 @@ public class ScheduleController {
         List<String> availableSlots = scheduleService.findAvailableSlots(doctorId, date).stream()
                 .map(Enum::toString)
                 .toList();
-        System.out.println(availableSlots);
         return ResponseEntity.ok(availableSlots);
     }
 
