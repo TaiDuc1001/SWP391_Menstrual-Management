@@ -74,80 +74,6 @@ const MenstrualCycleDashboard: React.FC = () => {
         return null;
     };
 
-    const parseSpecialDayRange = (dateRange: string): Date[] => {
-        if (!dateRange) return [];
-        
-        const dates = dateRange.split(' - ');
-        if (dates.length === 1) {
-            const [day, month, year] = dates[0].split('/');
-            return [new Date(parseInt(year), parseInt(month) - 1, parseInt(day))];
-        } else if (dates.length === 2) {
-            const [startDay, startMonth, startYear] = dates[0].split('/');
-            const [endDay, endMonth, endYear] = dates[1].split('/');
-            const startDate = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
-            const endDate = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
-            
-            const result = [];
-            const currentDate = new Date(startDate);
-            while (currentDate <= endDate) {
-                result.push(new Date(currentDate));
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            return result;
-        }
-        return [];
-    };
-
-    const hasSpecialDaysForCycle = (cycleStartDate: string): { hasOvulation: boolean; hasFertile: boolean } => {
-        const cycleKey = cycleStartDate;
-        const specialDayData = specialDays[cycleKey];
-        
-        return {
-            hasOvulation: !!(specialDayData && specialDayData.ovulationDays),
-            hasFertile: !!(specialDayData && specialDayData.fertileWindow)
-        };
-    };
-
-    const isDateInSpecialDays = (date: Date, cycleStartDate: string, type: 'ovulation' | 'fertile'): boolean => {
-        const cycleKey = cycleStartDate;
-        const specialDayData = specialDays[cycleKey];
-        
-        if (!specialDayData) return false;
-        
-        const dateRange = type === 'ovulation' ? specialDayData.ovulationDays : specialDayData.fertileWindow;
-        const specialDates = parseSpecialDayRange(dateRange);
-        
-        return specialDates.some(specialDate => 
-            specialDate.getDate() === date.getDate() &&
-            specialDate.getMonth() === date.getMonth() &&
-            specialDate.getFullYear() === date.getFullYear()
-        );
-    };
-
-    const getPredictedCycles = () => {
-        if (!cycles || cycles.length === 0) return [];
-        
-        const lastCycle = cycles[cycles.length - 1];
-        const startDate = new Date(lastCycle.cycleStartDate);
-        const cycleLength = lastCycle.cycleLength || 28;
-        const duration = lastCycle.periodDuration || 7;
-        const predictions = [];
-        for (let i = 0; i < 3; i++) {
-            const cycleStart = new Date(startDate);
-            cycleStart.setMonth(startDate.getMonth() + i);
-            predictions.push({
-                start: new Date(cycleStart),
-                end: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + duration - 1),
-                fertileStart: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 10),
-                fertileEnd: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 15),
-                ovulation: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 13),
-                duration,
-                cycleLength
-            });
-        }
-        return predictions;
-    };    
-    
     const getDayTypeForCalendar = (day: number | null) => {
         if (!day) return '';
         
@@ -164,37 +90,11 @@ const MenstrualCycleDashboard: React.FC = () => {
             
             if (cycleForCurrentMonth) {
                 const cycleStart = new Date(cycleForCurrentMonth.cycleStartDate);
-                const { hasOvulation, hasFertile } = hasSpecialDaysForCycle(cycleForCurrentMonth.cycleStartDate);
-                
                 const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
                 
                 // Check if current date is within period days
                 if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
                     return 'period';
-                }
-                
-                // Check for special days (user-defined ovulation and fertile window)
-                if (hasOvulation && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'ovulation')) {
-                    return 'ovulation';
-                }
-                
-                if (hasFertile && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'fertile')) {
-                    return 'fertile';
-                }
-                
-                // Use predicted ovulation and fertile window if no special days defined
-                if (!hasOvulation || !hasFertile) {
-                    const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
-                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                    
-                    if (!hasOvulation && currentDate.toDateString() === ovulationDate.toDateString()) {
-                        return 'ovulation';
-                    }
-                    
-                    if (!hasFertile && currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                        return 'fertile';
-                    }
                 }
             }
         }
@@ -387,8 +287,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     }
                                     let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
-                                    if (type === 'fertile') style = "cycle-fertile-day";
-                                    if (type === 'ovulation') style = "cycle-ovulation-day";
                                     
                                     if (hasSymptom) style += ' cycle-symptom-border';
                                     if (hasNote) style += ' cycle-note-indicator';
@@ -417,10 +315,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                             <div className="flex gap-4 mt-2 text-xs items-center flex-wrap">
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day (predicted)
-                                </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window (predicted)
-                                </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
@@ -431,14 +325,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                             className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
                             <h3 className="font-semibold text-lg text-purple-800 mb-2">Predictions & Analysis</h3>
                             <div className="flex flex-col gap-1 text-xs">
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 rounded-full inline-block"></span> Next
-                                    ovulation day <span
-                                        className="ml-auto font-semibold text-gray-800">18/05/2024</span></div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 rounded-full inline-block"></span> High
-                                    fertility chance <span className="ml-auto font-semibold text-gray-800">15/05 - 19/05</span>
-                                </div>
                                 <div className="flex items-center gap-1"><span
                                     className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Next
                                     period expected <span
