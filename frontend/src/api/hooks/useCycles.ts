@@ -12,10 +12,13 @@ export const useCycles = () => {
         setError(null);
         try {
             const data = await cycleService.getAllCycles();
+            console.log('Fetched cycles from backend:', data);
             setCycles(data);
         } catch (err) {
             setError('Failed to fetch cycles');
             console.error('Error fetching cycles:', err);
+            // Set empty array on error so UI can still function
+            setCycles([]);
         } finally {
             setLoading(false);
         }
@@ -26,7 +29,10 @@ export const useCycles = () => {
         setError(null);
         try {
             const newCycle = await cycleService.createCycle(cycleData);
-            setCycles(prev => [...prev, newCycle]);
+            setCycles(prev => {
+                const updated = [...prev, newCycle];
+                return updated;
+            });
             return newCycle;
         } catch (err) {
             setError('Failed to create cycle');

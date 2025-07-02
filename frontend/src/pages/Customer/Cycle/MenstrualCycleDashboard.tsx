@@ -156,6 +156,7 @@ const MenstrualCycleDashboard: React.FC = () => {
         if (cycles && cycles.length > 0) {
             const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
             
+            // Find cycle that matches current month and year
             const cycleForCurrentMonth = sortedCycles.find(cycle => {
                 const cycleDate = new Date(cycle.cycleStartDate);
                 return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
@@ -167,10 +168,12 @@ const MenstrualCycleDashboard: React.FC = () => {
                 
                 const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
                 
+                // Check if current date is within period days
                 if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
                     return 'period';
                 }
                 
+                // Check for special days (user-defined ovulation and fertile window)
                 if (hasOvulation && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'ovulation')) {
                     return 'ovulation';
                 }
@@ -179,6 +182,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                     return 'fertile';
                 }
                 
+                // Use predicted ovulation and fertile window if no special days defined
                 if (!hasOvulation || !hasFertile) {
                     const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
                     const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
@@ -279,6 +283,20 @@ const MenstrualCycleDashboard: React.FC = () => {
         }
     }, []); // Empty dependency array to run only once on mount
 
+    useEffect(() => {
+        console.log('Cycles updated in dashboard:', cycles);
+        console.log('Current month/year:', currentMonth + 1, currentYear);
+        
+        // Force calendar re-render when cycles change
+        if (cycles.length > 0) {
+            const currentMonthCycles = cycles.filter(cycle => {
+                const cycleDate = new Date(cycle.cycleStartDate);
+                return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
+            });
+            console.log('Cycles for current month:', currentMonthCycles);
+        }
+    }, [cycles, currentMonth, currentYear]);
+
     const [hasGeneratedRecommendations, setHasGeneratedRecommendations] = useState(false);
     
     useEffect(() => {
@@ -349,7 +367,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${JSON.stringify(specialDays)}-${cycles?.length || 0}-${cycles?.map(c => c.cycleStartDate).join(',') || ''}`}>
+                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${Date.now()}`}>
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
                                          className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
@@ -575,6 +593,9 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     cycleLength: data.cycleLength,
                                     periodDuration: data.duration
                                 });
+                                
+                                // Force re-fetch cycles to ensure state consistency
+                                await refetch();
                                 
                                 setShowCyclePopup(false);
                                 setShowSuccess(true);
