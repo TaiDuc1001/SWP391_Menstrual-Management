@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.feature.cycle.data.Cycle;
 import swp391.com.backend.feature.cycle.data.CycleRepository;
+import swp391.com.backend.feature.customer.data.Customer;
+import swp391.com.backend.feature.customer.service.CustomerService;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -13,10 +15,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CycleService {
     private final CycleRepository cycleRepository;
+    private final CustomerService customerService;
 
     public Cycle createCycle(Cycle cycle) {
         cycle.setId(null);
         return cycleRepository.save(cycle);
+    }
+
+    public Cycle createCycleForCustomer(Cycle cycle, Long customerId) {
+        Customer customer = customerService.findCustomerById(customerId);
+        cycle.setId(null);
+        cycle.setCustomer(customer);
+        return cycleRepository.save(cycle);
+    }
+
+    public List<Cycle> getCyclesByCustomer(Long customerId) {
+        List<Cycle> allCycles = cycleRepository.findAll();
+        return allCycles.stream()
+                .filter(cycle -> cycle.getCustomer() != null && cycle.getCustomer().getId().equals(customerId))
+                .sorted(Comparator.comparing(Cycle::getCycleStartDate))
+                .toList();
+    }
+
+    public Cycle getClosestCycleByCustomer(Long customerId) {
+        List<Cycle> customerCycles = getCyclesByCustomer(customerId);
+        if (customerCycles.isEmpty()) {
+            return null;
+        }
+        return customerCycles.stream()
+                .min(Comparator.comparing(cycle -> Math.abs(
+                    java.time.temporal.ChronoUnit.DAYS.between(cycle.getCycleStartDate(), LocalDate.now())
+                )))
+                .orElse(null);
     }
 
     public List<Cycle> getAllCycles() {
@@ -185,5 +215,10 @@ public class CycleService {
 
     public void deleteCycle(Integer cycleId) {
         cycleRepository.deleteById(cycleId.longValue());
+    }
+
+    public void deleteAllCyclesForCustomer(Long customerId) {
+        List<Cycle> customerCycles = getCyclesByCustomer(customerId);
+        cycleRepository.deleteAll(customerCycles);
     }
 }

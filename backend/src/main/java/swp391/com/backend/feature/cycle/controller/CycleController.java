@@ -9,6 +9,7 @@ import swp391.com.backend.feature.cycle.dto.CycleCreationRequest;
 import swp391.com.backend.feature.cycle.mapper.CycleMapper;
 import swp391.com.backend.feature.cycle.data.Cycle;
 import swp391.com.backend.feature.cycle.service.CycleService;
+import swp391.com.backend.common.util.AuthenticationUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +21,11 @@ import java.util.stream.Collectors;
 public class CycleController {
     private final CycleService cycleService;
     private final CycleMapper cycleMapper;
+    private final AuthenticationUtil authenticationUtil;
 
     @PostMapping
     public ResponseEntity<CycleDTO> createCycle(@RequestBody CycleCreationRequest request) {
+        Long customerId = authenticationUtil.getCurrentCustomerId();
 
         Cycle cycle = Cycle.builder()
                 .cycleStartDate(request.getStartDate())
@@ -30,7 +33,7 @@ public class CycleController {
                 .periodDuration(request.getPeriodDuration())
                 .build();
         Cycle predictedCycle = cycleService.cyclePrediction(cycle);
-        Cycle createdCycle = cycleService.createCycle(predictedCycle);
+        Cycle createdCycle = cycleService.createCycleForCustomer(predictedCycle, customerId);
 
         return ResponseEntity.ok(cycleMapper.toDTO(createdCycle));
     }
@@ -43,7 +46,9 @@ public class CycleController {
 
     @GetMapping
     public ResponseEntity<List<CycleDTO>> getAllCycles() {
-        List<Cycle> cycles = cycleService.getAllCycles();
+        Long customerId = authenticationUtil.getCurrentCustomerId();
+        
+        List<Cycle> cycles = cycleService.getCyclesByCustomer(customerId);
         List<CycleDTO> cycleDTOs = cycles.stream()
                 .map(cycleMapper::toDTO)
                 .collect(Collectors.toList());
@@ -52,7 +57,9 @@ public class CycleController {
 
     @GetMapping("/closest")
     public ResponseEntity<CycleDTO> getClosestCycle() {
-        Cycle closestCycle = cycleService.getClosetCycleByDate();
+        Long customerId = authenticationUtil.getCurrentCustomerId();
+        
+        Cycle closestCycle = cycleService.getClosestCycleByCustomer(customerId);
         return ResponseEntity.ok(cycleMapper.toDTO(closestCycle));
     }
 
@@ -66,5 +73,13 @@ public class CycleController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(cycleMapper.toDTO(predictedCycle));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllCycles() {
+        Long customerId = authenticationUtil.getCurrentCustomerId();
+        
+        cycleService.deleteAllCyclesForCustomer(customerId);
+        return ResponseEntity.ok().build();
     }
 }

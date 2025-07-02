@@ -5,13 +5,27 @@ const api = axios.create({
     baseURL: url,
 });
 
-// Add request interceptor to include auth token
+// Add request interceptor to include auth token and customer ID
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('authToken');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // Add customer ID for authenticated requests
+        try {
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                const parsed = JSON.parse(userProfile);
+                if (parsed.role === 'CUSTOMER' && parsed.profile?.id) {
+                    config.headers['X-Customer-ID'] = parsed.profile.id.toString();
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to parse user profile for customer ID:', error);
+        }
+        
         return config;
     },
     (error) => {
