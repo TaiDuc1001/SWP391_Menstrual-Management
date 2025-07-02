@@ -16,10 +16,11 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping("/{doctorId}/{date}")
-    public ResponseEntity<List<Integer>> getAvailableSlots(@PathVariable Long doctorId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<Integer> availableSlots = scheduleService.findAvailableSlots(doctorId, date).stream()
-                .map(slot -> slot.ordinal())
+    public ResponseEntity<List<String>> getAvailableSlots(@PathVariable Long doctorId, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<String> availableSlots = scheduleService.findAvailableSlots(doctorId, date).stream()
+                .map(Enum::toString)
                 .toList();
+        System.out.println(availableSlots);
         return ResponseEntity.ok(availableSlots);
     }
 

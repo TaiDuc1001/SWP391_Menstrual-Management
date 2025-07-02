@@ -22,4 +22,6 @@ public class AppointmentDTO {
     String doctorNote;
     String url;
     String phoneNumber;
+    Boolean doctorReady;
+    Boolean customerReady;
 }

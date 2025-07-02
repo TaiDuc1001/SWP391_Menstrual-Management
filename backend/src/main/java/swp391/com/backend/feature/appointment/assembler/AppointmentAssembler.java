@@ -5,7 +5,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 import swp391.com.backend.feature.appointment.controller.AppointmentsController;
-import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.appointment.data.AppointmentStatus;
 import swp391.com.backend.feature.appointment.dto.AppointmentDTO;
 import swp391.com.backend.feature.customer.controller.CustomerController;
@@ -32,14 +31,10 @@ public class AppointmentAssembler implements RepresentationModelAssembler<Appoin
                 linkTo(CustomerController.class).slash(entity.getCustomerId()).withRel("customer").withType("GET,PUT,DELETE"));
 
         if(entity.getAppointmentStatus() == (AppointmentStatus.CONFIRMED)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("confirm").withTitle("Doctor confirm").withType("POST"));
-            model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("confirm").withTitle("Customer confirm").withType("POST"));
-        } else if (entity.getAppointmentStatus() == (AppointmentStatus.WAITING_FOR_CUSTOMER)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("confirm").withTitle("Customer confirm").withType("POST"));
-        } else if (entity.getAppointmentStatus() == (AppointmentStatus.WAITING_FOR_DOCTOR)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("confirm").withTitle("Doctor confirm").withType("POST"));
+            if(!entity.getCustomerReady()){ model.add(linkTo(methodOn(AppointmentsController.class).customerConfirm(entity.getCustomerId())).withRel("ready").withTitle("Customer ready").withType("PATCH")); }
+            if(!entity.getDoctorReady()){ model.add(linkTo(methodOn(AppointmentsController.class).doctorConfirm(entity.getDoctorId())).withRel("ready").withTitle("Doctor ready").withType("PATCH")); }
         } else if (entity.getAppointmentStatus() == (AppointmentStatus.IN_PROGRESS)) {
-            model.add(linkTo(methodOn(AppointmentsController.class).finishAppointment(entity.getId())).withRel("finish").withType("PATCH"));
+            model.add(linkTo(AppointmentsController.class).slash("status").withRel("finish").withType("PATCH"));
         } else if(entity.getAppointmentStatus() == (AppointmentStatus.BOOKED)) {
             model.add(linkTo(methodOn(AppointmentsController.class).cancelAppointment(entity.getId())).withRel("cancel").withType("DELETE"));
         }

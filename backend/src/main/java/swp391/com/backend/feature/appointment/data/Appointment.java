@@ -41,6 +41,6 @@ public class Appointment {
 
     private Integer score;
 
-    private Boolean customerConfirmed = false;
-    private Boolean doctorConfirmed = false;
+    private Boolean customerReady = false;
+    private Boolean doctorReady = false;
 }

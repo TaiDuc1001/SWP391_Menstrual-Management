@@ -8,16 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.appointment.data.AppointmentRepository;
 import swp391.com.backend.feature.appointment.data.AppointmentStatus;
-import swp391.com.backend.feature.appointment.exception.AppointmentConflictException;
 import swp391.com.backend.feature.doctor.service.DoctorService;
-import swp391.com.backend.feature.doctor.data.Doctor;
-import swp391.com.backend.feature.schedule.data.Slot;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -87,14 +80,5 @@ public class AppointmentsService {
         }
     }
 
-    public List<String> getAvailableSlots(Long doctorId, String dateString) {
-        Doctor doctor = doctorService.findDoctorById(doctorId);
-        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
-        
-        return Arrays.stream(Slot.values())
-                .filter(slot -> !slot.equals(Slot.ZERO))
-                .filter(slot -> !appointmentRepository.existsByDoctorAndDateAndSlotAndNotCancelled(doctor, date, slot))
-                .map(Slot::getTimeRange)
-                .collect(Collectors.toList());
-    }
+
 }
