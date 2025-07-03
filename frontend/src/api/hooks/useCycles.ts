@@ -86,6 +86,35 @@ export const useCycles = () => {
         }
     };
 
+    const deleteCyclesForMonth = async (year: number, month: number) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const updatedCycles = cycles.filter(cycle => {
+                const cycleDate = new Date(cycle.cycleStartDate);
+                return !(cycleDate.getFullYear() === year && cycleDate.getMonth() === month);
+            });
+            
+            await cycleService.deleteAllCycles();
+            
+            for (const cycle of updatedCycles) {
+                await cycleService.createCycle({
+                    startDate: cycle.cycleStartDate,
+                    cycleLength: cycle.cycleLength,
+                    periodDuration: cycle.periodDuration
+                });
+            }
+            
+            setCycles(updatedCycles);
+        } catch (err) {
+            setError('Failed to delete cycles for month');
+            console.error('Error deleting cycles for month:', err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchCycles();
     }, []);
@@ -98,7 +127,8 @@ export const useCycles = () => {
         createCycle,
         deleteAllCycles,
         getClosestCycle,
-        predictCycleForMonth
+        predictCycleForMonth,
+        deleteCyclesForMonth
     };
 };
 

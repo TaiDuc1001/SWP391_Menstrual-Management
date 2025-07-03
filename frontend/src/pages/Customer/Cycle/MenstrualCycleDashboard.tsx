@@ -29,7 +29,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
     const navigate = useNavigate();
-    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
+    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles, deleteCyclesForMonth } = useCycles();
     const { recommendations, healthConcerns, needsSTITesting, healthIssueDescription, loading: aiLoading, generateRecommendations } = useAIRecommendations();
 
     useEffect(() => {
@@ -55,19 +55,19 @@ const MenstrualCycleDashboard: React.FC = () => {
         if (!day || !cycles || cycles.length === 0) return null;
         
         const currentDate = new Date(currentYear, currentMonth, day);
-        const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
         
-        const cycleIndex = sortedCycles.findIndex(cycle => {
+        const cyclesStartingOnThisDay = cycles.filter(cycle => {
             const cycleDate = new Date(cycle.cycleStartDate);
             return cycleDate.getDate() === currentDate.getDate() &&
                    cycleDate.getMonth() === currentDate.getMonth() &&
                    cycleDate.getFullYear() === currentDate.getFullYear();
         });
         
-        if (cycleIndex !== -1) {
+        if (cyclesStartingOnThisDay.length > 0) {
             return {
                 type: 'start',
-                cycleNumber: cycleIndex + 1
+                cycleNumber: 1,
+                count: cyclesStartingOnThisDay.length
             };
         }
         
@@ -80,19 +80,10 @@ const MenstrualCycleDashboard: React.FC = () => {
         const currentDate = new Date(currentYear, currentMonth, day);
         
         if (cycles && cycles.length > 0) {
-            const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
-            
-            // Find cycle that matches current month and year
-            const cycleForCurrentMonth = sortedCycles.find(cycle => {
-                const cycleDate = new Date(cycle.cycleStartDate);
-                return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
-            });
-            
-            if (cycleForCurrentMonth) {
-                const cycleStart = new Date(cycleForCurrentMonth.cycleStartDate);
-                const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
+            for (const cycle of cycles) {
+                const cycleStart = new Date(cycle.cycleStartDate);
+                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration - 1) * 24 * 60 * 60 * 1000);
                 
-                // Check if current date is within period days
                 if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
                     return 'period';
                 }
@@ -187,13 +178,16 @@ const MenstrualCycleDashboard: React.FC = () => {
         console.log('Cycles updated in dashboard:', cycles);
         console.log('Current month/year:', currentMonth + 1, currentYear);
         
-        // Force calendar re-render when cycles change
         if (cycles.length > 0) {
             const currentMonthCycles = cycles.filter(cycle => {
                 const cycleDate = new Date(cycle.cycleStartDate);
                 return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
             });
             console.log('Cycles for current month:', currentMonthCycles);
+            
+            cycles.forEach((cycle, index) => {
+                console.log(`Cycle ${index + 1}: Start date = ${cycle.cycleStartDate}, Period duration = ${cycle.periodDuration}`);
+            });
         }
     }, [cycles, currentMonth, currentYear]);
 
@@ -267,15 +261,17 @@ const MenstrualCycleDashboard: React.FC = () => {
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${Date.now()}`}>
+                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${JSON.stringify(cycles?.map(c => c.cycleStartDate))}`}>
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
                                          className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
                                 ))}
                                 {days.map((day, idx) => {
                                     let type = '';
+                                    let cycleAnnotation = null;
                                     if (cycles && cycles.length > 0) {
                                         type = getDayTypeForCalendar(day);
+                                        cycleAnnotation = getCycleAnnotation(day);
                                     }
                                     let hasSymptom = false;
                                     let hasNote = false;
@@ -305,6 +301,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         }}
                                                     >
                                                         {day}
+                                                        {cycleAnnotation && (
+                                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                                                                {cycleAnnotation.count > 1 ? cycleAnnotation.count : '●'}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ) : <div className="w-10 h-10"></div>}
@@ -318,6 +319,8 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
+                                </div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-purple-600 text-white text-xs flex items-center justify-center font-bold">●</span> Cycle start day
                                 </div>
                             </div>
                         </div>
@@ -471,17 +474,25 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 const formattedStartDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                                 setCurrentCycleStartDate(formattedStartDate);
                                 
+                                console.log('Creating new cycle with data:', {
+                                    startDate: formattedStartDate,
+                                    cycleLength: data.cycleLength,
+                                    periodDuration: data.duration
+                                });
+                                
+                                await deleteCyclesForMonth(currentYear, currentMonth);
+                                
                                 await createCycle({
                                     startDate: formattedStartDate,
                                     cycleLength: data.cycleLength,
                                     periodDuration: data.duration
                                 });
                                 
-                                // Force re-fetch cycles to ensure state consistency
                                 await refetch();
                                 
                                 setShowCyclePopup(false);
                                 setShowSuccess(true);
+                                console.log('Cycle created successfully, current cycles:', cycles);
                                 setTimeout(() => setShowSuccess(false), 1200);
                             } catch (error) {
                                 console.error('Error creating cycle:', error);
