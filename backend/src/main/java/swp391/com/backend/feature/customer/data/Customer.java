@@ -5,11 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import swp391.com.backend.feature.account.data.Account;
 import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.appointment.data.Appointment;
+import swp391.com.backend.feature.cycle.data.Cycle;
 import swp391.com.backend.feature.examination.data.Examination;
-import swp391.com.backend.feature.account.data.Account;
-import swp391.com.backend.feature.account.data.Role;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,4 +50,7 @@ public class Customer implements Actor {
 
     @OneToMany(mappedBy = "customer")
     private List<Examination> examinations;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Cycle> cycles;
 }

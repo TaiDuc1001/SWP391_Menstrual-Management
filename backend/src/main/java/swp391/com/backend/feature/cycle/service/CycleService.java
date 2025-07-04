@@ -1,5 +1,6 @@
 package swp391.com.backend.feature.cycle.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swp391.com.backend.feature.cycle.data.Cycle;
@@ -95,50 +96,6 @@ public class CycleService {
         return predictedCycle;
     }
 
-    public Cycle cyclePredictionForMonth(int year, int month) {
-        List<Cycle> fourClosestCycles = getFourClosetCycleByDate();
-        
-        if (fourClosestCycles.isEmpty()) {
-            return null;
-        }
-
-        double avgCycleLength = fourClosestCycles.stream()
-                .mapToInt(Cycle::getCycleLength)
-                .average()
-                .orElse(28);
-
-        double avgDuration = fourClosestCycles.stream()
-                .mapToInt(Cycle::getPeriodDuration)
-                .average()
-                .orElse(7);
-
-        Cycle lastCycle = fourClosestCycles.get(fourClosestCycles.size() - 1);
-        LocalDate lastCycleStart = lastCycle.getCycleStartDate();
-        
-        LocalDate targetMonthStart = LocalDate.of(year, month, 1);
-        LocalDate targetMonthEnd = targetMonthStart.plusMonths(1).minusDays(1);
-        
-        LocalDate predictedStartDate = lastCycleStart;
-        while (predictedStartDate.isBefore(targetMonthStart)) {
-            predictedStartDate = predictedStartDate.plusDays((int) Math.round(avgCycleLength));
-        }
-        
-        if (predictedStartDate.isAfter(targetMonthEnd)) {
-            predictedStartDate = predictedStartDate.minusDays((int) Math.round(avgCycleLength));
-        }
-
-        Cycle predictedCycle = Cycle.builder()
-                .cycleStartDate(predictedStartDate)
-                .cycleLength((int) Math.round(avgCycleLength))
-                .periodDuration((int) Math.round(avgDuration))
-                .ovulationDate(predictedStartDate.plusDays(14))
-                .fertilityWindowStart(predictedStartDate.plusDays(10))
-                .fertilityWindowEnd(predictedStartDate.plusDays(15))
-                .build();
-
-        return predictedCycle;
-    }
-
     public Cycle cyclePredictionForMonth(int year, int month, Long customerId) {
         List<Cycle> fourClosestCycles = getFourClosetCycleByCustomer(customerId);
         
@@ -183,7 +140,18 @@ public class CycleService {
         return predictedCycle;
     }
 
-    public void deleteCycle(Integer cycleId) {
-        cycleRepository.deleteById(cycleId.longValue());
+    public List<Cycle> getCyclesByCustomerId(Long customerId) {
+        return cycleRepository.getCycleByCustomerId(customerId);
+    }
+
+    public Cycle getCycleById(Long id) {
+        return cycleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cycle not found with id: " + id));
+    }
+
+    public void deleteCycleById(Long id) {
+        Cycle cycle = getCycleById(id);
+        if (cycle != null) {
+            cycleRepository.delete(cycle);
+        }
     }
 }
