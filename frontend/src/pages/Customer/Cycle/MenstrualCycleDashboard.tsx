@@ -389,7 +389,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                 
                                                 const cycleEndDate = nextCycle 
                                                     ? new Date(new Date(nextCycle.cycleStartDate).getTime() - 24 * 60 * 60 * 1000)
-                                                    : new Date(startDate.getTime() + (row.cycleLength - 1) * 24 * 60 * 60 * 1000);
+                                                    : null;
 
                                                 const actualCycleDays = nextCycle
                                                     ? Math.ceil((new Date(nextCycle.cycleStartDate).getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000))
@@ -402,7 +402,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                             {formatDateToDMY(row.cycleStartDate)}
                                                         </td>
                                                         <td className="py-1">
-                                                            {formatDateToDMY(cycleEndDate.toISOString())}
+                                                            {cycleEndDate ? formatDateToDMY(cycleEndDate.toISOString()) : ''}
                                                         </td>
                                                         <td className="py-1">
                                                             {formatDateToDMY(row.cycleStartDate)} - {formatDateToDMY(periodEndDate.toISOString())}
