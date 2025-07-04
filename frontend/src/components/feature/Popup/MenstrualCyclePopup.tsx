@@ -11,9 +11,10 @@ interface MenstrualCyclePopupProps {
     isPreviousMonth?: boolean;
     defaultMonth?: number;
     defaultYear?: number;
+    hideCycleLength?: boolean;
 }
 
-const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, defaultMonth, defaultYear}) => {
+const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, defaultMonth, defaultYear, hideCycleLength = false}) => {
     
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState(5);
@@ -99,7 +100,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
                             required
                         />
                     </div>
-                    {!isPreviousMonth && (
+                    {!isPreviousMonth && !hideCycleLength && (
                         <div className="mb-8">
                             <label className="block text-gray-700 mb-2 font-medium">Cycle length</label>
                             <input

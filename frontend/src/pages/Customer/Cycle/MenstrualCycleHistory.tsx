@@ -203,6 +203,7 @@ const MenstrualCycleHistory: React.FC = () => {
                     setShowCyclePopup(false);
                     setEditRow(null);
                 }}
+                hideCycleLength={true}
                 onSave={async (data) => {
                     setShowCyclePopup(false);
                     setEditRow(null);
