@@ -7,7 +7,6 @@ import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSet
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
 import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
-import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
 import '../../../styles/pages/cycle-dashboard.css';
@@ -624,10 +623,4 @@ const MenstrualCycleDashboard: React.FC = () => {
     );
 };
 
-export default function MenstrualCyclesWithProvider() {
-    return (
-        <MenstrualCycleProvider>
-            <MenstrualCycleDashboard/>
-        </MenstrualCycleProvider>
-    );
-}
+export default MenstrualCycleDashboard;
