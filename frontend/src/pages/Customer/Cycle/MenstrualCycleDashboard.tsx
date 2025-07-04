@@ -362,30 +362,57 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <table className="w-full text-xs mt-2">
                                     <thead>
                                     <tr className="text-gray-600">
-                                        <th className="py-1 font-medium">Start</th>
-                                        <th className="py-1 font-medium">End</th>
+                                        <th className="py-1 font-medium">Start day</th>
+                                        <th className="py-1 font-medium">End day</th>
                                         <th className="py-1 font-medium">Period days</th>
                                         <th className="py-1 font-medium">Cycle (days)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        {historyData.map((row: CycleData, idx: number) => (
-                                        <tr key={idx}
-                                            className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
-                                            <td className="py-1">
-                                                {row.cycleStartDate}
-                                            </td>
-                                            <td className="py-1">
-                                                {row.cycleStartDate ? new Date(new Date(row.cycleStartDate).getTime() + row.periodDuration * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : ''}
-                                            </td>
-                                            <td className="py-1">
-                                                {row.periodDuration}
-                                            </td>
-                                            <td className="py-1">
-                                                {row.cycleLength}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                        {historyData
+                                            .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime())
+                                            .map((row: CycleData, idx: number) => {
+                                                const formatDateToDMY = (dateString: string) => {
+                                                    const date = new Date(dateString);
+                                                    const day = date.getDate().toString().padStart(2, '0');
+                                                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                                                    const year = date.getFullYear();
+                                                    return `${day}/${month}/${year}`;
+                                                };
+
+                                                const startDate = new Date(row.cycleStartDate);
+                                                const periodEndDate = new Date(startDate.getTime() + (row.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                                                
+                                                const nextCycle = historyData
+                                                    .filter(cycle => new Date(cycle.cycleStartDate) > startDate)
+                                                    .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime())[0];
+                                                
+                                                const cycleEndDate = nextCycle 
+                                                    ? new Date(new Date(nextCycle.cycleStartDate).getTime() - 24 * 60 * 60 * 1000)
+                                                    : new Date(startDate.getTime() + (row.cycleLength - 1) * 24 * 60 * 60 * 1000);
+
+                                                const actualCycleDays = nextCycle
+                                                    ? Math.ceil((new Date(nextCycle.cycleStartDate).getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000))
+                                                    : null;
+
+                                                return (
+                                                    <tr key={idx}
+                                                        className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
+                                                        <td className="py-1">
+                                                            {formatDateToDMY(row.cycleStartDate)}
+                                                        </td>
+                                                        <td className="py-1">
+                                                            {formatDateToDMY(cycleEndDate.toISOString())}
+                                                        </td>
+                                                        <td className="py-1">
+                                                            {formatDateToDMY(row.cycleStartDate)} - {formatDateToDMY(periodEndDate.toISOString())}
+                                                        </td>
+                                                        <td className="py-1">
+                                                            {actualCycleDays || ''}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                     </tbody>
                                 </table>
                             </div>
