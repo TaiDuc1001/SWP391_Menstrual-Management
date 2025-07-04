@@ -9,12 +9,12 @@ interface MenstrualCyclePopupProps {
     onSave?: (data: { startDate: string; duration: number; cycleLength: number }) => void;
     editRow?: { id?: number; startDate?: string; endDate?: string; duration?: number; cycle?: number } | null;
     isPreviousMonth?: boolean;
-    onSpecialDayClick?: () => void;
     defaultMonth?: number;
     defaultYear?: number;
+    hideCycleLength?: boolean;
 }
 
-const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, onSpecialDayClick, defaultMonth, defaultYear}) => {
+const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose, onSave, editRow, isPreviousMonth = false, defaultMonth, defaultYear, hideCycleLength = false}) => {
     
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState(5);
@@ -100,7 +100,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
                             required
                         />
                     </div>
-                    {!isPreviousMonth && (
+                    {!isPreviousMonth && !hideCycleLength && (
                         <div className="mb-8">
                             <label className="block text-gray-700 mb-2 font-medium">Cycle length</label>
                             <input
@@ -112,17 +112,6 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
                                 onChange={e => setCycleLength(Number(e.target.value))}
                                 required
                             />
-                        </div>
-                    )}
-                    {isPreviousMonth && (
-                        <div className="mb-8">
-                            <button
-                                type="button"
-                                className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-6 py-3 transition-all text-base shadow w-full"
-                                onClick={onSpecialDayClick}
-                            >
-                                Special day
-                            </button>
                         </div>
                     )}
                     <div className="flex justify-end">

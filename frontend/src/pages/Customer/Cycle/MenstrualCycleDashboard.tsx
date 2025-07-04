@@ -7,7 +7,6 @@ import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSet
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
 import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
-import {MenstrualCycleProvider} from '../../../context/MenstrualCycleContext';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
 import '../../../styles/pages/cycle-dashboard.css';
@@ -29,7 +28,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const location = useLocation();
     const navigate = useNavigate();
-    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles } = useCycles();
+    const { cycles, loading: cyclesLoading, refetch, createCycle, deleteAllCycles, deleteCyclesForMonth } = useCycles();
     const { recommendations, healthConcerns, needsSTITesting, healthIssueDescription, loading: aiLoading, generateRecommendations } = useAIRecommendations();
 
     useEffect(() => {
@@ -55,146 +54,37 @@ const MenstrualCycleDashboard: React.FC = () => {
         if (!day || !cycles || cycles.length === 0) return null;
         
         const currentDate = new Date(currentYear, currentMonth, day);
-        const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
         
-        const cycleIndex = sortedCycles.findIndex(cycle => {
+        const cyclesStartingOnThisDay = cycles.filter(cycle => {
             const cycleDate = new Date(cycle.cycleStartDate);
             return cycleDate.getDate() === currentDate.getDate() &&
                    cycleDate.getMonth() === currentDate.getMonth() &&
                    cycleDate.getFullYear() === currentDate.getFullYear();
         });
         
-        if (cycleIndex !== -1) {
+        if (cyclesStartingOnThisDay.length > 0) {
             return {
                 type: 'start',
-                cycleNumber: cycleIndex + 1
+                cycleNumber: 1,
+                count: cyclesStartingOnThisDay.length
             };
         }
         
         return null;
     };
 
-    const parseSpecialDayRange = (dateRange: string): Date[] => {
-        if (!dateRange) return [];
-        
-        const dates = dateRange.split(' - ');
-        if (dates.length === 1) {
-            const [day, month, year] = dates[0].split('/');
-            return [new Date(parseInt(year), parseInt(month) - 1, parseInt(day))];
-        } else if (dates.length === 2) {
-            const [startDay, startMonth, startYear] = dates[0].split('/');
-            const [endDay, endMonth, endYear] = dates[1].split('/');
-            const startDate = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
-            const endDate = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
-            
-            const result = [];
-            const currentDate = new Date(startDate);
-            while (currentDate <= endDate) {
-                result.push(new Date(currentDate));
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            return result;
-        }
-        return [];
-    };
-
-    const hasSpecialDaysForCycle = (cycleStartDate: string): { hasOvulation: boolean; hasFertile: boolean } => {
-        const cycleKey = cycleStartDate;
-        const specialDayData = specialDays[cycleKey];
-        
-        return {
-            hasOvulation: !!(specialDayData && specialDayData.ovulationDays),
-            hasFertile: !!(specialDayData && specialDayData.fertileWindow)
-        };
-    };
-
-    const isDateInSpecialDays = (date: Date, cycleStartDate: string, type: 'ovulation' | 'fertile'): boolean => {
-        const cycleKey = cycleStartDate;
-        const specialDayData = specialDays[cycleKey];
-        
-        if (!specialDayData) return false;
-        
-        const dateRange = type === 'ovulation' ? specialDayData.ovulationDays : specialDayData.fertileWindow;
-        const specialDates = parseSpecialDayRange(dateRange);
-        
-        return specialDates.some(specialDate => 
-            specialDate.getDate() === date.getDate() &&
-            specialDate.getMonth() === date.getMonth() &&
-            specialDate.getFullYear() === date.getFullYear()
-        );
-    };
-
-    const getPredictedCycles = () => {
-        if (!cycles || cycles.length === 0) return [];
-        
-        const lastCycle = cycles[cycles.length - 1];
-        const startDate = new Date(lastCycle.cycleStartDate);
-        const cycleLength = lastCycle.cycleLength || 28;
-        const duration = lastCycle.periodDuration || 7;
-        const predictions = [];
-        for (let i = 0; i < 3; i++) {
-            const cycleStart = new Date(startDate);
-            cycleStart.setMonth(startDate.getMonth() + i);
-            predictions.push({
-                start: new Date(cycleStart),
-                end: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + duration - 1),
-                fertileStart: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 10),
-                fertileEnd: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 15),
-                ovulation: new Date(cycleStart.getFullYear(), cycleStart.getMonth(), cycleStart.getDate() + 13),
-                duration,
-                cycleLength
-            });
-        }
-        return predictions;
-    };    
-    
     const getDayTypeForCalendar = (day: number | null) => {
         if (!day) return '';
         
         const currentDate = new Date(currentYear, currentMonth, day);
         
         if (cycles && cycles.length > 0) {
-            const sortedCycles = [...cycles].sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
-            
-            // Find cycle that matches current month and year
-            const cycleForCurrentMonth = sortedCycles.find(cycle => {
-                const cycleDate = new Date(cycle.cycleStartDate);
-                return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
-            });
-            
-            if (cycleForCurrentMonth) {
-                const cycleStart = new Date(cycleForCurrentMonth.cycleStartDate);
-                const { hasOvulation, hasFertile } = hasSpecialDaysForCycle(cycleForCurrentMonth.cycleStartDate);
+            for (const cycle of cycles) {
+                const cycleStart = new Date(cycle.cycleStartDate);
+                const periodEnd = new Date(cycleStart.getTime() + (cycle.periodDuration - 1) * 24 * 60 * 60 * 1000);
                 
-                const periodEnd = new Date(cycleStart.getTime() + (cycleForCurrentMonth.periodDuration - 1) * 24 * 60 * 60 * 1000);
-                
-                // Check if current date is within period days
                 if (currentDate.getTime() >= cycleStart.getTime() && currentDate.getTime() <= periodEnd.getTime()) {
                     return 'period';
-                }
-                
-                // Check for special days (user-defined ovulation and fertile window)
-                if (hasOvulation && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'ovulation')) {
-                    return 'ovulation';
-                }
-                
-                if (hasFertile && isDateInSpecialDays(currentDate, cycleForCurrentMonth.cycleStartDate, 'fertile')) {
-                    return 'fertile';
-                }
-                
-                // Use predicted ovulation and fertile window if no special days defined
-                if (!hasOvulation || !hasFertile) {
-                    const ovulationDate = new Date(cycleStart.getTime() + 14 * 24 * 60 * 60 * 1000);
-                    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
-                    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
-                    
-                    if (!hasOvulation && currentDate.toDateString() === ovulationDate.toDateString()) {
-                        return 'ovulation';
-                    }
-                    
-                    if (!hasFertile && currentDate.getTime() >= fertileStart.getTime() && currentDate.getTime() <= fertileEnd.getTime()) {
-                        return 'fertile';
-                    }
                 }
             }
         }
@@ -287,13 +177,16 @@ const MenstrualCycleDashboard: React.FC = () => {
         console.log('Cycles updated in dashboard:', cycles);
         console.log('Current month/year:', currentMonth + 1, currentYear);
         
-        // Force calendar re-render when cycles change
         if (cycles.length > 0) {
             const currentMonthCycles = cycles.filter(cycle => {
                 const cycleDate = new Date(cycle.cycleStartDate);
                 return cycleDate.getFullYear() === currentYear && cycleDate.getMonth() === currentMonth;
             });
             console.log('Cycles for current month:', currentMonthCycles);
+            
+            cycles.forEach((cycle, index) => {
+                console.log(`Cycle ${index + 1}: Start date = ${cycle.cycleStartDate}, Period duration = ${cycle.periodDuration}`);
+            });
         }
     }, [cycles, currentMonth, currentYear]);
 
@@ -338,12 +231,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                             My Cycle
                         </h2>
-                        <div className="flex gap-2">
-                            <button
-                                className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-2 rounded-lg font-semibold shadow hover:from-purple-600 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
-                                onClick={() => setShowPredictPopup(true)}>Predict Cycle
-                            </button>
-                        </div>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         <div
@@ -367,15 +254,17 @@ const MenstrualCycleDashboard: React.FC = () => {
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${Date.now()}`}>
+                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${JSON.stringify(cycles?.map(c => c.cycleStartDate))}`}>
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
                                          className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
                                 ))}
                                 {days.map((day, idx) => {
                                     let type = '';
+                                    let cycleAnnotation = null;
                                     if (cycles && cycles.length > 0) {
                                         type = getDayTypeForCalendar(day);
+                                        cycleAnnotation = getCycleAnnotation(day);
                                     }
                                     let hasSymptom = false;
                                     let hasNote = false;
@@ -387,8 +276,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     }
                                     let style = "cycle-regular-day";
                                     if (type === 'period') style = "cycle-period-day";
-                                    if (type === 'fertile') style = "cycle-fertile-day";
-                                    if (type === 'ovulation') style = "cycle-ovulation-day";
                                     
                                     if (hasSymptom) style += ' cycle-symptom-border';
                                     if (hasNote) style += ' cycle-note-indicator';
@@ -407,6 +294,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         }}
                                                     >
                                                         {day}
+                                                        {cycleAnnotation && (
+                                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                                                                {cycleAnnotation.count > 1 ? cycleAnnotation.count : '●'}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ) : <div className="w-10 h-10"></div>}
@@ -417,13 +309,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                             <div className="flex gap-4 mt-2 text-xs items-center flex-wrap">
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#FFD740'}}></span> Ovulation day (predicted)
-                                </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#1DE9B6'}}></span> Fertile window (predicted)
-                                </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
                                 <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
+                                </div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-purple-600 text-white text-xs flex items-center justify-center font-bold">●</span> Cycle start day
                                 </div>
                             </div>
                         </div>
@@ -431,14 +321,6 @@ const MenstrualCycleDashboard: React.FC = () => {
                             className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
                             <h3 className="font-semibold text-lg text-purple-800 mb-2">Predictions & Analysis</h3>
                             <div className="flex flex-col gap-1 text-xs">
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-400 rounded-full inline-block"></span> Next
-                                    ovulation day <span
-                                        className="ml-auto font-semibold text-gray-800">18/05/2024</span></div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-gradient-to-br from-green-400 via-teal-400 to-emerald-500 rounded-full inline-block"></span> High
-                                    fertility chance <span className="ml-auto font-semibold text-gray-800">15/05 - 19/05</span>
-                                </div>
                                 <div className="flex items-center gap-1"><span
                                     className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Next
                                     period expected <span
@@ -473,30 +355,57 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 <table className="w-full text-xs mt-2">
                                     <thead>
                                     <tr className="text-gray-600">
-                                        <th className="py-1 font-medium">Start</th>
-                                        <th className="py-1 font-medium">End</th>
+                                        <th className="py-1 font-medium">Start day</th>
+                                        <th className="py-1 font-medium">End day</th>
                                         <th className="py-1 font-medium">Period days</th>
                                         <th className="py-1 font-medium">Cycle (days)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        {historyData.map((row: CycleData, idx: number) => (
-                                        <tr key={idx}
-                                            className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
-                                            <td className="py-1">
-                                                {row.cycleStartDate}
-                                            </td>
-                                            <td className="py-1">
-                                                {row.cycleStartDate ? new Date(new Date(row.cycleStartDate).getTime() + row.periodDuration * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : ''}
-                                            </td>
-                                            <td className="py-1">
-                                                {row.periodDuration}
-                                            </td>
-                                            <td className="py-1">
-                                                {row.cycleLength}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                        {historyData
+                                            .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime())
+                                            .map((row: CycleData, idx: number) => {
+                                                const formatDateToDMY = (dateString: string) => {
+                                                    const date = new Date(dateString);
+                                                    const day = date.getDate().toString().padStart(2, '0');
+                                                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                                                    const year = date.getFullYear();
+                                                    return `${day}/${month}/${year}`;
+                                                };
+
+                                                const startDate = new Date(row.cycleStartDate);
+                                                const periodEndDate = new Date(startDate.getTime() + (row.periodDuration - 1) * 24 * 60 * 60 * 1000);
+                                                
+                                                const nextCycle = historyData
+                                                    .filter(cycle => new Date(cycle.cycleStartDate) > startDate)
+                                                    .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime())[0];
+                                                
+                                                const cycleEndDate = nextCycle 
+                                                    ? new Date(new Date(nextCycle.cycleStartDate).getTime() - 24 * 60 * 60 * 1000)
+                                                    : null;
+
+                                                const actualCycleDays = nextCycle
+                                                    ? Math.ceil((new Date(nextCycle.cycleStartDate).getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000))
+                                                    : null;
+
+                                                return (
+                                                    <tr key={idx}
+                                                        className="text-center border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200">
+                                                        <td className="py-1">
+                                                            {formatDateToDMY(row.cycleStartDate)}
+                                                        </td>
+                                                        <td className="py-1">
+                                                            {cycleEndDate ? formatDateToDMY(cycleEndDate.toISOString()) : ''}
+                                                        </td>
+                                                        <td className="py-1">
+                                                            {formatDateToDMY(row.cycleStartDate)} - {formatDateToDMY(periodEndDate.toISOString())}
+                                                        </td>
+                                                        <td className="py-1">
+                                                            {actualCycleDays || ''}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                     </tbody>
                                 </table>
                             </div>
@@ -579,14 +488,19 @@ const MenstrualCycleDashboard: React.FC = () => {
                         isPreviousMonth={currentYear < now.getFullYear() || (currentYear === now.getFullYear() && currentMonth <= now.getMonth())}
                         defaultMonth={currentMonth}
                         defaultYear={currentYear}
-                        onSpecialDayClick={() => {
-                            setShowSpecialDayPopup(true);
-                        }}
                         onSave={async (data) => {
                             try {
                                 const [day, month, year] = data.startDate.split('/');
                                 const formattedStartDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                                 setCurrentCycleStartDate(formattedStartDate);
+                                
+                                console.log('Creating new cycle with data:', {
+                                    startDate: formattedStartDate,
+                                    cycleLength: data.cycleLength,
+                                    periodDuration: data.duration
+                                });
+                                
+                                await deleteCyclesForMonth(currentYear, currentMonth);
                                 
                                 await createCycle({
                                     startDate: formattedStartDate,
@@ -594,11 +508,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     periodDuration: data.duration
                                 });
                                 
-                                // Force re-fetch cycles to ensure state consistency
                                 await refetch();
                                 
                                 setShowCyclePopup(false);
                                 setShowSuccess(true);
+                                console.log('Cycle created successfully, current cycles:', cycles);
                                 setTimeout(() => setShowSuccess(false), 1200);
                             } catch (error) {
                                 console.error('Error creating cycle:', error);
@@ -709,10 +623,4 @@ const MenstrualCycleDashboard: React.FC = () => {
     );
 };
 
-export default function MenstrualCyclesWithProvider() {
-    return (
-        <MenstrualCycleProvider>
-            <MenstrualCycleDashboard/>
-        </MenstrualCycleProvider>
-    );
-}
+export default MenstrualCycleDashboard;

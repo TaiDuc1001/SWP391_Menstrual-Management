@@ -212,8 +212,7 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
             recommendations = this.parseRecommendations(text);
         }
 
-        // healthConcerns = true;
-        // needsSTITesting = true;
+
         return {
             recommendations: recommendations.length > 0 ? recommendations : this.getFallbackRecommendations(),
             healthConcerns,
@@ -283,6 +282,14 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
         
         const symptomsText = allSymptoms.join(' ').toLowerCase();
         
+        // Check for irregular cycles (not in 28-35 days range)
+        const hasIrregularCycles = cycles.some(cycle => 
+            cycle.cycleLength < 28 || cycle.cycleLength > 35
+        );
+        
+        // Check for heavy symptoms
+        const hasHeavySymptoms = symptomsText.includes('heavy');
+        
         // Check for STI-related symptoms
         const stiSymptoms = [
             'discharge', 'unusual discharge', 'burning', 'itching', 'odor', 'pain during urination',
@@ -291,16 +298,6 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
         
         const hasStiSymptoms = stiSymptoms.some(symptom => symptomsText.includes(symptom));
         
-        // Check for irregular cycles
-        const hasIrregularCycles = cycles.some(cycle => 
-            cycle.cycleLength < 21 || cycle.cycleLength > 35
-        );
-        
-        // Check for extremely concerning cycles (our test data)
-        const hasExtremelyConcerningCycles = cycles.some(cycle => 
-            cycle.cycleLength < 18 || cycle.cycleLength > 38 || cycle.periodDuration > 8
-        );
-        
         // Check for concerning symptoms
         const concerningSymptoms = [
             'severe pain', 'heavy bleeding', 'fever', 'severe cramps'
@@ -308,19 +305,22 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
         
         const hasConcerningSymptoms = concerningSymptoms.some(symptom => symptomsText.includes(symptom));
         
-        const healthConcerns = hasStiSymptoms || hasIrregularCycles || hasConcerningSymptoms || hasExtremelyConcerningCycles;
-        const needsSTITesting = hasStiSymptoms || hasExtremelyConcerningCycles;
+        // Determine if health concerns exist and STI testing is needed
+        const healthConcerns = hasIrregularCycles || hasHeavySymptoms || hasStiSymptoms || hasConcerningSymptoms;
+        const needsSTITesting = hasIrregularCycles || hasHeavySymptoms || hasStiSymptoms || hasConcerningSymptoms;
         
         let healthIssueDescription = undefined;
         
-        if (hasExtremelyConcerningCycles) {
-            healthIssueDescription = "Extremely irregular cycles detected with concerning patterns. Immediate medical consultation recommended.";
-        } else if (hasStiSymptoms) {
-            healthIssueDescription = "Symptoms suggesting possible infection detected. Consider getting tested.";
+        if (hasIrregularCycles && hasHeavySymptoms) {
+            healthIssueDescription = "Chu kỳ kinh nguyệt không đều (không trong khoảng 28-35 ngày) và có triệu chứng nặng. Nên thực hiện xét nghiệm để kiểm tra sức khỏe sinh sản.";
         } else if (hasIrregularCycles) {
-            healthIssueDescription = "Irregular menstrual cycles detected. Consider consulting a healthcare provider.";
+            healthIssueDescription = "Chu kỳ kinh nguyệt không đều (không trong khoảng 28-35 ngày). Nên thực hiện xét nghiệm để đánh giá tình trạng sức khỏe.";
+        } else if (hasHeavySymptoms) {
+            healthIssueDescription = "Phát hiện triệu chứng nặng trong chu kỳ kinh nguyệt. Nên thực hiện xét nghiệm để kiểm tra sức khỏe sinh sản.";
+        } else if (hasStiSymptoms) {
+            healthIssueDescription = "Triệu chứng có thể liên quan đến nhiễm trùng. Nên thực hiện xét nghiệm STI.";
         } else if (hasConcerningSymptoms) {
-            healthIssueDescription = "Concerning symptoms detected. Consider medical evaluation.";
+            healthIssueDescription = "Phát hiện triệu chứng đáng lo ngại. Nên tham khảo ý kiến bác sĩ.";
         }
         
         return {
