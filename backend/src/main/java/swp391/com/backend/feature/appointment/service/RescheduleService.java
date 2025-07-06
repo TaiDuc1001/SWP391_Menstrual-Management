@@ -24,6 +24,15 @@ public class RescheduleService {
 
     @Transactional
     public RescheduleRequest createRescheduleRequest(CreateRescheduleRequestDTO createRequest) {
+        // Validation: chỉ cho phép 1 option duy nhất
+        if (createRequest.getOptions() == null || createRequest.getOptions().isEmpty()) {
+            throw new RuntimeException("At least one reschedule option is required");
+        }
+        
+        if (createRequest.getOptions().size() > 1) {
+            throw new RuntimeException("Only one reschedule option is allowed per request");
+        }
+        
         // Lấy appointment gốc
         Appointment appointment = appointmentsService.findAppointmentById(createRequest.getAppointmentId());
         
@@ -63,12 +72,12 @@ public class RescheduleService {
     }
 
     public List<RescheduleRequest> getRescheduleRequestsForDoctor(Long doctorId) {
-        return rescheduleRequestRepository.findByDoctorId(doctorId);
+        return rescheduleRequestRepository.findByDoctorIdOrderByCreatedAtDesc(doctorId);
     }
 
     public List<RescheduleRequest> getPendingRescheduleRequestsForDoctor(Long doctorId) {
         var doctor = doctorService.findDoctorById(doctorId);
-        return rescheduleRequestRepository.findByDoctorAndStatus(doctor, RescheduleStatus.PENDING);
+        return rescheduleRequestRepository.findByDoctorAndStatusOrderByCreatedAtDesc(doctor, RescheduleStatus.PENDING);
     }
 
     public RescheduleRequest getRescheduleRequestById(Long id) {
@@ -136,10 +145,10 @@ public class RescheduleService {
     }
 
     public List<RescheduleRequest> getRescheduleRequestsByAppointmentId(Long appointmentId) {
-        return rescheduleRequestRepository.findByAppointmentId(appointmentId);
+        return rescheduleRequestRepository.findByAppointmentIdOrderByCreatedAtDesc(appointmentId);
     }
 
     public List<RescheduleRequest> getRescheduleRequestsForCustomer(Long customerId) {
-        return rescheduleRequestRepository.findByCustomerId(customerId);
+        return rescheduleRequestRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
     }
 }

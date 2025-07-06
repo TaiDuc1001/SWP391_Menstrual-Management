@@ -3,6 +3,8 @@ import {useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
 import {Button, LoadingSpinner, StatusBadge} from '../../../components';
 import RescheduleModal from '../../../components/feature/Modal/RescheduleModal';
+import RescheduleStatusCard from '../../../components/feature/Card/RescheduleStatusCard';
+import { rescheduleService, RescheduleRequest } from '../../../api/services/rescheduleService';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import clockIcon from '../../../assets/icons/clock.svg';
 import userIcon from '../../../assets/icons/profile.svg';
@@ -26,6 +28,8 @@ const AppointmentDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [rescheduleRequests, setRescheduleRequests] = useState<RescheduleRequest[]>([]);
+    const [loadingReschedule, setLoadingReschedule] = useState(false);
 
     useEffect(() => {
         const fetchAppointmentDetail = async () => {
@@ -35,6 +39,9 @@ const AppointmentDetail: React.FC = () => {
                 setLoading(true);
                 const response = await api.get(`/appointments/${id}`);
                 setAppointment(response.data);
+                
+                // Fetch reschedule requests for this appointment
+                await fetchRescheduleRequests();
             } catch (err) {
                 console.error('Error fetching appointment details:', err);
                 setError('Failed to load appointment details');
@@ -45,6 +52,20 @@ const AppointmentDetail: React.FC = () => {
 
         fetchAppointmentDetail();
     }, [id]);
+
+    const fetchRescheduleRequests = async () => {
+        if (!id) return;
+        
+        try {
+            setLoadingReschedule(true);
+            const requests = await rescheduleService.getRescheduleRequestsByAppointmentId(Number(id));
+            setRescheduleRequests(requests);
+        } catch (err) {
+            console.error('Error fetching reschedule requests:', err);
+        } finally {
+            setLoadingReschedule(false);
+        }
+    };
 
     const handleJoinMeeting = () => {
         if (appointment?.url) {
@@ -61,6 +82,9 @@ const AppointmentDetail: React.FC = () => {
                 setLoading(true);
                 const response = await api.get(`/appointments/${id}`);
                 setAppointment(response.data);
+                
+                // Refresh reschedule requests
+                await fetchRescheduleRequests();
             } catch (err) {
                 console.error('Error fetching appointment details:', err);
                 setError('Failed to load appointment details');
@@ -72,6 +96,24 @@ const AppointmentDetail: React.FC = () => {
         fetchAppointmentDetail();
         alert('Reschedule request submitted successfully! Your doctor will review and approve one of your options.');
     };
+
+    const handleCancelRescheduleRequest = async (requestId: number) => {
+        if (!window.confirm('Are you sure you want to cancel this reschedule request?')) {
+            return;
+        }
+
+        try {
+            await rescheduleService.cancelRescheduleRequest(requestId);
+            await fetchRescheduleRequests();
+            alert('Reschedule request cancelled successfully');
+        } catch (err) {
+            console.error('Error cancelling reschedule request:', err);
+            alert('Failed to cancel reschedule request');
+        }
+    };
+
+    // Check if there's an active reschedule request (PENDING)
+    const hasPendingRescheduleRequest = rescheduleRequests.some(req => req.status === 'PENDING');
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-GB', {
@@ -156,6 +198,33 @@ const AppointmentDetail: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-6">
+                        {/* Latest Reschedule Status Card */}
+                        {!loadingReschedule && rescheduleRequests.length > 0 && (() => {
+                            const latestRequest = rescheduleRequests
+                                .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())[0];
+                            
+                            return (
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="text-lg font-semibold text-gray-800">Latest Reschedule Request</h3>
+                                        {rescheduleRequests.length > 1 && (
+                                            <button
+                                                onClick={() => navigate(`/customer/appointments/${id}/reschedule-history`)}
+                                                className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+                                            >
+                                                View Full History ({rescheduleRequests.length})
+                                                <span className="ml-1">→</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                    <RescheduleStatusCard
+                                        rescheduleRequest={latestRequest}
+                                        onCancel={latestRequest.status === 'PENDING' ? handleCancelRescheduleRequest : undefined}
+                                    />
+                                </div>
+                            );
+                        })()}
+
                         <div className="appointment-detail-info-card">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Appointment Information</h2>
 
@@ -236,9 +305,15 @@ const AppointmentDetail: React.FC = () => {
                                 {['BOOKED', 'CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
                                     <button
                                         onClick={() => setShowRescheduleModal(true)}
-                                        className="appointment-detail-action-btn appointment-detail-btn-orange"
+                                        disabled={hasPendingRescheduleRequest}
+                                        className={`appointment-detail-action-btn ${
+                                            hasPendingRescheduleRequest 
+                                                ? 'appointment-detail-btn-gray opacity-50 cursor-not-allowed' 
+                                                : 'appointment-detail-btn-orange'
+                                        }`}
+                                        title={hasPendingRescheduleRequest ? 'You already have a pending reschedule request' : ''}
                                     >
-                                        🔄 Dời lịch
+                                        🔄 {hasPendingRescheduleRequest ? 'Reschedule Pending' : 'Dời lịch'}
                                     </button>
                                 )}
                                 

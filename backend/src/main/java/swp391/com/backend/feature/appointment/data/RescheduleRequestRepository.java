@@ -13,12 +13,22 @@ import java.util.Optional;
 @Repository
 public interface RescheduleRequestRepository extends JpaRepository<RescheduleRequest, Long> {
     
-    List<RescheduleRequest> findByDoctorAndStatus(Doctor doctor, RescheduleStatus status);
+    List<RescheduleRequest> findByDoctorAndStatusOrderByCreatedAtDesc(Doctor doctor, RescheduleStatus status);
     
-    List<RescheduleRequest> findByAppointmentId(Long appointmentId);
+    List<RescheduleRequest> findByAppointmentIdOrderByCreatedAtDesc(Long appointmentId);
     
     @Query("SELECT r FROM RescheduleRequest r WHERE r.appointment.id = :appointmentId AND r.status = :status")
     Optional<RescheduleRequest> findByAppointmentIdAndStatus(@Param("appointmentId") Long appointmentId, @Param("status") RescheduleStatus status);
+    
+    @Query("SELECT r FROM RescheduleRequest r WHERE r.doctor.id = :doctorId ORDER BY r.createdAt DESC")
+    List<RescheduleRequest> findByDoctorIdOrderByCreatedAtDesc(@Param("doctorId") Long doctorId);
+    
+    @Query("SELECT r FROM RescheduleRequest r WHERE r.customer.id = :customerId ORDER BY r.createdAt DESC")
+    List<RescheduleRequest> findByCustomerIdOrderByCreatedAtDesc(@Param("customerId") Long customerId);
+    
+    // Keep old methods for backward compatibility
+    List<RescheduleRequest> findByDoctorAndStatus(Doctor doctor, RescheduleStatus status);
+    List<RescheduleRequest> findByAppointmentId(Long appointmentId);
     
     @Query("SELECT r FROM RescheduleRequest r WHERE r.doctor.id = :doctorId")
     List<RescheduleRequest> findByDoctorId(@Param("doctorId") Long doctorId);

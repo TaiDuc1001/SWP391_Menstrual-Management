@@ -129,6 +129,11 @@ const DoctorRescheduleRequests: React.FC = () => {
                                         Appointment #{request.appointmentId}
                                     </h3>
                                     <p className="text-gray-600">Reschedule Request #{request.id}</p>
+                                    {request.createdAt && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Requested: {new Date(request.createdAt).toLocaleString('en-GB')}
+                                        </p>
+                                    )}
                                 </div>
                                 <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
                                     Pending Review
@@ -145,18 +150,13 @@ const DoctorRescheduleRequests: React.FC = () => {
 
                             {/* Options */}
                             <div className="mb-6">
-                                <h4 className="font-medium text-gray-700 mb-3">Patient's Preferred Options:</h4>
+                                <h4 className="font-medium text-gray-700 mb-3">Patient's Preferred Time:</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                     {request.options.map((option, index) => (
                                         <div
                                             key={option.id}
                                             className="border border-gray-200 rounded-lg p-4 hover:border-pink-300 transition-colors"
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium text-gray-500">
-                                                    Option {index + 1}
-                                                </span>
-                                            </div>
                                             <div className="space-y-1">
                                                 <div className="flex items-center space-x-2">
                                                     <span className="text-gray-500">📅</span>
@@ -176,7 +176,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                                                 disabled={!option.id}
                                                 className="w-full mt-3 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium disabled:opacity-50"
                                             >
-                                                Approve This Option
+                                                Approve This Time
                                             </button>
                                         </div>
                                     ))}
