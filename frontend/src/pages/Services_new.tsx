@@ -122,7 +122,7 @@ const Services: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
+                <div className="relative container mx-auto px-6 py-24">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
                             <span className="text-pink-200">⭐</span>
@@ -159,8 +159,8 @@ const Services: React.FC = () => {
             </section>
 
             {/* Main Services */}
-            <section className="py-16 bg-white">
-                    <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-4 py-2 rounded-full mb-6">
                             <span>🎯</span>
@@ -179,12 +179,12 @@ const Services: React.FC = () => {
 
                     {/* Service Tabs */}
                     <div className="flex justify-center mb-12">
-                        <div className="bg-gray-100 rounded-3xl p-2 flex gap-2">
+                        <div className="bg-gray-100 rounded-2xl p-2 flex gap-2">
                             {services.map((service, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setActiveService(index)}
-                                    className={`px-6 py-3 rounded-3xl font-semibold transition-all duration-300 ${
+                                    className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                                         activeService === index
                                             ? 'bg-white shadow-lg text-pink-600'
                                             : 'text-gray-600 hover:text-gray-800'
@@ -226,15 +226,15 @@ const Services: React.FC = () => {
                                 </div>
                                 
                                 <div className="grid grid-cols-3 gap-4 mb-8">
-                                    <div className="text-center p-4 bg-gray-50 rounded-3xl">
+                                    <div className="text-center p-4 bg-gray-50 rounded-xl">
                                         <div className="font-bold text-gray-800">{services[activeService].price}</div>
                                         <div className="text-gray-600 text-sm">Starting Price</div>
                                     </div>
-                                    <div className="text-center p-4 bg-gray-50 rounded-3xl">
+                                    <div className="text-center p-4 bg-gray-50 rounded-xl">
                                         <div className="font-bold text-gray-800">{services[activeService].duration}</div>
                                         <div className="text-gray-600 text-sm">Duration</div>
                                     </div>
-                                    <div className="text-center p-4 bg-gray-50 rounded-3xl">
+                                    <div className="text-center p-4 bg-gray-50 rounded-xl">
                                         <div className="font-bold text-gray-800">{services[activeService].availability}</div>
                                         <div className="text-gray-600 text-sm">Availability</div>
                                     </div>
@@ -242,13 +242,13 @@ const Services: React.FC = () => {
                                 
                                 <div className="flex gap-4">
                                     <button
-                                        className={`flex-1 py-4 bg-gradient-to-r ${services[activeService].color} text-white font-bold rounded-3xl hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
+                                        className={`flex-1 py-4 bg-gradient-to-r ${services[activeService].color} text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
                                         onClick={() => navigate('/signup')}
                                     >
                                         Get Started
                                     </button>
                                     <button
-                                        className="px-6 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-3xl hover:border-gray-400 transition-colors"
+                                        className="px-6 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-gray-400 transition-colors"
                                         onClick={() => navigate('/contact')}
                                     >
                                         Learn More
@@ -261,7 +261,7 @@ const Services: React.FC = () => {
                                     <img
                                         src={services[activeService].image}
                                         alt={services[activeService].title}
-                                        className="w-full h-80 object-cover rounded-3xl"
+                                        className="w-full h-80 object-cover rounded-2xl"
                                     />
                                 </div>
                                 
@@ -275,8 +275,8 @@ const Services: React.FC = () => {
             </section>
 
             {/* Additional Services */}
-            <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
-                    <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
+            <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-600 px-4 py-2 rounded-full mb-6">
                             <span>✨</span>
@@ -297,7 +297,7 @@ const Services: React.FC = () => {
                         {additionalServices.map((service, index) => (
                             <div key={index} className="group">
                                 <div className="bg-white rounded-3xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 h-full">
-                                    <div className={`w-16 h-16 rounded-3xl bg-gradient-to-r ${service.color} flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${service.color} flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}>
                                         <span className="text-2xl">{service.icon}</span>
                                     </div>
                                     
@@ -311,8 +311,8 @@ const Services: React.FC = () => {
             </section>
 
             {/* Testimonials */}
-            <section className="py-16 bg-white">
-                    <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-green-100 text-green-600 px-4 py-2 rounded-full mb-6">
                             <span>💬</span>
@@ -331,7 +331,7 @@ const Services: React.FC = () => {
                     
                     <div className="grid md:grid-cols-3 gap-8">
                         {testimonials.map((testimonial, index) => (
-                            <div key={index} className="bg-gray-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div key={index} className="bg-gray-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                                 <div className="flex justify-center mb-4">
                                     <div className="flex text-yellow-400 text-lg">
                                         {'★'.repeat(testimonial.rating)}
@@ -353,9 +353,9 @@ const Services: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white relative overflow-hidden">
+            <section className="py-24 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl text-center">
+                <div className="relative container mx-auto px-6 text-center">
                     <h2 className="text-4xl lg:text-5xl font-bold mb-6">
                         Ready to Experience Better Healthcare?
                     </h2>

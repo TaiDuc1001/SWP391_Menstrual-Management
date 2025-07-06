@@ -7,7 +7,7 @@ const PublicLayout: React.FC<{ children: React.ReactNode }> = ({children}) => {
             <div className="shadow-lg rounded-b-3xl overflow-hidden">
                 <PublicHeader/>
             </div>
-            <main className="flex-1 w-full mx-auto px-2 md:px-0 py-6 md:py-10 max-w-7xl">
+            <main className="flex-1 w-full">
                 {children}
             </main>
         </div>
