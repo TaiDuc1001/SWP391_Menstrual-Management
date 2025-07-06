@@ -120,13 +120,9 @@ const Home: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-24">
+                <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
                         <div className="flex-1">
-                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-                                <span className="text-pink-200">🌸</span>
-                                <span className="text-sm font-medium">Your Health, Our Priority</span>
-                            </div>
                             <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
                                 Empower Your
                                 <span className="block bg-gradient-to-r from-pink-200 to-white bg-clip-text text-transparent">
@@ -199,7 +195,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* Features Section */}
-            <section className="py-24 bg-white">
+            <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
@@ -234,7 +230,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* Health Blog Section */}
-            <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+            <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="flex justify-between items-center mb-16">
                         <div>
@@ -281,7 +277,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* Team Section */}
-            <section className="py-24 bg-white">
+            <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-bold text-gray-800 mb-6">Meet Our Expert Team</h2>
@@ -332,7 +328,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* Testimonials Section */}
-            <section className="py-24 bg-gradient-to-br from-purple-50 to-pink-50">
+            <section className="py-16 bg-gradient-to-br from-purple-50 to-pink-50">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-bold text-gray-800 mb-6">What Our Patients Say</h2>
@@ -368,7 +364,7 @@ const Home: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-24 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white text-center relative overflow-hidden">
+            <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white text-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative">
                     <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">

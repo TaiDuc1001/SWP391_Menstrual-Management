@@ -59,7 +59,7 @@ const Contact: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative w-full px-6 py-24">
+                <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
                             <span className="text-pink-200">💝</span>
@@ -108,8 +108,8 @@ const Contact: React.FC = () => {
                 <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-30 animate-pulse delay-1000"></div>
             </section>
             {/* Contact Form & Info Section */}
-            <section className="py-24 bg-white">
-                <div className="w-full px-6">
+            <section className="py-16 bg-white">
+                <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="grid lg:grid-cols-2 gap-16 items-start">
                         {/* Contact Form */}
                         <div>
@@ -290,8 +290,8 @@ const Contact: React.FC = () => {
             </section>
             
             {/* Health News Section */}
-            <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
-                    <div className="w-full px-6">
+            <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+                    <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full mb-6">
                             <span>📰</span>
