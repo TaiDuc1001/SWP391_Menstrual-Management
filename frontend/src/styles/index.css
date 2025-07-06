@@ -160,6 +160,17 @@
             transform: translateY(0);
         }
     }
+
+    /* Animation keyframes */
+    @keyframes shrink {
+        from { width: 100%; }
+        to { width: 0%; }
+    }
+
+    .animate-shrink {
+        animation-name: shrink;
+        animation-timing-function: linear;
+    }
 }
 
 @import './components/table-actions.css';

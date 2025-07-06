@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { rescheduleService, RescheduleRequest as RescheduleRequestType } from '../../../api/services/rescheduleService';
+import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
+import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
 
 interface RescheduleOption {
     id: number;
@@ -16,6 +18,12 @@ const DoctorRescheduleRequests: React.FC = () => {
     const [requests, setRequests] = useState<RescheduleRequestType[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    
+    // Notification states
+    const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+    const [showErrorNotification, setShowErrorNotification] = useState(false);
+    const [successMessage, setSuccessMessage] = useState({ title: '', message: '' });
+    const [errorMessage, setErrorMessage] = useState({ title: '', message: '' });
 
     // Assuming doctor ID is 1 for now (in real app, get from auth context)
     const doctorId = 1;
@@ -43,10 +51,16 @@ const DoctorRescheduleRequests: React.FC = () => {
             
             // Refresh the list
             await fetchRescheduleRequests();
-            alert('Reschedule request approved successfully!');
+            showSuccess(
+                'Request Approved!', 
+                'The reschedule request has been approved successfully. The appointment has been updated with the new time.'
+            );
         } catch (err) {
             console.error('Error approving reschedule option:', err);
-            alert('Failed to approve reschedule request');
+            showError(
+                'Approval Failed', 
+                'Failed to approve the reschedule request. Please try again.'
+            );
         }
     };
 
@@ -60,10 +74,16 @@ const DoctorRescheduleRequests: React.FC = () => {
             
             // Refresh the list
             await fetchRescheduleRequests();
-            alert('Reschedule request rejected');
+            showSuccess(
+                'Request Rejected',
+                'The reschedule request has been rejected successfully.'
+            );
         } catch (err) {
             console.error('Error rejecting reschedule request:', err);
-            alert('Failed to reject reschedule request');
+            showError(
+                'Rejection Failed',
+                'Failed to reject the reschedule request. Please try again.'
+            );
         }
     };
 
@@ -74,6 +94,17 @@ const DoctorRescheduleRequests: React.FC = () => {
             day: 'numeric',
             year: 'numeric'
         });
+    };
+
+    // Helper functions for notifications
+    const showSuccess = (title: string, message: string) => {
+        setSuccessMessage({ title, message });
+        setShowSuccessNotification(true);
+    };
+
+    const showError = (title: string, message: string) => {
+        setErrorMessage({ title, message });
+        setShowErrorNotification(true);
     };
 
     if (loading) {
@@ -206,6 +237,22 @@ const DoctorRescheduleRequests: React.FC = () => {
                     🔄 Refresh
                 </button>
             </div>
+
+            {/* Success Notification */}
+            <SuccessNotification
+                isOpen={showSuccessNotification}
+                title={successMessage.title}
+                message={successMessage.message}
+                onClose={() => setShowSuccessNotification(false)}
+            />
+
+            {/* Error Notification */}
+            <ErrorNotification
+                isOpen={showErrorNotification}
+                title={errorMessage.title}
+                message={errorMessage.message}
+                onClose={() => setShowErrorNotification(false)}
+            />
         </div>
     );
 };
