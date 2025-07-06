@@ -25,8 +25,8 @@ public class ExaminationAssembler implements RepresentationModelAssembler<Examin
                 linkTo(PanelController.class).slash(entity.getPanelId()).withRel("panel").withType("GET,PUT,DELETE"));
 
         if(!(entity.getExaminationStatus() == ExaminationStatus.COMPLETED || entity.getExaminationStatus() == ExaminationStatus.CANCELLED)) {
-            model.add(linkTo(methodOn(ExaminationController.class).updateExaminationStatus(entity.getId(), dummyDTO)).withRel("status").withType("PATCH"));
-            model.add(linkTo(methodOn(ExaminationController.class).cancelExamination(entity.getId())).withRel("status").withType("DELETE"));
+            model.add(linkTo(methodOn(ExaminationController.class).updateExaminationStatus(entity.getId(), dummyDTO)).withRel("status").withType("PATCH").withTitle("Update Examination Status"));
+            model.add(linkTo(methodOn(ExaminationController.class).cancelExamination(entity.getId())).withRel("status").withType("DELETE").withTitle("Cancel Examination"));
         }
         return model;
     }
