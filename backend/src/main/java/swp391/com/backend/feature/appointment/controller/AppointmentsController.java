@@ -75,6 +75,11 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentsService.toModel(cancelledAppointment));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EntityModel<AppointmentDTO>> deleteAppointment(@PathVariable Long id) {
+        return cancelAppointment(id);
+    }
+
 
     @PatchMapping("/{id}/ready/customer")
     public ResponseEntity<EntityModel<AppointmentDTO>> customerConfirm(@PathVariable Long id) {

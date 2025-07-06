@@ -2,35 +2,37 @@ package swp391.com.backend.feature.examination.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import swp391.com.backend.feature.examination.dto.ExaminationCreateResponse;
-import swp391.com.backend.feature.examination.dto.ExaminedExaminationDTO;
-import swp391.com.backend.feature.examination.dto.SampledExaminationDTO;
-import swp391.com.backend.feature.examination.dto.SimpleExaminationDTO;
 import swp391.com.backend.feature.examination.data.Examination;
+import swp391.com.backend.feature.examination.dto.ExaminationCreateResponse;
+import swp391.com.backend.feature.examination.dto.ExaminationDTO;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface ExaminationMapper {    @Mapping(target = "testResults", ignore = true)
-    @Mapping(source = "customer.name", target = "customerName")
-    @Mapping(source = "slot.timeRange", target = "timeRange")
-    @Mapping(source = "staff.name", target = "staffName")
-    @Mapping(source = "panel.id", target = "panelId")
-    @Mapping(source = "panel.panelName", target = "panelName")
-    ExaminedExaminationDTO toExaminedDTO(Examination entity);
-
-    @Mapping(target = "testTypes", ignore = true)
-    @Mapping(source = "customer.name", target = "customerName")
-    @Mapping(source = "slot.timeRange", target = "timeRange")
-    @Mapping(source = "staff.name", target = "staffName")
-    SampledExaminationDTO toSampledDTO(Examination entity);
-    @Mapping(source = "panel.panelName", target = "panelName")
-    @Mapping(source = "slot.timeRange", target = "timeRange")
-    @Mapping(source = "customer.name", target = "customerName")
-    @Mapping(source = "staff.name", target = "staffName")
-    SimpleExaminationDTO toSimpleDTO(Examination entity);
-
+public interface ExaminationMapper {
     @Mapping(source = "slot.timeRange", target = "timeRange")
     ExaminationCreateResponse toCreateResponse(Examination entity);
 
-    Examination toEntity(ExaminedExaminationDTO dto);
+    Examination toEntity(ExaminationDTO dto);
+
+    @Mapping(source = "panel.panelName", target = "panelName")
+    @Mapping(source = "panel.id", target = "panelId")
+    @Mapping(source = "result.id", target = "resultId")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
+    @Mapping(source = "customer.name", target = "customerName")
+    @Mapping(source = "customer.id", target = "customerId")
+    @Mapping(source = "staff.id", target = "staffId")
+    @Mapping(source = "staff.name", target = "staffName")
+    ExaminationDTO toDTO(Examination entity);
+
+    @Mapping(source = "panel.panelName", target = "panelName")
+    @Mapping(source = "panel.id", target = "panelId")
+    @Mapping(source = "result.id", target = "resultId")
+    @Mapping(source = "slot.timeRange", target = "timeRange")
+    @Mapping(source = "customer.name", target = "customerName")
+    @Mapping(source = "customer.id", target = "customerId")
+    @Mapping(source = "staff.id", target = "staffId")
+    @Mapping(source = "staff.name", target = "staffName")
+    List<ExaminationDTO> toDTOs(List<Examination> entities);
 }
 
