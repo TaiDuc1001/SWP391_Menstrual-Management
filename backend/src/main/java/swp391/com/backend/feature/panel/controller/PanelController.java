@@ -1,20 +1,18 @@
 package swp391.com.backend.feature.panel.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import swp391.com.backend.feature.examination.dto.ExaminationCreateResponse;
-import swp391.com.backend.feature.panel.dto.PanelDTO;
-import swp391.com.backend.feature.examination.dto.ExaminationCreateRequest;
-import swp391.com.backend.feature.panel.dto.SimplePanelDTO;
-import swp391.com.backend.feature.examination.mapper.ExaminationMapper;
-import swp391.com.backend.feature.panel.mapper.PanelMapper;
-import swp391.com.backend.feature.examination.data.Examination;
-import swp391.com.backend.feature.examination.data.ExaminationStatus;
-import swp391.com.backend.feature.panel.data.Panel;
-import swp391.com.backend.feature.examination.service.ExaminationService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import swp391.com.backend.feature.customer.service.CustomerService;
+import swp391.com.backend.feature.examination.mapper.ExaminationMapper;
+import swp391.com.backend.feature.examination.service.ExaminationService;
+import swp391.com.backend.feature.panel.data.Panel;
+import swp391.com.backend.feature.panel.dto.PanelDTO;
+import swp391.com.backend.feature.panel.dto.SimplePanelDTO;
+import swp391.com.backend.feature.panel.mapper.PanelMapper;
 import swp391.com.backend.feature.panel.service.PanelService;
 import swp391.com.backend.feature.panelTestType.service.PanelTestTypeService;
 
@@ -82,23 +80,5 @@ public class PanelController {
         result.setTestTypesUnits(testTypesUnits);
         result.setTestTypesIds(testTypesIds);
         return ResponseEntity.ok(result);
-    }
-
-    @PostMapping("/{id}")
-    public ResponseEntity<ExaminationCreateResponse> createExamination(@PathVariable Long id, @RequestBody ExaminationCreateRequest request) {
-        Panel panel = panelService.findPanelById(id);
-        Examination examination = Examination.builder()
-                .id(null)
-                .panel(panel)
-                .date(request.getDate())
-                .slot(request.getSlot())
-                .customer(customerService.findCustomerById(3L))
-                .examinationStatus(ExaminationStatus.PENDING)
-                .build();
-
-        Examination createdExamination = examinationService.createExamination(examination);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(examinationMapper.toCreateResponse(createdExamination));
     }
 }

@@ -16,9 +16,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExaminationCreateRequest {
+    Long panelId;
+
     @NotBlank(message = "Ngày không được để trống")
     LocalDate date;
 
     @NotNull(message = "Khung giờ không được để trống")
     Slot slot;
+
 }

@@ -14,6 +14,7 @@ import swp391.com.backend.feature.examination.assembler.ExaminationAssembler;
 import swp391.com.backend.feature.examination.data.Examination;
 import swp391.com.backend.feature.examination.data.ExaminationRepository;
 import swp391.com.backend.feature.examination.data.ExaminationStatus;
+import swp391.com.backend.feature.examination.dto.ExaminationCreateRequest;
 import swp391.com.backend.feature.examination.dto.ExaminationDTO;
 import swp391.com.backend.feature.examination.dto.ExaminationPaymentInfo;
 import swp391.com.backend.feature.examination.exception.ExaminationConflictException;
@@ -52,8 +53,16 @@ public class ExaminationService {
     }
 
     @Transactional
-    public EntityModel<ExaminationDTO> createExamination(Examination examination) {
-        validateExaminationConflict(examination);
+    public EntityModel<ExaminationDTO> createExamination(ExaminationCreateRequest request){
+        Panel panel = panelService.findPanelById(request.getPanelId());
+        Examination examination = Examination.builder()
+                .id(null)
+                .panel(panel)
+                .date(request.getDate())
+                .slot(request.getSlot())
+                .customer(customerService.findCustomerById(3L))
+                .examinationStatus(ExaminationStatus.PENDING)
+                .build();
         return toModel(examinationRepository.save(examination));
     }
 
@@ -226,6 +235,9 @@ public class ExaminationService {
         return examinationAssembler.toCollectionModel(models);
     }
 
+
+}
+
 //    public List<String> getAvailableSlots(String dateString) {
 //        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
 //
@@ -244,4 +256,4 @@ public class ExaminationService {
 //                .filter(slot -> !bookedSlotTimeRanges.contains(slot))
 //                .collect(Collectors.toList());
 //    }
-}
+

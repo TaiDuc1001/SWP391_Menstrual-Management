@@ -6,6 +6,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swp391.com.backend.feature.examination.assembler.ExaminationAssembler;
+import swp391.com.backend.feature.examination.dto.ExaminationCreateRequest;
 import swp391.com.backend.feature.examination.dto.ExaminationDTO;
 import swp391.com.backend.feature.examination.mapper.ExaminationMapper;
 import swp391.com.backend.feature.examination.service.ExaminationService;
@@ -46,6 +47,11 @@ public class ExaminationController {
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<CollectionModel<EntityModel<ExaminationDTO>>> getExaminationsForCustomer(@PathVariable Long customerId) {
         return ResponseEntity.ok(examinationService.getExaminationsByCustomerId(customerId));
+    }
+
+    @PostMapping()
+    public ResponseEntity<EntityModel<ExaminationDTO>> createExamination(@RequestBody ExaminationCreateRequest request) {
+        return ResponseEntity.status(201).body(examinationService.createExamination(request));
     }
 
     @PutMapping("/{id}")
