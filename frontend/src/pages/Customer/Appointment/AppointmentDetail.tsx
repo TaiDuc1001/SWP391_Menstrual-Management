@@ -112,6 +112,23 @@ const AppointmentDetail: React.FC = () => {
         }
     };
 
+    const handleCancelAppointment = async () => {
+        if (!window.confirm('Are you sure you want to cancel this appointment? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await api.put(`/appointments/cancel/${id}`);
+            // Refresh appointment data
+            const response = await api.get(`/appointments/${id}`);
+            setAppointment(response.data);
+            alert('Appointment cancelled successfully');
+        } catch (err) {
+            console.error('Error cancelling appointment:', err);
+            alert('Failed to cancel appointment');
+        }
+    };
+
     // Check if there's an active reschedule request (PENDING)
     const hasPendingRescheduleRequest = rescheduleRequests.some(req => req.status === 'PENDING');
 
@@ -319,8 +336,7 @@ const AppointmentDetail: React.FC = () => {
                                 
                                 {appointment.appointmentStatus === 'BOOKED' && (
                                     <button
-                                        onClick={() => {
-                                        }}
+                                        onClick={handleCancelAppointment}
                                         className="appointment-detail-action-btn appointment-detail-btn-red"
                                     >
                                         Cancel Appointment

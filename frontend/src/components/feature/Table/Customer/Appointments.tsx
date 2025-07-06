@@ -128,13 +128,6 @@ const Appointments: React.FC<AppointmentTableProps> = ({
             label: 'Join Meeting',
             onClick: (row) => onJoinMeeting?.(row.id),
             hidden: (row) => row.status !== 'In progress'
-        },
-        {
-            icon: 'Cancel',
-            label: 'Cancel',
-            onClick: (row) => onCancelRows?.([row.id]),
-            hidden: (row) => !['Upcoming', 'Booked'].includes(row.status),
-            variant: 'danger' as const
         }
     ];
 
