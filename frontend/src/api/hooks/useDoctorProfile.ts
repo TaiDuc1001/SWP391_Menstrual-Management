@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { DoctorProfile } from '../services/doctorService';
 import { doctorProfileService } from '../services/doctorProfileService';
 
-export const useDoctorProfile = (useMockAPI: boolean = false) => {
+export const useDoctorProfile = () => {
     const [profile, setProfile] = useState<DoctorProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -12,17 +12,17 @@ export const useDoctorProfile = (useMockAPI: boolean = false) => {
             setLoading(isLoading);
         });
 
-        doctorProfileService.loadProfile(useMockAPI);
+        doctorProfileService.loadProfile();
 
         return unsubscribe;
-    }, [useMockAPI]);
+    }, []);
 
     const updateProfile = async (profileData: Partial<DoctorProfile>) => {
-        return await doctorProfileService.updateProfile(profileData, useMockAPI);
+        return await doctorProfileService.updateProfile(profileData);
     };
 
     const checkProfileComplete = async () => {
-        return await doctorProfileService.checkProfileComplete(useMockAPI);
+        return await doctorProfileService.checkProfileComplete();
     };
 
     return {

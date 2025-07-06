@@ -4,11 +4,9 @@ import { Button } from '../../components/common/Button';
 import { DoctorProfile } from '../../api/services/doctorService';
 import { useDoctorProfile } from '../../api/hooks/useDoctorProfile';
 
-const USE_MOCK_API = true;
-
 const MyProfile: React.FC = () => {
     const navigate = useNavigate();
-    const { profile, loading } = useDoctorProfile(USE_MOCK_API);
+    const { profile, loading } = useDoctorProfile();
 
     const calculateCompletionPercentage = (profile: DoctorProfile): number => {
         let completed = 0;

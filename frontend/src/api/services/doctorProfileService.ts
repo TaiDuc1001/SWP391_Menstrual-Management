@@ -1,5 +1,4 @@
 import { doctorService, DoctorProfile } from './doctorService';
-import { mockDoctorService } from './mockDoctorService';
 
 class DoctorProfileService {
     private static instance: DoctorProfileService;
@@ -30,7 +29,7 @@ class DoctorProfileService {
         });
     }
 
-    async loadProfile(useMockAPI: boolean = false): Promise<DoctorProfile | null> {
+    async loadProfile(): Promise<DoctorProfile | null> {
         if (this.hasLoaded && this.profile) {
             return this.profile;
         }
@@ -52,8 +51,7 @@ class DoctorProfileService {
             this.loading = true;
             this.notify();
 
-            const service = useMockAPI ? mockDoctorService : doctorService;
-            const response = await service.getDoctorProfile();
+            const response = await doctorService.getDoctorProfile();
             
             this.profile = response.data;
             this.hasLoaded = true;
@@ -62,28 +60,20 @@ class DoctorProfileService {
         } catch (error) {
             console.error('Error loading profile:', error);
             
-            const fallbackProfile: DoctorProfile = {
-                id: 1,
-                name: "Dr. Sarah Johnson",
-                specialization: "Gynecology",
-                price: 500000,
-                isProfileComplete: true
-            };
+            // Don't use fallback profile, let the error bubble up
+            this.profile = null;
+            this.hasLoaded = false;
             
-            this.profile = fallbackProfile;
-            this.hasLoaded = true;
-            
-            return this.profile;
+            throw error;
         } finally {
             this.loading = false;
             this.notify();
         }
     }
 
-    async updateProfile(profileData: Partial<DoctorProfile>, useMockAPI: boolean = false): Promise<DoctorProfile | null> {
+    async updateProfile(profileData: Partial<DoctorProfile>): Promise<DoctorProfile | null> {
         try {
-            const service = useMockAPI ? mockDoctorService : doctorService;
-            const response = await service.updateDoctorProfile(profileData);
+            const response = await doctorService.updateDoctorProfile(profileData);
             
             this.profile = response.data;
             this.notify();
@@ -95,7 +85,7 @@ class DoctorProfileService {
         }
     }
 
-    async checkProfileComplete(useMockAPI: boolean = false): Promise<{ isComplete: boolean; percentage: number }> {
+    async checkProfileComplete(): Promise<{ isComplete: boolean; percentage: number }> {
         // If we have a cached profile, calculate completion from that
         if (this.profile) {
             const completedFields = [
@@ -112,8 +102,7 @@ class DoctorProfileService {
 
         // Otherwise, make API call
         try {
-            const service = useMockAPI ? mockDoctorService : doctorService;
-            const response = await service.checkProfileComplete();
+            const response = await doctorService.checkProfileComplete();
             return response.data;
         } catch (error) {
             console.error('Error checking profile completion:', error);

@@ -7,7 +7,6 @@ import keyIcon from '../../assets/icons/key.svg';
 import eyeIcon from '../../assets/icons/eye.svg';
 import google from '../../assets/icons/google.svg';
 import facebook from '../../assets/icons/facebook.svg';
-import { mockDoctorService } from '../../api/services/mockDoctorService';
 
 interface SignUpProps {
     onSignUp: (role?: string) => void;
@@ -51,10 +50,6 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             // Clear any existing user data before storing new user data
             localStorage.removeItem('userProfile');
             localStorage.removeItem('doctor_token');
-            
-            // NOTE: We do NOT clear profile data here (mock_doctor_profile_*) 
-            // because we want to preserve existing user profiles
-            // Each user has their own profile storage key based on their user ID
             
             // Store user data in localStorage
             localStorage.setItem('userProfile', JSON.stringify(userData));

@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useDoctorProfile } from '../api/hooks/useDoctorProfile';
 
-// Toggle between real API and mock for testing
-const USE_MOCK_API = false;
-
 interface DoctorProfileGuardProps {
     children: React.ReactNode;
 }
@@ -13,7 +10,7 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     const [isLoading, setIsLoading] = useState(true);
     const [isProfileComplete, setIsProfileComplete] = useState(false);
     const location = useLocation();
-    const { checkProfileComplete } = useDoctorProfile(USE_MOCK_API);
+    const { checkProfileComplete } = useDoctorProfile();
 
     // Allow access to profile management routes without checking
     const allowedRoutes = [
