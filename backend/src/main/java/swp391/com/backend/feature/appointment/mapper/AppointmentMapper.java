@@ -13,7 +13,7 @@ public interface AppointmentMapper {
 
     @Mapping(source = "customer.id", target = "customerId")
     @Mapping(source = "customer.name", target = "customerName")
-    @Mapping(source = "customer.phoneNumber", target = "phoneNumber")
+    @Mapping(source = "customer.phoneNumber", target = "customerPhoneNumber")
     @Mapping(source = "doctor.id", target = "doctorId")
     @Mapping(source = "doctor.name", target = "doctorName")
     @Mapping(source = "slot.timeRange", target = "timeRange")
@@ -21,7 +21,7 @@ public interface AppointmentMapper {
 
     @Mapping(source = "customer.id", target = "customerId")
     @Mapping(source = "customer.name", target = "customerName")
-    @Mapping(source = "customer.phoneNumber", target = "phoneNumber")
+    @Mapping(source = "customer.phoneNumber", target = "customerPhoneNumber")
     @Mapping(source = "doctor.id", target = "doctorId")
     @Mapping(source = "doctor.name", target = "doctorName")
     @Mapping(source = "slot.timeRange", target = "timeRange")

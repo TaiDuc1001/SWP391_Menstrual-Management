@@ -5,7 +5,6 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swp391.com.backend.feature.appointment.assembler.AppointmentAssembler;
 import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.appointment.data.AppointmentStatus;
 import swp391.com.backend.feature.appointment.dto.AppointmentCreateRequest;
@@ -13,9 +12,7 @@ import swp391.com.backend.feature.appointment.dto.AppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.PaymentInfoDTO;
 import swp391.com.backend.feature.appointment.mapper.AppointmentMapper;
 import swp391.com.backend.feature.appointment.service.AppointmentsService;
-import swp391.com.backend.feature.customer.data.Customer;
 import swp391.com.backend.feature.customer.service.CustomerService;
-import swp391.com.backend.feature.doctor.data.Doctor;
 import swp391.com.backend.feature.doctor.service.DoctorService;
 
 import java.util.List;
@@ -29,36 +26,66 @@ public class AppointmentsController {
     private final AppointmentMapper appointmentMapper;
     private final DoctorService doctorService;
     private final CustomerService customerService;
-    private final AppointmentAssembler appointmentAssembler;
 
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<AppointmentDTO>>> getAllAppointments() {
         List<Appointment> results = appointmentsService.getAllAppointments();
-        List<AppointmentDTO> dtos = appointmentMapper.toDTOs(results);
-        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = appointmentAssembler.toCollectionModel(dtos);
-        return ResponseEntity.ok(collectionModel);
+        return ResponseEntity.ok(appointmentsService.toCollectionModel(results));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<AppointmentDTO>> getAppointmentById(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
-        return ResponseEntity.ok(appointmentMapper.toDTO(appointment));
+        return ResponseEntity.ok(appointmentsService.toModel(appointment));
     }
 
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<CollectionModel<EntityModel<AppointmentDTO>>> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
         List<Appointment> results = appointmentsService.getAppointmentsByDoctorId(doctorId);
-        List<AppointmentDTO> dtos = appointmentMapper.toDTOs(results);
-        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = appointmentAssembler.toCollectionModel(dtos);
-        return ResponseEntity.ok(collectionModel);
+        return ResponseEntity.ok(appointmentsService.toCollectionModel(results));
     }
 
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<CollectionModel<EntityModel<AppointmentDTO>>> getAppointmentsByCustomerId(@PathVariable Long customerId) {
         List<Appointment> results = appointmentsService.getAppointmentsByCustomerId(customerId);
-        List<AppointmentDTO> dtos = appointmentMapper.toDTOs(results);
-        CollectionModel<EntityModel<AppointmentDTO>> collectionModel = appointmentAssembler.toCollectionModel(dtos);
-        return ResponseEntity.ok(collectionModel);
+        return ResponseEntity.ok(appointmentsService.toCollectionModel(results));
+    }
+
+    @PostMapping
+    public ResponseEntity<EntityModel<AppointmentDTO>> createAppointment(@RequestBody AppointmentCreateRequest request) {
+        Appointment result = appointmentsService.createAppointment(request);
+        return ResponseEntity.ok(appointmentsService.toModel(result));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityModel<AppointmentDTO>> updateAppointment(@PathVariable Long id, @RequestBody AppointmentDTO appointmentDTO) {
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointmentDTO);
+        return ResponseEntity.ok(appointmentsService.toModel(updatedAppointment));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<EntityModel<AppointmentDTO>> updateAppointmentStatus(@PathVariable Long id, @RequestBody AppointmentDTO appointmentDTO) {
+        Appointment updatedAppointment = appointmentsService.updateAppointmentStatus(id, appointmentDTO);
+        return ResponseEntity.ok(appointmentsService.toModel(updatedAppointment));
+    }
+
+    @DeleteMapping("/{id}/status")
+    public ResponseEntity<EntityModel<AppointmentDTO>> cancelAppointment(@PathVariable Long id) {
+        Appointment cancelledAppointment = appointmentsService.cancelAppointment(id);
+        return ResponseEntity.ok(appointmentsService.toModel(cancelledAppointment));
+    }
+
+
+    @PatchMapping("/{id}/ready/customer")
+    public ResponseEntity<EntityModel<AppointmentDTO>> customerConfirm(@PathVariable Long id) {
+        Appointment updatedAppointment = appointmentsService.flagCustomerAsReady(id);
+        return ResponseEntity.ok(appointmentsService.toModel(updatedAppointment));
+    }
+
+    @PatchMapping("/{id}/ready/doctor")
+    public ResponseEntity<EntityModel<AppointmentDTO>> doctorConfirm(@PathVariable Long id) {
+        Appointment updatedAppointment = appointmentsService.flagDoctorAsReady(id);
+        return ResponseEntity.ok(appointmentsService.toModel(updatedAppointment));
     }
 
     @GetMapping("/payment/callback/{id}")
@@ -73,8 +100,9 @@ public class AppointmentsController {
         } else {
             appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
         }
+        AppointmentDTO appointmentDTO = appointmentMapper.toDTO(appointment);
 
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointmentDTO);
 
         String frontendUrl = "http://localhost:3000/customer/payment-return";
         if (queryParams.containsKey("vnp_ResponseCode")) {
@@ -106,108 +134,5 @@ public class AppointmentsController {
         EntityModel<AppointmentDTO> entityModel = EntityModel.of(appointmentDTO);
 
         return ResponseEntity.ok(entityModel);
-    }
-
-    @PostMapping
-    public ResponseEntity<EntityModel<AppointmentDTO>> createAppointment(@RequestBody AppointmentCreateRequest request) {
-        Doctor doctor = doctorService.findDoctorById(request.getDoctorId());
-        Customer customer = customerService.findCustomerById(request.getCustomerId());
-        Appointment appointment = Appointment.builder()
-                .date(request.getDate())
-                .slot(request.getSlot())
-                .doctor(doctor)
-                .customer(customer)
-                .appointmentStatus(AppointmentStatus.CONFIRMED)
-                .customerNote(request.getCustomerNote())
-                .customerReady(false)
-                .doctorReady(false)
-                .build();
-        Appointment result = appointmentsService.createAppointment(appointment);
-        AppointmentDTO dto = appointmentMapper.toDTO(result);
-        EntityModel<AppointmentDTO> entityModel = appointmentAssembler.toModel(dto);
-        return ResponseEntity.ok(entityModel);
-    }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<AppointmentDTO>> updateAppointment(@PathVariable Long id, @RequestBody AppointmentDTO appointmentDTO) {
-        Appointment appointment = appointmentMapper.toEntity(appointmentDTO);
-
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
-        AppointmentDTO dto = appointmentMapper.toDTO(updatedAppointment);
-        EntityModel<AppointmentDTO> entityModel = appointmentAssembler.toModel(dto);
-
-        return ResponseEntity.ok(entityModel);
-    }
-
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<EntityModel<AppointmentDTO>> updateAppointmentStatus(@PathVariable Long id, @RequestBody AppointmentDTO appointmentDTO) {
-        Appointment appointment = appointmentsService.findAppointmentById(id);
-        appointment.setAppointmentStatus(appointmentDTO.getAppointmentStatus());
-
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
-        AppointmentDTO dto = appointmentMapper.toDTO(updatedAppointment);
-        EntityModel<AppointmentDTO> entityModel = appointmentAssembler.toModel(dto);
-
-        return ResponseEntity.ok(entityModel);
-    }
-
-    @DeleteMapping("/{id}/status")
-    public ResponseEntity<EntityModel<AppointmentDTO>> cancelAppointment(@PathVariable Long id) {
-        Appointment appointment = appointmentsService.findAppointmentById(id);
-        if(appointment.getAppointmentStatus() != AppointmentStatus.BOOKED) {
-            throw new IllegalStateException("Cannot cancel appointment that is not in BOOKED status");
-        }
-        appointment.setAppointmentStatus(AppointmentStatus.CANCELLED);
-
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
-        AppointmentDTO dto = appointmentMapper.toDTO(updatedAppointment);
-        EntityModel<AppointmentDTO> entityModel = appointmentAssembler.toModel(dto);
-
-        return ResponseEntity.ok(entityModel);
-    }
-
-
-    @PatchMapping("/{id}/ready/customer")
-    public ResponseEntity<AppointmentDTO> customerConfirm(@PathVariable Long id) {
-        Appointment appointment = appointmentsService.findAppointmentById(id);
-        if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED) {
-            throw new IllegalStateException("Appointment is not in CONFIRMED status");
-        }
-
-        if(appointment.getCustomerReady()){
-            throw new IllegalArgumentException("Customer is already marked as ready");
-        }
-        
-        appointment.setCustomerReady(true);
-          boolean doctorConfirmed = appointment.getDoctorReady() != null && appointment.getDoctorReady();
-        if (doctorConfirmed) {
-            appointment.setAppointmentStatus(AppointmentStatus.IN_PROGRESS);
-        }
-
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
-        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
-    }
-
-    @PatchMapping("/{id}/ready/doctor")
-    public ResponseEntity<AppointmentDTO> doctorConfirm(@PathVariable Long id) {
-        Appointment appointment = appointmentsService.findAppointmentById(id);
-
-        if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED) {
-            throw new IllegalStateException("Appointment is not in CONFIRMED status");
-        }
-
-        if(appointment.getDoctorReady()){
-            throw new IllegalArgumentException("Doctor is already marked as ready");
-        }
-
-        appointment.setDoctorReady(true);
-        boolean customerConfirmed = appointment.getCustomerReady() != null && appointment.getCustomerReady();
-          if (customerConfirmed) {
-            appointment.setAppointmentStatus(AppointmentStatus.IN_PROGRESS);
-        }
-
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
-        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
     }
 }

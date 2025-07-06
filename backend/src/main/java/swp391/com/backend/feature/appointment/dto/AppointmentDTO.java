@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.hateoas.server.core.Relation;
 import swp391.com.backend.feature.appointment.data.AppointmentStatus;
+import swp391.com.backend.feature.schedule.data.Slot;
+
+import java.time.LocalDate;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -15,13 +18,14 @@ public class AppointmentDTO {
     String customerName;
     Long doctorId;
     String doctorName;
-    String date;
+    LocalDate date;
     AppointmentStatus appointmentStatus;
+    Slot slot;
     String timeRange;
     String customerNote;
     String doctorNote;
     String url;
-    String phoneNumber;
+    String customerPhoneNumber;
     Boolean doctorReady;
     Boolean customerReady;
 }
