@@ -126,8 +126,8 @@ const AboutUs: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative w-full px-6 py-24">
-                    <div className="max-w-4xl mx-auto text-center">
+                <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-24">
+                    <div className="text-center">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
                             <span className="text-pink-200">💝</span>
                             <span className="text-lg font-medium">About GenHealth</span>
@@ -164,7 +164,7 @@ const AboutUs: React.FC = () => {
 
             {/* Mission & Vision */}
             <section className="py-24 bg-white">
-                <div className="w-full">
+                <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div>
                             <div className="inline-flex items-center gap-2 bg-pink-100 text-pink-600 px-4 py-2 rounded-full mb-6">
@@ -272,7 +272,7 @@ const AboutUs: React.FC = () => {
                         </p>
                     </div>
                     
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 mx-auto max-w-6xl">
                         {values.map((value, index) => (
                             <div key={index} className="group">
                                 <div className="bg-white rounded-3xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 h-full">
@@ -291,7 +291,7 @@ const AboutUs: React.FC = () => {
 
             {/* Team */}
             <section className="py-24 bg-white">
-                <div className="w-full">
+                <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-green-100 text-green-600 px-4 py-2 rounded-full mb-6">
                             <span>👨‍⚕️</span>
@@ -308,7 +308,7 @@ const AboutUs: React.FC = () => {
                         </p>
                     </div>
                     
-                    <div className="grid lg:grid-cols-3 gap-8">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {team.map((member, index) => (
                             <div key={index} className="group">
                                 <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
@@ -319,7 +319,7 @@ const AboutUs: React.FC = () => {
                                                 alt={member.name}
                                                 className="w-24 h-24 rounded-full mx-auto border-4 border-pink-200 group-hover:border-pink-400 transition-colors"
                                             />
-                                            <div className="absolute -bottom-2 -right-8 w-8 h-8 bg-green-400 rounded-full border-4 border-white flex items-center justify-center">
+                                            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-400 rounded-full border-4 border-white flex items-center justify-center">
                                                 <span className="text-white text-xs">✓</span>
                                             </div>
                                         </div>
