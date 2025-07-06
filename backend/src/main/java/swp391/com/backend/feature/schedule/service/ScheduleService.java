@@ -24,12 +24,23 @@ public class ScheduleService {
         List<Slot> bookedSlots = appointmentRepository.findAppointmentsByDoctorIdAndDate(doctorId, date).stream()
                 .map(Appointment::getSlot)
                 .toList();
-        System.out.println("Booked slots: " + bookedSlots);
 
         List<Slot> scheduledSlots = scheduleRepository.findSchedulesByDoctorIdAndDate(doctorId, date).stream()
                 .map(Schedule::getSlot)
                 .filter(slot -> !bookedSlots.contains(slot))
                 .toList();
         return scheduledSlots;
+    }
+
+    public List<Slot> findBusySlots(Long doctorId, LocalDate date) {
+        return appointmentRepository.findAppointmentsByDoctorIdAndDate(doctorId, date).stream()
+                .map(Appointment::getSlot)
+                .toList();
+    }
+
+    public List<Slot> findScheduledSlots(Long doctorId, LocalDate date) {
+        return scheduleRepository.findSchedulesByDoctorIdAndDate(doctorId, date).stream()
+                .map(Schedule::getSlot)
+                .toList();
     }
 }
