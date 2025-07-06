@@ -5,8 +5,6 @@ import { DoctorProfile } from '../../api/services/doctorService';
 import { useDoctorProfile } from '../../api/hooks/useDoctorProfile';
 import { SimpleNotification, useSimpleNotification } from '../../components/common/SimpleNotification';
 
-const USE_MOCK_API = false;
-
 interface ManageProfileProps {
     isFirstTime?: boolean;
 }
@@ -44,7 +42,7 @@ const calculateCompletion = (profile: Partial<DoctorProfile>): number => {
 const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) => {
     const navigate = useNavigate();
     const { notification, showNotification, hideNotification } = useSimpleNotification();
-    const { profile: loadedProfile, loading, updateProfile } = useDoctorProfile(USE_MOCK_API);
+    const { profile: loadedProfile, loading, updateProfile } = useDoctorProfile();
     
     const [profile, setProfile] = useState<Partial<DoctorProfile>>({
         name: '',
