@@ -10,6 +10,7 @@ import MenstrualCyclesAll from '../pages/Customer/Cycle/MenstrualCycleHistory';
 import Appointments from '../pages/Customer/Appointment/Appointments';
 import AppointmentDetail from '../pages/Customer/Appointment/AppointmentDetail';
 import AppointmentBooking from '../pages/Customer/Appointment/AppointmentBooking';
+import RescheduleHistory from '../pages/Customer/Appointment/RescheduleHistory';
 import Checkout from '../pages/Customer/Appointment/Checkout';
 import VNPayCheckout from '../pages/Customer/Appointment/VNPayCheckout';
 import PaymentReturn from '../pages/Customer/Appointment/PaymentReturn';
@@ -52,6 +53,7 @@ export const customerPaths: RouteConfig[] = [
         showInSidebar: true
     },
     {path: '/customer/appointments/:id', element: <ProfileGuard><AppointmentDetail/></ProfileGuard>},
+    {path: '/customer/appointments/:appointmentId/reschedule-history', element: <ProfileGuard><RescheduleHistory/></ProfileGuard>},
     {path: '/customer/appointments/book', element: <ProfileGuard><AppointmentBooking/></ProfileGuard>},
     {path: '/customer/checkout/:appointmentId', element: <ProfileGuard><Checkout/></ProfileGuard>},
     {path: '/customer/vnpay-checkout/:appointmentId', element: <ProfileGuard><VNPayCheckout/></ProfileGuard>},

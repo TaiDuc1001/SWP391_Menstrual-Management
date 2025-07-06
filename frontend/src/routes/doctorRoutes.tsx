@@ -7,6 +7,7 @@ import MyProfile from '../pages/Doctor/MyProfile';
 import ManageProfile from '../pages/Doctor/ManageProfile';
 import SetupProfile from '../pages/Doctor/SetupProfile';
 import Appointments from '../pages/Doctor/Appointment/Appointments';
+import DoctorRescheduleRequests from '../pages/Doctor/Reschedule/RescheduleRequests';
 import DoctorProfileGuard from '../components/DoctorProfileGuard';
 
 export const doctorPaths: RouteConfig[] = [
@@ -36,6 +37,13 @@ export const doctorPaths: RouteConfig[] = [
         element: <DoctorProfileGuard><Appointments/></DoctorProfileGuard>,
         label: 'Appointments',
         iconName: 'FaUserMd',
+        showInSidebar: true
+    },
+    {
+        path: '/doctor/reschedule',
+        element: <DoctorProfileGuard><DoctorRescheduleRequests/></DoctorProfileGuard>,
+        label: 'Reschedule Requests',
+        iconName: 'FaCalendarAlt',
         showInSidebar: true
     },
     {
