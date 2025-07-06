@@ -12,18 +12,7 @@ import java.util.List;
 @Repository
 public interface ExaminationRepository extends JpaRepository<Examination, Long> {
     Examination findExaminationById(Long id);
-    
-    @Query("SELECT e FROM Examination e " +
-           "LEFT JOIN FETCH e.staff " +
-           "LEFT JOIN FETCH e.customer " +
-           "LEFT JOIN FETCH e.panel " +
-           "WHERE e.id = :id")
-    Examination findExaminationByIdWithRelations(@Param("id") Long id);
-    @Query("SELECT e FROM Examination e " +
-           "LEFT JOIN FETCH e.staff " +
-           "LEFT JOIN FETCH e.customer " +
-           "LEFT JOIN FETCH e.panel")
-    List<Examination> findAllWithRelations();
+
     @Query("SELECT COUNT(e) > 0 FROM Examination e WHERE e.date = :date AND e.slot = :slot AND e.examinationStatus NOT IN (swp391.com.backend.feature.examination.data.ExaminationStatus.CANCELLED, swp391.com.backend.feature.examination.data.ExaminationStatus.COMPLETED)")
     boolean existsByDateAndSlotAndNotCancelledOrCompleted(@Param("date") LocalDate date, @Param("slot") Slot slot);
 
@@ -31,4 +20,6 @@ public interface ExaminationRepository extends JpaRepository<Examination, Long> 
     List<Slot> findBookedSlotsByDate(@Param("date") LocalDate date);
 
     List<Examination> findExaminationsByStaffId(Long id);
+
+    List<Examination> findExaminationsByCustomerId(Long customerId);
 }

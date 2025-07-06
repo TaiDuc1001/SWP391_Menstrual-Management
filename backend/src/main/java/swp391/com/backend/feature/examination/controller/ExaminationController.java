@@ -44,6 +44,18 @@ public class ExaminationController {
         return ResponseEntity.ok(examinationService.toModel(result));
     }
 
+    @GetMapping("/staff/{staffId}")
+    public ResponseEntity<CollectionModel<EntityModel<ExaminationDTO>>> getExaminationsForStaff(@PathVariable Long staffId) {
+        List<Examination> result = examinationService.getExaminationsByStaffId(staffId);
+        return ResponseEntity.ok(examinationService.toCollectionModel(result));
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<CollectionModel<EntityModel<ExaminationDTO>>> getExaminationsForCustomer(@PathVariable Long customerId) {
+        List<Examination> result = examinationService.getExaminationsByCustomerId(customerId);
+        return ResponseEntity.ok(examinationService.toCollectionModel(result));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<ExaminationDTO>> updateExamination(@PathVariable Long id, @RequestBody ExaminationDTO examinationDTO) {
         Examination updatedExamination = examinationService.updateExamination(id, examinationDTO);
@@ -71,12 +83,6 @@ public class ExaminationController {
     public ResponseEntity<EntityModel<ExaminationDTO>> scanExaminationPayment(@PathVariable Long id, @RequestBody ExaminationDTO dto) {
             Examination updatedExamination = examinationService.updateExaminationStatusWithStaff(id, dto);
             return ResponseEntity.ok(examinationService.toModel(updatedExamination));
-    }
-
-    @GetMapping("/staff/{staffId}")
-    public ResponseEntity<CollectionModel<EntityModel<ExaminationDTO>>> getExaminationsForStaff(@PathVariable Long staffId) {
-        List<Examination> result = examinationService.getExaminationsByStaffId(staffId);
-        return ResponseEntity.ok(examinationService.toCollectionModel(result));
     }
 
     @GetMapping("/payment/callback/{id}")
@@ -122,7 +128,7 @@ public class ExaminationController {
 
         return ResponseEntity.ok(paymentInfo);
     }
-}
+
 //    @GetMapping("/{id}")
 //    public ResponseEntity<ExaminedExaminationDTO> getExaminationById(@PathVariable Long id) {
 //        Examination examination = examinationService.findExaminationById(id);
@@ -133,4 +139,6 @@ public class ExaminationController {
 //        dto.setTestResults(testResultList);
 //        return ResponseEntity.ok(dto);
 //    }
+
+}
 

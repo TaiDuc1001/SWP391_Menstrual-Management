@@ -21,17 +21,12 @@ import swp391.com.backend.feature.panel.service.PanelService;
 import swp391.com.backend.feature.result.data.Result;
 import swp391.com.backend.feature.result.service.ResultService;
 import swp391.com.backend.feature.resultDetail.data.ResultDetail;
-import swp391.com.backend.feature.schedule.data.Slot;
 import swp391.com.backend.feature.schedule.service.ScheduleService;
 import swp391.com.backend.feature.staff.data.Staff;
 import swp391.com.backend.feature.staff.service.StaffService;
 import swp391.com.backend.feature.testType.data.TestType;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -170,25 +165,6 @@ public class ExaminationService {
         }
     }
 
-    public List<String> getAvailableSlots(String dateString) {
-        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
-        
-        List<Slot> allSlots = Arrays.asList(Slot.values());
-        List<String> allSlotTimeRanges = allSlots.stream()
-                .filter(slot -> !slot.getTimeRange().equals("Filler slot, not used"))
-                .map(Slot::getTimeRange)
-                .collect(Collectors.toList());
-
-        List<Slot> bookedSlots = examinationRepository.findBookedSlotsByDate(date);
-        List<String> bookedSlotTimeRanges = bookedSlots.stream()
-                .map(Slot::getTimeRange)
-                .collect(Collectors.toList());
-        
-        return allSlotTimeRanges.stream()
-                .filter(slot -> !bookedSlotTimeRanges.contains(slot))
-                .collect(Collectors.toList());
-    }
-
     public EntityModel<ExaminationDTO> toModel(Examination examination) {
         ExaminationDTO dto = examinationMapper.toDTO(examination);
         return examinationAssembler.toModel(dto);
@@ -198,4 +174,27 @@ public class ExaminationService {
         List<ExaminationDTO> models = examinationMapper.toDTOs(examinations);
         return examinationAssembler.toCollectionModel(models);
     }
+
+    public List<Examination> getExaminationsByCustomerId(Long customerId) {
+        return examinationRepository.findExaminationsByCustomerId(customerId);
+    }
+
+//    public List<String> getAvailableSlots(String dateString) {
+//        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
+//
+//        List<Slot> allSlots = Arrays.asList(Slot.values());
+//        List<String> allSlotTimeRanges = allSlots.stream()
+//                .filter(slot -> !slot.getTimeRange().equals("Filler slot, not used"))
+//                .map(Slot::getTimeRange)
+//                .collect(Collectors.toList());
+//
+//        List<Slot> bookedSlots = examinationRepository.findBookedSlotsByDate(date);
+//        List<String> bookedSlotTimeRanges = bookedSlots.stream()
+//                .map(Slot::getTimeRange)
+//                .collect(Collectors.toList());
+//
+//        return allSlotTimeRanges.stream()
+//                .filter(slot -> !bookedSlotTimeRanges.contains(slot))
+//                .collect(Collectors.toList());
+//    }
 }
