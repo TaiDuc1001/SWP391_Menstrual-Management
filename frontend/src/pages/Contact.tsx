@@ -55,246 +55,356 @@ const Contact: React.FC = () => {
     const handleNext = () => setCurrent((prev) => (prev >= newsData.length - 2 ? 0 : prev + 1));
 
     return (
-        <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen pt-0 pb-16">
-            <div
-                className="w-full bg-gradient-to-r from-blue-400 to-purple-300 py-20 mb-0 shadow-lg relative flex items-center justify-center">
-                <h1 className="flex items-center gap-4 text-6xl font-extrabold text-white text-center tracking-wider drop-shadow-[0_4px_24px_rgba(236,72,153,0.8)] hover:scale-105 transition-transform duration-300 animate-fadeIn">
-					<span className="inline-block text-pink-400 animate-bounce">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                             className="w-12 h-12">
-							<path
-                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-						</svg>
-					</span>
-                    Contact
-                </h1>
-            </div>
-            <div
-                className="max-w-5xl mx-auto rounded-3xl overflow-hidden mb-16 shadow-2xl -mt-16 relative z-10 border-8 border-white bg-gradient-to-br from-blue-200 via-purple-100 to-pink-100 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 animate-fadeIn">
-                <div className="aspect-[21/9] relative">
-                    <img
-                        src="https://hih.vn/wp-content/uploads/2021/04/z2414595269448_51e8e0db0c1fdd9fe9f4f4fed808498f.jpg"
-                        alt="Contact Banner"
-                        className="w-full h-full object-cover absolute inset-0 rounded-2xl scale-110 blur-[2px] brightness-75 contrast-125"
-                    />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <h2
-                            className="text-4xl md:text-5xl font-extrabold text-white mb-2 animate-fadeIn text-center"
-                            style={{
-                                background: 'rgba(0,0,0,0.35)',
-                                borderRadius: '12px',
-                                padding: '0.25em 1em',
-                                letterSpacing: '1px',
-                            }}
-                        >
-                            Contact Us
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+            {/* Hero Section */}
+            <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
+                <div className="absolute inset-0 bg-black/10"></div>
+                <div className="relative w-full px-6 py-24">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
+                            <span className="text-pink-200">💝</span>
+                            <span className="text-lg font-medium">Get In Touch</span>
+                        </div>
+                        
+                        <h1 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">
+                            We're Here
+                            <span className="block bg-gradient-to-r from-pink-200 to-white bg-clip-text text-transparent">
+                                To Help You
+                            </span>
+                        </h1>
+                        
+                        <p className="text-xl lg:text-2xl mb-12 text-white/90 leading-relaxed max-w-3xl mx-auto">
+                            Have questions about your health? Need support or guidance? 
+                            Our dedicated team is always ready to listen and help you on your wellness journey.
+                        </p>
+                        
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">📞</div>
+                                <div className="text-lg font-bold mb-1">24/7 Support</div>
+                                <div className="text-white/80 text-sm">Always Available</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">💬</div>
+                                <div className="text-lg font-bold mb-1">Live Chat</div>
+                                <div className="text-white/80 text-sm">Instant Response</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">📧</div>
+                                <div className="text-lg font-bold mb-1">Email Support</div>
+                                <div className="text-white/80 text-sm">Quick Reply</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">🏥</div>
+                                <div className="text-lg font-bold mb-1">Office Visits</div>
+                                <div className="text-white/80 text-sm">In-Person Care</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Floating elements */}
+                <div className="absolute top-20 left-10 w-20 h-20 bg-pink-300 rounded-full opacity-30 animate-pulse"></div>
+                <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-30 animate-pulse delay-1000"></div>
+            </section>
+            {/* Contact Form & Info Section */}
+            <section className="py-24 bg-white">
+                <div className="w-full px-6">
+                    <div className="grid lg:grid-cols-2 gap-16 items-start">
+                        {/* Contact Form */}
+                        <div>
+                            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-4 py-2 rounded-full mb-8">
+                                <span>✉️</span>
+                                <span className="font-medium">Send Message</span>
+                            </div>
+                            
+                            <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                                Get in Touch with Our Team
+                            </h2>
+                            
+                            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                                Have questions about our services? Need medical advice? 
+                                Fill out the form below and we'll get back to you as soon as possible.
+                            </p>
+                            
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="relative">
+                                        <label className="block text-gray-700 font-semibold mb-2">Full Name</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                                                <img src={avatarIcon} alt="name" className="w-5 h-5 opacity-60"/>
+                                            </span>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                value={form.name}
+                                                onChange={handleChange}
+                                                placeholder="Enter your full name"
+                                                className="w-full border-2 border-gray-200 rounded-3xl px-12 py-4 focus:ring-4 focus:ring-pink-100 focus:border-pink-500 bg-gray-50 text-gray-700 font-medium shadow-sm transition-all duration-300"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="relative">
+                                        <label className="block text-gray-700 font-semibold mb-2">Email Address</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                                                <img src={emailIcon} alt="email" className="w-5 h-5 opacity-60"/>
+                                            </span>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={form.email}
+                                                onChange={handleChange}
+                                                placeholder="Enter your email"
+                                                className="w-full border-2 border-gray-200 rounded-3xl px-12 py-4 focus:ring-4 focus:ring-pink-100 focus:border-pink-500 bg-gray-50 text-gray-700 font-medium shadow-sm transition-all duration-300"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="relative">
+                                    <label className="block text-gray-700 font-semibold mb-2">Subject</label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                                            <img src={locationIcon} alt="subject" className="w-5 h-5 opacity-60"/>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            name="subject"
+                                            value={form.subject}
+                                            onChange={handleChange}
+                                            placeholder="What's this about?"
+                                            className="w-full border-2 border-gray-200 rounded-3xl px-12 py-4 focus:ring-4 focus:ring-pink-100 focus:border-pink-500 bg-gray-50 text-gray-700 font-medium shadow-sm transition-all duration-300"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="relative">
+                                    <label className="block text-gray-700 font-semibold mb-2">Message</label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-6">
+                                            <img src={clockIcon} alt="message" className="w-5 h-5 opacity-60"/>
+                                        </span>
+                                        <textarea
+                                            name="message"
+                                            value={form.message}
+                                            onChange={handleChange}
+                                            placeholder="Tell us how we can help you..."
+                                            rows={6}
+                                            className="w-full border-2 border-gray-200 rounded-3xl px-12 py-4 focus:ring-4 focus:ring-pink-100 focus:border-pink-500 bg-gray-50 text-gray-700 font-medium shadow-sm resize-none transition-all duration-300"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <button
+                                    type="submit"
+                                    className="group w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white py-4 rounded-3xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                                >
+                                    Send Message
+                                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        {/* Contact Information */}
+                        <div>
+                            <div className="inline-flex items-center gap-2 bg-green-100 text-green-600 px-4 py-2 rounded-full mb-8">
+                                <span>📍</span>
+                                <span className="font-medium">Contact Info</span>
+                            </div>
+                            
+                            <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                                Let's Start a Conversation
+                            </h2>
+                            
+                            <p className="text-xl text-gray-600 mb-12 leading-relaxed">
+                                We're here to support you every step of the way. 
+                                Choose the most convenient way to reach out to us.
+                            </p>
+                            
+                            <div className="space-y-6">
+                                <div className="group bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-pink-100">
+                                    <div className="flex items-center gap-6">
+                                        <div className="bg-pink-500 p-4 rounded-3xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                            <img src={phoneIcon} alt="Emergency" className="w-8 h-8 brightness-0 invert"/>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-pink-600 mb-2">Emergency Hotline</h3>
+                                            <p className="text-gray-700 font-semibold text-lg">1800-123-456 / 1800-654-321</p>
+                                            <p className="text-gray-500 text-sm mt-1">Available 24/7 for urgent medical concerns</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="group bg-gradient-to-r from-blue-50 to-cyan-50 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-blue-100">
+                                    <div className="flex items-center gap-6">
+                                        <div className="bg-blue-500 p-4 rounded-3xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                            <img src={locationIcon} alt="Address" className="w-8 h-8 brightness-0 invert"/>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-blue-600 mb-2">Visit Our Clinic</h3>
+                                            <p className="text-gray-700 font-semibold text-lg">123 Main St, Vietnam</p>
+                                            <p className="text-gray-500 text-sm mt-1">Modern facilities with expert medical staff</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="group bg-gradient-to-r from-purple-50 to-violet-50 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-purple-100">
+                                    <div className="flex items-center gap-6">
+                                        <div className="bg-purple-500 p-4 rounded-3xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                            <img src={emailIcon} alt="Email" className="w-8 h-8 brightness-0 invert"/>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-purple-600 mb-2">Email Support</h3>
+                                            <p className="text-gray-700 font-semibold text-lg">contact@genhealth.com</p>
+                                            <p className="text-gray-500 text-sm mt-1">We'll respond within 24 hours</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="group bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-green-100">
+                                    <div className="flex items-center gap-6">
+                                        <div className="bg-green-500 p-4 rounded-3xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                            <img src={clockIcon} alt="Working Hour" className="w-8 h-8 brightness-0 invert"/>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-green-600 mb-2">Office Hours</h3>
+                                            <div className="text-gray-700 font-semibold text-lg">
+                                                <p>Mon - Fri: 7:00 AM - 8:00 PM</p>
+                                                <p>Sat - Sun: 8:00 AM - 6:00 PM</p>
+                                            </div>
+                                            <p className="text-gray-500 text-sm mt-1">Extended hours for your convenience</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            {/* Health News Section */}
+            <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+                    <div className="w-full px-6">
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full mb-6">
+                            <span>📰</span>
+                            <span className="font-medium">Latest Updates</span>
+                        </div>
+                        
+                        <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                            Health News & Insights
                         </h2>
-                        <p
-                            className="text-lg md:text-2xl text-white/95 font-semibold animate-fadeIn text-center"
-                            style={{
-                                background: 'rgba(0,0,0,0.25)',
-                                borderRadius: '8px',
-                                padding: '0.15em 0.8em',
-                                marginTop: '0.5em',
-                            }}
-                        >
-                            We are always ready to listen to you!
+                        
+                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                            Stay informed with the latest health news, medical breakthroughs, 
+                            and wellness tips from our expert team.
                         </p>
                     </div>
-                </div>
-            </div>
-            <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-12 mb-20 px-4 animate-fadeIn">
-                <form
-                    onSubmit={handleSubmit}
-                    className="flex-1 bg-white/95 rounded-3xl shadow-2xl p-12 border-2 border-pink-200 backdrop-blur-md hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 relative"
-                >
-                    <h3 className="text-3xl font-extrabold mb-8 text-pink-500 text-center tracking-wide">
-                        Send us a message
-                    </h3>
-                    <div className="mb-10 flex flex-col gap-5">
-                        <div className="relative">
-							<span className="absolute left-4 top-1/2 -translate-y-1/2">
-								<img src={avatarIcon} alt="name" className="w-6 h-6 opacity-60"/>
-							</span>
-                            <input
-                                type="text"
-                                name="name"
-                                value={form.name}
-                                onChange={handleChange}
-                                placeholder="Full Name"
-                                className="w-full border border-gray-200 rounded-xl px-12 py-3 focus:ring-2 focus:ring-pink-200 bg-blue-50 text-gray-700 text-lg shadow-sm placeholder-gray-400"
-                                required
-                            />
-                        </div>
-                        <div className="relative">
-							<span className="absolute left-4 top-1/2 -translate-y-1/2">
-								<img src={emailIcon} alt="email" className="w-6 h-6 opacity-60"/>
-							</span>
-                            <input
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                placeholder="Your Email"
-                                className="w-full border border-gray-200 rounded-xl px-12 py-3 focus:ring-2 focus:ring-pink-200 bg-blue-50 text-gray-700 text-lg shadow-sm placeholder-gray-400"
-                                required
-                            />
-                        </div>
-                        <div className="relative">
-							<span className="absolute left-4 top-1/2 -translate-y-1/2">
-								<img src={locationIcon} alt="subject" className="w-6 h-6 opacity-60"/>
-							</span>
-                            <input
-                                type="text"
-                                name="subject"
-                                value={form.subject}
-                                onChange={handleChange}
-                                placeholder="Subject"
-                                className="w-full border border-gray-200 rounded-xl px-12 py-3 focus:ring-2 focus:ring-pink-200 bg-blue-50 text-gray-700 text-lg shadow-sm placeholder-gray-400"
-                                required
-                            />
-                        </div>
-                        <div className="relative">
-							<span className="absolute left-4 top-6">
-								<img src={clockIcon} alt="message" className="w-6 h-6 opacity-60"/>
-							</span>
-                            <textarea
-                                name="message"
-                                value={form.message}
-                                onChange={handleChange}
-                                placeholder="Message content..."
-                                className="w-full border border-gray-200 rounded-xl px-12 py-3 h-32 focus:ring-2 focus:ring-pink-200 bg-blue-50 text-gray-700 text-lg shadow-sm resize-none placeholder-gray-400"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white py-3 rounded-xl font-bold text-xl shadow hover:from-pink-500 hover:to-purple-500 hover:scale-105 transition-all duration-200"
-                    >
-                        Send Message
-                    </button>
-                </form>
-                <div className="flex-1 flex flex-col gap-8 justify-center">
-                    <div
-                        className="bg-white/95 rounded-2xl shadow-xl p-8 flex items-center gap-6 border-2 border-blue-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50/95">
-						<span className="bg-pink-100 p-5 rounded-full shadow">
-							<img src={phoneIcon} alt="Emergency" className="w-8 h-8"/>
-						</span>
-                        <div>
-                            <div className="font-bold text-pink-500 text-xl">Emergency</div>
-                            <div className="text-gray-700 text-lg">1800-123-456 / 1800-654-321</div>
-                        </div>
-                    </div>
-                    <div
-                        className="bg-white/95 rounded-2xl shadow-xl p-8 flex items-center gap-6 border-2 border-blue-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50/95">
-						<span className="bg-blue-100 p-5 rounded-full shadow">
-							<img src={locationIcon} alt="Address" className="w-8 h-8"/>
-						</span>
-                        <div>
-                            <div className="font-bold text-blue-500 text-xl">Address</div>
-                            <div className="text-gray-700 text-lg">123 Main St, Vietnam</div>
-                        </div>
-                    </div>
-                    <div
-                        className="bg-white/95 rounded-2xl shadow-xl p-8 flex items-center gap-6 border-2 border-blue-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50/95">
-						<span className="bg-purple-100 p-5 rounded-full shadow">
-							<img src={emailIcon} alt="Email" className="w-8 h-8"/>
-						</span>
-                        <div>
-                            <div className="font-bold text-purple-500 text-xl">Email</div>
-                            <div className="text-gray-700 text-lg">contact@hospital.com</div>
-                        </div>
-                    </div>
-                    <div
-                        className="bg-white/95 rounded-2xl shadow-xl p-8 flex items-center gap-6 border-2 border-blue-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50/95">
-						<span className="bg-pink-100 p-5 rounded-full shadow">
-							<img src={clockIcon} alt="Working Hour" className="w-8 h-8"/>
-						</span>
-                        <div>
-                            <div className="font-bold text-pink-500 text-xl">Working Hours</div>
-                            <div className="text-gray-700 text-lg">
-                                Mon - Fri: 7:00 - 20:00
-                                <br/>
-                                Sat - Sun: 8:00 - 18:00
+                    
+                    <div className="relative max-w-5xl mx-auto">
+                        <div className="overflow-hidden">
+                            <div className="flex transition-transform duration-500 ease-in-out" 
+                                 style={{ transform: `translateX(-${current * 50}%)` }}>
+                                {newsData.map((item, index) => (
+                                    <div key={index} className="w-1/2 flex-shrink-0 px-4">
+                                        <article className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 h-full">
+                                            <div className="flex flex-col items-center text-center h-full">
+                                                <div className="relative mb-6">
+                                                    <img
+                                                        src={item.image}
+                                                        alt="health news"
+                                                        className="w-40 h-40 object-cover rounded-3xl shadow-lg"
+                                                    />
+                                                    <div className="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                                                        {index + 1}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="mb-4">
+                                                    <div className="text-sm text-gray-500 mb-2">
+                                                        {item.date} | {item.author}
+                                                    </div>
+                                                    <div className="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-xs font-medium inline-block mb-3">
+                                                        Health Article
+                                                    </div>
+                                                </div>
+                                                
+                                                <h3 className="text-xl font-bold text-gray-800 mb-4 leading-tight line-clamp-3">
+                                                    {item.title}
+                                                </h3>
+                                                
+                                                <div className="flex items-center gap-6 text-gray-500 mt-auto pt-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-pink-500">❤️</span>
+                                                        <span className="font-medium">{item.likes}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-blue-500">💬</span>
+                                                        <span className="font-medium">{item.comments}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div className="max-w-6xl mx-auto mt-16 animate-fadeIn">
-                <h3 className="text-center text-2xl font-semibold mb-2 text-gray-700 tracking-wide hover:scale-105 transition-transform duration-300">
-                    Better information, Better health
-                </h3>
-                <h2 className="text-center text-4xl font-extrabold mb-10 text-pink-500 hover:scale-105 transition-transform duration-300">
-                    News
-                </h2>
-                <div className="relative flex items-center justify-center">
-                    <button
-                        onClick={handlePrev}
-                        className="absolute left-0 z-10 bg-white rounded-full shadow-lg p-4 hover:bg-pink-100 transition flex items-center justify-center"
-                    >
-                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-                            <path
-                                d="M15 19l-7-7 7-7"
-                                stroke="#ec4899"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </button>
-                    <div className="flex gap-8 w-full justify-center items-stretch">
-                        {newsData.slice(current, current + 2).map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="bg-white/95 rounded-2xl shadow-2xl p-10 w-full max-w-md flex flex-col items-center border border-pink-100 hover:shadow-2xl transition-all duration-300 min-h-[420px]"
-                            >
-                                <img
-                                    src={item.image}
-                                    alt="news"
-                                    className="w-32 h-32 object-cover rounded-xl mb-6 shadow"
-                                />
-                                <div className="text-base text-gray-400 mb-2">
-                                    {item.date} | {item.author}
-                                </div>
-                                <div className="font-bold text-2xl text-center mb-4 text-gray-800 break-words">
-                                    {item.title}
-                                </div>
-                                <div className="flex gap-8 text-gray-500 text-lg mt-auto">
-                                    <span>❤️ {item.likes}</span>
-                                    <span>💬 {item.comments}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <button
-                        onClick={handleNext}
-                        className="absolute right-0 z-10 bg-white rounded-full shadow-lg p-4 hover:bg-pink-100 transition flex items-center justify-center"
-                    >
-                        <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-                            <path
-                                d="M9 5l7 7-7 7"
-                                stroke="#ec4899"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <div className="flex justify-center mt-8 gap-4">
-                    {Array.from({length: newsData.length - 1}).map((_, idx) => (
+                        
+                        {/* Navigation Buttons */}
                         <button
-                            key={idx}
-                            onClick={() => setCurrent(idx)}
-                            className={`w-5 h-5 rounded-full border-2 border-pink-300 transition-all duration-200 ${
-                                current === idx ? 'bg-pink-400' : 'bg-white'
-                            }`}
-                        />
-                    ))}
+                            onClick={handlePrev}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full shadow-xl p-4 hover:bg-pink-50 transition-all duration-300 transform hover:scale-110 z-10"
+                        >
+                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path
+                                    d="M15 19l-7-7 7-7"
+                                    stroke="#ec4899"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
+                        
+                        <button
+                            onClick={handleNext}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full shadow-xl p-4 hover:bg-pink-50 transition-all duration-300 transform hover:scale-110 z-10"
+                        >
+                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path
+                                    d="M9 5l7 7-7 7"
+                                    stroke="#ec4899"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
+                        
+                        {/* Pagination Dots */}
+                        <div className="flex justify-center mt-8 gap-2">
+                            {Array.from({length: newsData.length - 1}).map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrent(idx)}
+                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                                        current === idx 
+                                            ? 'bg-pink-500 w-8' 
+                                            : 'bg-gray-300 hover:bg-pink-300'
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
     );
 };

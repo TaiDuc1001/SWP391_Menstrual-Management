@@ -126,7 +126,7 @@ const AboutUs: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative w-full px-6 py-24">
+                <div className="relative container mx-auto px-6 py-24">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
                             <span className="text-pink-200">💝</span>
@@ -164,7 +164,7 @@ const AboutUs: React.FC = () => {
 
             {/* Mission & Vision */}
             <section className="py-24 bg-white">
-                <div className="w-full">
+                <div className="container mx-auto px-6">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div>
                             <div className="inline-flex items-center gap-2 bg-pink-100 text-pink-600 px-4 py-2 rounded-full mb-6">
@@ -219,25 +219,25 @@ const AboutUs: React.FC = () => {
                         <div className="relative">
                             <div className="bg-gradient-to-br from-pink-100 to-purple-100 rounded-3xl p-8">
                                 <div className="grid grid-cols-2 gap-6">
-                                    <div className="bg-white rounded-3xl p-6 text-center shadow-lg">
+                                    <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
                                         <div className="text-3xl mb-3">🌍</div>
                                         <h4 className="font-bold text-gray-800 mb-2">Global Reach</h4>
                                         <p className="text-gray-600 text-sm">Serving women worldwide with localized care</p>
                                     </div>
                                     
-                                    <div className="bg-white rounded-3xl p-6 text-center shadow-lg">
+                                    <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
                                         <div className="text-3xl mb-3">🔬</div>
                                         <h4 className="font-bold text-gray-800 mb-2">Research-Driven</h4>
                                         <p className="text-gray-600 text-sm">Evidence-based solutions and treatments</p>
                                     </div>
                                     
-                                    <div className="bg-white rounded-3xl p-6 text-center shadow-lg">
+                                    <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
                                         <div className="text-3xl mb-3">📱</div>
                                         <h4 className="font-bold text-gray-800 mb-2">Digital First</h4>
                                         <p className="text-gray-600 text-sm">Cutting-edge technology for better care</p>
                                     </div>
                                     
-                                    <div className="bg-white rounded-3xl p-6 text-center shadow-lg">
+                                    <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
                                         <div className="text-3xl mb-3">❤️</div>
                                         <h4 className="font-bold text-gray-800 mb-2">Patient-Centered</h4>
                                         <p className="text-gray-600 text-sm">Your health and comfort come first</p>
@@ -255,7 +255,7 @@ const AboutUs: React.FC = () => {
 
             {/* Values */}
             <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
-                <div className="w-full">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-600 px-4 py-2 rounded-full mb-6">
                             <span>💎</span>
@@ -276,7 +276,7 @@ const AboutUs: React.FC = () => {
                         {values.map((value, index) => (
                             <div key={index} className="group">
                                 <div className="bg-white rounded-3xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 h-full">
-                                    <div className={`w-16 h-16 rounded-3xl bg-gradient-to-r ${value.color} flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${value.color} flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}>
                                         <span className="text-2xl">{value.icon}</span>
                                     </div>
                                     
@@ -291,7 +291,7 @@ const AboutUs: React.FC = () => {
 
             {/* Team */}
             <section className="py-24 bg-white">
-                <div className="w-full">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-green-100 text-green-600 px-4 py-2 rounded-full mb-6">
                             <span>👨‍⚕️</span>
@@ -351,7 +351,7 @@ const AboutUs: React.FC = () => {
 
             {/* Health Tips Carousel */}
             <section className="py-24 bg-gradient-to-br from-purple-50 to-pink-50">
-                <div className="w-full">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full mb-6">
                             <span>💡</span>
@@ -419,7 +419,7 @@ const AboutUs: React.FC = () => {
             {/* CTA Section */}
             <section className="py-24 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative w-full text-center">
+                <div className="relative container mx-auto px-6 text-center">
                     <h2 className="text-4xl lg:text-5xl font-bold mb-6">
                         Ready to Join Our Mission?
                     </h2>
