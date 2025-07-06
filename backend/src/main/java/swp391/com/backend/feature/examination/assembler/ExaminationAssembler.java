@@ -11,23 +11,22 @@ import swp391.com.backend.feature.examination.dto.ExaminationDTO;
 import swp391.com.backend.feature.panel.controller.PanelController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class ExaminationAssembler implements RepresentationModelAssembler<ExaminationDTO, EntityModel<ExaminationDTO>> {
 
     @Override
     public EntityModel<ExaminationDTO> toModel(ExaminationDTO entity) {
+        ExaminationDTO dummyDTO = new ExaminationDTO();
         EntityModel<ExaminationDTO> model = EntityModel.of(entity,
                 linkTo(ExaminationController.class).slash(entity.getId()).withSelfRel().withType("GET,PUT,DELETE"),
                 linkTo(CustomerController.class).slash(entity.getCustomerId()).withRel("customer").withType("GET,PUT,DELETE"),
                 linkTo(PanelController.class).slash(entity.getPanelId()).withRel("panel").withType("GET,PUT,DELETE"));
 
-        if (entity.getExaminationStatus() == ExaminationStatus.IN_PROGRESS) {
-            model.add(linkTo(ExaminationController.class).slash(entity.getId()).withRel("status").withType("PATCH").withTitle("Mark status as sampled"));
-        } else if (entity.getExaminationStatus() == ExaminationStatus.SAMPLED) {
-            model.add(linkTo(ExaminationController.class).slash(entity.getId()).withRel("examine").withType("PATCH"));
-        } else if (entity.getExaminationStatus() == ExaminationStatus.EXAMINED) {
-            model.add(linkTo(ExaminationController.class).slash(entity.getId()).withRel("complete").withType("PATCH"));
+        if(!(entity.getExaminationStatus() == ExaminationStatus.COMPLETED || entity.getExaminationStatus() == ExaminationStatus.CANCELLED)) {
+            model.add(linkTo(methodOn(ExaminationController.class).updateExaminationStatus(entity.getId(), dummyDTO)).withRel("status").withType("PATCH"));
+            model.add(linkTo(methodOn(ExaminationController.class).cancelExamination(entity.getId())).withRel("status").withType("DELETE"));
         }
         return model;
     }

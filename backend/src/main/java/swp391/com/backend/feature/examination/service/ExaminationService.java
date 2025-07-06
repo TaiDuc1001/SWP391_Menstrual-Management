@@ -46,7 +46,7 @@ public class ExaminationService {
     private final PanelService panelService;
 
     public List<Examination> getAllExaminations() {
-        return examinationRepository.findAllWithRelations();
+        return examinationRepository.findAll();
     }
 
     @Transactional
@@ -156,7 +156,7 @@ public class ExaminationService {
             }
         }
 
-        return examinationRepository.save(existingExamination);;
+        return examinationRepository.save(existingExamination);
     }
 
     private void validateExaminationConflict(Examination examination) {

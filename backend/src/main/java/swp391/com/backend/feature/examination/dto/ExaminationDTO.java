@@ -17,7 +17,7 @@ public class ExaminationDTO {
     Long staffId;
     String staffName;
     Long customerId;
-    Long customerName;
+    String customerName;
     PaymentMethod paymentMethod;
     Slot slot;
     String timeRange;

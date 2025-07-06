@@ -1,13 +1,11 @@
 package swp391.com.backend.feature.schedule.data;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Slot {
     ZERO("Filler slot, not used"),
     ONE("7:00 AM - 8:00 AM"),
