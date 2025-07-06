@@ -148,6 +148,15 @@
     background-color: #dc2626;
 }
 
+.appointment-detail-btn-orange {
+    background-color: #f97316;
+    color: white;
+}
+
+.appointment-detail-btn-orange:hover {
+    background-color: #ea580c;
+}
+
 .appointment-detail-btn-pink {
     background-color: #ec4899;
     color: white;

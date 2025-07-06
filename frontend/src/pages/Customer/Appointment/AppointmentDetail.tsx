@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
 import {Button, LoadingSpinner, StatusBadge} from '../../../components';
+import RescheduleModal from '../../../components/feature/Modal/RescheduleModal';
 import calendarIcon from '../../../assets/icons/calendar.svg';
 import clockIcon from '../../../assets/icons/clock.svg';
 import userIcon from '../../../assets/icons/profile.svg';
@@ -24,6 +25,7 @@ const AppointmentDetail: React.FC = () => {
     const [appointment, setAppointment] = useState<AppointmentDetailData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
 
     useEffect(() => {
         const fetchAppointmentDetail = async () => {
@@ -50,6 +52,27 @@ const AppointmentDetail: React.FC = () => {
         }
     };
 
+    const handleRescheduleSuccess = () => {
+        // Refresh appointment data
+        const fetchAppointmentDetail = async () => {
+            if (!id) return;
+
+            try {
+                setLoading(true);
+                const response = await api.get(`/appointments/${id}`);
+                setAppointment(response.data);
+            } catch (err) {
+                console.error('Error fetching appointment details:', err);
+                setError('Failed to load appointment details');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAppointmentDetail();
+        alert('Reschedule request submitted successfully! Your doctor will review and approve one of your options.');
+    };
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-GB', {
             weekday: 'long',
@@ -58,6 +81,28 @@ const AppointmentDetail: React.FC = () => {
             day: 'numeric'
         });
     };
+
+    const handleReschedule = async (newDateTime: string) => {
+        if (!id) return;
+
+        try {
+            setLoading(true);
+            await api.put(`/appointments/${id}`, {
+                date: newDateTime,
+                appointmentStatus: 'PENDING'
+            });
+            setShowRescheduleModal(false);
+            // Refetch appointment details
+            const response = await api.get(`/appointments/${id}`);
+            setAppointment(response.data);
+        } catch (err) {
+            console.error('Error rescheduling appointment:', err);
+            setError('Failed to reschedule appointment');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="page-container">
@@ -186,6 +231,17 @@ const AppointmentDetail: React.FC = () => {
                                         Join Consultation
                                     </button>
                                 )}
+                                
+                                {/* Nút Dời lịch */}
+                                {['BOOKED', 'CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
+                                    <button
+                                        onClick={() => setShowRescheduleModal(true)}
+                                        className="appointment-detail-action-btn appointment-detail-btn-orange"
+                                    >
+                                        🔄 Dời lịch
+                                    </button>
+                                )}
+                                
                                 {appointment.appointmentStatus === 'BOOKED' && (
                                     <button
                                         onClick={() => {
@@ -277,6 +333,15 @@ const AppointmentDetail: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {showRescheduleModal && appointment && (
+                <RescheduleModal
+                    isOpen={showRescheduleModal}
+                    onClose={() => setShowRescheduleModal(false)}
+                    appointmentId={appointment.id}
+                    doctorId={appointment.doctorId}
+                    onSuccess={handleRescheduleSuccess}
+                />
+            )}
         </div>
     );
 };
