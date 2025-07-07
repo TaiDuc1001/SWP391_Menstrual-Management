@@ -645,9 +645,13 @@ const MenstrualCycleDashboard: React.FC = () => {
                     />
                     <DaySymptomPopup
                         open={showSymptomPopup}
-                        onClose={() => setShowSymptomPopup(false)}
+                        onClose={() => {
+                            setShowSymptomPopup(false);
+                            setShowPredictionsAnalysisPopup(true);
+                        }}
                         onSave={(data) => {
                             setShowSymptomPopup(false);
+                            setShowPredictionsAnalysisPopup(true);
                             setShowSuccess(true);
                             setTimeout(() => setShowSuccess(false), 1200);
                         }}
