@@ -12,11 +12,14 @@ import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
 import api from '../../api/axios';
 import {Doughnut} from 'react-chartjs-2';
 import {ArcElement, Chart as ChartJS, Tooltip} from 'chart.js';
+import { usePublicBlogs } from '../../api/hooks';
+import { SimpleBlogDTO } from '../../api/services/blogService';
 
 ChartJS.register(ArcElement, Tooltip);
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const { blogs } = usePublicBlogs();
     const [userName, setUserName] = useState('');
     const [cycleStart, setCycleStart] = useState('');
     const [ovulationDate, setOvulationDate] = useState('');
@@ -30,6 +33,7 @@ const Dashboard: React.FC = () => {
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [prediction, setPrediction] = useState<any>(null);
+    const [recentBlogs, setRecentBlogs] = useState<SimpleBlogDTO[]>([]);
 
     useEffect(() => {
         let isMounted = true; // Flag to prevent setState after unmount
@@ -313,9 +317,34 @@ const Dashboard: React.FC = () => {
         }
     }, [cycles]);
 
+    useEffect(() => {
+        // Get 3 most recent blogs for health tips
+        if (blogs.length > 0) {
+            const sortedBlogs = [...blogs]
+                .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+                .slice(0, 3);
+            setRecentBlogs(sortedBlogs);
+        }
+    }, [blogs]);
+
+    // Format date helper
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    };
+
+    useEffect(() => {
+        // Log recent blogs with formatted dates
+        console.log('Recent blogs:', recentBlogs);
+    }, [recentBlogs]);
+
     const chartData = cycles.length > 0 && prediction ? {
         labels: ['Period', 'Fertile', 'Other'],
-        datasets: [
+        datasets:
+        [
             {
                 data: [prediction.avgPeriod, 6, prediction.avgCycle - prediction.avgPeriod - 6],
                 backgroundColor: ['#f472b6', '#34d399', '#fbbf24'],
@@ -422,17 +451,44 @@ const Dashboard: React.FC = () => {
                         <button className="text-pink-500 hover:underline text-sm mt-2">View cycle</button>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
+                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4">
                     <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                        Your menstrual reminder
+                        <div className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        Tips for Health
                     </div>
-                    <div className="flex items-center gap-2 text-pink-600 font-bold text-lg">
-                        <span>Only <span className="text-pink-500">{daysToOvulation} days</span> until your next <span
-                            className="underline">ovulation</span> ({ovulationDate})</span>
+                    <div className="flex flex-col gap-3">
+                        {recentBlogs.map((blog) => (
+                            <div key={blog.id} className="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded-lg transition-colors" onClick={() => navigate('/blogs')}>
+                                <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg flex-shrink-0 flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1.447.894L10 15.118l-4.553 1.776A1 1 0 014 16V4zm2 3a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 2a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-pink-700 text-sm leading-5 mb-1 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                                        {blog.title}
+                                    </h4>
+                                    <p className="text-pink-400 text-xs">
+                                        {formatDate(blog.publishDate)}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                        {recentBlogs.length === 0 && (
+                            <div className="text-pink-300 text-sm text-center py-4">
+                                Không có bài viết nào
+                            </div>
+                        )}
                     </div>
-                    <button
-                        className="bg-pink-100 hover:bg-pink-200 text-pink-600 font-semibold px-4 py-2 rounded-lg shadow transition w-max"
-                        onClick={() => setShowReminderPopup(true)}>Set reminder
+                    <button 
+                        className="text-pink-500 hover:underline text-sm mt-2 w-max"
+                        onClick={() => navigate('/blogs')}
+                    >
+                        View all Tips
                     </button>
                 </div>
             </div>
