@@ -139,3 +139,25 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
+
+.flow-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: left;
+}
+
+.flow-label {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.flow-level {
+    font-size: 16px;
+    font-weight: 600;
+}
