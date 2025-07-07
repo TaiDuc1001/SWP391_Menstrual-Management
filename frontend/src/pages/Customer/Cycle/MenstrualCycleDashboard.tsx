@@ -8,6 +8,7 @@ import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
 import DaySymptomPopup from '../../../components/feature/Popup/DaySymptomPopup';
 import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
 import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
+import PredictionsAnalysisPopup from '../../../components/feature/Popup/PredictionsAnalysisPopup';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
 import '../../../styles/pages/cycle-dashboard.css';
@@ -22,6 +23,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
     const [showSymptomPopup, setShowSymptomPopup] = useState(false);
+    const [showPredictionsAnalysisPopup, setShowPredictionsAnalysisPopup] = useState(false);
     const [showPredictPopup, setShowPredictPopup] = useState(false);
     const [showPredictedCalendar, setShowPredictedCalendar] = useState(false);
     const [selectedPredictMonth, setSelectedPredictMonth] = useState('');
@@ -317,7 +319,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         onClick={() => {
                                                             if (day) {
                                                                 setSelectedDay(day);
-                                                                setShowSymptomPopup(true);
+                                                                setShowPredictionsAnalysisPopup(true);
                                                             }
                                                         }}
                                                     >
@@ -630,6 +632,16 @@ const MenstrualCycleDashboard: React.FC = () => {
                             setShowPredictPopup(true);
                         }}
                         selectedMonth={selectedPredictMonth}
+                    />
+                    <PredictionsAnalysisPopup
+                        open={showPredictionsAnalysisPopup}
+                        onClose={() => setShowPredictionsAnalysisPopup(false)}
+                        selectedDate={selectedDay ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}` : undefined}
+                        cycles={cycles}
+                        onOpenSymptomPopup={() => {
+                            setShowPredictionsAnalysisPopup(false);
+                            setShowSymptomPopup(true);
+                        }}
                     />
                     <DaySymptomPopup
                         open={showSymptomPopup}

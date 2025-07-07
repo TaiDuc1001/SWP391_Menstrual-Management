@@ -1,0 +1,141 @@
+.predictions-analysis-popup .popup-content {
+    width: 300px;
+    padding: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8f4ff 0%, #efe4ff 100%);
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1000;
+}
+
+.predictions-analysis-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.predictions-analysis-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #8b5cf6;
+    margin: 0 0 16px 0;
+}
+
+.prediction-date {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+.prediction-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.prediction-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.prediction-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.period-icon {
+    background-color: #ef4444;
+}
+
+.cycle-icon {
+    background-color: #3b82f6;
+}
+
+.prediction-text {
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.prediction-label {
+    font-size: 12px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.prediction-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    align-self: flex-start;
+}
+
+.prediction-status.normal {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.prediction-date-value {
+    font-size: 12px;
+    color: #8b5cf6;
+    font-weight: 500;
+}
+
+.prediction-value {
+    font-size: 12px;
+    color: #8b5cf6;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.symptom-button {
+    width: 100%;
+    padding: 10px;
+    background: white;
+    color: #8b5cf6;
+    border: 2px solid #8b5cf6;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.symptom-button:hover {
+    background: #8b5cf6;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.close-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
