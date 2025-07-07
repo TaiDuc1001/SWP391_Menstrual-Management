@@ -251,13 +251,13 @@ const CustomerBlogs: React.FC = () => {
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-6">
                         <div>
                             <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                                {searchTerm ? `Search Results for "${searchTerm}"` : 
-                                 selectedCategory !== 'ALL' ? `${formatCategory(selectedCategory)} Tips` : 
-                                 'All Health Tips'}
+                                {searchTerm ? 'Search Results' : 'Latest Health Tips'}
                             </h2>
                             <p className="text-gray-600">
-                                {searchTerm ? `Found ${displayBlogs.length} articles` : 
-                                 'Browse our collection of expert health advice and wellness tips'}
+                                {searchTerm 
+                                    ? `Found ${displayBlogs.length} articles for "${searchTerm}"`
+                                    : 'Discover valuable insights and expert advice for your health journey'
+                                }
                             </p>
                         </div>
                         
@@ -268,16 +268,18 @@ const CustomerBlogs: React.FC = () => {
                                 className="w-full appearance-none bg-white border-2 border-gray-200 rounded-3xl px-6 py-4 pr-12 text-gray-700 font-semibold focus:outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-100 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
                             >
                                 <option value="ALL">All Categories</option>
-                                {Object.keys(categories).map(category => (
+                                {categories.map((category) => (
                                     <option key={category} value={category}>
                                         {formatCategory(category)}
                                     </option>
                                 ))}
                             </select>
                             <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
-                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
+                                <div className="bg-pink-500 rounded-2xl p-1">
+                                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
