@@ -5,6 +5,7 @@ import SpecialDayPopup from '../../../components/feature/Popup/SpecialDayPopup';
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
+import DaySymptomPopup from '../../../components/feature/Popup/DaySymptomPopup';
 import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
 import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
@@ -20,6 +21,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
+    const [showSymptomPopup, setShowSymptomPopup] = useState(false);
     const [showPredictPopup, setShowPredictPopup] = useState(false);
     const [showPredictedCalendar, setShowPredictedCalendar] = useState(false);
     const [selectedPredictMonth, setSelectedPredictMonth] = useState('');
@@ -109,6 +111,11 @@ const MenstrualCycleDashboard: React.FC = () => {
     const getSymptomsStorageKey = (): string => {
         const userId = getCurrentUserId();
         return `menstrual_symptoms_${userId}`;
+    };
+
+    const getDetailedSymptomsStorageKey = (): string => {
+        const userId = getCurrentUserId();
+        return `menstrual_symptoms_detailed_${userId}`;
     };
 
     const [symptoms, setSymptoms] = useState<{
@@ -270,8 +277,29 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     let hasNote = false;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                        
+                                        // Check old symptom data
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
+                                        
+                                        // Check new detailed symptom data
+                                        const detailedStorageKey = getDetailedSymptomsStorageKey();
+                                        const detailedSaved = localStorage.getItem(detailedStorageKey);
+                                        const detailedData = detailedSaved ? JSON.parse(detailedSaved) : {};
+                                        const dayDetailedData = detailedData[dayKey];
+                                        
+                                        if (dayDetailedData) {
+                                            hasSymptom = hasSymptom || 
+                                                dayDetailedData.periods ||
+                                                dayDetailedData.crampsLevel > 0 ||
+                                                dayDetailedData.sex ||
+                                                dayDetailedData.discharge ||
+                                                (dayDetailedData.symptoms && dayDetailedData.symptoms.length > 0) ||
+                                                (dayDetailedData.mood && dayDetailedData.mood.length > 0) ||
+                                                (dayDetailedData.habits && dayDetailedData.habits.length > 0) ||
+                                                dayDetailedData.flowLevel > 0;
+                                        }
+                                        
                                         hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
                                     }
                                     let style = "cycle-regular-day";
@@ -289,7 +317,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         onClick={() => {
                                                             if (day) {
                                                                 setSelectedDay(day);
-                                                                setShowDayNote(true);
+                                                                setShowSymptomPopup(true);
                                                             }
                                                         }}
                                                     >
@@ -615,6 +643,16 @@ const MenstrualCycleDashboard: React.FC = () => {
                             setShowPredictPopup(true);
                         }}
                         selectedMonth={selectedPredictMonth}
+                    />
+                    <DaySymptomPopup
+                        open={showSymptomPopup}
+                        onClose={() => setShowSymptomPopup(false)}
+                        onSave={(data) => {
+                            setShowSymptomPopup(false);
+                            setShowSuccess(true);
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
+                        selectedDate={selectedDay ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}` : undefined}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>
