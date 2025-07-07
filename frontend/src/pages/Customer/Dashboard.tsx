@@ -32,10 +32,14 @@ const Dashboard: React.FC = () => {
     const [prediction, setPrediction] = useState<any>(null);
 
     useEffect(() => {
+        let isMounted = true; // Flag to prevent setState after unmount
+        
         setUserName('Thiên An');
         // Fetch cycle data with error handling
         api.get('/cycles/closest')
             .then(res => {
+                if (!isMounted) return; // Prevent setState if component unmounted
+                console.log('Cycle data received:', res.data);
                 const cycle = res.data;
                 setCycleStart(cycle.cycleStartDate || '');
                 setCycleStatus(cycle.status || '');
@@ -44,6 +48,7 @@ const Dashboard: React.FC = () => {
                 setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
             })
             .catch(error => {
+                if (!isMounted) return;
                 console.error('Error fetching cycle data:', error);
                 // Set default values if API fails
                 setCycleStart('');
@@ -54,6 +59,7 @@ const Dashboard: React.FC = () => {
         // Fetch appointments with error handling
         api.get('/appointments')
             .then(res => {
+                console.log('Appointments raw data:', res.data);
                 // Filter upcoming appointments (not cancelled, not finished, in the future)
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -71,6 +77,8 @@ const Dashboard: React.FC = () => {
                     })
                     .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                     .slice(0, 3); // Take only first 3 upcoming appointments
+                
+                console.log('Filtered upcoming appointments:', upcomingAppointments);
                 
                 // Fetch doctor ratings for each appointment
                 Promise.all(
@@ -99,8 +107,10 @@ const Dashboard: React.FC = () => {
                         }
                     })
                 ).then(appointmentsWithRatings => {
+                    if (!isMounted) return;
                     setAppointments(appointmentsWithRatings);
                 }).catch(error => {
+                    if (!isMounted) return;
                     console.error('Error processing appointments with ratings:', error);
                     // Fallback: set appointments without ratings
                     setAppointments(upcomingAppointments.map((a: any) => ({
@@ -114,20 +124,22 @@ const Dashboard: React.FC = () => {
                 });
             })
             .catch(error => {
+                if (!isMounted) return;
                 console.error('Error fetching appointments:', error);
                 setAppointments([]);
             });
         // Fetch upcoming examinations with error handling
         api.get('/examinations')
             .then(res => {
+                console.log('Examinations raw data:', res.data);
                 // Filter upcoming examinations (not cancelled, in the future)
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
                 const upcomingExaminations = res.data
                     .filter((e: any) => {
-                        // Skip if cancelled or if date is in the past
-                        if (e.status === 'CANCELLED' || e.status === 'COMPLETED') {
+                        // Skip if cancelled or completed
+                        if (e.examinationStatus === 'CANCELLED' || e.examinationStatus === 'COMPLETED') {
                             return false;
                         }
                         
@@ -138,51 +150,97 @@ const Dashboard: React.FC = () => {
                     .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                     .slice(0, 3) // Take only first 3 upcoming
                     .map((e: any) => ({
+                        id: e.id,
                         name: e.panelName || e.name || 'Health Screening',
                         date: new Date(e.date).toLocaleDateString('en-GB'),
-                        time: e.time || 'TBD',
+                        time: e.timeRange || 'TBD',
                         place: e.place || e.location || 'Medical Center',
-                        status: e.status === 'APPROVED' ? 'Upcoming' : 
-                               e.status === 'PENDING' ? 'Pending' : 
-                               e.status || 'Scheduled'
+                        status: e.examinationStatus === 'IN_PROGRESS' ? 'In Progress' : 
+                               e.examinationStatus === 'SAMPLED' ? 'Sampled' :
+                               e.examinationStatus === 'EXAMINED' ? 'Examined' :
+                               e.examinationStatus === 'PENDING' ? 'Pending' : 
+                               e.examinationStatus || 'Scheduled'
                     }));
                 
+                if (!isMounted) return;
+                console.log('Upcoming examinations found:', upcomingExaminations);
                 setExaminations(upcomingExaminations);
             })
             .catch(error => {
+                if (!isMounted) return;
                 console.error('Error fetching examinations:', error);
                 setExaminations([]);
             });
 
         // Fetch latest screening results with error handling
         api.get('/examinations')
-            .then(res => {
-                // Filter completed examinations with results, sort by date desc
-                const completedScreenings = res.data
-                    .filter((e: any) => e.result && (e.status === 'COMPLETED' || e.status === 'FINISHED'))
+            .then(async (res) => {
+                console.log('Examinations for screening results:', res.data);
+                // Filter completed examinations, sort by date desc
+                const completedExaminations = res.data
+                    .filter((e: any) => e.examinationStatus === 'COMPLETED' || e.examinationStatus === 'EXAMINED')
                     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                    .slice(0, 1) // Take only the latest one
-                    .map((e: any) => ({
-                        name: e.panelName || e.name || 'Health Screening',
-                        result: e.result,
-                        pdf: true // Assume PDF is available for completed examinations
-                    }));
+                    .slice(0, 3); // Take latest 3 to check for test results
                 
-                setScreenings(completedScreenings);
+                console.log('Completed examinations for screening:', completedExaminations);
+                
+                // Try to fetch detailed test results for each completed examination
+                const screeningsWithResults = [];
+                for (const exam of completedExaminations) {
+                    try {
+                        const detailResponse = await api.get(`/examinations/${exam.id}`);
+                        const examDetail = detailResponse.data;
+                        console.log(`Examination ${exam.id} detail:`, examDetail);
+                        
+                        // Check if examination has test results
+                        if (examDetail.testResults && examDetail.testResults.length > 0) {
+                            const hasPositiveResults = examDetail.testResults.some((tr: any) => tr.diagnosis === true);
+                            const resultSummary = hasPositiveResults ? 'Abnormal - Require attention' : 'Normal - All good';
+                            
+                            screeningsWithResults.push({
+                                id: exam.id,
+                                name: exam.panelName || exam.name || 'Health Screening',
+                                result: resultSummary,
+                                date: exam.date,
+                                testResults: examDetail.testResults,
+                                pdf: true // Assume PDF is available for completed examinations
+                            });
+                            
+                            // Only need the latest one with results for dashboard
+                            break;
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching details for examination ${exam.id}:`, error);
+                        // Continue to next examination
+                    }
+                }
+                
+                if (!isMounted) return;
+                console.log('Screening results found:', screeningsWithResults);
+                setScreenings(screeningsWithResults);
             })
             .catch(error => {
+                if (!isMounted) return;
                 console.error('Error fetching screening results:', error);
                 setScreenings([]);
             });
         // Fetch all cycles data for prediction with error handling
         api.get('/cycles')
             .then(res => {
+                if (!isMounted) return;
+                console.log('All cycles data received:', res.data);
                 setCycles(res.data);
             })
             .catch(error => {
+                if (!isMounted) return;
                 console.error('Error fetching cycles data:', error);
                 setCycles([]);
             });
+            
+        // Cleanup function to prevent setState after unmount
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     useEffect(() => {
@@ -278,7 +336,7 @@ const Dashboard: React.FC = () => {
                         <div className="text-2xl font-bold text-pink-600 mb-1">{cycleStatus}</div>
                         <div className="text-2xl flex gap-2">
                             {cycleEmojis.map((icon, idx) => (
-                                <img key={idx} src={icon} alt="cycle emoji" className="w-7 h-7 inline"/>
+                                <img key={`emoji-${idx}`} src={icon} alt="cycle emoji" className="w-7 h-7 inline"/>
                             ))}
                         </div>
                     </div>
@@ -361,15 +419,22 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex flex-col gap-2">
                         {screenings.map((s, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
+                            <div key={`screening-${s.name}-${idx}`} className="flex items-center gap-2">
                                 <span className="font-semibold text-gray-700">{s.name} - <span
-                                    className="text-green-600">{s.result}</span></span>
+                                    className={s.result.includes('Abnormal') ? 'text-red-600' : 'text-green-600'}>{s.result}</span></span>
                                 {s.pdf &&
-                                    <button className="text-pink-500 hover:underline text-sm">Xem file PDF</button>}
+                                    <button 
+                                        className="text-pink-500 hover:underline text-sm"
+                                        onClick={() => navigate(`/customer/sti-tests/${s.id}`)}
+                                    >
+                                        Xem chi tiết
+                                    </button>}
                             </div>
                         ))}
+                        {screenings.length === 0 && (
+                            <div className="text-gray-400 text-sm">Chưa có kết quả xét nghiệm</div>
+                        )}
                     </div>
-                    <div className="text-xs text-gray-400 mt-2">Bảo mật qua OTP</div>
                 </div>
                 <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-pink-500 font-semibold">
@@ -377,11 +442,11 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex flex-col gap-2">
                         {examinations.map((e, idx) => (
-                            <div key={idx} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
+                            <div key={`examination-${e.name}-${idx}`} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
                                 <div className="flex justify-between items-center">
                                     <span className="font-semibold text-pink-600">{e.name}</span>
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full ${e.status === 'Sắp diễn ra' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
+                                        className={`text-xs px-2 py-1 rounded-full ${e.status === 'In Progress' || e.status === 'Pending' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
                                 </div>
                                 <div className="text-xs text-gray-500">{e.place} | {e.date} - {e.time}</div>
                             </div>
