@@ -462,7 +462,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex flex-col gap-3">
                         {recentBlogs.map((blog) => (
-                            <div key={blog.id} className="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded-lg transition-colors" onClick={() => navigate('/blogs')}>
+                            <div key={blog.id} className="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded-lg transition-colors" onClick={() => navigate('/customer/health-tips')}>
                                 <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg flex-shrink-0 flex items-center justify-center">
                                     <svg className="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1.447.894L10 15.118l-4.553 1.776A1 1 0 014 16V4zm2 3a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 2a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
@@ -486,7 +486,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <button 
                         className="text-pink-500 hover:underline text-sm mt-2 w-max"
-                        onClick={() => navigate('/blogs')}
+                        onClick={() => navigate('/customer/health-tips')}
                     >
                         View all Tips
                     </button>
