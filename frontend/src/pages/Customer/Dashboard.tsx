@@ -132,20 +132,45 @@ const Dashboard: React.FC = () => {
         api.get('/examinations')
             .then(res => {
                 console.log('Examinations raw data:', res.data);
-                // Filter upcoming examinations (not cancelled, in the future)
+                
+                // Temporarily show all examinations to debug
+                const allExaminations = res.data
+                    .map((e: any) => ({
+                        id: e.id,
+                        name: e.panelName || e.name || 'Health Screening',
+                        date: new Date(e.date).toLocaleDateString('en-GB'),
+                        time: e.timeRange || 'TBD',
+                        place: e.place || e.location || 'Medical Center',
+                        status: e.examinationStatus || 'Unknown',
+                        rawStatus: e.examinationStatus,
+                        rawDate: e.date
+                    }))
+                    .slice(0, 5); // Show first 5 for debugging
+                
+                console.log('All examinations (debug):', allExaminations);
+                
+                // Now filter for actual upcoming ones
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
                 const upcomingExaminations = res.data
                     .filter((e: any) => {
-                        // Skip if cancelled or completed
-                        if (e.examinationStatus === 'CANCELLED' || e.examinationStatus === 'COMPLETED') {
+                        console.log(`Exam ${e.id}: status=${e.examinationStatus}, date=${e.date}`);
+                        
+                        // Skip if cancelled
+                        if (e.examinationStatus === 'CANCELLED') {
+                            console.log(`Exam ${e.id} skipped: cancelled`);
                             return false;
                         }
                         
-                        // Filter examinations from today onwards
-                        const examDate = new Date(e.date);
-                        return examDate >= today;
+                        // Include all non-completed examinations for now
+                        if (e.examinationStatus === 'COMPLETED') {
+                            console.log(`Exam ${e.id} skipped: completed`);
+                            return false;
+                        }
+                        
+                        console.log(`Exam ${e.id} included`);
+                        return true;
                     })
                     .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                     .slice(0, 3) // Take only first 3 upcoming
@@ -155,11 +180,7 @@ const Dashboard: React.FC = () => {
                         date: new Date(e.date).toLocaleDateString('en-GB'),
                         time: e.timeRange || 'TBD',
                         place: e.place || e.location || 'Medical Center',
-                        status: e.examinationStatus === 'IN_PROGRESS' ? 'In Progress' : 
-                               e.examinationStatus === 'SAMPLED' ? 'Sampled' :
-                               e.examinationStatus === 'EXAMINED' ? 'Examined' :
-                               e.examinationStatus === 'PENDING' ? 'Pending' : 
-                               e.examinationStatus || 'Scheduled'
+                        status: e.examinationStatus || 'Scheduled'
                     }));
                 
                 if (!isMounted) return;
@@ -176,42 +197,66 @@ const Dashboard: React.FC = () => {
         api.get('/examinations')
             .then(async (res) => {
                 console.log('Examinations for screening results:', res.data);
-                // Filter completed examinations, sort by date desc
-                const completedExaminations = res.data
-                    .filter((e: any) => e.examinationStatus === 'COMPLETED' || e.examinationStatus === 'EXAMINED')
-                    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                    .slice(0, 3); // Take latest 3 to check for test results
                 
-                console.log('Completed examinations for screening:', completedExaminations);
+                // Find any examination that might have results (completed/examined)
+                const potentialResultExaminations = res.data
+                    .filter((e: any) => {
+                        console.log(`Screening check - Exam ${e.id}: status=${e.examinationStatus}`);
+                        return e.examinationStatus === 'COMPLETED' || e.examinationStatus === 'EXAMINED';
+                    })
+                    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
                 
-                // Try to fetch detailed test results for each completed examination
+                console.log('Potential result examinations:', potentialResultExaminations);
+                
                 const screeningsWithResults = [];
-                for (const exam of completedExaminations) {
-                    try {
-                        const detailResponse = await api.get(`/examinations/${exam.id}`);
-                        const examDetail = detailResponse.data;
-                        console.log(`Examination ${exam.id} detail:`, examDetail);
-                        
-                        // Check if examination has test results
-                        if (examDetail.testResults && examDetail.testResults.length > 0) {
-                            const hasPositiveResults = examDetail.testResults.some((tr: any) => tr.diagnosis === true);
-                            const resultSummary = hasPositiveResults ? 'Abnormal - Require attention' : 'Normal - All good';
+                
+                // If we have completed examinations, try to get their details
+                if (potentialResultExaminations.length > 0) {
+                    for (const exam of potentialResultExaminations.slice(0, 3)) {
+                        try {
+                            const detailResponse = await api.get(`/examinations/${exam.id}`);
+                            const examDetail = detailResponse.data;
+                            console.log(`Examination ${exam.id} detail:`, examDetail);
                             
+                            // Check if examination has test results
+                            if (examDetail.testResults && examDetail.testResults.length > 0) {
+                                const hasPositiveResults = examDetail.testResults.some((tr: any) => tr.diagnosis === true);
+                                const resultSummary = hasPositiveResults ? 'Abnormal - Require attention' : 'Normal - All good';
+                                
+                                screeningsWithResults.push({
+                                    id: exam.id,
+                                    name: exam.panelName || exam.name || 'Health Screening',
+                                    result: resultSummary,
+                                    date: exam.date,
+                                    testResults: examDetail.testResults,
+                                    pdf: true
+                                });
+                                break; // Take first one with results
+                            } else {
+                                // Show basic info even without detailed results
+                                screeningsWithResults.push({
+                                    id: exam.id,
+                                    name: exam.panelName || exam.name || 'Health Screening',
+                                    result: 'Results available',
+                                    date: exam.date,
+                                    testResults: [],
+                                    pdf: true
+                                });
+                                break;
+                            }
+                        } catch (error) {
+                            console.error(`Error fetching details for examination ${exam.id}:`, error);
+                            // Still show basic info
                             screeningsWithResults.push({
                                 id: exam.id,
                                 name: exam.panelName || exam.name || 'Health Screening',
-                                result: resultSummary,
+                                result: 'Results available',
                                 date: exam.date,
-                                testResults: examDetail.testResults,
-                                pdf: true // Assume PDF is available for completed examinations
+                                testResults: [],
+                                pdf: true
                             });
-                            
-                            // Only need the latest one with results for dashboard
                             break;
                         }
-                    } catch (error) {
-                        console.error(`Error fetching details for examination ${exam.id}:`, error);
-                        // Continue to next examination
                     }
                 }
                 
@@ -451,6 +496,9 @@ const Dashboard: React.FC = () => {
                                 <div className="text-xs text-gray-500">{e.place} | {e.date} - {e.time}</div>
                             </div>
                         ))}
+                        {examinations.length === 0 && (
+                            <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm sắp tới</div>
+                        )}
                     </div>
                 </div>
             </div>
