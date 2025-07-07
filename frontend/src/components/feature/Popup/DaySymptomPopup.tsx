@@ -3,6 +3,9 @@ import Popup from './ExitPopup';
 import Toast from '../../common/Toast';
 import SexActivityPopup from './SexActivityPopup';
 import SymptomSelectionPopup from './SymptomSelectionPopup';
+import VaginalDischargePopup from './VaginalDischargePopup';
+import WeightInputPopup from './WeightInputPopup';
+import TemperatureInputPopup from './TemperatureInputPopup';
 import '../../../styles/components/symptom-popup.css';
 
 interface DaySymptomPopupProps {
@@ -36,12 +39,16 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     const [mood, setMood] = useState<string[]>([]);
     const [habits, setHabits] = useState<string[]>([]);
     const [discharge, setDischarge] = useState(false);
+    const [dischargeType, setDischargeType] = useState('');
     const [bodyTemp, setBodyTemp] = useState('');
     const [weight, setWeight] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [showSexActivityPopup, setShowSexActivityPopup] = useState(false);
     const [showSymptomSelectionPopup, setShowSymptomSelectionPopup] = useState(false);
+    const [showVaginalDischargePopup, setShowVaginalDischargePopup] = useState(false);
+    const [showWeightInputPopup, setShowWeightInputPopup] = useState(false);
+    const [showTemperatureInputPopup, setShowTemperatureInputPopup] = useState(false);
     const [sexActivityData, setSexActivityData] = useState<any>(null);
 
     const crampLevelMessages = {
@@ -108,6 +115,31 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                 setBodyTemp('');
                 setWeight('');
             }
+
+            const userId = getCurrentUserId();
+            const dischargeStorageKey = `vaginal_discharge_${userId}`;
+            const dischargeSaved = localStorage.getItem(dischargeStorageKey);
+            const dischargeData = dischargeSaved ? JSON.parse(dischargeSaved) : {};
+            
+            const dayDischargeData = dischargeData[selectedDate];
+            if (dayDischargeData && dayDischargeData.discharge) {
+                setDischargeType(dayDischargeData.discharge);
+                setDischarge(true);
+            } else {
+                setDischargeType('');
+                setDischarge(false);
+            }
+
+            const weightStorageKey = `weight_input_${userId}`;
+            const weightSaved = localStorage.getItem(weightStorageKey);
+            const weightData = weightSaved ? JSON.parse(weightSaved) : {};
+            
+            const dayWeightData = weightData[selectedDate];
+            if (dayWeightData && dayWeightData.weight) {
+                setWeight(dayWeightData.weight);
+            } else {
+                setWeight('');
+            }
         }
     }, [open, selectedDate]);
 
@@ -122,8 +154,8 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     const handleMoodToggle = (moodItem: string) => {
         setMood(prev => 
             prev.includes(moodItem) 
-                ? prev.filter(m => m !== moodItem)
-                : [...prev, moodItem]
+                ? []
+                : [moodItem]
         );
     };
 
@@ -166,6 +198,19 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
 
     const handleSymptomSelectionSave = (selectedSymptoms: string[]) => {
         setSymptoms(selectedSymptoms);
+    };
+
+    const handleVaginalDischargeSave = (selectedDischarge: string) => {
+        setDischarge(!!selectedDischarge);
+        setDischargeType(selectedDischarge);
+    };
+
+    const handleWeightSave = (weightValue: string) => {
+        setWeight(weightValue);
+    };
+
+    const handleTemperatureSave = (temperatureValue: string) => {
+        setBodyTemp(temperatureValue);
     };
 
     const handleSave = () => {
@@ -313,24 +358,47 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                         </div>
                     </div>
 
-                    <div className="symptom-row" onClick={() => setDischarge(!discharge)}>
+                    <div className="symptom-row" onClick={() => {
+                        if (discharge) {
+                            setDischarge(false);
+                            setDischargeType('');
+                        } else {
+                            setShowVaginalDischargePopup(true);
+                        }
+                    }}>
                         <div className="symptom-icon">💜</div>
                         <span className="symptom-label">Dịch âm đạo</span>
-                        <div className={`add-button ${discharge ? 'active' : ''}`}>
-                            {discharge ? '✓' : '+'}
+                        <div className={`discharge-display ${discharge ? 'active' : ''}`}>
+                            {discharge ? dischargeType : '+'}
                         </div>
                     </div>
 
-                    <div className="symptom-row">
+                    <div className="symptom-row" onClick={() => {
+                        if (weight) {
+                            setWeight('');
+                        } else {
+                            setShowWeightInputPopup(true);
+                        }
+                    }}>
                         <div className="symptom-icon">💜</div>
                         <span className="symptom-label">Cân nặng</span>
-                        <div className="add-button">+</div>
+                        <div className={`weight-display ${weight ? 'active' : ''}`}>
+                            {weight ? `${weight} kg` : '+'}
+                        </div>
                     </div>
 
-                    <div className="symptom-row">
+                    <div className="symptom-row" onClick={() => {
+                        if (bodyTemp) {
+                            setBodyTemp('');
+                        } else {
+                            setShowTemperatureInputPopup(true);
+                        }
+                    }}>
                         <div className="symptom-icon">🌡️</div>
                         <span className="symptom-label">Thân nhiệt</span>
-                        <div className="add-button">+</div>
+                        <div className={`temperature-display ${bodyTemp ? 'active' : ''}`}>
+                            {bodyTemp ? `${bodyTemp} °C` : '+'}
+                        </div>
                     </div>
                 </div>
 
@@ -351,6 +419,27 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                 onSave={handleSymptomSelectionSave}
                 selectedDate={selectedDate}
                 currentSymptoms={symptoms}
+            />
+            <VaginalDischargePopup
+                open={showVaginalDischargePopup}
+                onClose={() => setShowVaginalDischargePopup(false)}
+                onSave={handleVaginalDischargeSave}
+                selectedDate={selectedDate}
+                currentDischarge={dischargeType}
+            />
+            <WeightInputPopup
+                open={showWeightInputPopup}
+                onClose={() => setShowWeightInputPopup(false)}
+                onSave={handleWeightSave}
+                selectedDate={selectedDate}
+                currentWeight={weight}
+            />
+            <TemperatureInputPopup
+                open={showTemperatureInputPopup}
+                onClose={() => setShowTemperatureInputPopup(false)}
+                onSave={handleTemperatureSave}
+                selectedDate={selectedDate}
+                currentTemperature={bodyTemp}
             />
             <Toast 
                 message={toastMessage}
