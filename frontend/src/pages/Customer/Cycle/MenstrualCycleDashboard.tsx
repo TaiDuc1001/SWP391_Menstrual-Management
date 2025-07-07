@@ -5,8 +5,10 @@ import SpecialDayPopup from '../../../components/feature/Popup/SpecialDayPopup';
 import SuccessPopup from '../../../components/feature/Popup/SuccessPopup';
 import ReminderSettingsPopup from '../../../components/feature/Popup/ReminderSettingsPopup';
 import DayNotePopup from '../../../components/feature/Popup/DayNotePopup';
+import DaySymptomPopup from '../../../components/feature/Popup/DaySymptomPopup';
 import PredictCyclePopup from '../../../components/feature/Popup/PredictCyclePopup';
 import PredictedCalendarPopup from '../../../components/feature/Popup/PredictedCalendarPopup';
+import PredictionsAnalysisPopup from '../../../components/feature/Popup/PredictionsAnalysisPopup';
 import { useCycles, useAIRecommendations } from '../../../api/hooks';
 import { CycleData, CycleCreationRequest } from '../../../api/services';
 import '../../../styles/pages/cycle-dashboard.css';
@@ -20,6 +22,8 @@ const MenstrualCycleDashboard: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
     const [showDayNote, setShowDayNote] = useState(false);
+    const [showSymptomPopup, setShowSymptomPopup] = useState(false);
+    const [showPredictionsAnalysisPopup, setShowPredictionsAnalysisPopup] = useState(false);
     const [showPredictPopup, setShowPredictPopup] = useState(false);
     const [showPredictedCalendar, setShowPredictedCalendar] = useState(false);
     const [selectedPredictMonth, setSelectedPredictMonth] = useState('');
@@ -109,6 +113,11 @@ const MenstrualCycleDashboard: React.FC = () => {
     const getSymptomsStorageKey = (): string => {
         const userId = getCurrentUserId();
         return `menstrual_symptoms_${userId}`;
+    };
+
+    const getDetailedSymptomsStorageKey = (): string => {
+        const userId = getCurrentUserId();
+        return `menstrual_symptoms_detailed_${userId}`;
     };
 
     const [symptoms, setSymptoms] = useState<{
@@ -232,11 +241,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                             My Cycle
                         </h2>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div
-                            className="col-span-2 bg-white rounded-2xl shadow p-4 flex flex-col border border-gray-100">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                            className="bg-white rounded-2xl shadow p-6 flex flex-col border border-gray-100">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-semibold text-xl text-gray-800 flex items-center gap-2">
                                     <span
                                         className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                     Cycle calendar for {currentMonth + 1}/{currentYear}
@@ -254,10 +263,10 @@ const MenstrualCycleDashboard: React.FC = () => {
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${JSON.stringify(cycles?.map(c => c.cycleStartDate))}`}>
+                            <div className="grid grid-cols-7 gap-2 mb-4" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${JSON.stringify(cycles?.map(c => c.cycleStartDate))}`}>
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
-                                         className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
+                                         className="text-center text-sm font-medium text-gray-700 py-2 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
                                 ))}
                                 {days.map((day, idx) => {
                                     let type = '';
@@ -270,8 +279,29 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     let hasNote = false;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                        
+                                        // Check old symptom data
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
+                                        
+                                        // Check new detailed symptom data
+                                        const detailedStorageKey = getDetailedSymptomsStorageKey();
+                                        const detailedSaved = localStorage.getItem(detailedStorageKey);
+                                        const detailedData = detailedSaved ? JSON.parse(detailedSaved) : {};
+                                        const dayDetailedData = detailedData[dayKey];
+                                        
+                                        if (dayDetailedData) {
+                                            hasSymptom = hasSymptom || 
+                                                dayDetailedData.periods ||
+                                                dayDetailedData.crampsLevel > 0 ||
+                                                dayDetailedData.sex ||
+                                                dayDetailedData.discharge ||
+                                                (dayDetailedData.symptoms && dayDetailedData.symptoms.length > 0) ||
+                                                (dayDetailedData.mood && dayDetailedData.mood.length > 0) ||
+                                                (dayDetailedData.habits && dayDetailedData.habits.length > 0) ||
+                                                dayDetailedData.flowLevel > 0;
+                                        }
+                                        
                                         hasNote = !!(dayNotes[dayKey] && dayNotes[dayKey].trim() !== '');
                                     }
                                     let style = "cycle-regular-day";
@@ -281,7 +311,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     if (hasNote) style += ' cycle-note-indicator';
                                     
                                     return (
-                                        <div key={idx} className="flex justify-center items-center h-10">
+                                        <div key={idx} className="flex justify-center items-center h-12">
                                             {day ? (
                                                 <div className="relative">
                                                     <div
@@ -289,7 +319,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         onClick={() => {
                                                             if (day) {
                                                                 setSelectedDay(day);
-                                                                setShowDayNote(true);
+                                                                setShowPredictionsAnalysisPopup(true);
                                                             }
                                                         }}
                                                     >
@@ -301,33 +331,20 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                            ) : <div className="w-10 h-10"></div>}
+                                            ) : <div className="w-12 h-12"></div>}
                                         </div>
                                     );
                                 })}
                             </div>
-                            <div className="flex gap-4 mt-2 text-xs items-center flex-wrap">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
+                            <div className="flex gap-6 mt-3 text-sm items-center flex-wrap">
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '10px'}}>📝</span> Has note
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-purple-600 text-white text-xs flex items-center justify-center font-bold">●</span> Cycle start day
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block bg-purple-600 text-white text-xs flex items-center justify-center font-bold">●</span> Cycle start day
                                 </div>
-                            </div>
-                        </div>
-                        <div
-                            className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
-                            <h3 className="font-semibold text-lg text-purple-800 mb-2">Predictions & Analysis</h3>
-                            <div className="flex flex-col gap-1 text-xs">
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Next
-                                    period expected <span
-                                        className="ml-auto font-semibold text-gray-800">12/06/2024</span></div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-blue-400 rounded-full inline-block"></span> Cycle
-                                    alert <span className="ml-auto font-semibold text-gray-800">Normal</span></div>
                             </div>
                         </div>
                     </div>
@@ -615,6 +632,30 @@ const MenstrualCycleDashboard: React.FC = () => {
                             setShowPredictPopup(true);
                         }}
                         selectedMonth={selectedPredictMonth}
+                    />
+                    <PredictionsAnalysisPopup
+                        open={showPredictionsAnalysisPopup}
+                        onClose={() => setShowPredictionsAnalysisPopup(false)}
+                        selectedDate={selectedDay ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}` : undefined}
+                        cycles={cycles}
+                        onOpenSymptomPopup={() => {
+                            setShowPredictionsAnalysisPopup(false);
+                            setShowSymptomPopup(true);
+                        }}
+                    />
+                    <DaySymptomPopup
+                        open={showSymptomPopup}
+                        onClose={() => {
+                            setShowSymptomPopup(false);
+                            setShowPredictionsAnalysisPopup(true);
+                        }}
+                        onSave={(data) => {
+                            setShowSymptomPopup(false);
+                            setShowPredictionsAnalysisPopup(true);
+                            setShowSuccess(true);
+                            setTimeout(() => setShowSuccess(false), 1200);
+                        }}
+                        selectedDate={selectedDay ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}` : undefined}
                     />
                     <SuccessPopup open={showSuccess} onClose={() => setShowSuccess(false)} message="Successfully!"/>
                 </main>

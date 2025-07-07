@@ -1,0 +1,141 @@
+.sex-activity-popup-container {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.sex-activity-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sex-activity-popup-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.sex-activity-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.time-section,
+.method-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.time-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.time-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.time-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.time-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.time-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.time-item,
+.method-item {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-size: 0.875rem;
+  background: white;
+}
+
+.time-item:hover,
+.method-item:hover {
+  border-color: #ec4899;
+  background: #fdf2f8;
+}
+
+.time-item.active,
+.method-item.active {
+  background: #ec4899;
+  color: white;
+  border-color: #ec4899;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cancel-btn {
+  padding: 0.5rem 1.5rem;
+  color: #4b5563;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.save-btn {
+  padding: 0.5rem 1.5rem;
+  background: #ec4899;
+  color: white;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-btn:hover {
+  background: #db2777;
+}
