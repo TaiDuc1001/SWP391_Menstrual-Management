@@ -27,7 +27,13 @@ public class AppointmentsService {
     }
 
     public List<Appointment> getAppointmentsForDoctor() {
+        // TODO: Get doctor ID from security context
+        // For now, return all appointments - this should be changed in production
         return appointmentRepository.findAppointmentsForDoctor();
+    }
+
+    public List<Appointment> getAppointmentsByDoctorId(Long doctorId) {
+        return appointmentRepository.findAppointmentsByDoctorId(doctorId);
     }
 
     public void deleteAppointment(Long id) {
@@ -86,5 +92,13 @@ public class AppointmentsService {
                 .filter(slot -> !appointmentRepository.existsByDoctorAndDateAndSlotAndNotCancelled(doctor, date, slot))
                 .map(Slot::getTimeRange)
                 .collect(Collectors.toList());
+    }
+
+    public Double getAverageRatingByDoctorId(Long doctorId) {
+        return appointmentRepository.findAverageRatingByDoctorId(doctorId);
+    }
+
+    public Long getTotalRatingsByDoctorId(Long doctorId) {
+        return appointmentRepository.countRatingsByDoctorId(doctorId);
     }
 }

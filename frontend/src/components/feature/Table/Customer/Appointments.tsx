@@ -2,6 +2,7 @@ import React from 'react';
 import CustomerTable from './BaseTable';
 import {TableAction, TableColumn} from '../types';
 import StatusBadge from '../../../common/Badge/StatusBadge';
+import Rating from '../../Rating/Rating';
 
 interface AppointmentRecord {
     id: number;
@@ -14,6 +15,8 @@ interface AppointmentRecord {
     slot?: string;
     slotTime?: string;
     appointmentStatus?: string;
+    score?: number;
+    feedback?: string;
 }
 
 interface AppointmentTableProps {
@@ -88,6 +91,20 @@ const Appointments: React.FC<AppointmentTableProps> = ({
                     <span>{row.doctor || row.name}</span>
                 </div>
             )
+        }, {
+            key: 'rating',
+            label: 'Rating',
+            sortable: true,
+            width: 'w-32',
+            align: 'center',
+            headerClassName: 'text-center',
+            cellClassName: 'text-center',
+            render: (row) => {
+                if (row.score && row.appointmentStatus === 'FINISHED') {
+                    return <Rating score={row.score} size="small" showText={false} />;
+                }
+                return <span className="text-sm text-gray-400">-</span>;
+            }
         }, {
             key: 'status',
             label: 'Status',

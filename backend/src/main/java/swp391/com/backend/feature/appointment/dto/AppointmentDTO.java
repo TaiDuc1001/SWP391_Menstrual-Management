@@ -20,4 +20,6 @@ public class AppointmentDTO {
     String doctorNote;
     String url;
     String phoneNumber;
+    Integer score;
+    String feedback;
 }
