@@ -201,16 +201,29 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     };
 
     const handleVaginalDischargeSave = (selectedDischarge: string) => {
-        setDischarge(!!selectedDischarge);
-        setDischargeType(selectedDischarge);
+        if (!selectedDischarge || selectedDischarge.trim() === '') {
+            setDischarge(false);
+            setDischargeType('');
+        } else {
+            setDischarge(true);
+            setDischargeType(selectedDischarge);
+        }
     };
 
     const handleWeightSave = (weightValue: string) => {
-        setWeight(weightValue);
+        if (!weightValue || weightValue.trim() === '') {
+            setWeight('');
+        } else {
+            setWeight(weightValue);
+        }
     };
 
     const handleTemperatureSave = (temperatureValue: string) => {
-        setBodyTemp(temperatureValue);
+        if (!temperatureValue || temperatureValue.trim() === '') {
+            setBodyTemp('');
+        } else {
+            setBodyTemp(temperatureValue);
+        }
     };
 
     const handleSave = () => {
@@ -358,14 +371,7 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                         </div>
                     </div>
 
-                    <div className="symptom-row" onClick={() => {
-                        if (discharge) {
-                            setDischarge(false);
-                            setDischargeType('');
-                        } else {
-                            setShowVaginalDischargePopup(true);
-                        }
-                    }}>
+                    <div className="symptom-row" onClick={() => setShowVaginalDischargePopup(true)}>
                         <div className="symptom-icon">💜</div>
                         <span className="symptom-label">Dịch âm đạo</span>
                         <div className={`discharge-display ${discharge ? 'active' : ''}`}>
@@ -373,13 +379,7 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                         </div>
                     </div>
 
-                    <div className="symptom-row" onClick={() => {
-                        if (weight) {
-                            setWeight('');
-                        } else {
-                            setShowWeightInputPopup(true);
-                        }
-                    }}>
+                    <div className="symptom-row" onClick={() => setShowWeightInputPopup(true)}>
                         <div className="symptom-icon">💜</div>
                         <span className="symptom-label">Cân nặng</span>
                         <div className={`weight-display ${weight ? 'active' : ''}`}>
@@ -387,13 +387,7 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                         </div>
                     </div>
 
-                    <div className="symptom-row" onClick={() => {
-                        if (bodyTemp) {
-                            setBodyTemp('');
-                        } else {
-                            setShowTemperatureInputPopup(true);
-                        }
-                    }}>
+                    <div className="symptom-row" onClick={() => setShowTemperatureInputPopup(true)}>
                         <div className="symptom-icon">🌡️</div>
                         <span className="symptom-label">Thân nhiệt</span>
                         <div className={`temperature-display ${bodyTemp ? 'active' : ''}`}>
