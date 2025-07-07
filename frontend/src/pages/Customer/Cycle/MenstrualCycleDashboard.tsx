@@ -239,11 +239,11 @@ const MenstrualCycleDashboard: React.FC = () => {
                             My Cycle
                         </h2>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div
-                            className="col-span-2 bg-white rounded-2xl shadow p-4 flex flex-col border border-gray-100">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                            className="bg-white rounded-2xl shadow p-6 flex flex-col border border-gray-100">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-semibold text-xl text-gray-800 flex items-center gap-2">
                                     <span
                                         className="inline-block w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full"></span>
                                     Cycle calendar for {currentMonth + 1}/{currentYear}
@@ -261,10 +261,10 @@ const MenstrualCycleDashboard: React.FC = () => {
                                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-purple-100 flex items-center justify-center text-xl font-bold text-purple-600 transition-all duration-200 hover:scale-105">{'>'}</button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-7 gap-1 mb-3" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${JSON.stringify(cycles?.map(c => c.cycleStartDate))}`}>
+                            <div className="grid grid-cols-7 gap-2 mb-4" key={`calendar-${currentMonth}-${currentYear}-${cycles?.length || 0}-${JSON.stringify(cycles?.map(c => c.cycleStartDate))}`}>
                                 {weekDays.map((wd, idx) => (
                                     <div key={idx}
-                                         className="text-center text-xs font-medium text-gray-700 py-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
+                                         className="text-center text-sm font-medium text-gray-700 py-2 bg-gradient-to-b from-gray-50 to-gray-100 rounded shadow-sm">{wd}</div>
                                 ))}
                                 {days.map((day, idx) => {
                                     let type = '';
@@ -309,7 +309,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     if (hasNote) style += ' cycle-note-indicator';
                                     
                                     return (
-                                        <div key={idx} className="flex justify-center items-center h-10">
+                                        <div key={idx} className="flex justify-center items-center h-12">
                                             {day ? (
                                                 <div className="relative">
                                                     <div
@@ -329,33 +329,20 @@ const MenstrualCycleDashboard: React.FC = () => {
                                                         )}
                                                     </div>
                                                 </div>
-                                            ) : <div className="w-10 h-10"></div>}
+                                            ) : <div className="w-12 h-12"></div>}
                                         </div>
                                     );
                                 })}
                             </div>
-                            <div className="flex gap-4 mt-2 text-xs items-center flex-wrap">
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
+                            <div className="flex gap-6 mt-3 text-sm items-center flex-wrap">
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '8px'}}>📝</span> Has note
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block bg-gray-200 relative" style={{fontSize: '10px'}}>📝</span> Has note
                                 </div>
-                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full inline-block bg-purple-600 text-white text-xs flex items-center justify-center font-bold">●</span> Cycle start day
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block bg-purple-600 text-white text-xs flex items-center justify-center font-bold">●</span> Cycle start day
                                 </div>
-                            </div>
-                        </div>
-                        <div
-                            className="bg-gradient-to-br from-purple-100 via-pink-100 to-purple-200 rounded-2xl shadow p-4 flex flex-col gap-2">
-                            <h3 className="font-semibold text-lg text-purple-800 mb-2">Predictions & Analysis</h3>
-                            <div className="flex flex-col gap-1 text-xs">
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-gradient-to-br from-red-600 via-red-500 to-pink-500 rounded-full inline-block"></span> Next
-                                    period expected <span
-                                        className="ml-auto font-semibold text-gray-800">12/06/2024</span></div>
-                                <div className="flex items-center gap-1"><span
-                                    className="w-3 h-3 bg-blue-400 rounded-full inline-block"></span> Cycle
-                                    alert <span className="ml-auto font-semibold text-gray-800">Normal</span></div>
                             </div>
                         </div>
                     </div>
