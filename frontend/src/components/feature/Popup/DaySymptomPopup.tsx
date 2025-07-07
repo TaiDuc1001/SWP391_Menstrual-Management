@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Popup from './ExitPopup';
 import Toast from '../../common/Toast';
+import SexActivityPopup from './SexActivityPopup';
 import '../../../styles/components/symptom-popup.css';
 
 interface DaySymptomPopupProps {
@@ -38,6 +39,8 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     const [weight, setWeight] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [showSexActivityPopup, setShowSexActivityPopup] = useState(false);
+    const [sexActivityData, setSexActivityData] = useState<any>(null);
 
     const defaultSymptoms = ['Đau lưng dưới', 'Đau đầu', 'Buồn nôn', 'Mệt mỏi'];
     const currentSymptom = symptoms.length > 0 ? symptoms[0] : defaultSymptoms[0];
@@ -134,17 +137,32 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     };
 
     const handleCrampLevelSelect = (level: number) => {
-        setCrampsLevel(level);
-        const message = crampLevelMessages[level as keyof typeof crampLevelMessages];
-        setToastMessage(message);
+        if (crampsLevel === level) {
+            setCrampsLevel(0);
+            setToastMessage('Đã hủy chọn mức đau bụng kinh');
+        } else {
+            setCrampsLevel(level);
+            const message = crampLevelMessages[level as keyof typeof crampLevelMessages];
+            setToastMessage(message);
+        }
         setShowToast(true);
     };
 
     const handleFlowLevelSelect = (level: number) => {
-        setFlowLevel(level);
-        const message = flowLevelMessages[level as keyof typeof flowLevelMessages];
-        setToastMessage(message);
+        if (flowLevel === level) {
+            setFlowLevel(0);
+            setToastMessage('Đã hủy chọn mức lượng kinh');
+        } else {
+            setFlowLevel(level);
+            const message = flowLevelMessages[level as keyof typeof flowLevelMessages];
+            setToastMessage(message);
+        }
         setShowToast(true);
+    };
+
+    const handleSexActivitySave = (data: any) => {
+        setSexActivityData(data);
+        setSex(!!data);
     };
 
     const handleSave = () => {
@@ -237,7 +255,14 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                         </div>
                     </div>
 
-                    <div className="symptom-row" onClick={() => setSex(!sex)}>
+                    <div className="symptom-row" onClick={() => {
+                        if (sex) {
+                            setSex(false);
+                            setSexActivityData(null);
+                        } else {
+                            setShowSexActivityPopup(true);
+                        }
+                    }}>
                         <div className="symptom-icon">💕</div>
                         <span className="symptom-label">Ân ái</span>
                         <div className={`add-button ${sex ? 'active' : ''}`}>
@@ -311,6 +336,12 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                     <button className="save-btn" onClick={handleSave}>Lưu</button>
                 </div>
             </div>
+            <SexActivityPopup
+                open={showSexActivityPopup}
+                onClose={() => setShowSexActivityPopup(false)}
+                onSave={handleSexActivitySave}
+                selectedDate={selectedDate}
+            />
             <Toast 
                 message={toastMessage}
                 isVisible={showToast}
