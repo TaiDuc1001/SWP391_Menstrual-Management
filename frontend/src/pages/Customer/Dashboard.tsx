@@ -33,43 +33,156 @@ const Dashboard: React.FC = () => {
 
     useEffect(() => {
         setUserName('Thiên An');
-        api.get('/cycles/closest').then(res => {
-            const cycle = res.data;
-            setCycleStart(cycle.cycleStartDate || '');
-            setCycleStatus(cycle.status || '');
-            setOvulationDate(cycle.ovulationDate || '');
-            setDaysToOvulation(cycle.daysToOvulation || 0);
-            setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
-        });
-        api.get('/appointments').then(res => {
-            setAppointments(res.data.slice(0, 3).map((a: any) => ({
-                id: a.id,
-                name: a.doctorName,
-                date: a.date,
-                time: a.timeRange || a.slot || '',
-                avatar: '',
-                rating: 4.5
-            })));
-        });
-        api.get('/examinations').then(res => {
-            setExaminations(res.data.slice(0, 3).map((e: any) => ({
-                name: e.panelName || e.name,
-                date: e.date,
-                time: e.time,
-                place: e.place || '',
-                status: e.status || ''
-            })));
-        });
-        api.get('/examinations').then(res => {
-            setScreenings(res.data.filter((e: any) => e.result).slice(0, 1).map((e: any) => ({
-                name: e.panelName || e.name,
-                result: e.result,
-                pdf: true
-            })));
-        });
-        api.get('/cycles').then(res => {
-            setCycles(res.data);
-        });
+        // Fetch cycle data with error handling
+        api.get('/cycles/closest')
+            .then(res => {
+                const cycle = res.data;
+                setCycleStart(cycle.cycleStartDate || '');
+                setCycleStatus(cycle.status || '');
+                setOvulationDate(cycle.ovulationDate || '');
+                setDaysToOvulation(cycle.daysToOvulation || 0);
+                setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
+            })
+            .catch(error => {
+                console.error('Error fetching cycle data:', error);
+                // Set default values if API fails
+                setCycleStart('');
+                setCycleStatus('No data');
+                setOvulationDate('');
+                setDaysToOvulation(0);
+            });
+        // Fetch appointments with error handling
+        api.get('/appointments')
+            .then(res => {
+                // Filter upcoming appointments (not cancelled, not finished, in the future)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const upcomingAppointments = res.data
+                    .filter((a: any) => {
+                        // Filter out cancelled and finished appointments
+                        if (a.appointmentStatus === 'CANCELLED' || a.appointmentStatus === 'FINISHED') {
+                            return false;
+                        }
+                        
+                        // Filter appointments from today onwards
+                        const appointmentDate = new Date(a.date);
+                        return appointmentDate >= today;
+                    })
+                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .slice(0, 3); // Take only first 3 upcoming appointments
+                
+                // Fetch doctor ratings for each appointment
+                Promise.all(
+                    upcomingAppointments.map(async (a: any) => {
+                        try {
+                            const ratingResponse = await api.get(`/appointments/doctor/${a.doctorId}/average-rating`);
+                            const { averageRating } = ratingResponse.data;
+                            return {
+                                id: a.id,
+                                name: a.doctorName,
+                                date: new Date(a.date).toLocaleDateString('en-GB'),
+                                time: a.timeRange || a.slot || '',
+                                avatar: '',
+                                rating: averageRating ? Math.round(averageRating * 10) / 10 : 0
+                            };
+                        } catch (error) {
+                            // If rating fetch fails, use default rating
+                            return {
+                                id: a.id,
+                                name: a.doctorName,
+                                date: new Date(a.date).toLocaleDateString('en-GB'),
+                                time: a.timeRange || a.slot || '',
+                                avatar: '',
+                                rating: 0
+                            };
+                        }
+                    })
+                ).then(appointmentsWithRatings => {
+                    setAppointments(appointmentsWithRatings);
+                }).catch(error => {
+                    console.error('Error processing appointments with ratings:', error);
+                    // Fallback: set appointments without ratings
+                    setAppointments(upcomingAppointments.map((a: any) => ({
+                        id: a.id,
+                        name: a.doctorName,
+                        date: new Date(a.date).toLocaleDateString('en-GB'),
+                        time: a.timeRange || a.slot || '',
+                        avatar: '',
+                        rating: 0
+                    })));
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching appointments:', error);
+                setAppointments([]);
+            });
+        // Fetch upcoming examinations with error handling
+        api.get('/examinations')
+            .then(res => {
+                // Filter upcoming examinations (not cancelled, in the future)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const upcomingExaminations = res.data
+                    .filter((e: any) => {
+                        // Skip if cancelled or if date is in the past
+                        if (e.status === 'CANCELLED' || e.status === 'COMPLETED') {
+                            return false;
+                        }
+                        
+                        // Filter examinations from today onwards
+                        const examDate = new Date(e.date);
+                        return examDate >= today;
+                    })
+                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .slice(0, 3) // Take only first 3 upcoming
+                    .map((e: any) => ({
+                        name: e.panelName || e.name || 'Health Screening',
+                        date: new Date(e.date).toLocaleDateString('en-GB'),
+                        time: e.time || 'TBD',
+                        place: e.place || e.location || 'Medical Center',
+                        status: e.status === 'APPROVED' ? 'Upcoming' : 
+                               e.status === 'PENDING' ? 'Pending' : 
+                               e.status || 'Scheduled'
+                    }));
+                
+                setExaminations(upcomingExaminations);
+            })
+            .catch(error => {
+                console.error('Error fetching examinations:', error);
+                setExaminations([]);
+            });
+
+        // Fetch latest screening results with error handling
+        api.get('/examinations')
+            .then(res => {
+                // Filter completed examinations with results, sort by date desc
+                const completedScreenings = res.data
+                    .filter((e: any) => e.result && (e.status === 'COMPLETED' || e.status === 'FINISHED'))
+                    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .slice(0, 1) // Take only the latest one
+                    .map((e: any) => ({
+                        name: e.panelName || e.name || 'Health Screening',
+                        result: e.result,
+                        pdf: true // Assume PDF is available for completed examinations
+                    }));
+                
+                setScreenings(completedScreenings);
+            })
+            .catch(error => {
+                console.error('Error fetching screening results:', error);
+                setScreenings([]);
+            });
+        // Fetch all cycles data for prediction with error handling
+        api.get('/cycles')
+            .then(res => {
+                setCycles(res.data);
+            })
+            .catch(error => {
+                console.error('Error fetching cycles data:', error);
+                setCycles([]);
+            });
     }, []);
 
     useEffect(() => {
