@@ -32,44 +32,260 @@ const Dashboard: React.FC = () => {
     const [prediction, setPrediction] = useState<any>(null);
 
     useEffect(() => {
+        let isMounted = true; // Flag to prevent setState after unmount
+        
         setUserName('Thiên An');
-        api.get('/cycles/closest').then(res => {
-            const cycle = res.data;
-            setCycleStart(cycle.cycleStartDate || '');
-            setCycleStatus(cycle.status || '');
-            setOvulationDate(cycle.ovulationDate || '');
-            setDaysToOvulation(cycle.daysToOvulation || 0);
-            setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
-        });
-        api.get('/appointments').then(res => {
-            setAppointments(res.data.slice(0, 3).map((a: any) => ({
-                id: a.id,
-                name: a.doctorName,
-                date: a.date,
-                time: a.timeRange || a.slot || '',
-                avatar: '',
-                rating: 4.5
-            })));
-        });
-        api.get('/examinations').then(res => {
-            setExaminations(res.data.slice(0, 3).map((e: any) => ({
-                name: e.panelName || e.name,
-                date: e.date,
-                time: e.time,
-                place: e.place || '',
-                status: e.status || ''
-            })));
-        });
-        api.get('/examinations').then(res => {
-            setScreenings(res.data.filter((e: any) => e.result).slice(0, 1).map((e: any) => ({
-                name: e.panelName || e.name,
-                result: e.result,
-                pdf: true
-            })));
-        });
-        api.get('/cycles').then(res => {
-            setCycles(res.data);
-        });
+        // Fetch cycle data with error handling
+        api.get('/cycles/closest')
+            .then(res => {
+                if (!isMounted) return; // Prevent setState if component unmounted
+                console.log('Cycle data received:', res.data);
+                const cycle = res.data;
+                setCycleStart(cycle.cycleStartDate || '');
+                setCycleStatus(cycle.status || '');
+                setOvulationDate(cycle.ovulationDate || '');
+                setDaysToOvulation(cycle.daysToOvulation || 0);
+                setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
+            })
+            .catch(error => {
+                if (!isMounted) return;
+                console.error('Error fetching cycle data:', error);
+                // Set default values if API fails
+                setCycleStart('');
+                setCycleStatus('No data');
+                setOvulationDate('');
+                setDaysToOvulation(0);
+            });
+        // Fetch appointments with error handling
+        api.get('/appointments')
+            .then(res => {
+                console.log('Appointments raw data:', res.data);
+                // Filter upcoming appointments (not cancelled, not finished, in the future)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const upcomingAppointments = res.data
+                    .filter((a: any) => {
+                        // Filter out cancelled and finished appointments
+                        if (a.appointmentStatus === 'CANCELLED' || a.appointmentStatus === 'FINISHED') {
+                            return false;
+                        }
+                        
+                        // Filter appointments from today onwards
+                        const appointmentDate = new Date(a.date);
+                        return appointmentDate >= today;
+                    })
+                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .slice(0, 3); // Take only first 3 upcoming appointments
+                
+                console.log('Filtered upcoming appointments:', upcomingAppointments);
+                
+                // Fetch doctor ratings for each appointment
+                Promise.all(
+                    upcomingAppointments.map(async (a: any) => {
+                        try {
+                            const ratingResponse = await api.get(`/appointments/doctor/${a.doctorId}/average-rating`);
+                            const { averageRating } = ratingResponse.data;
+                            return {
+                                id: a.id,
+                                name: a.doctorName,
+                                date: new Date(a.date).toLocaleDateString('en-GB'),
+                                time: a.timeRange || a.slot || '',
+                                avatar: '',
+                                rating: averageRating ? Math.round(averageRating * 10) / 10 : 0
+                            };
+                        } catch (error) {
+                            // If rating fetch fails, use default rating
+                            return {
+                                id: a.id,
+                                name: a.doctorName,
+                                date: new Date(a.date).toLocaleDateString('en-GB'),
+                                time: a.timeRange || a.slot || '',
+                                avatar: '',
+                                rating: 0
+                            };
+                        }
+                    })
+                ).then(appointmentsWithRatings => {
+                    if (!isMounted) return;
+                    setAppointments(appointmentsWithRatings);
+                }).catch(error => {
+                    if (!isMounted) return;
+                    console.error('Error processing appointments with ratings:', error);
+                    // Fallback: set appointments without ratings
+                    setAppointments(upcomingAppointments.map((a: any) => ({
+                        id: a.id,
+                        name: a.doctorName,
+                        date: new Date(a.date).toLocaleDateString('en-GB'),
+                        time: a.timeRange || a.slot || '',
+                        avatar: '',
+                        rating: 0
+                    })));
+                });
+            })
+            .catch(error => {
+                if (!isMounted) return;
+                console.error('Error fetching appointments:', error);
+                setAppointments([]);
+            });
+        // Fetch upcoming examinations with error handling
+        api.get('/examinations')
+            .then(res => {
+                console.log('Examinations raw data:', res.data);
+                
+                // Temporarily show all examinations to debug
+                const allExaminations = res.data
+                    .map((e: any) => ({
+                        id: e.id,
+                        name: e.panelName || e.name || 'Health Screening',
+                        date: new Date(e.date).toLocaleDateString('en-GB'),
+                        time: e.timeRange || 'TBD',
+                        place: e.place || e.location || 'Medical Center',
+                        status: e.examinationStatus || 'Unknown',
+                        rawStatus: e.examinationStatus,
+                        rawDate: e.date
+                    }))
+                    .slice(0, 5); // Show first 5 for debugging
+                
+                console.log('All examinations (debug):', allExaminations);
+                
+                // Now filter for actual upcoming ones
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const upcomingExaminations = res.data
+                    .filter((e: any) => {
+                        console.log(`Exam ${e.id}: status=${e.examinationStatus}, date=${e.date}`);
+                        
+                        // Skip if cancelled
+                        if (e.examinationStatus === 'CANCELLED') {
+                            console.log(`Exam ${e.id} skipped: cancelled`);
+                            return false;
+                        }
+                        
+                        // Include all non-completed examinations for now
+                        if (e.examinationStatus === 'COMPLETED') {
+                            console.log(`Exam ${e.id} skipped: completed`);
+                            return false;
+                        }
+                        
+                        console.log(`Exam ${e.id} included`);
+                        return true;
+                    })
+                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .slice(0, 3) // Take only first 3 upcoming
+                    .map((e: any) => ({
+                        id: e.id,
+                        name: e.panelName || e.name || 'Health Screening',
+                        date: new Date(e.date).toLocaleDateString('en-GB'),
+                        time: e.timeRange || 'TBD',
+                        place: e.place || e.location || 'Medical Center',
+                        status: e.examinationStatus || 'Scheduled'
+                    }));
+                
+                if (!isMounted) return;
+                console.log('Upcoming examinations found:', upcomingExaminations);
+                setExaminations(upcomingExaminations);
+            })
+            .catch(error => {
+                if (!isMounted) return;
+                console.error('Error fetching examinations:', error);
+                setExaminations([]);
+            });
+
+        // Fetch latest screening results with error handling
+        api.get('/examinations')
+            .then(async (res) => {
+                console.log('Examinations for screening results:', res.data);
+                
+                // Find any examination that might have results (completed/examined)
+                const potentialResultExaminations = res.data
+                    .filter((e: any) => {
+                        console.log(`Screening check - Exam ${e.id}: status=${e.examinationStatus}`);
+                        return e.examinationStatus === 'COMPLETED' || e.examinationStatus === 'EXAMINED';
+                    })
+                    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                
+                console.log('Potential result examinations:', potentialResultExaminations);
+                
+                const screeningsWithResults = [];
+                
+                // If we have completed examinations, try to get their details
+                if (potentialResultExaminations.length > 0) {
+                    for (const exam of potentialResultExaminations.slice(0, 3)) {
+                        try {
+                            const detailResponse = await api.get(`/examinations/${exam.id}`);
+                            const examDetail = detailResponse.data;
+                            console.log(`Examination ${exam.id} detail:`, examDetail);
+                            
+                            // Check if examination has test results
+                            if (examDetail.testResults && examDetail.testResults.length > 0) {
+                                const hasPositiveResults = examDetail.testResults.some((tr: any) => tr.diagnosis === true);
+                                const resultSummary = hasPositiveResults ? 'Abnormal - Require attention' : 'Normal - All good';
+                                
+                                screeningsWithResults.push({
+                                    id: exam.id,
+                                    name: exam.panelName || exam.name || 'Health Screening',
+                                    result: resultSummary,
+                                    date: exam.date,
+                                    testResults: examDetail.testResults,
+                                    pdf: true
+                                });
+                                break; // Take first one with results
+                            } else {
+                                // Show basic info even without detailed results
+                                screeningsWithResults.push({
+                                    id: exam.id,
+                                    name: exam.panelName || exam.name || 'Health Screening',
+                                    result: 'Results available',
+                                    date: exam.date,
+                                    testResults: [],
+                                    pdf: true
+                                });
+                                break;
+                            }
+                        } catch (error) {
+                            console.error(`Error fetching details for examination ${exam.id}:`, error);
+                            // Still show basic info
+                            screeningsWithResults.push({
+                                id: exam.id,
+                                name: exam.panelName || exam.name || 'Health Screening',
+                                result: 'Results available',
+                                date: exam.date,
+                                testResults: [],
+                                pdf: true
+                            });
+                            break;
+                        }
+                    }
+                }
+                
+                if (!isMounted) return;
+                console.log('Screening results found:', screeningsWithResults);
+                setScreenings(screeningsWithResults);
+            })
+            .catch(error => {
+                if (!isMounted) return;
+                console.error('Error fetching screening results:', error);
+                setScreenings([]);
+            });
+        // Fetch all cycles data for prediction with error handling
+        api.get('/cycles')
+            .then(res => {
+                if (!isMounted) return;
+                console.log('All cycles data received:', res.data);
+                setCycles(res.data);
+            })
+            .catch(error => {
+                if (!isMounted) return;
+                console.error('Error fetching cycles data:', error);
+                setCycles([]);
+            });
+            
+        // Cleanup function to prevent setState after unmount
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     useEffect(() => {
@@ -165,7 +381,7 @@ const Dashboard: React.FC = () => {
                         <div className="text-2xl font-bold text-pink-600 mb-1">{cycleStatus}</div>
                         <div className="text-2xl flex gap-2">
                             {cycleEmojis.map((icon, idx) => (
-                                <img key={idx} src={icon} alt="cycle emoji" className="w-7 h-7 inline"/>
+                                <img key={`emoji-${idx}`} src={icon} alt="cycle emoji" className="w-7 h-7 inline"/>
                             ))}
                         </div>
                     </div>
@@ -248,15 +464,22 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex flex-col gap-2">
                         {screenings.map((s, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
+                            <div key={`screening-${s.name}-${idx}`} className="flex items-center gap-2">
                                 <span className="font-semibold text-gray-700">{s.name} - <span
-                                    className="text-green-600">{s.result}</span></span>
+                                    className={s.result.includes('Abnormal') ? 'text-red-600' : 'text-green-600'}>{s.result}</span></span>
                                 {s.pdf &&
-                                    <button className="text-pink-500 hover:underline text-sm">Xem file PDF</button>}
+                                    <button 
+                                        className="text-pink-500 hover:underline text-sm"
+                                        onClick={() => navigate(`/customer/sti-tests/${s.id}`)}
+                                    >
+                                        Xem chi tiết
+                                    </button>}
                             </div>
                         ))}
+                        {screenings.length === 0 && (
+                            <div className="text-gray-400 text-sm">Chưa có kết quả xét nghiệm</div>
+                        )}
                     </div>
-                    <div className="text-xs text-gray-400 mt-2">Bảo mật qua OTP</div>
                 </div>
                 <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-pink-500 font-semibold">
@@ -264,15 +487,18 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex flex-col gap-2">
                         {examinations.map((e, idx) => (
-                            <div key={idx} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
+                            <div key={`examination-${e.name}-${idx}`} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
                                 <div className="flex justify-between items-center">
                                     <span className="font-semibold text-pink-600">{e.name}</span>
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full ${e.status === 'Sắp diễn ra' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
+                                        className={`text-xs px-2 py-1 rounded-full ${e.status === 'In Progress' || e.status === 'Pending' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
                                 </div>
                                 <div className="text-xs text-gray-500">{e.place} | {e.date} - {e.time}</div>
                             </div>
                         ))}
+                        {examinations.length === 0 && (
+                            <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm sắp tới</div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import {useNavigate} from 'react-router-dom';
 import DropdownSelect from '../../../components/feature/Filter/DropdownSelect';
 import {SearchInput} from '../../../components';
 import BookingSuccessPopup from '../../../components/feature/Popup/BookingSuccessPopup';
+import Rating from '../../../components/feature/Rating/Rating';
 import api from '../../../api/axios';
 import { appointmentService } from '../../../api/services/appointmentService';
 
@@ -74,25 +75,50 @@ const AppointmentBooking: React.FC = () => {
     }, [selectedAdvisor, selectedDate]);
 
     useEffect(() => {
-        api.get('/doctors')
-            .then(res => {
-                const data = res.data;
-                setAdvisors(
-                    data.map((d: any) => ({
-                        id: d.id,
-                        name: d.name,
-                        avatar: '', 
-                        rating: 4.5, 
-                        reviews: 10, 
-                        appointments: 0, 
-                        specialization: d.specialization,
-                        price: d.price,
-                    }))
+        const fetchDoctorsWithRatings = async () => {
+            try {
+                const doctorsResponse = await api.get('/doctors');
+                const doctors = doctorsResponse.data;
+                
+                // Fetch ratings for each doctor
+                const doctorsWithRatings = await Promise.all(
+                    doctors.map(async (doctor: any) => {
+                        try {
+                            const ratingResponse = await api.get(`/appointments/doctor/${doctor.id}/average-rating`);
+                            const { averageRating, totalRatings } = ratingResponse.data;
+                            return {
+                                id: doctor.id,
+                                name: doctor.name,
+                                avatar: '',
+                                rating: averageRating ? Math.round(averageRating * 10) / 10 : 0,
+                                reviews: totalRatings || 0,
+                                appointments: 0,
+                                specialization: doctor.specialization,
+                                price: doctor.price,
+                            };
+                        } catch (error) {
+                            // If rating fetch fails, use default values
+                            return {
+                                id: doctor.id,
+                                name: doctor.name,
+                                avatar: '',
+                                rating: 0,
+                                reviews: 0,
+                                appointments: 0,
+                                specialization: doctor.specialization,
+                                price: doctor.price,
+                            };
+                        }
+                    })
                 );
-            })
-            .catch(() => {
+                
+                setAdvisors(doctorsWithRatings);
+            } catch (error) {
                 setAdvisors([]);
-            });
+            }
+        };
+
+        fetchDoctorsWithRatings();
     }, []);
 
     const specializationOptions = [
@@ -212,15 +238,18 @@ const AppointmentBooking: React.FC = () => {
                                                         </div>
                                                         <div>
                                                             <div className="font-semibold text-gray-800">{a.name}</div>
-                                                            <div
-                                                                className="flex items-center gap-2 text-sm text-gray-500">
-                                                                <span
-                                                                    className="text-yellow-500 font-bold">{a.rating} ★</span>
-                                                                <span>({a.reviews} reviews)</span>
-                                                                <span
-                                                                    className="ml-2 text-xs text-gray-400">({a.appointments} appointments given)</span>
-                                                                <span
-                                                                    className="ml-2 text-xs text-pink-500 font-bold">{a.price ? `${a.price}đ` : ''}</span>
+                                                            <div className="text-sm text-gray-600 mb-1">{a.specialization}</div>
+                                                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                                {a.rating > 0 ? (
+                                                                    <>
+                                                                        <Rating score={a.rating} size="small" showText={false} />
+                                                                        <span className="text-yellow-600 font-semibold">{a.rating}</span>
+                                                                        <span>({a.reviews} reviews)</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <span className="text-gray-400">No ratings yet</span>
+                                                                )}
+                                                                <span className="ml-2 text-xs text-pink-500 font-bold">{a.price ? `${a.price}đ` : ''}</span>
                                                             </div>
                                                         </div>
                                                     </div>

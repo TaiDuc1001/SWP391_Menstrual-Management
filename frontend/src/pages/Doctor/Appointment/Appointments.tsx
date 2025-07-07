@@ -3,6 +3,7 @@ import api from '../../../api/axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import NotificationPopup from '../../../components/feature/Popup/NotificationPopup';
+import Rating from '../../../components/feature/Rating/Rating';
 import refreshIcon from '../../../assets/icons/refresh.svg';
 
 interface Appointment {
@@ -18,6 +19,8 @@ interface Appointment {
     doctorNote?: string;
     url?: string;
     phoneNumber?: string;
+    score?: number;
+    feedback?: string;
 }
 
 type ViewType = 'day' | 'week' | 'month';
@@ -77,6 +80,7 @@ const Appointments: React.FC = () => {
     const fetchAppointments = async () => {
         try {
             const response = await api.get('/appointments/doctor');
+            
             const filteredAppointments = response.data.filter(
                 (apt: Appointment) =>
                     (apt.appointmentStatus === 'BOOKED' ||
@@ -84,8 +88,10 @@ const Appointments: React.FC = () => {
                         apt.appointmentStatus === 'WAITING_FOR_CUSTOMER' ||
                         apt.appointmentStatus === 'WAITING_FOR_DOCTOR' ||
                         apt.appointmentStatus === 'WAITING' ||
-                        apt.appointmentStatus === 'IN_PROGRESS')
+                        apt.appointmentStatus === 'IN_PROGRESS' ||
+                        apt.appointmentStatus === 'FINISHED')
             );
+            
             setAppointments(filteredAppointments);
         } catch (error) {
             console.error('Error fetching appointments:', error);
@@ -436,6 +442,31 @@ const Appointments: React.FC = () => {
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* Customer Rating */}
+                                    {detailModal.appointment.score && detailModal.appointment.score > 0 && (
+                                        <div className="bg-yellow-50 rounded-lg p-6">
+                                            <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                                ⭐ Customer Rating
+                                            </h4>
+                                            <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                                <div className="flex items-center space-x-3 mb-3">
+                                                    <Rating score={detailModal.appointment.score} size="large" />
+                                                    <span className="text-lg font-semibold text-gray-700">
+                                                        ({detailModal.appointment.score}/5)
+                                                    </span>
+                                                </div>
+                                                {detailModal.appointment.feedback && detailModal.appointment.feedback.trim() !== '' && (
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-600 mb-2">Customer Feedback:</p>
+                                                        <p className="text-gray-700 leading-relaxed italic">
+                                                            "{detailModal.appointment.feedback}"
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
@@ -515,9 +546,12 @@ const Appointments: React.FC = () => {
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                                 </thead>
@@ -526,6 +560,9 @@ const Appointments: React.FC = () => {
                                     <tr key={appointment.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="text-sm font-medium text-gray-900">#{appointment.id}</span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className="text-sm text-gray-900">{appointment.customerName}</span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-gray-900">
@@ -540,6 +577,7 @@ const Appointments: React.FC = () => {
                             appointment.appointmentStatus === 'BOOKED' ? 'bg-blue-100 text-blue-800' :
                                 appointment.appointmentStatus === 'CONFIRMED' ? 'bg-orange-100 text-orange-800' :
                                     (appointment.appointmentStatus === 'WAITING' || appointment.appointmentStatus === 'WAITING_FOR_CUSTOMER' || appointment.appointmentStatus === 'WAITING_FOR_DOCTOR') ? 'bg-purple-100 text-purple-800' :
+                                        appointment.appointmentStatus === 'FINISHED' ? 'bg-gray-100 text-gray-800' :
                                         'bg-green-100 text-green-800'
                         }`}>
                           {appointment.appointmentStatus === 'BOOKED' ? 'Booked' :
@@ -547,8 +585,19 @@ const Appointments: React.FC = () => {
                                   appointment.appointmentStatus === 'WAITING_FOR_CUSTOMER' ? 'Waiting for Customer' :
                                       appointment.appointmentStatus === 'WAITING_FOR_DOCTOR' ? 'Waiting for Doctor' :
                                           appointment.appointmentStatus === 'WAITING' ? 'Waiting' :
+                                              appointment.appointmentStatus === 'FINISHED' ? 'Finished' :
                                               'In Progress'}
                         </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {appointment.score && appointment.score > 0 ? (
+                                                <div className="flex items-center space-x-1">
+                                                    <Rating score={appointment.score} size="small" showText={false} />
+                                                    <span className="text-sm text-gray-600">({appointment.score})</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-sm text-gray-400">No rating</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex space-x-2">

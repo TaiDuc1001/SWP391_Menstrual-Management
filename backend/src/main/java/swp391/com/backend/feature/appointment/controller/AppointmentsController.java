@@ -7,6 +7,7 @@ import swp391.com.backend.feature.appointment.dto.AppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.SimpleAppointmentDTO;
 import swp391.com.backend.feature.appointment.dto.AppointmentCreateRequest;
 import swp391.com.backend.feature.appointment.dto.PaymentInfoDTO;
+import swp391.com.backend.feature.appointment.dto.RatingRequest;
 import swp391.com.backend.feature.appointment.mapper.AppointmentMapper;
 import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.appointment.data.AppointmentStatus;
@@ -37,10 +38,10 @@ public class AppointmentsController {
         return ResponseEntity.ok(results);
     }
     @GetMapping("/doctor")
-    public ResponseEntity<List<SimpleAppointmentDTO>> getAppointmentsForDoctor() {
-        List<SimpleAppointmentDTO> results = appointmentsService.getAppointmentsForDoctor()
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsForDoctor() {
+        List<AppointmentDTO> results = appointmentsService.getAppointmentsForDoctor()
                 .stream()
-                .map(appointmentMapper::toSimpleDTO)
+                .map(appointmentMapper::toDTO)
                 .toList();
         return ResponseEntity.ok(results);
     }
@@ -236,6 +237,42 @@ public class AppointmentsController {
     public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
         Appointment appointment = appointmentsService.findAppointmentById(id);
         return ResponseEntity.ok(appointmentMapper.toDTO(appointment));
+    }
+
+    @PutMapping("/rate/{id}")
+    public ResponseEntity<AppointmentDTO> rateAppointment(@PathVariable Long id, @RequestBody RatingRequest ratingRequest) {
+        Appointment appointment = appointmentsService.findAppointmentById(id);
+        if (appointment.getAppointmentStatus() != AppointmentStatus.FINISHED) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        appointment.setScore(ratingRequest.getScore());
+        appointment.setFeedback(ratingRequest.getFeedback());
+        
+        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        return ResponseEntity.ok(appointmentMapper.toDTO(updatedAppointment));
+    }
+
+    @GetMapping("/doctor/{doctorId}/average-rating")
+    public ResponseEntity<Map<String, Object>> getDoctorAverageRating(@PathVariable Long doctorId) {
+        Double averageRating = appointmentsService.getAverageRatingByDoctorId(doctorId);
+        Long totalRatings = appointmentsService.getTotalRatingsByDoctorId(doctorId);
+        
+        Map<String, Object> response = Map.of(
+            "averageRating", averageRating != null ? averageRating : 0.0,
+            "totalRatings", totalRatings != null ? totalRatings : 0L
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/debug/all-with-ratings")
+    public ResponseEntity<List<AppointmentDTO>> getAllAppointmentsWithRatings() {
+        List<AppointmentDTO> results = appointmentsService.getAllAppointments()
+                .stream()
+                .map(appointmentMapper::toDTO)
+                .toList();
+        return ResponseEntity.ok(results);
     }
 
 }
