@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Popup from './ExitPopup';
 import Toast from '../../common/Toast';
 import SexActivityPopup from './SexActivityPopup';
+import SymptomSelectionPopup from './SymptomSelectionPopup';
 import '../../../styles/components/symptom-popup.css';
 
 interface DaySymptomPopupProps {
@@ -40,10 +41,8 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [showSexActivityPopup, setShowSexActivityPopup] = useState(false);
+    const [showSymptomSelectionPopup, setShowSymptomSelectionPopup] = useState(false);
     const [sexActivityData, setSexActivityData] = useState<any>(null);
-
-    const defaultSymptoms = ['Đau lưng dưới', 'Đau đầu', 'Buồn nôn', 'Mệt mỏi'];
-    const currentSymptom = symptoms.length > 0 ? symptoms[0] : defaultSymptoms[0];
 
     const crampLevelMessages = {
         1: 'Về cơ bản là không đau',
@@ -165,6 +164,10 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
         setSex(!!data);
     };
 
+    const handleSymptomSelectionSave = (selectedSymptoms: string[]) => {
+        setSymptoms(selectedSymptoms);
+    };
+
     const handleSave = () => {
         if (!selectedDate) return;
 
@@ -270,11 +273,11 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                         </div>
                     </div>
 
-                    <div className="symptom-row">
+                    <div className="symptom-row" onClick={() => setShowSymptomSelectionPopup(true)}>
                         <div className="symptom-icon">💎</div>
                         <span className="symptom-label">Triệu chứng</span>
                         <span className="symptom-status">
-                            {currentSymptom}
+                            {symptoms.length > 0 ? `${symptoms.length} triệu chứng` : 'Chưa chọn'}
                         </span>
                     </div>
 
@@ -341,6 +344,13 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                 onClose={() => setShowSexActivityPopup(false)}
                 onSave={handleSexActivitySave}
                 selectedDate={selectedDate}
+            />
+            <SymptomSelectionPopup
+                open={showSymptomSelectionPopup}
+                onClose={() => setShowSymptomSelectionPopup(false)}
+                onSave={handleSymptomSelectionSave}
+                selectedDate={selectedDate}
+                currentSymptoms={symptoms}
             />
             <Toast 
                 message={toastMessage}
