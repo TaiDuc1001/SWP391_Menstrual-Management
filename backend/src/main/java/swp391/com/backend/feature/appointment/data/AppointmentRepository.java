@@ -16,6 +16,9 @@ import java.util.List;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> findAppointmentByDoctorAndDate(Doctor doctor, LocalDate date);
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId")
+    List<Appointment> findAppointmentsByDoctorId(@Param("doctorId") Long doctorId);
+    
     @Query("SELECT a FROM Appointment a WHERE a.appointmentStatus != AppointmentStatus.BOOKED")
     List<Appointment> findAppointmentsForDoctor();
     
@@ -31,4 +34,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Transactional
     @Query("UPDATE Appointment a SET a.doctor = null WHERE a.doctor.id = :doctorId")
     void updateDoctorToNullByDoctorId(@Param("doctorId") Long doctorId);
+
+    @Query("SELECT AVG(a.score) FROM Appointment a WHERE a.doctor.id = :doctorId AND a.score IS NOT NULL")
+    Double findAverageRatingByDoctorId(@Param("doctorId") Long doctorId);
+
+    @Query("SELECT COUNT(a) FROM Appointment a WHERE a.doctor.id = :doctorId AND a.score IS NOT NULL")
+    Long countRatingsByDoctorId(@Param("doctorId") Long doctorId);
 }

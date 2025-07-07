@@ -93,9 +93,20 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
             await rescheduleService.createRescheduleRequest(requestData);
             onSuccess();
             onClose();
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error creating reschedule request:', err);
-            setError('Failed to submit reschedule request');
+            
+            // Extract error message from backend response
+            let errorMessage = 'Failed to submit reschedule request';
+            if (err.response?.data?.message) {
+                errorMessage = err.response.data.message;
+            } else if (err.response?.status === 400) {
+                errorMessage = 'Cannot reschedule appointment. Please check appointment status and payment status.';
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

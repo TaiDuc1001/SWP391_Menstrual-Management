@@ -24,13 +24,15 @@ public class RescheduleController {
      * Customer tạo reschedule request
      */
     @PostMapping("/request")
-    public ResponseEntity<RescheduleRequestDTO> createRescheduleRequest(@RequestBody CreateRescheduleRequestDTO createRequest) {
+    public ResponseEntity<?> createRescheduleRequest(@RequestBody CreateRescheduleRequestDTO createRequest) {
         try {
             RescheduleRequest rescheduleRequest = rescheduleService.createRescheduleRequest(createRequest);
             RescheduleRequestDTO responseDTO = rescheduleMapper.toDTO(rescheduleRequest);
             return ResponseEntity.ok(responseDTO);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            // Return error message to frontend
+            return ResponseEntity.badRequest()
+                .body(Map.of("message", e.getMessage()));
         }
     }
 

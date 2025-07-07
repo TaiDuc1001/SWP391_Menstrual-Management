@@ -3,6 +3,8 @@ import {useNavigate, useParams} from 'react-router-dom';
 import api from '../../../api/axios';
 import {Button, LoadingSpinner, StatusBadge} from '../../../components';
 import RescheduleModal from '../../../components/feature/Modal/RescheduleModal';
+import RatingModal from '../../../components/feature/Modal/RatingModal';
+import Rating from '../../../components/feature/Rating/Rating';
 import RescheduleStatusCard from '../../../components/feature/Card/RescheduleStatusCard';
 import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
 import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
@@ -21,6 +23,8 @@ interface AppointmentDetailData {
     appointmentStatus: string;
     customerNote: string;
     url?: string;
+    score?: number;
+    feedback?: string;
 }
 
 const AppointmentDetail: React.FC = () => {
@@ -30,6 +34,7 @@ const AppointmentDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [showRatingModal, setShowRatingModal] = useState(false);
     const [rescheduleRequests, setRescheduleRequests] = useState<RescheduleRequest[]>([]);
     const [loadingReschedule, setLoadingReschedule] = useState(false);
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
@@ -142,6 +147,20 @@ const AppointmentDetail: React.FC = () => {
             setErrorMessage('Unable to cancel appointment. Please try again.');
             setShowErrorNotification(true);
         }
+    };
+
+    const handleRatingSuccess = (score: number, feedback: string) => {
+        // Update appointment data with new rating
+        if (appointment) {
+            setAppointment({
+                ...appointment,
+                score,
+                feedback
+            });
+        }
+        setSuccessTitle('Rating Submitted Successfully!');
+        setSuccessMessage('Thank you for your feedback. Your rating has been recorded.');
+        setShowSuccessNotification(true);
     };
 
     // Check if there's an active reschedule request (PENDING)
@@ -305,6 +324,26 @@ const AppointmentDetail: React.FC = () => {
                                     <p className="text-gray-700">{appointment.customerNote}</p>
                                 </div>
                             </div>
+                        )}
+
+                        {/* Rating Display */}
+                        {appointment.appointmentStatus === 'FINISHED' && appointment.score && (
+                            <div className="appointment-detail-rating-card">
+                                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                    ⭐ Your Rating
+                                </h2>
+                                <div className="appointment-detail-rating-display">
+                                    <div className="rating-section">
+                                        <Rating score={appointment.score} size="large" />
+                                    </div>
+                                    {appointment.feedback && (
+                                        <div className="feedback-section">
+                                            <h4 className="feedback-title">Your Feedback:</h4>
+                                            <p className="feedback-text">{appointment.feedback}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         )} {appointment.url && ['CONFIRMED', 'IN_PROGRESS', 'FINISHED'].includes(appointment.appointmentStatus) && (
                         <div className="appointment-detail-meeting-card">
                             <div className="appointment-detail-meeting-content">
@@ -333,8 +372,8 @@ const AppointmentDetail: React.FC = () => {
                                     </button>
                                 )}
                                 
-                                {/* Reschedule Button */}
-                                {['BOOKED', 'CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
+                                {/* Reschedule Button - Only show after payment is confirmed */}
+                                {['CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
                                     <button
                                         onClick={() => setShowRescheduleModal(true)}
                                         disabled={hasPendingRescheduleRequest}
@@ -349,6 +388,15 @@ const AppointmentDetail: React.FC = () => {
                                     </button>
                                 )}
                                 
+                                {/* Payment Required Message for BOOKED status */}
+                                {appointment.appointmentStatus === 'BOOKED' && (
+                                    <div className="appointment-detail-info-note">
+                                        <p className="text-sm text-amber-600">
+                                            ⚠️ Please complete payment first before rescheduling this appointment.
+                                        </p>
+                                    </div>
+                                )}
+                                
                                 {appointment.appointmentStatus === 'BOOKED' && (
                                     <button
                                         onClick={handleCancelAppointment}
@@ -357,6 +405,17 @@ const AppointmentDetail: React.FC = () => {
                                         Cancel Appointment
                                     </button>
                                 )}
+
+                                {/* Rate Doctor Button */}
+                                {appointment.appointmentStatus === 'FINISHED' && (
+                                    <button
+                                        onClick={() => setShowRatingModal(true)}
+                                        className="appointment-detail-action-btn appointment-detail-btn-yellow"
+                                    >
+                                        {appointment.score ? 'Update Rating' : 'Rate Doctor'}
+                                    </button>
+                                )}
+                                
                                 <button
                                     onClick={() => navigate(`/customer/doctors/${appointment.doctorId}`)}
                                     className="appointment-detail-action-btn appointment-detail-btn-pink"
@@ -446,6 +505,17 @@ const AppointmentDetail: React.FC = () => {
                     appointmentId={appointment.id}
                     doctorId={appointment.doctorId}
                     onSuccess={handleRescheduleSuccess}
+                />
+            )}
+
+            {/* Rating Modal */}
+            {showRatingModal && appointment && (
+                <RatingModal
+                    appointmentId={appointment.id}
+                    currentScore={appointment.score}
+                    currentFeedback={appointment.feedback}
+                    onClose={() => setShowRatingModal(false)}
+                    onSuccess={handleRatingSuccess}
                 />
             )}
 

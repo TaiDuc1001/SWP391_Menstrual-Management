@@ -36,6 +36,18 @@ public class RescheduleService {
         // Lấy appointment gốc
         Appointment appointment = appointmentsService.findAppointmentById(createRequest.getAppointmentId());
         
+        // Kiểm tra trạng thái appointment - chỉ cho phép reschedule sau khi đã thanh toán
+        if (appointment.getAppointmentStatus() == AppointmentStatus.BOOKED) {
+            throw new RuntimeException("Cannot reschedule appointment before payment is completed. Please complete payment first.");
+        }
+        
+        // Chỉ cho phép reschedule các appointment ở trạng thái hợp lệ
+        if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED && 
+            appointment.getAppointmentStatus() != AppointmentStatus.WAITING_FOR_CUSTOMER &&
+            appointment.getAppointmentStatus() != AppointmentStatus.WAITING_FOR_DOCTOR) {
+            throw new RuntimeException("Cannot reschedule appointment in current status: " + appointment.getAppointmentStatus());
+        }
+        
         // Kiểm tra xem đã có reschedule request pending chưa
         var existingRequest = rescheduleRequestRepository.findByAppointmentIdAndStatus(
             createRequest.getAppointmentId(), RescheduleStatus.PENDING);
