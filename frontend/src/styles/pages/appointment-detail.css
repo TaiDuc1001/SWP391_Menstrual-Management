@@ -184,6 +184,24 @@
     background-color: #2563eb;
 }
 
+/* Info note styles */
+.appointment-detail-info-note {
+    background-color: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.appointment-detail-info-note p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #92400e;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .appointment-detail-timeline-item {
     display: flex;
     align-items: center;

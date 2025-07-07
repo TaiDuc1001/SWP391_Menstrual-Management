@@ -372,8 +372,8 @@ const AppointmentDetail: React.FC = () => {
                                     </button>
                                 )}
                                 
-                                {/* Reschedule Button */}
-                                {['BOOKED', 'CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
+                                {/* Reschedule Button - Only show after payment is confirmed */}
+                                {['CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
                                     <button
                                         onClick={() => setShowRescheduleModal(true)}
                                         disabled={hasPendingRescheduleRequest}
@@ -386,6 +386,15 @@ const AppointmentDetail: React.FC = () => {
                                     >
                                         {hasPendingRescheduleRequest ? 'Reschedule Pending' : 'Reschedule'}
                                     </button>
+                                )}
+                                
+                                {/* Payment Required Message for BOOKED status */}
+                                {appointment.appointmentStatus === 'BOOKED' && (
+                                    <div className="appointment-detail-info-note">
+                                        <p className="text-sm text-amber-600">
+                                            ⚠️ Please complete payment first before rescheduling this appointment.
+                                        </p>
+                                    </div>
                                 )}
                                 
                                 {appointment.appointmentStatus === 'BOOKED' && (
