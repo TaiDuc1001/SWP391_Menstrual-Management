@@ -42,7 +42,7 @@ export const customerPaths: RouteConfig[] = [
         element: <ProfileGuard><CustomerBlogs/></ProfileGuard>,
         label: 'Health Tips',
         iconName: 'FaLightbulb',
-        showInSidebar: true
+        showInSidebar: false
     },
 
     {

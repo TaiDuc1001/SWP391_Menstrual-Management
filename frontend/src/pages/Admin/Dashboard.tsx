@@ -1,4 +1,5 @@
 import React from 'react';
+import {useNavigate} from 'react-router-dom';
 import {FaCalendarAlt, FaChartLine, FaDollarSign, FaFlask, FaStethoscope, FaUser} from 'react-icons/fa';
 import {
     Area,
@@ -50,6 +51,12 @@ const recentActivities = [
 ];
 
 const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
+
+    const handleViewAllTips = () => {
+        navigate('/admin/blogs');
+    };
+
     return (
         <div className="p-6 bg-gray-50">
             <div className="flex justify-between items-center mb-6">
@@ -152,6 +159,21 @@ const Dashboard: React.FC = () => {
                             <p className="text-red-800">The system will be maintained at 23:00 today</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h2 className="text-xl font-semibold text-gray-800">Health Tips Management</h2>
+                        <p className="text-gray-600 mt-1">Manage and view all health tips and blog content</p>
+                    </div>
+                    <button 
+                        onClick={handleViewAllTips}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        View all Tips
+                    </button>
                 </div>
             </div>
         </div>
