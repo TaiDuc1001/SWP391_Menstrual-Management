@@ -28,7 +28,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
     const getNextDays = (count: number) => {
         const days = [];
         const today = new Date();
-        for (let i = 1; i <= count; i++) {
+        for (let i = 1; i <= count; i++) { // Start from 1 to exclude today
             const date = new Date(today);
             date.setDate(today.getDate() + i);
             // Skip weekends (optional)
@@ -37,6 +37,22 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
             }
         }
         return days;
+    };
+
+    // Get minimum date (tomorrow)
+    const getMinDate = () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+    };
+
+    // Validate if selected date is in the future
+    const isDateInFuture = (dateString: string) => {
+        const selectedDate = new Date(dateString);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
+        return selectedDate > today;
     };
 
     const availableDates = getNextDays(30);
@@ -76,6 +92,22 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
     const handleSubmit = async () => {
         if (!selectedDate || !selectedSlot) {
             setError('Please select both a date and time slot');
+            return;
+        }
+
+        // Validate date is in the future
+        if (!isDateInFuture(selectedDate)) {
+            setError('You can only reschedule to future dates. Please select a date starting from tomorrow.');
+            return;
+        }
+
+        // Additional validation for past dates
+        const selectedDateObj = new Date(selectedDate);
+        const currentDate = new Date();
+        if (selectedDateObj < currentDate) {
+            setError('Cannot reschedule to past dates. Please select a future date.');
+            setSelectedDate('');
+            setSelectedSlot('');
             return;
         }
 
@@ -158,7 +190,17 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         </label>
                         <select
                             value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
+                            onChange={(e) => {
+                                const newDate = e.target.value;
+                                // Additional validation on change
+                                if (newDate && !isDateInFuture(newDate)) {
+                                    setError('Please select a future date. You can only reschedule to dates starting from tomorrow.');
+                                    return;
+                                }
+                                setSelectedDate(newDate);
+                                setSelectedSlot('');
+                                setError(''); // Clear any previous error
+                            }}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
                         >
                             <option value="">Choose a date...</option>
@@ -168,6 +210,9 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                                 </option>
                             ))}
                         </select>
+                        <div className="text-xs text-gray-500 mt-1">
+                            You can reschedule to dates starting from tomorrow
+                        </div>
                     </div>
 
                     {/* Time Slot Selection */}
