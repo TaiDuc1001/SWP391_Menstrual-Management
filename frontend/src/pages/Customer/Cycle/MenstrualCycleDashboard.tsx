@@ -337,7 +337,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 })}
                             </div>
                             <div className="flex gap-6 mt-3 text-sm items-center flex-wrap">
-                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days (declared)
+                                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-full inline-block" style={{backgroundColor: '#ff5047'}}></span> Period days
                                 </div>
                                 <div className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-indigo-400 rounded-full inline-block bg-white"></span> Has symptoms
                                 </div>
