@@ -1,33 +1,50 @@
-import React, {useEffect, useRef, useState} from 'react';
-import dropDownIcon from '../../../assets/icons/drop-down.svg';
+import React, { useEffect, useState } from 'react';
 import NewUserButton from "../../../components/common/Button/AdminCreateButton";
 import plusWhiteIcon from "../../../assets/icons/plus-white.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import refreshIcon from "../../../assets/icons/refresh.svg";
 import editIcon from '../../../assets/icons/edit.svg';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
-import userAvt from '../../../assets/icons/avatar.svg';
-import { accountService, AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../../api';
+import { AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../../api';
+import { useAccounts } from '../../../api/hooks';
 import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
+import ConfirmDialog from '../../../components/common/Dialog/ConfirmDialog';
+import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
+import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
+import { DropdownSelect } from '../../../components';
 import { applyPagination } from '../../../utils';
+import { generateAvatarUrl } from '../../../utils/avatar';
 
 
-const roles = ['CUSTOMER', 'DOCTOR', 'STAFF', 'ADMIN'];
-const statuses = ['Active', 'Locked'];
+const roles = [
+    { value: '', label: 'All roles' },
+    { value: 'CUSTOMER', label: 'Customer' },
+    { value: 'DOCTOR', label: 'Doctor' },
+    { value: 'STAFF', label: 'Staff' },
+    { value: 'ADMIN', label: 'Admin' }
+];
 
-const plusIcon = plusWhiteIcon;
+const statuses = [
+    { value: '', label: 'All status' },
+    { value: 'Active', label: 'Active' },
+    { value: 'Inactive', label: 'Inactive' }
+];
 
 const Accounts: React.FC = () => {
-    const [users, setUsers] = useState<AccountForUI[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedRole, setSelectedRole] = useState<string | null>(null);
-    const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-    const [showRoleDropdown, setShowRoleDropdown] = useState(false);
-    const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+    const { 
+        accounts: users, 
+        loading, 
+        error, 
+        fetchAccounts, 
+        createAccount, 
+        updateAccount, 
+        deleteAccount
+    } = useAccounts();
+    
+    const [selectedRole, setSelectedRole] = useState<string>('');
+    const [selectedStatus, setSelectedStatus] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -35,42 +52,75 @@ const Accounts: React.FC = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const roleRef = useRef<HTMLDivElement>(null);
-    const statusRef = useRef<HTMLDivElement>(null);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<AccountForUI | null>(null);
+    
 
-    const fetchAccounts = async () => {
+    const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+    const [showErrorNotification, setShowErrorNotification] = useState(false);
+    const [notificationTitle, setNotificationTitle] = useState('');
+    const [notificationMessage, setNotificationMessage] = useState('');
+
+    const pageSize = 5;
+
+
+    const showSuccess = (title: string, message: string) => {
+        setNotificationTitle(title);
+        setNotificationMessage(message);
+        setShowSuccessNotification(true);
+    };
+
+    const showError = (title: string, message: string) => {
+        setNotificationTitle(title);
+        setNotificationMessage(message);
+        setShowErrorNotification(true);
+    };
+
+
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedRole, selectedStatus, searchTerm]);
+
+    const handleRefresh = async () => {
         try {
-            setLoading(true);
-            setError(null);
-            const accounts = await accountService.getAllAccounts();
-            setUsers(accounts);
-        } catch (err) {
-            setError('Failed to fetch accounts');
-            console.error('Error fetching accounts:', err);
-        } finally {
-            setLoading(false);
+            await fetchAccounts();
+            setSelectedRole('');
+            setSelectedStatus('');
+            setSearchTerm('');
+            setCurrentPage(1);
+            showSuccess('Data Refreshed', 'User data has been refreshed successfully.');
+        } catch (error) {
+            showError('Refresh Failed', 'Failed to refresh user data. Please try again.');
         }
     };
 
-    const handleRefresh = async () => {
-        setLoading(true);
-        await fetchAccounts();
-        // Reset filters and pagination
-        setSelectedRole(null);
-        setSelectedStatus(null);
-        setSearchTerm('');
-        setCurrentPage(1);
-    };
-
     const handleCreateUser = async (userData: CreateAccountRequest) => {
+        setIsCreating(true);
         try {
-            setIsCreating(true);
-            await accountService.createAccount(userData);
-            await fetchAccounts(); // Refresh the list
-            setShowCreateModal(false);
+            const result = await createAccount(userData);
+            
+            if (result.success) {
+                setShowCreateModal(false);
+                showSuccess('User Created', `Account for ${userData.name} has been created successfully.`);
+            } else {
+                let errorMessage = result.error || 'Failed to create user. Please try again.';
+                
+                if (result.error?.includes('Duplicate entry') && result.error?.includes('phone')) {
+                    errorMessage = 'This phone number is already registered. Please use a different phone number.';
+                } else if (result.error?.includes('Duplicate entry') && result.error?.includes('email')) {
+                    errorMessage = 'This email address is already registered. Please use a different email address.';
+                } else if (result.error?.includes('could not execute statement')) {
+                    errorMessage = 'Database error occurred. Please check if the information is already registered.';
+                }
+                
+                showError('Creation Failed', errorMessage);
+            }
         } catch (error) {
-            console.error('Error creating user:', error);
-            throw error; // Re-throw to let modal handle the error
+            showError('Creation Failed', 'An unexpected error occurred while creating the user.');
         } finally {
             setIsCreating(false);
         }
@@ -79,36 +129,57 @@ const Accounts: React.FC = () => {
     const handleUpdateUser = async (userData: UpdateAccountRequest) => {
         if (!selectedUser) return;
         
+        setIsUpdating(true);
         try {
-            setIsUpdating(true);
-            await accountService.updateAccount(selectedUser.id, userData);
-            await fetchAccounts(); // Refresh the list
-            setShowUpdateModal(false);
-            setSelectedUser(null);
+            const result = await updateAccount(selectedUser.id, userData);
+            
+            if (result.success) {
+                setShowUpdateModal(false);
+                setSelectedUser(null);
+                showSuccess('User Updated', `Account for ${userData.name} has been updated successfully.`);
+            } else {
+                let errorMessage = result.error || 'Failed to update user. Please try again.';
+                
+                if (result.error?.includes('Duplicate entry') && result.error?.includes('phone')) {
+                    errorMessage = 'This phone number is already used by another account. Please use a different phone number.';
+                } else if (result.error?.includes('Duplicate entry') && result.error?.includes('email')) {
+                    errorMessage = 'This email address is already used by another account. Please use a different email address.';
+                } else if (result.error?.includes('could not execute statement')) {
+                    errorMessage = 'Database error occurred. Please check if the information is already registered.';
+                }
+                
+                showError('Update Failed', errorMessage);
+            }
         } catch (error) {
-            console.error('Error updating user:', error);
-            throw error; // Re-throw to let modal handle the error
+            showError('Update Failed', 'An unexpected error occurred while updating the user.');
         } finally {
             setIsUpdating(false);
         }
     };
 
-    const handleDeleteUser = async (user: AccountForUI) => {
-        if (!window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản ${user.name}? Hành động này không thể hoàn tác.`)) {
-            return;
-        }
+    const handleDeleteUser = (user: AccountForUI) => {
+        setUserToDelete(user);
+        setShowConfirmDialog(true);
+    };
 
+    const confirmDeleteUser = async () => {
+        if (!userToDelete) return;
+
+        setIsDeleting(true);
         try {
-            setIsDeleting(true);
-            await accountService.deleteAccount(user.id);
-            await fetchAccounts(); // Refresh the list
-            alert(`Tài khoản ${user.name} đã được xóa thành công.`);
-        } catch (error: any) {
-            console.error('Error deleting user:', error);
-            const errorMessage = error.message || 'Xóa tài khoản thất bại. Vui lòng thử lại.';
-            alert(errorMessage);
+            const result = await deleteAccount(userToDelete.id);
+            
+            if (result.success) {
+                showSuccess('User Deleted', `Account ${userToDelete.name} has been deleted successfully.`);
+            } else {
+                showError('Delete Failed', result.error || 'Failed to delete account. Please try again.');
+            }
+        } catch (error) {
+            showError('Delete Failed', 'An unexpected error occurred while deleting the user.');
         } finally {
             setIsDeleting(false);
+            setShowConfirmDialog(false);
+            setUserToDelete(null);
         }
     };
 
@@ -117,31 +188,6 @@ const Accounts: React.FC = () => {
         setShowUpdateModal(true);
     };
 
-    useEffect(() => {
-        fetchAccounts();
-    }, []);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (roleRef.current && !roleRef.current.contains(e.target as Node)) {
-                setShowRoleDropdown(false);
-            }
-            if (statusRef.current && !statusRef.current.contains(e.target as Node)) {
-                setShowStatusDropdown(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const pageSize = 10;
-
-    const handleSelectRow = (id: number) => {
-        setSelectedRows((prev) =>
-            prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-        );
-    };
-    
     const filteredUsers = users.filter((user: AccountForUI) =>
         (!selectedRole || user.role === selectedRole) &&
         (!selectedStatus || user.status === selectedStatus) &&
@@ -149,38 +195,14 @@ const Accounts: React.FC = () => {
             user.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    // Apply pagination using utility function
     const paginationResult = applyPagination(filteredUsers, {
         currentPage,
         itemsPerPage: pageSize
     });
     const { items: paginatedUsers, totalPages, totalItems: totalUsers, startIdx, endIdx } = paginationResult;
-    
-    const handleSelectAll = () => {
-        if (selectedRows.length === paginatedUsers.length) {
-            setSelectedRows([]);
-        } else {
-            setSelectedRows(paginatedUsers.map((u: AccountForUI) => u.id));
-        }
-    };
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) setCurrentPage(page);
-    };
-
-    // Reset to page 1 when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [selectedRole, selectedStatus, searchTerm]);
-
-    const getRoleDisplayName = (role: string) => {
-        switch (role) {
-            case 'CUSTOMER': return 'Customer';
-            case 'DOCTOR': return 'Doctor';
-            case 'STAFF': return 'Staff';
-            case 'ADMIN': return 'Admin';
-            default: return role;
-        }
     };
 
     const getRoleBadgeColor = (role: string) => {
@@ -197,43 +219,31 @@ const Accounts: React.FC = () => {
                 return 'bg-gray-100 text-gray-600';
         }
     };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'Active':
                 return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">Active</span>;
             case 'Locked':
                 return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Locked</span>;
-            case 'Inactive':
-                return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">Inactive</span>;
-            case 'Pending':
-                return <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs">Pending</span>;
             default:
                 return <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">{status}</span>;
         }
     };
 
-
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-
             <div className="bg-white p-4 rounded shadow w-full mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-black">User management</h1>
                 <NewUserButton 
-                    icon={<img src={plusIcon} alt="Plus" className="w-5 h-5"/>}
+                    icon={<img src={plusWhiteIcon} alt="Plus" className="w-5 h-5"/>}
                     onClick={() => setShowCreateModal(true)}
                 >
                     Create new user
                 </NewUserButton>
             </div>
 
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                </div>
-            )}
-
             <div className="mb-4 flex space-x-4 w-full">
-
                 <div className="relative flex-1 min-w-0">
                     <input
                         type="text"
@@ -247,101 +257,37 @@ const Accounts: React.FC = () => {
                     </span>
                 </div>
 
-                <div className="relative" ref={roleRef}>
-                    <button
-                        className="border px-4 py-2 rounded flex items-center justify-between gap-2 min-w-[100px]"
-                        onClick={() => {
-                            setShowRoleDropdown(!showRoleDropdown);
-                            setShowStatusDropdown(false);
-                        }}
-                    >
-                        {selectedRole ? getRoleDisplayName(selectedRole) : 'All roles'}
-                        <img src={dropDownIcon} alt="dropdown" className="w-4 h-4"/>
-                    </button>
-                    {showRoleDropdown && (
-                        <div className="absolute bg-white border mt-2 rounded shadow w-48 z-10">
-                            <div
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => {
-                                    setSelectedRole(null);
-                                    setShowRoleDropdown(false);
-                                }}
-                            >
-                                All roles
-                            </div>
-                            {roles.map((role) => (
-                                <div
-                                    key={role}
-                                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${selectedRole === role ? 'bg-gray-200' : ''}`}
-                                    onClick={() => {
-                                        setSelectedRole(role);
-                                        setShowRoleDropdown(false);
-                                    }}
-                                >
-                                    {getRoleDisplayName(role)}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <DropdownSelect
+                    options={roles}
+                    value={selectedRole}
+                    onChange={setSelectedRole}
+                    placeholder="All roles"
+                    className="min-w-[120px]"
+                />
 
-                <div className="relative" ref={statusRef}>
-                    <button
-                        className="border px-2 py-2 rounded flex justify-between items-center gap-2 min-w-[100px]"
-                        onClick={() => {
-                            setShowStatusDropdown(!showStatusDropdown);
-                            setShowRoleDropdown(false);
-                        }}
-                    >
-                        {selectedStatus || 'All status'}
-                        <img src={dropDownIcon} alt="dropdown" className="w-4 h-4"/>
-                    </button>
-                    {showStatusDropdown && (
-                        <div className="absolute bg-white border mt-2 rounded shadow w-48 z-10">
-                            <div
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => {
-                                    setSelectedStatus(null);
-                                    setShowStatusDropdown(false);
-                                }}
-                            >
-                                All status
-                            </div>
-                            {statuses.map((status) => (
-                                <div
-                                    key={status}
-                                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${selectedStatus === status ? 'bg-gray-200' : ''}`}
-                                    onClick={() => {
-                                        setSelectedStatus(status);
-                                        setShowStatusDropdown(false);
-                                    }}
-                                >
-                                    {status}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <DropdownSelect
+                    options={statuses}
+                    value={selectedStatus}
+                    onChange={setSelectedStatus}
+                    placeholder="All status"
+                    className="min-w-[120px]"
+                />
 
-
-                <div className="relative">
-                    <button
-                        onClick={handleRefresh}
-                        disabled={loading}
-                        className={`flex items-center px-4 py-2 border rounded bg-white transition ${
-                            loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
-                        }`}
-                    >
-                        <img 
-                            src={refreshIcon} 
-                            alt="Refresh" 
-                            className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`}
-                        />
-                        {loading ? 'Refreshing...' : 'Refresh'}
-                    </button>
-                </div>
+                <button
+                    onClick={handleRefresh}
+                    disabled={loading}
+                    className={`flex items-center px-4 py-2 border rounded bg-white transition ${
+                        loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+                    }`}
+                >
+                    <img 
+                        src={refreshIcon} 
+                        alt="Refresh" 
+                        className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`}
+                    />
+                    {loading ? 'Refreshing...' : 'Refresh'}
+                </button>
             </div>
-
 
             <div className="bg-white p-4 rounded shadow w-full">
                 <div className="flex items-center mb-2">
@@ -350,65 +296,75 @@ const Accounts: React.FC = () => {
                 </div>
                 <table className="w-full table-fixed text-sm">
                     <thead>
-                    <tr className="bg-gray-50 text-gray-700">
-                        <th className="p-2 border w-3">No</th>
-                        <th className="p-2 border w-20">Name</th>
-                        <th className="p-2 border w-20">Email</th>
-                        <th className="p-2 border w-10">Password</th>
-                        <th className="p-2 border w-12">Role</th>
-                        <th className="p-2 border w-12">Phone</th>
-                        <th className="p-2 border w-20">Status</th>
-                        <th className="p-2 border w-12">Actions</th>
-                    </tr>
+                        <tr className="bg-gray-50 text-gray-700">
+                            <th className="p-2 border w-3">No</th>
+                            <th className="p-2 border w-20">Name</th>
+                            <th className="p-2 border w-20">Email</th>
+                            <th className="p-2 border w-10">Password</th>
+                            <th className="p-2 border w-12">Role</th>
+                            <th className="p-2 border w-12">Phone</th>
+                            <th className="p-2 border w-20">Status</th>
+                            <th className="p-2 border w-12">Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {loading ? (
-                        <tr>
-                            <td colSpan={8} className="p-4 text-center text-gray-500">Loading...</td>
-                        </tr>
-                    ) : paginatedUsers.length === 0 ? (
-                        <tr>
-                            <td colSpan={8} className="p-4 text-center text-gray-500">No users found</td>
-                        </tr>
-                    ) : (
-                        paginatedUsers.map((user: AccountForUI, idx: number) => (
-                            <tr key={user.id} className="hover:bg-gray-50">
-                                <td className="p-2 border text-center">{startIdx + idx + 1}</td>
-                                <td className="p-2 border flex items-center gap-2">
-                                    <img src={user.avatar || userAvt} alt="avatar" className="w-7 h-7 rounded-full border"/>
-                                    <span>{user.name}</span>
-                                </td>
-                                <td className="p-2 border">{user.email}</td>
-                                <td className="p-2 border text-center">********</td>
-                                <td className="p-2 border text-center">
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>{user.role}</span>
-                                </td>
-                                <td className="p-2 border text-center">{user.phone}</td>
-                                <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
-                                <td className="p-2 border text-center">
-                                    <div className="flex justify-center items-center gap-1">
-                                        <button 
-                                            title="Edit User"
-                                            onClick={() => handleEditUser(user)}
-                                            className="hover:opacity-70 transition p-1"
-                                            disabled={isUpdating || isDeleting}
-                                        >
-                                            <img src={editIcon} alt="edit" className="w-4 h-4"/>
-                                        </button>
-                                        <button 
-                                            title="Delete User"
-                                            onClick={() => handleDeleteUser(user)}
-                                            className="hover:opacity-70 transition p-1 text-red-600"
-                                            disabled={isUpdating || isDeleting}
-                                        >
-                                            <img src={deleteIcon} alt="delete user" className="w-4 h-4"/>
-                                        </button>
-                                    </div>
-                                </td>
+                        {loading ? (
+                            <tr>
+                                <td colSpan={8} className="p-4 text-center text-gray-500">Loading...</td>
                             </tr>
-                        ))
-                    )}
+                        ) : paginatedUsers.length === 0 ? (
+                            <tr>
+                                <td colSpan={8} className="p-4 text-center text-gray-500">No users found</td>
+                            </tr>
+                        ) : (
+                            paginatedUsers.map((user: AccountForUI, idx: number) => (
+                                <tr key={user.id} className="hover:bg-gray-50">
+                                    <td className="p-2 border text-center">{startIdx + idx + 1}</td>
+                                    <td className="p-2 border flex items-center gap-2">
+                                        <img 
+                                            src={user.avatar} 
+                                            alt="avatar" 
+                                            className="w-7 h-7 rounded-full border"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.src = generateAvatarUrl(user.name);
+                                            }}
+                                        />
+                                        <span>{user.name}</span>
+                                    </td>
+                                    <td className="p-2 border">{user.email}</td>
+                                    <td className="p-2 border text-center">********</td>
+                                    <td className="p-2 border text-center">
+                                        <span
+                                            className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>
+                                            {user.role}
+                                        </span>
+                                    </td>
+                                    <td className="p-2 border text-center">{user.phone}</td>
+                                    <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
+                                    <td className="p-2 border text-center">
+                                        <div className="flex justify-center items-center gap-1">
+                                            <button 
+                                                title="Edit User"
+                                                onClick={() => handleEditUser(user)}
+                                                className="hover:opacity-70 transition p-1"
+                                                disabled={isUpdating || isDeleting}
+                                            >
+                                                <img src={editIcon} alt="edit" className="w-4 h-4"/>
+                                            </button>
+                                            <button 
+                                                title="Delete User"
+                                                onClick={() => handleDeleteUser(user)}
+                                                className="hover:opacity-70 transition p-1 text-red-600"
+                                                disabled={isUpdating || isDeleting}
+                                            >
+                                                <img src={deleteIcon} alt="delete user" className="w-4 h-4"/>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
@@ -461,7 +417,38 @@ const Accounts: React.FC = () => {
                 loading={isUpdating}
                 user={selectedUser}
             />
+
+            <ConfirmDialog
+                isOpen={showConfirmDialog}
+                title="Confirm Deletion"
+                message={`Are you sure you want to permanently delete account ${userToDelete?.name}? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={confirmDeleteUser}
+                onCancel={() => {
+                    setShowConfirmDialog(false);
+                    setUserToDelete(null);
+                }}
+                type="danger"
+            />
+
+            <SuccessNotification
+                isOpen={showSuccessNotification}
+                onClose={() => setShowSuccessNotification(false)}
+                title={notificationTitle}
+                message={notificationMessage}
+                duration={5000}
+            />
+
+            <ErrorNotification
+                isOpen={showErrorNotification}
+                onClose={() => setShowErrorNotification(false)}
+                title={notificationTitle}
+                message={notificationMessage}
+                duration={5000}
+            />
         </div>
     );
 };
+
 export default Accounts;
