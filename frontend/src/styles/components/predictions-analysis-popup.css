@@ -1,5 +1,5 @@
 .predictions-analysis-popup .popup-content {
-    width: 300px;
+    width: 10000px;
     padding: 0;
     border-radius: 16px;
     background: linear-gradient(135deg, #f8f4ff 0%, #efe4ff 100%);
@@ -158,6 +158,112 @@
 }
 
 .flow-level {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cramps-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: left;
+}
+
+.cramps-label {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.cramps-level {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.symptoms-info {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.symptom-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    text-align: left;
+}
+
+.symptom-label {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.symptom-value {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.symptom-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+}
+
+.symptom-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.symptom-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.flow-icon {
+    background-color: #ff69b4;
+}
+
+.cramps-icon {
+    background-color: #ff69b4;
+}
+
+.symptom-title {
+    font-size: 16px;
+    color: #374151;
+    font-weight: 600;
+}
+
+.symptom-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.symptom-description {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.symptom-value {
     font-size: 16px;
     font-weight: 600;
 }

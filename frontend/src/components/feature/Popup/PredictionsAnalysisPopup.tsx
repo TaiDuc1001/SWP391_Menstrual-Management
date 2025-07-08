@@ -71,7 +71,34 @@ const PredictionsAnalysisPopup: React.FC<PredictionsAnalysisPopupProps> = ({
         };
     };
 
+    const getCrampsLevelData = () => {
+        if (!selectedDate) return null;
+        
+        const storageKey = getStorageKey();
+        const saved = localStorage.getItem(storageKey);
+        const savedData = saved ? JSON.parse(saved) : {};
+        const dayData = savedData[selectedDate];
+        
+        if (!dayData || !dayData.crampsLevel || dayData.crampsLevel === 0) {
+            return null;
+        }
+
+        const crampsLevelMessages = {
+            1: 'Về cơ bản không đau',
+            2: 'Hơi đau',
+            3: 'Rất đau',
+            4: 'Cực đau',
+            5: 'Đau không chịu nổi'
+        };
+
+        return {
+            level: dayData.crampsLevel,
+            message: crampsLevelMessages[dayData.crampsLevel as keyof typeof crampsLevelMessages]
+        };
+    };
+
     const flowData = getFlowLevelData();
+    const crampsData = getCrampsLevelData();
 
     return (
         <Popup open={open} onClose={onClose} className="predictions-analysis-popup">
@@ -84,11 +111,31 @@ const PredictionsAnalysisPopup: React.FC<PredictionsAnalysisPopupProps> = ({
 
                 <div className="prediction-items">
                     {flowData && (
-                        <div className="flow-info">
-                            <span className="flow-label">Lượng kinh lần này</span>
-                            <span className="flow-level" style={{ color: '#ff69b4' }}>
-                                {flowData.message}
-                            </span>
+                        <div className="symptom-card">
+                            <div className="symptom-header">
+                                <div className="symptom-icon flow-icon"></div>
+                                <span className="symptom-title">Lượng kinh</span>
+                            </div>
+                            <div className="symptom-content">
+                                <span className="symptom-description">Lượng kinh lần này</span>
+                                <span className="symptom-value" style={{ color: '#ff69b4' }}>
+                                    {flowData.message}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    {crampsData && (
+                        <div className="symptom-card">
+                            <div className="symptom-header">
+                                <div className="symptom-icon cramps-icon"></div>
+                                <span className="symptom-title">Đau bụng kinh</span>
+                            </div>
+                            <div className="symptom-content">
+                                <span className="symptom-description">Đau bụng kinh lần này</span>
+                                <span className="symptom-value" style={{ color: '#ff69b4' }}>
+                                    {crampsData.message}
+                                </span>
+                            </div>
                         </div>
                     )}
                 </div>
