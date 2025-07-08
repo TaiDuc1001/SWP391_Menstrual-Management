@@ -1,5 +1,6 @@
 .predictions-analysis-popup .popup-content {
-    width: 10000px;
+    width: 100%;
+    max-width: 600px;
     padding: 0;
     border-radius: 16px;
     background: linear-gradient(135deg, #f8f4ff 0%, #efe4ff 100%);
@@ -10,15 +11,15 @@
 }
 
 .predictions-analysis-content {
-    padding: 24px;
+    padding: 24px 40px;
     text-align: center;
 }
 
 .predictions-analysis-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: #8b5cf6;
-    margin: 0 0 16px 0;
+    margin: 0 0 20px 0;
 }
 
 .prediction-date {
@@ -28,8 +29,8 @@
 }
 
 .prediction-items {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
     margin-bottom: 24px;
 }
@@ -99,8 +100,8 @@
 
 .action-buttons {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    gap: 12px;
 }
 
 .symptom-button {
