@@ -11,7 +11,8 @@ import { Panel, CreatePanelRequest, UpdatePanelRequest, CreateTestTypeRequest } 
 import PanelModal from '../../../components/feature/Modal/PanelModal';
 import TestTypeModal from '../../../components/feature/Modal/TestTypeModal';
 import ConfirmDialog from '../../../components/common/Dialog/ConfirmDialog';
-import { useNotification } from '../../../context/NotificationContext';
+import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
+import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
 
 const tabs = [
     {label: 'Service Management'},
@@ -111,6 +112,27 @@ const TestPanels: React.FC = () => {
     const [panelToDelete, setPanelToDelete] = useState<Panel | null>(null);
     const [panelForDetails, setPanelForDetails] = useState<Panel | null>(null);
     
+    // Notification states
+    const [successNotification, setSuccessNotification] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+    }>({
+        isOpen: false,
+        title: '',
+        message: ''
+    });
+    
+    const [errorNotification, setErrorNotification] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+    }>({
+        isOpen: false,
+        title: '',
+        message: ''
+    });
+    
     const { 
         panels, 
         loading: panelsLoading, 
@@ -128,7 +150,30 @@ const TestPanels: React.FC = () => {
         fetchTestTypes
     } = useTestTypes();
 
-    const { addNotification } = useNotification();
+    // Helper functions for notifications
+    const showSuccessNotification = (title: string, message: string) => {
+        setSuccessNotification({
+            isOpen: true,
+            title,
+            message
+        });
+    };
+
+    const showErrorNotification = (title: string, message: string) => {
+        setErrorNotification({
+            isOpen: true,
+            title,
+            message
+        });
+    };
+
+    const closeSuccessNotification = () => {
+        setSuccessNotification(prev => ({ ...prev, isOpen: false }));
+    };
+
+    const closeErrorNotification = () => {
+        setErrorNotification(prev => ({ ...prev, isOpen: false }));
+    };
 
     useEffect(() => {
         const filters = {
@@ -173,11 +218,7 @@ const TestPanels: React.FC = () => {
         if (panelToDelete) {
             const success = await deletePanel(panelToDelete.id);
             if (success) {
-                addNotification({
-                    type: 'success',
-                    title: 'Success',
-                    message: 'Panel deleted successfully'
-                });
+                showSuccessNotification('Success', 'Panel deleted successfully');
 
                 const remainingItems = totalItems - 1;
                 const maxPage = Math.ceil(remainingItems / pageSize);
@@ -193,11 +234,7 @@ const TestPanels: React.FC = () => {
                     fetchPanels(filters);
                 }
             } else {
-                addNotification({
-                    type: 'error',
-                    title: 'Error',
-                    message: 'Failed to delete panel'
-                });
+                showErrorNotification('Error', 'Failed to delete panel');
             }
         }
         setIsDeleteConfirmOpen(false);
@@ -213,51 +250,31 @@ const TestPanels: React.FC = () => {
         try {
             if (modalMode === 'create') {
                 await createPanel(data as CreatePanelRequest);
-                addNotification({
-                    type: 'success',
-                    title: 'Success',
-                    message: 'Panel created successfully'
-                });
+                showSuccessNotification('Success', 'Panel created successfully');
                 if (currentPage !== 1) {
                     setCurrentPage(1);
                 }
             } else if (selectedPanel) {
                 await updatePanel(selectedPanel.id, data as UpdatePanelRequest);
-                addNotification({
-                    type: 'success',
-                    title: 'Success',
-                    message: 'Panel updated successfully'
-                });
+                showSuccessNotification('Success', 'Panel updated successfully');
             }
             setIsPanelModalOpen(false);
         } catch (error) {
             console.error('Error submitting panel:', error);
-            addNotification({
-                type: 'error',
-                title: 'Error',
-                message: 'Failed to save panel. Please try again.'
-            });
+            showErrorNotification('Error', 'Failed to save panel. Please try again.');
         }
     };
 
     const handleTestTypeSubmit = async (data: CreateTestTypeRequest) => {
         try {
             await createTestType(data);
-            addNotification({
-                type: 'success',
-                title: 'Success',
-                message: 'Test type created successfully'
-            });
+            showSuccessNotification('Success', 'Test type created successfully');
             // Refresh test types immediately after creation
             await fetchTestTypes();
             setIsTestTypeModalOpen(false);
         } catch (error) {
             console.error('Error creating test type:', error);
-            addNotification({
-                type: 'error',
-                title: 'Error',
-                message: 'Failed to create test type. Please try again.'
-            });
+            showErrorNotification('Error', 'Failed to create test type. Please try again.');
         }
     };
 
@@ -632,6 +649,22 @@ const TestPanels: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Success Notification */}
+            <SuccessNotification
+                isOpen={successNotification.isOpen}
+                onClose={closeSuccessNotification}
+                title={successNotification.title}
+                message={successNotification.message}
+            />
+
+            {/* Error Notification */}
+            <ErrorNotification
+                isOpen={errorNotification.isOpen}
+                onClose={closeErrorNotification}
+                title={errorNotification.title}
+                message={errorNotification.message}
+            />
         </div>
     );
 };
