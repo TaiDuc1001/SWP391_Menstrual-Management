@@ -2,6 +2,7 @@ import logo from '../../../assets/icons/logo.svg';
 import { useEffect, useRef, useState } from 'react';
 import logoutIcon from '../../../assets/icons/log-out.svg';
 import { getCurrentUserProfile } from '../../../utils/auth';
+import { generateAvatarUrl } from '../../../utils/avatar';
 
 interface HeaderProps {
     isAuthenticated: boolean;
@@ -12,11 +13,6 @@ const AdminHeader: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) =
     const [userName, setUserName] = useState('Admin');
     const [userAvatar, setUserAvatar] = useState('');
     const profileRef = useRef<HTMLDivElement>(null);
-
-    const generateAvatarUrl = (name: string) => {
-        const encodedName = encodeURIComponent(name || 'Admin');
-        return `https://ui-avatars.com/api/?name=${encodedName}&size=40&background=3b82f6&color=ffffff&bold=true`;
-    };
 
     useEffect(() => {
         const userProfile = getCurrentUserProfile();

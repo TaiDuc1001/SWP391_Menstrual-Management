@@ -1,4 +1,5 @@
 import api from '../axios';
+import { generateAvatarUrl } from '../../utils/avatar';
 
 export interface Account {
     id: number;
@@ -47,7 +48,7 @@ const mapAccountToUI = (account: Account): AccountForUI => ({
     role: account.role,
     phone: account.phoneNumber || 'N/A',
     status: account.status ? 'Active' : 'Inactive',
-    avatar: account.avatar || ''
+    avatar: account.avatar || generateAvatarUrl(account.name)
 });
 
 export const accountService = {
