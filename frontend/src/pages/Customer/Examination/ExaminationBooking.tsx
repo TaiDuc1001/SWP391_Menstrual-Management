@@ -15,12 +15,37 @@ const ExaminationBooking: React.FC = () => {
     const [error, setError] = useState('');
     const [slotOptions, setSlotOptions] = useState<{ value: string; label: string }[]>([]);
     const [slotLabelMap, setSlotLabelMap] = useState<{ [key: string]: string }>({});
-    const [panelName, setPanelName] = useState('');    const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+    const [panelName, setPanelName] = useState('');    
+    const [availableSlots, setAvailableSlots] = useState<string[]>([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {panelId: panelIdParam} = useParams();
-    const location = useLocation();    const panelId = panelIdParam || (location.state && location.state.panelId);
+    const location = useLocation();
+
+    const panelId = panelIdParam || (location.state && location.state.panelId);
+
+    // Get current date and minimum allowed date
+    const getCurrentDate = () => {
+        const now = new Date();
+        return now.toISOString().split('T')[0];
+    };
+
+    const getMinDate = () => {
+        // Allow booking from tomorrow onwards
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+    };
+
+    // Validate if selected date is in the future
+    const isDateInFuture = (dateString: string) => {
+        const selectedDate = new Date(dateString);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
+        return selectedDate > today;
+    };
 
     useEffect(() => {
         api.get('/enumerators/slots')
@@ -79,10 +104,29 @@ const ExaminationBooking: React.FC = () => {
     }    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        
         if (!date || !slot) {
             setError('Please select date and time slot.');
             return;
-        }        setLoading(true);
+        }
+
+        // Validate date is in the future
+        if (!isDateInFuture(date)) {
+            setError('You can only book examinations for future dates. Please select a date starting from tomorrow.');
+            return;
+        }
+
+        // Additional validation for past dates
+        const selectedDateObj = new Date(date);
+        const currentDate = new Date();
+        if (selectedDateObj < currentDate) {
+            setError('Cannot book examination for past dates. Please select a future date.');
+            setDate('');
+            setSlot('');
+            return;
+        }
+
+        setLoading(true);
 
         try {
             const result = await examinationService.createExamination(Number(panelId), {
@@ -143,12 +187,22 @@ const ExaminationBooking: React.FC = () => {
                                         type="date" 
                                         className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-lg focus:border-pink-400 focus:outline-none transition-colors" 
                                         value={date}
-                                        min={new Date().toISOString().split('T')[0]}
+                                        min={getMinDate()}
                                         onChange={e => {
-                                            setDate(e.target.value);
+                                            const newDate = e.target.value;
+                                            // Additional validation on change
+                                            if (newDate && !isDateInFuture(newDate)) {
+                                                setError('Please select a future date. You can only book examinations starting from tomorrow.');
+                                                return;
+                                            }
+                                            setDate(newDate);
                                             setSlot('');
+                                            setError(''); // Clear any previous error
                                         }}
                                     />
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        You can book examinations starting from tomorrow ({new Date(getMinDate()).toLocaleDateString('vi-VN')})
+                                    </div>
                                 </div>
                                 
                                 <div>
