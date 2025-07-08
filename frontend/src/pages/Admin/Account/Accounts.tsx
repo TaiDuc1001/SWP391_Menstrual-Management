@@ -10,6 +10,7 @@ import userAvt from '../../../assets/icons/avatar.svg';
 import { accountService, AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../../api';
 import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
+import { applyPagination } from '../../../utils';
 
 
 const roles = ['CUSTOMER', 'DOCTOR', 'STAFF', 'ADMIN'];
@@ -148,13 +149,12 @@ const Accounts: React.FC = () => {
             user.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    const totalUsers = filteredUsers.length;
-    const totalPages = Math.ceil(totalUsers / pageSize);
-    
-    // Calculate paginated users
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    // Apply pagination using utility function
+    const paginationResult = applyPagination(filteredUsers, {
+        currentPage,
+        itemsPerPage: pageSize
+    });
+    const { items: paginatedUsers, totalPages, totalItems: totalUsers, startIdx, endIdx } = paginationResult;
     
     const handleSelectAll = () => {
         if (selectedRows.length === paginatedUsers.length) {
@@ -162,6 +162,10 @@ const Accounts: React.FC = () => {
         } else {
             setSelectedRows(paginatedUsers.map((u: AccountForUI) => u.id));
         }
+    };
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) setCurrentPage(page);
     };
 
     // Reset to page 1 when filters change
@@ -369,7 +373,7 @@ const Accounts: React.FC = () => {
                     ) : (
                         paginatedUsers.map((user: AccountForUI, idx: number) => (
                             <tr key={user.id} className="hover:bg-gray-50">
-                                <td className="p-2 border text-center">{startIndex + idx + 1}</td>
+                                <td className="p-2 border text-center">{startIdx + idx + 1}</td>
                                 <td className="p-2 border flex items-center gap-2">
                                     <img src={user.avatar || userAvt} alt="avatar" className="w-7 h-7 rounded-full border"/>
                                     <span>{user.name}</span>
@@ -408,86 +412,37 @@ const Accounts: React.FC = () => {
                     </tbody>
                 </table>
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>Displaying {Math.min(startIndex + 1, totalUsers)}-{Math.min(endIndex, totalUsers)} of {totalUsers.toLocaleString()} users</span>
-                    <div className="flex items-center gap-1">
-                        <button 
-                            disabled={currentPage === 1} 
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                            className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white border hover:bg-gray-50'}`}
-                        >
-                            {'<'}
-                        </button>
-                        
-                        {/* Page numbers */}
-                        {(() => {
-                            const pages = [];
-                            const maxVisiblePages = 5;
-                            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-                            
-                            // Adjust startPage if we're near the end
-                            if (endPage - startPage + 1 < maxVisiblePages) {
-                                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                            }
-                            
-                            // Show first page if not in range
-                            if (startPage > 1) {
-                                pages.push(
-                                    <button 
-                                        key={1}
-                                        onClick={() => setCurrentPage(1)}
-                                        className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
-                                    >
-                                        1
-                                    </button>
-                                );
-                                if (startPage > 2) {
-                                    pages.push(<span key="ellipsis1" className="px-1">...</span>);
-                                }
-                            }
-                            
-                            // Show page numbers in range
-                            for (let i = startPage; i <= endPage; i++) {
-                                pages.push(
-                                    <button 
-                                        key={i}
-                                        onClick={() => setCurrentPage(i)}
-                                        className={`px-2 py-1 rounded ${currentPage === i ? 'bg-blue-600 text-white' : 'bg-white border hover:bg-gray-50'}`}
-                                    >
-                                        {i}
-                                    </button>
-                                );
-                            }
-                            
-                            // Show last page if not in range
-                            if (endPage < totalPages) {
-                                if (endPage < totalPages - 1) {
-                                    pages.push(<span key="ellipsis2" className="px-1">...</span>);
-                                }
-                                pages.push(
-                                    <button 
-                                        key={totalPages}
-                                        onClick={() => setCurrentPage(totalPages)}
-                                        className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
-                                    >
-                                        {totalPages}
-                                    </button>
-                                );
-                            }
-                            
-                            return pages;
-                        })()}
-                        
-                        <button 
-                            disabled={currentPage === totalPages || totalPages === 0} 
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                            className={`px-2 py-1 rounded ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white border hover:bg-gray-50'}`}
-                        >
-                            {'>'}
-                        </button>
-                    </div>
+                    <span>Displaying {Math.min(startIdx + 1, totalUsers)}-{Math.min(endIdx, totalUsers)} of {totalUsers.toLocaleString()} users</span>
                 </div>
             </div>
+
+            {totalUsers > 0 && (
+                <div className="flex justify-center items-center gap-2 mt-8">
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                    >
+                        Prev
+                    </button>
+                    {Array.from({length: totalPages}, (_, i) => (
+                        <button
+                            key={i + 1}
+                            onClick={() => handlePageChange(i + 1)}
+                            className={`px-3 py-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
 
             <CreateUserModal
                 isOpen={showCreateModal}
