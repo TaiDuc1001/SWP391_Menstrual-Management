@@ -70,28 +70,9 @@ public class DoctorController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<DoctorProfileDTO> updateDoctorProfile(@RequestBody DoctorProfileDTO profileDTO) {
-        // For now, update doctor ID 1
-        // In a real implementation, you would get the current authenticated doctor
-        Doctor doctor = doctorService.findDoctorById(1L);
-        
-        Doctor updatedDoctor = doctor.toBuilder()
-                .name(profileDTO.getName())
-                .specialization(profileDTO.getSpecialization())
-                .price(profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null)
-                .build();
-        
-        Doctor savedDoctor = doctorService.updateDoctor(1L, updatedDoctor);
-        
-        DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
-                .id(savedDoctor.getId())
-                .name(savedDoctor.getName())
-                .specialization(savedDoctor.getSpecialization())
-                .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
-                .isProfileComplete(isProfileComplete(savedDoctor))
-                .build();
-        
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<Void> updateDoctorProfile(@RequestBody DoctorProfileDTO profileDTO) {
+        // Updating profile is not allowed - view only
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
     @GetMapping("/profile/check-complete")

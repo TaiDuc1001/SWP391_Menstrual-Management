@@ -12,37 +12,32 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     const location = useLocation();
     const { checkProfileComplete } = useDoctorProfile();
 
-    // Allow access to profile management routes without checking
+    // Allow access to profile viewing route without checking
     const allowedRoutes = [
-        '/doctor/manage-profile',
-        '/doctor/setup-profile'
+        '/doctor/profile'
     ];
 
-    const isAllowedRoute = allowedRoutes.some(route => 
+    const isAllowedRoute = allowedRoutes.some(route =>
         location.pathname.startsWith(route)
     );
 
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
-                console.log('DoctorProfileGuard: Checking profile completion status...');
                 const result = await checkProfileComplete();
                 setIsProfileComplete(result.isComplete);
-            } catch (error) {
-                console.error('Error checking profile status:', error);
-                // If API fails, assume profile is incomplete to be safe
+            } catch {
                 setIsProfileComplete(false);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        // Only check if not on allowed routes
         if (!isAllowedRoute) {
             checkProfileStatus();
         } else {
             setIsLoading(false);
-            setIsProfileComplete(true); // Allow access to profile routes
+            setIsProfileComplete(true);
         }
     }, [isAllowedRoute, checkProfileComplete]);
 
@@ -57,9 +52,9 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
         );
     }
 
-    // If profile is not complete and not on allowed routes, redirect to setup
     if (!isProfileComplete && !isAllowedRoute) {
-        return <Navigate to="/doctor/setup-profile" replace />;
+        // Redirect to profile view if incomplete
+        return <Navigate to="/doctor/profile" replace />;
     }
 
     return <>{children}</>;
