@@ -23,7 +23,8 @@ const getStatusBadge = (status: string) => {
     }
     return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs">Inactive</span>;
 };
-// This function formats the price to Vietnamese currency format
+
+
 const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
@@ -101,7 +102,6 @@ const TestPanels: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 7;
     
-    // Modal states
     const [isPanelModalOpen, setIsPanelModalOpen] = useState(false);
     const [isTestTypeModalOpen, setIsTestTypeModalOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -111,7 +111,6 @@ const TestPanels: React.FC = () => {
     const [panelToDelete, setPanelToDelete] = useState<Panel | null>(null);
     const [panelForDetails, setPanelForDetails] = useState<Panel | null>(null);
     
-    // API hooks
     const { 
         panels, 
         loading: panelsLoading, 
@@ -125,16 +124,15 @@ const TestPanels: React.FC = () => {
     } = usePanels();
     
     const { 
-        createTestType 
+        createTestType,
+        fetchTestTypes
     } = useTestTypes();
 
-    // Notification hook
     const { addNotification } = useNotification();
 
-    // Fetch panels on component mount and when filters change
     useEffect(() => {
         const filters = {
-            page: currentPage - 1, // API uses 0-based indexing
+            page: currentPage - 1, 
             size: pageSize,
             keyword: search.trim() || undefined
         };
@@ -144,12 +142,14 @@ const TestPanels: React.FC = () => {
     const handleCreatePanel = () => {
         setModalMode('create');
         setSelectedPanel(null);
+        fetchTestTypes();
         setIsPanelModalOpen(true);
     };
 
     const handleEditPanel = (panel: Panel) => {
         setModalMode('edit');
         setSelectedPanel(panel);
+        fetchTestTypes();
         setIsPanelModalOpen(true);
     };
 
@@ -178,6 +178,20 @@ const TestPanels: React.FC = () => {
                     title: 'Success',
                     message: 'Panel deleted successfully'
                 });
+
+                const remainingItems = totalItems - 1;
+                const maxPage = Math.ceil(remainingItems / pageSize);
+
+                if (currentPage > maxPage && maxPage > 0) {
+                    setCurrentPage(maxPage);
+                } else {
+                    const filters = {
+                        page: currentPage - 1,
+                        size: pageSize,
+                        keyword: search.trim() || undefined
+                    };
+                    fetchPanels(filters);
+                }
             } else {
                 addNotification({
                     type: 'error',
@@ -204,6 +218,9 @@ const TestPanels: React.FC = () => {
                     title: 'Success',
                     message: 'Panel created successfully'
                 });
+                if (currentPage !== 1) {
+                    setCurrentPage(1);
+                }
             } else if (selectedPanel) {
                 await updatePanel(selectedPanel.id, data as UpdatePanelRequest);
                 addNotification({
@@ -212,6 +229,7 @@ const TestPanels: React.FC = () => {
                     message: 'Panel updated successfully'
                 });
             }
+            setIsPanelModalOpen(false);
         } catch (error) {
             console.error('Error submitting panel:', error);
             addNotification({
@@ -230,6 +248,9 @@ const TestPanels: React.FC = () => {
                 title: 'Success',
                 message: 'Test type created successfully'
             });
+            // Refresh test types immediately after creation
+            await fetchTestTypes();
+            setIsTestTypeModalOpen(false);
         } catch (error) {
             console.error('Error creating test type:', error);
             addNotification({
@@ -247,6 +268,18 @@ const TestPanels: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
     };
 
     return (
@@ -364,56 +397,54 @@ const TestPanels: React.FC = () => {
                     </table>
                 </div>
 
-                <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+                <div className="flex items-center justify-between mt-2 px-6 py-4 text-xs text-gray-500 border-t">
                     <span>
-                        Displaying {Math.min((currentPage - 1) * pageSize + 1, totalItems)}-{Math.min(currentPage * pageSize, totalItems)} of {totalItems} panels
+                        Displaying {Math.min((currentPage - 1) * pageSize + 1, totalItems)}-{Math.min(currentPage * pageSize, totalItems)} of {totalItems.toLocaleString()} panels
                     </span>
-                    <div className="flex items-center gap-1">
-                        <button 
-                            disabled={currentPage === 1} 
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            className={`px-2 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-white border hover:bg-gray-50'}`}
-                        >
-                            {'<'}
-                        </button>
-                        {[...Array(Math.min(totalPages, 5))].map((_, i) => {
-                            const page = i + 1;
-                            return (
-                                <button 
-                                    key={page}
-                                    onClick={() => handlePageChange(page)}
-                                    className={`px-2 py-1 rounded ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white border hover:bg-gray-50'}`}
-                                >
-                                    {page}
-                                </button>
-                            );
-                        })}
-                        {totalPages > 5 && (
-                            <>
-                                <button disabled className="px-2 py-1 rounded bg-white border">...</button>
-                                <button 
-                                    onClick={() => handlePageChange(totalPages)}
-                                    className="px-2 py-1 rounded bg-white border hover:bg-gray-50"
-                                >
-                                    {totalPages}
-                                </button>
-                            </>
-                        )}
-                        <button 
-                            disabled={currentPage === totalPages} 
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            className={`px-2 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-white border hover:bg-gray-50'}`}
-                        >
-                            {'>'}
-                        </button>
-                    </div>
                 </div>
             </div>
+
+            {totalItems > 0 && totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8">
+                    <button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                    >
+                        Prev
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i + 1}
+                            onClick={() => handlePageChange(i + 1)}
+                            className={`px-3 py-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
 
             {/* Panel Modal */}
             <PanelModal
                 isOpen={isPanelModalOpen}
-                onClose={() => setIsPanelModalOpen(false)}
+                onClose={() => {
+                    setIsPanelModalOpen(false);
+                    // Refresh data when modal is closed
+                    const filters = {
+                        page: currentPage - 1,
+                        size: pageSize,
+                        keyword: search.trim() || undefined
+                    };
+                    fetchPanels(filters);
+                }}
                 onSubmit={handlePanelSubmit}
                 panel={selectedPanel}
                 mode={modalMode}
@@ -422,7 +453,17 @@ const TestPanels: React.FC = () => {
             {/* Test Type Modal */}
             <TestTypeModal
                 isOpen={isTestTypeModalOpen}
-                onClose={() => setIsTestTypeModalOpen(false)}
+                onClose={() => {
+                    setIsTestTypeModalOpen(false);
+                    // Refresh both panels and test types when modal is closed
+                    const filters = {
+                        page: currentPage - 1,
+                        size: pageSize,
+                        keyword: search.trim() || undefined
+                    };
+                    fetchPanels(filters);
+                    fetchTestTypes(); // This will ensure PanelModal has latest test types
+                }}
                 onSubmit={handleTestTypeSubmit}
             />
 
