@@ -3,7 +3,6 @@ import {useNavigate} from 'react-router-dom';
 import plusIcon from '../../assets/icons/plus-white.svg';
 import calendarIcon from '../../assets/icons/calendar.svg';
 import hospitalIcon from '../../assets/icons/hospital.svg';
-import pdfIcon from '../../assets/icons/pdf.svg';
 import bloodIcon from '../../assets/icons/blood.svg';
 import strawberyyIcon from '../../assets/icons/strawberyy.svg';
 import angryIcon from '../../assets/icons/angry.svg';
@@ -14,6 +13,7 @@ import {Doughnut} from 'react-chartjs-2';
 import {ArcElement, Chart as ChartJS, Tooltip} from 'chart.js';
 import { usePublicBlogs } from '../../api/hooks';
 import { SimpleBlogDTO } from '../../api/services/blogService';
+import '../../styles/pages/cycle-dashboard.css';
 
 ChartJS.register(ArcElement, Tooltip);
 
@@ -27,7 +27,6 @@ const Dashboard: React.FC = () => {
     const [cycleStatus, setCycleStatus] = useState('');
     const [cycleEmojis, setCycleEmojis] = useState([strawberyyIcon, bloodIcon, angryIcon]);
     const [appointments, setAppointments] = useState<any[]>([]);
-    const [screenings, setScreenings] = useState<any[]>([]);
     const [examinations, setExaminations] = useState<any[]>([]);
     const [cycles, setCycles] = useState<any[]>([]);
     const [showReminderPopup, setShowReminderPopup] = useState(false);
@@ -197,82 +196,6 @@ const Dashboard: React.FC = () => {
                 setExaminations([]);
             });
 
-        // Fetch latest screening results with error handling
-        api.get('/examinations')
-            .then(async (res) => {
-                console.log('Examinations for screening results:', res.data);
-                
-                // Find any examination that might have results (completed/examined)
-                const potentialResultExaminations = res.data
-                    .filter((e: any) => {
-                        console.log(`Screening check - Exam ${e.id}: status=${e.examinationStatus}`);
-                        return e.examinationStatus === 'COMPLETED' || e.examinationStatus === 'EXAMINED';
-                    })
-                    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                
-                console.log('Potential result examinations:', potentialResultExaminations);
-                
-                const screeningsWithResults = [];
-                
-                // If we have completed examinations, try to get their details
-                if (potentialResultExaminations.length > 0) {
-                    for (const exam of potentialResultExaminations.slice(0, 3)) {
-                        try {
-                            const detailResponse = await api.get(`/examinations/${exam.id}`);
-                            const examDetail = detailResponse.data;
-                            console.log(`Examination ${exam.id} detail:`, examDetail);
-                            
-                            // Check if examination has test results
-                            if (examDetail.testResults && examDetail.testResults.length > 0) {
-                                const hasPositiveResults = examDetail.testResults.some((tr: any) => tr.diagnosis === true);
-                                const resultSummary = hasPositiveResults ? 'Abnormal - Require attention' : 'Normal - All good';
-                                
-                                screeningsWithResults.push({
-                                    id: exam.id,
-                                    name: exam.panelName || exam.name || 'Health Screening',
-                                    result: resultSummary,
-                                    date: exam.date,
-                                    testResults: examDetail.testResults,
-                                    pdf: true
-                                });
-                                break; // Take first one with results
-                            } else {
-                                // Show basic info even without detailed results
-                                screeningsWithResults.push({
-                                    id: exam.id,
-                                    name: exam.panelName || exam.name || 'Health Screening',
-                                    result: 'Results available',
-                                    date: exam.date,
-                                    testResults: [],
-                                    pdf: true
-                                });
-                                break;
-                            }
-                        } catch (error) {
-                            console.error(`Error fetching details for examination ${exam.id}:`, error);
-                            // Still show basic info
-                            screeningsWithResults.push({
-                                id: exam.id,
-                                name: exam.panelName || exam.name || 'Health Screening',
-                                result: 'Results available',
-                                date: exam.date,
-                                testResults: [],
-                                pdf: true
-                            });
-                            break;
-                        }
-                    }
-                }
-                
-                if (!isMounted) return;
-                console.log('Screening results found:', screeningsWithResults);
-                setScreenings(screeningsWithResults);
-            })
-            .catch(error => {
-                if (!isMounted) return;
-                console.error('Error fetching screening results:', error);
-                setScreenings([]);
-            });
         // Fetch all cycles data for prediction with error handling
         api.get('/cycles')
             .then(res => {
@@ -399,11 +322,16 @@ const Dashboard: React.FC = () => {
                     </button>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3 h-full relative">
                     <div className="flex items-center gap-2 text-pink-500 font-semibold">
                         <img src={calendarIcon} alt="Calendar" className="w-5 h-5"/> Cycle calendar
                     </div>
+                    <button 
+                        className="chart-view-cycle-btn"
+                        onClick={() => navigate('/customer/cycle-chart')}>
+                        View Cycle
+                    </button>
                     <div className="text-gray-500 text-sm">Starting date: <span
                         className="text-pink-600 font-bold">{cycleStart}</span></div>
                     <div className="bg-pink-100 rounded-xl p-4 flex flex-col items-center">
@@ -418,13 +346,11 @@ const Dashboard: React.FC = () => {
                         <span className="text-gray-500 text-sm">Ovulation: <span
                             className="text-pink-600 font-bold">{ovulationDate}</span></span>
                         <button className="text-pink-500 hover:underline text-sm"
-                                onClick={() => navigate('/customer/menstrual-cycles')}>Xem lịch
+                                onClick={() => navigate('/customer/menstrual-cycles')}>View Calendar
                         </button>
                     </div>
-                </div>
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center justify-center">
-                    <div className="flex flex-col items-center w-full">
-                        <div className="flex flex-row items-center justify-center w-full gap-8">
+                    <div className="flex flex-col items-center justify-center flex-1 w-full">
+                        <div className="flex flex-row items-center justify-center w-full gap-8 mb-6">
                             <div className="w-32 h-32 flex items-center justify-center">
                                 <Doughnut data={chartData} options={chartOptions}/>
                             </div>
@@ -439,7 +365,7 @@ const Dashboard: React.FC = () => {
                             </div>
                         </div>
                         {prediction && (
-                            <div className="mt-4 text-center w-full">
+                            <div className="text-center w-full">
                                 <div className="text-gray-500 text-sm">Ovulation: <span
                                     className="text-pink-600 font-bold">{prediction.ovulation}</span></div>
                                 <div className="text-gray-500 text-sm">Next period: <span
@@ -448,139 +374,92 @@ const Dashboard: React.FC = () => {
                                     className="text-pink-600 font-bold">{prediction.fertileWindow}</span></div>
                             </div>
                         )}
-                        <button className="text-pink-500 hover:underline text-sm mt-2">View cycle</button>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4">
-                    <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                        <div className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                            </svg>
+                <div className="flex flex-col gap-6">
+                    <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4">
+                        <div className="flex items-center gap-2 text-pink-500 font-semibold">
+                            <div className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            Tips for Health
                         </div>
-                        Tips for Health
-                    </div>
-                    <div className="flex flex-col gap-3">
-                        {recentBlogs.map((blog) => (
-                            <div key={blog.id} className="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded-lg transition-colors" onClick={() => navigate('/customer/health-tips')}>
-                                <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg flex-shrink-0 flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1.447.894L10 15.118l-4.553 1.776A1 1 0 014 16V4zm2 3a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 2a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                                    </svg>
+                        <div className="flex flex-col gap-3">
+                            {recentBlogs.map((blog) => (
+                                <div key={blog.id} className="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded-lg transition-colors" onClick={() => navigate('/customer/health-tips')}>
+                                    <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg flex-shrink-0 flex items-center justify-center">
+                                        <svg className="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1.447.894L10 15.118l-4.553 1.776A1 1 0 014 16V4zm2 3a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 2a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-medium text-pink-700 text-sm leading-5 mb-1 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                                            {blog.title}
+                                        </h4>
+                                        <p className="text-pink-400 text-xs">
+                                            {formatDate(blog.publishDate)}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium text-pink-700 text-sm leading-5 mb-1 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
-                                        {blog.title}
-                                    </h4>
-                                    <p className="text-pink-400 text-xs">
-                                        {formatDate(blog.publishDate)}
-                                    </p>
+                            ))}
+                            {recentBlogs.length === 0 && (
+                                <div className="text-pink-300 text-sm text-center py-4">
+                                    Không có bài viết nào
                                 </div>
-                            </div>
-                        ))}
-                        {recentBlogs.length === 0 && (
-                            <div className="text-pink-300 text-sm text-center py-4">
-                                Không có bài viết nào
-                            </div>
-                        )}
+                            )}
+                        </div>
+                        <button 
+                            className="text-pink-500 hover:underline text-sm mt-2 w-max"
+                            onClick={() => navigate('/customer/health-tips')}
+                        >
+                            View all Tips
+                        </button>
                     </div>
-                    <button 
-                        className="text-pink-500 hover:underline text-sm mt-2 w-max"
-                        onClick={() => navigate('/customer/health-tips')}
-                    >
-                        View all Tips
-                    </button>
-                </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                        <img src={hospitalIcon} alt="Doctor" className="w-5 h-5"/> Upcoming appointments
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        {appointments.map((a) => (
-                            <div key={a.id} className="flex items-center gap-3">
-                                <div
-                                    className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-pink-500">{a.name?.split(' ')[1]?.[0] || 'D'}</div>
-                                <div>
-                                    <div className="font-semibold text-gray-700">{a.name} <span
-                                        className="text-yellow-400">{'★'.repeat(Math.round(a.rating))}</span></div>
-                                    <div className="text-xs text-gray-500">{a.date}, {a.time}</div>
+                    <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
+                        <div className="flex items-center gap-2 text-pink-500 font-semibold">
+                            <img src={calendarIcon} alt="Calendar" className="w-5 h-5"/> Upcoming examinations
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            {examinations.map((e, idx) => (
+                                <div key={`examination-${e.name}-${idx}`} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-semibold text-pink-600">{e.name}</span>
+                                        <span
+                                            className={`text-xs px-2 py-1 rounded-full ${e.status === 'In Progress' || e.status === 'Pending' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500">{e.place} | {e.date} - {e.time}</div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                            {examinations.length === 0 && (
+                                <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm sắp tới</div>
+                            )}
+                        </div>
                     </div>
-                    <button className="text-pink-500 hover:underline text-sm mt-2 w-max"
-                            onClick={() => navigate('/customer/appointments')}>Xem chi tiết
-                    </button>
-                </div>
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                        <img src={pdfIcon} alt="PDF" className="w-5 h-5"/> Latest screenings
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        {screenings.map((s, idx) => (
-                            <div key={`screening-${s.name}-${idx}`} className="flex items-center gap-2">
-                                <span className="font-semibold text-gray-700">{s.name} - <span
-                                    className={s.result.includes('Abnormal') ? 'text-red-600' : 'text-green-600'}>{s.result}</span></span>
-                                {s.pdf &&
-                                    <button 
-                                        className="text-pink-500 hover:underline text-sm"
-                                        onClick={() => navigate(`/customer/sti-tests/${s.id}`)}
-                                    >
-                                        Xem chi tiết
-                                    </button>}
-                            </div>
-                        ))}
-                        {screenings.length === 0 && (
-                            <div className="text-gray-400 text-sm">Chưa có kết quả xét nghiệm</div>
-                        )}
-                    </div>
-                </div>
-                <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                        <img src={calendarIcon} alt="Calendar" className="w-5 h-5"/> Upcoming examinations
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        {examinations.map((e, idx) => (
-                            <div key={`examination-${e.name}-${idx}`} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
-                                <div className="flex justify-between items-center">
-                                    <span className="font-semibold text-pink-600">{e.name}</span>
-                                    <span
-                                        className={`text-xs px-2 py-1 rounded-full ${e.status === 'In Progress' || e.status === 'Pending' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
+                    <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
+                        <div className="flex items-center gap-2 text-pink-500 font-semibold">
+                            <img src={hospitalIcon} alt="Doctor" className="w-5 h-5"/> Upcoming appointments
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            {appointments.map((a) => (
+                                <div key={a.id} className="flex items-center gap-3">
+                                    <div
+                                        className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-pink-500">{a.name?.split(' ')[1]?.[0] || 'D'}</div>
+                                    <div>
+                                        <div className="font-semibold text-gray-700">{a.name} <span
+                                            className="text-yellow-400">{'★'.repeat(Math.round(a.rating))}</span></div>
+                                        <div className="text-xs text-gray-500">{a.date}, {a.time}</div>
+                                    </div>
                                 </div>
-                                <div className="text-xs text-gray-500">{e.place} | {e.date} - {e.time}</div>
-                            </div>
-                        ))}
-                        {examinations.length === 0 && (
-                            <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm sắp tới</div>
-                        )}
+                            ))}
+                        </div>
+                        <button className="text-pink-500 hover:underline text-sm mt-2 w-max"
+                                onClick={() => navigate('/customer/appointments')}>Xem chi tiết
+                        </button>
                     </div>
                 </div>
             </div>
-            {prediction && (
-                <div
-                    className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl shadow p-6 flex flex-col gap-3 mt-6">
-                    <h3 className="font-semibold text-lg text-pink-600 mb-2">Dự đoán & Phân tích</h3>
-                    <div className="flex flex-col gap-2 text-sm">
-                        <div className="flex items-center gap-2"><span
-                            className="w-4 h-4 bg-yellow-400 rounded-full inline-block"></span> Ngày rụng trứng tiếp
-                            theo <span className="ml-auto font-semibold text-gray-700">{prediction.ovulation}</span>
-                        </div>
-                        <div className="flex items-center gap-2"><span
-                            className="w-4 h-4 bg-green-500 rounded-full inline-block"></span> Khả năng thụ thai
-                            cao <span className="ml-auto font-semibold text-gray-700">{prediction.fertileWindow}</span>
-                        </div>
-                        <div className="flex items-center gap-2"><span
-                            className="w-4 h-4 bg-red-500 rounded-full inline-block"></span> Kỳ kinh tiếp theo dự
-                            kiến <span className="ml-auto font-semibold text-gray-700">{prediction.nextPeriod}</span>
-                        </div>
-                        <div className="flex items-center gap-2"><span
-                            className="w-4 h-4 bg-blue-400 rounded-full inline-block"></span> Cảnh báo chu kỳ <span
-                            className="ml-auto font-semibold text-gray-700">Bình thường</span></div>
-                    </div>
-                </div>
-            )}
             <ReminderSettingsPopup
                 open={showReminderPopup}
                 onClose={() => setShowReminderPopup(false)}
