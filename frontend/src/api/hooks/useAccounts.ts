@@ -56,23 +56,6 @@ export const useAccounts = () => {
         }
     };
 
-    const deleteAccount = async (id: number): Promise<{ success: boolean; error?: string }> => {
-        try {
-            setLoading(true);
-            setError(null);
-            await accountService.deleteAccount(id);
-            await fetchAccounts(); // Refresh list
-            return { success: true };
-        } catch (err: any) {
-            const errorMessage = err.message || err.response?.data?.message || 'Failed to delete account';
-            setError(errorMessage);
-            console.error('Error deleting account:', err);
-            return { success: false, error: errorMessage };
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return {
         accounts,
         loading,
@@ -81,7 +64,6 @@ export const useAccounts = () => {
         fetchAccounts,
         createAccount,
         updateAccount,
-        deleteAccount,
         setError
     };
 };

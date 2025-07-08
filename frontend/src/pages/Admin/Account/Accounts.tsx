@@ -4,12 +4,10 @@ import plusWhiteIcon from "../../../assets/icons/plus-white.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import refreshIcon from "../../../assets/icons/refresh.svg";
 import editIcon from '../../../assets/icons/edit.svg';
-import deleteIcon from '../../../assets/icons/trash-bin.svg';
 import { AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../../api';
 import { useAccounts } from '../../../api/hooks';
 import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
-import ConfirmDialog from '../../../components/common/Dialog/ConfirmDialog';
 import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
 import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
 import { DropdownSelect } from '../../../components';
@@ -38,8 +36,7 @@ const Accounts: React.FC = () => {
         error, 
         fetchAccounts, 
         createAccount, 
-        updateAccount, 
-        deleteAccount
+        updateAccount
     } = useAccounts();
     
     const [selectedRole, setSelectedRole] = useState<string>('');
@@ -51,9 +48,6 @@ const Accounts: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<AccountForUI | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-    const [userToDelete, setUserToDelete] = useState<AccountForUI | null>(null);
     
 
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
@@ -114,7 +108,7 @@ const Accounts: React.FC = () => {
                 } else if (result.error?.includes('Duplicate entry') && result.error?.includes('email')) {
                     errorMessage = 'This email address is already registered. Please use a different email address.';
                 } else if (result.error?.includes('could not execute statement')) {
-                    errorMessage = 'Database error occurred. Please check if the information is already registered.';
+                    errorMessage = 'An unexpected error occurred during the operation. Please ensure the information is valid and try again.';
                 }
                 
                 showError('Creation Failed', errorMessage);
@@ -144,8 +138,10 @@ const Accounts: React.FC = () => {
                     errorMessage = 'This phone number is already used by another account. Please use a different phone number.';
                 } else if (result.error?.includes('Duplicate entry') && result.error?.includes('email')) {
                     errorMessage = 'This email address is already used by another account. Please use a different email address.';
+                } else if (result.error?.includes('foreign key constraint fails')) {
+                    errorMessage = 'Cannot update role due to existing data dependencies. Please contact system administrator.';
                 } else if (result.error?.includes('could not execute statement')) {
-                    errorMessage = 'Database error occurred. Please check if the information is already registered.';
+                    errorMessage = 'An unexpected error occurred during the operation. Please ensure the information is valid and try again.';
                 }
                 
                 showError('Update Failed', errorMessage);
@@ -154,32 +150,6 @@ const Accounts: React.FC = () => {
             showError('Update Failed', 'An unexpected error occurred while updating the user.');
         } finally {
             setIsUpdating(false);
-        }
-    };
-
-    const handleDeleteUser = (user: AccountForUI) => {
-        setUserToDelete(user);
-        setShowConfirmDialog(true);
-    };
-
-    const confirmDeleteUser = async () => {
-        if (!userToDelete) return;
-
-        setIsDeleting(true);
-        try {
-            const result = await deleteAccount(userToDelete.id);
-            
-            if (result.success) {
-                showSuccess('User Deleted', `Account ${userToDelete.name} has been deleted successfully.`);
-            } else {
-                showError('Delete Failed', result.error || 'Failed to delete account. Please try again.');
-            }
-        } catch (error) {
-            showError('Delete Failed', 'An unexpected error occurred while deleting the user.');
-        } finally {
-            setIsDeleting(false);
-            setShowConfirmDialog(false);
-            setUserToDelete(null);
         }
     };
 
@@ -348,17 +318,9 @@ const Accounts: React.FC = () => {
                                                 title="Edit User"
                                                 onClick={() => handleEditUser(user)}
                                                 className="hover:opacity-70 transition p-1"
-                                                disabled={isUpdating || isDeleting}
+                                                disabled={isUpdating}
                                             >
                                                 <img src={editIcon} alt="edit" className="w-4 h-4"/>
-                                            </button>
-                                            <button 
-                                                title="Delete User"
-                                                onClick={() => handleDeleteUser(user)}
-                                                className="hover:opacity-70 transition p-1 text-red-600"
-                                                disabled={isUpdating || isDeleting}
-                                            >
-                                                <img src={deleteIcon} alt="delete user" className="w-4 h-4"/>
                                             </button>
                                         </div>
                                     </td>
@@ -416,20 +378,6 @@ const Accounts: React.FC = () => {
                 onSubmit={handleUpdateUser}
                 loading={isUpdating}
                 user={selectedUser}
-            />
-
-            <ConfirmDialog
-                isOpen={showConfirmDialog}
-                title="Confirm Deletion"
-                message={`Are you sure you want to permanently delete account ${userToDelete?.name}? This action cannot be undone.`}
-                confirmText="Delete"
-                cancelText="Cancel"
-                onConfirm={confirmDeleteUser}
-                onCancel={() => {
-                    setShowConfirmDialog(false);
-                    setUserToDelete(null);
-                }}
-                type="danger"
             />
 
             <SuccessNotification

@@ -159,39 +159,5 @@ export const accountService = {
             
             throw new Error('Failed to update account. Please try again.');
         }
-    },
-
-    deleteAccount: async (id: number): Promise<Account> => {
-        try {
-            console.log(`Sending DELETE request to /accounts/admin/${id}`);
-            const response = await api.delete<Account>(`/accounts/admin/${id}`);
-            console.log('Delete response:', response.data);
-            return response.data;
-        } catch (error: any) {
-            console.error('Error deleting account:', error);
-            console.error('Error response:', error);
-            
-            // Extract error message from different possible response formats
-            const errorMessage = error.response?.data?.message || 
-                               error.response?.data?.error || 
-                               error.response?.data || 
-                               error.message;
-            
-            // Handle specific delete errors
-            if (errorMessage && typeof errorMessage === 'string') {
-                throw new Error(errorMessage);
-            }
-            
-            // Handle network or other errors
-            if (error.response?.status === 404) {
-                throw new Error('Account not found.');
-            }
-            
-            if (error.response?.status === 400) {
-                throw new Error('Cannot delete account. Account may have related data.');
-            }
-            
-            throw new Error('Failed to delete account. Please try again.');
-        }
     }
 };
