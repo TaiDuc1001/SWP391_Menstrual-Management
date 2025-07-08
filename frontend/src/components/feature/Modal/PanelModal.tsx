@@ -19,7 +19,7 @@ const PanelModal: React.FC<PanelModalProps> = ({
     panel,
     mode
 }) => {
-    const { testTypes, loading: testTypesLoading, createTestType } = useTestTypes();
+    const { testTypes, loading: testTypesLoading, createTestType, fetchTestTypes } = useTestTypes();
     const { addNotification } = useNotification();
     const [formData, setFormData] = useState<CreatePanelRequest>({
         panelName: '',
@@ -36,6 +36,12 @@ const PanelModal: React.FC<PanelModalProps> = ({
     const [isTestTypeModalOpen, setIsTestTypeModalOpen] = useState(false);
 
     useEffect(() => {
+        if (isOpen) {
+            fetchTestTypes();
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
         if (panel && mode === 'edit') {
             setFormData({
                 panelName: panel.panelName,
@@ -49,7 +55,6 @@ const PanelModal: React.FC<PanelModalProps> = ({
             });
             setSelectedTestTypes(panel.testTypes.map(t => t.id));
         } else {
-            // Reset form for create mode
             setFormData({
                 panelName: '',
                 description: '',
@@ -93,7 +98,6 @@ const PanelModal: React.FC<PanelModalProps> = ({
         try {
             const newTestType = await createTestType(data);
             if (newTestType) {
-                // Auto-select the newly created test type
                 setSelectedTestTypes(prev => [...prev, newTestType.id]);
                 setFormData(prevData => ({
                     ...prevData,
@@ -118,8 +122,7 @@ const PanelModal: React.FC<PanelModalProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Basic validation
+
         if (!formData.panelName.trim()) {
             addNotification({
                 type: 'error',

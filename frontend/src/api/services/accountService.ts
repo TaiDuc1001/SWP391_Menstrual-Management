@@ -1,4 +1,5 @@
 import api from '../axios';
+import { generateAvatarUrl } from '../../utils/avatar';
 
 export interface Account {
     id: number;
@@ -47,7 +48,7 @@ const mapAccountToUI = (account: Account): AccountForUI => ({
     role: account.role,
     phone: account.phoneNumber || 'N/A',
     status: account.status ? 'Active' : 'Inactive',
-    avatar: account.avatar || ''
+    avatar: account.avatar || generateAvatarUrl(account.name)
 });
 
 export const accountService = {
@@ -79,8 +80,8 @@ export const accountService = {
             // Handle specific email already exists error - check for the exact backend message
             if (typeof errorMessage === 'string' && 
                 errorMessage.includes('Email already exists:')) {
-                const email = errorMessage.split('Email already exists: ')[1] || 'này';
-                throw new Error(`Email ${email} đã tồn tại. Vui lòng sử dụng email khác.`);
+                const email = errorMessage.split('Email already exists: ')[1] || 'this';
+                throw new Error(`Email ${email} already exists. Please use a different email.`);
             }
             
             // Fallback for other email duplicate patterns
@@ -88,7 +89,7 @@ export const accountService = {
                 (errorMessage.toLowerCase().includes('email') && 
                  (errorMessage.toLowerCase().includes('exists') || 
                   errorMessage.toLowerCase().includes('duplicate')))) {
-                throw new Error('Email đã tồn tại. Vui lòng sử dụng email khác.');
+                throw new Error('Email already exists. Please use a different email.');
             }
             
             // Handle other backend validation errors
@@ -98,14 +99,14 @@ export const accountService = {
             
             // Handle network or other errors
             if (error.response?.status === 400) {
-                throw new Error('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.');
+                throw new Error('Invalid data. Please check your information.');
             }
             
             if (error.response?.status === 409) {
-                throw new Error('Email đã tồn tại. Vui lòng sử dụng email khác.');
+                throw new Error('Email already exists. Please use a different email.');
             }
             
-            throw new Error('Tạo tài khoản thất bại. Vui lòng thử lại.');
+            throw new Error('Failed to create account. Please try again.');
         }
     },
 
@@ -130,8 +131,8 @@ export const accountService = {
             // Handle specific email already exists error - check for the exact backend message
             if (typeof errorMessage === 'string' && 
                 errorMessage.includes('Email already exists:')) {
-                const email = errorMessage.split('Email already exists: ')[1] || 'này';
-                throw new Error(`Email ${email} đã tồn tại. Vui lòng sử dụng email khác.`);
+                const email = errorMessage.split('Email already exists: ')[1] || 'this';
+                throw new Error(`Email ${email} already exists. Please use a different email.`);
             }
             
             // Fallback for other email duplicate patterns
@@ -139,7 +140,7 @@ export const accountService = {
                 (errorMessage.toLowerCase().includes('email') && 
                  (errorMessage.toLowerCase().includes('exists') || 
                   errorMessage.toLowerCase().includes('duplicate')))) {
-                throw new Error('Email đã tồn tại. Vui lòng sử dụng email khác.');
+                throw new Error('Email already exists. Please use a different email.');
             }
             
             // Handle other backend validation errors
@@ -149,48 +150,14 @@ export const accountService = {
             
             // Handle network or other errors
             if (error.response?.status === 400) {
-                throw new Error('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.');
+                throw new Error('Invalid data. Please check your information.');
             }
             
             if (error.response?.status === 409) {
-                throw new Error('Email đã tồn tại. Vui lòng sử dụng email khác.');
+                throw new Error('Email already exists. Please use a different email.');
             }
             
-            throw new Error('Cập nhật tài khoản thất bại. Vui lòng thử lại.');
-        }
-    },
-
-    deleteAccount: async (id: number): Promise<Account> => {
-        try {
-            console.log(`Sending DELETE request to /accounts/admin/${id}`);
-            const response = await api.delete<Account>(`/accounts/admin/${id}`);
-            console.log('Delete response:', response.data);
-            return response.data;
-        } catch (error: any) {
-            console.error('Error deleting account:', error);
-            console.error('Error response:', error);
-            
-            // Extract error message from different possible response formats
-            const errorMessage = error.response?.data?.message || 
-                               error.response?.data?.error || 
-                               error.response?.data || 
-                               error.message;
-            
-            // Handle specific delete errors
-            if (errorMessage && typeof errorMessage === 'string') {
-                throw new Error(errorMessage);
-            }
-            
-            // Handle network or other errors
-            if (error.response?.status === 404) {
-                throw new Error('Không tìm thấy tài khoản.');
-            }
-            
-            if (error.response?.status === 400) {
-                throw new Error('Không thể xóa tài khoản. Tài khoản có thể có dữ liệu liên quan.');
-            }
-            
-            throw new Error('Xóa tài khoản thất bại. Vui lòng thử lại.');
+            throw new Error('Failed to update account. Please try again.');
         }
     }
 };

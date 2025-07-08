@@ -29,6 +29,7 @@ export {default as UtilityBar} from './feature/UtilityBar/UtilityBar';
 
 export {default as Header} from './layout/Header/Header';
 export {default as AdminHeader} from './layout/Header/AdminHeader';
+export {default as StaffHeader} from './layout/Header/StaffHeader';
 export {default as PublicHeader} from './layout/Header/PublicHeader';
 export {default as Sidebar} from './layout/Sidebar/Sidebar';
 export {default as Footer} from './layout/Footer/Footer';

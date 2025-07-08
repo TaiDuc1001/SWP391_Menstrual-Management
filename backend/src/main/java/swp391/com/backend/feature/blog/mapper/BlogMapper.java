@@ -17,6 +17,7 @@ public interface BlogMapper {
     @Mapping(source = "admin.name", target = "authorName")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(expression = "java(entity.getContent())", target = "content")
     BlogDTO toDTO(Blog entity);
     
     @Mapping(source = "admin.name", target = "authorName")

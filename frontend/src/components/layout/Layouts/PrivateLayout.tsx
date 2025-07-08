@@ -1,5 +1,7 @@
 import React from 'react';
 import Header from '../Header/Header';
+import AdminHeader from '../Header/AdminHeader';
+import StaffHeader from '../Header/StaffHeader';
 import Sidebar from '../Sidebar/Sidebar';
 import {RouteConfig} from '../../../types/routes';
 
@@ -18,9 +20,24 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({
                                                          isAuthenticated,
                                                          onAuthToggle
                                                      }) => {
+
+    const currentRole = localStorage.getItem('role')?.toLowerCase();
+    
+
+    const renderHeader = () => {
+        switch (currentRole) {
+            case 'admin':
+                return <AdminHeader isAuthenticated={isAuthenticated} onAuthToggle={onAuthToggle}/>;
+            case 'staff':
+                return <StaffHeader isAuthenticated={isAuthenticated} onAuthToggle={onAuthToggle}/>;
+            default:
+                return <Header isAuthenticated={isAuthenticated} onAuthToggle={onAuthToggle}/>;
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
-            <Header isAuthenticated={isAuthenticated} onAuthToggle={onAuthToggle}/>
+            {renderHeader()}
             <div className="flex flex-1 min-h-0">
                 {showSidebar && <Sidebar routes={routes}/>}
                 <main
