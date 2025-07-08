@@ -10,21 +10,16 @@ interface Post {
     title: string;
     category: string;
     author: string;
-    status: 'published' | 'draft' | 'pending';
     createdAt: string;
-    views: number;
     content?: string;
     slug?: string;
     excerpt?: string;
     publishDate?: string;
 }
 
-const STATUS_FILTERS = ['All', 'published', 'draft', 'pending'];
-
 const Blogs: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const [selectedStatus, setSelectedStatus] = useState('All');
     const [posts, setPosts] = useState<Post[]>([]);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(false);
@@ -35,7 +30,6 @@ const Blogs: React.FC = () => {
     const [postsPerPage] = useState(10);
     const { addNotification } = useNotification();
 
-    // Load blogs and categories on component mount
     useEffect(() => {
         loadBlogs();
         loadCategories();
@@ -50,9 +44,7 @@ const Blogs: React.FC = () => {
                 title: blog.title,
                 category: blog.category.replace(/_/g, ' '),
                 author: blog.authorName,
-                status: 'published' as const, // Backend doesn't have status, assume published
                 createdAt: new Date(blog.createdAt).toLocaleDateString('en-GB'),
-                views: Math.floor(Math.random() * 2000), // Mock views since backend doesn't provide
                 content: blog.excerpt,
                 slug: blog.slug,
                 excerpt: blog.excerpt,
@@ -116,7 +108,7 @@ const Blogs: React.FC = () => {
             });
             setShowBlogForm(false);
             setEditingBlog(null);
-            await loadBlogs(); // Reload blogs
+            await loadBlogs(); 
         } catch (error: any) {
             console.error('Error updating blog:', error);
             addNotification({
@@ -142,7 +134,7 @@ const Blogs: React.FC = () => {
                 title: 'Success',
                 message: 'Blog deleted successfully!'
             });
-            await loadBlogs(); // Reload blogs
+            await loadBlogs();
         } catch (error: any) {
             console.error('Error deleting blog:', error);
             addNotification({
@@ -189,11 +181,9 @@ const Blogs: React.FC = () => {
         const matchesCategory = selectedCategory === 'All' || 
             post.category === selectedCategory || 
             post.category === selectedCategory.replace(/_/g, ' ');
-        const matchesStatus = selectedStatus === 'All' || post.status === selectedStatus;
-        return matchesSearch && matchesCategory && matchesStatus;
+        return matchesSearch && matchesCategory;
     });
 
-    // Pagination logic
     const totalPosts = filteredPosts.length;
     const totalPages = Math.ceil(totalPosts / postsPerPage);
     const indexOfLastPost = currentPage * postsPerPage;
@@ -219,20 +209,7 @@ const Blogs: React.FC = () => {
     // Reset to first page when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, selectedCategory, selectedStatus]);
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'published':
-                return 'bg-green-100 text-green-800';
-            case 'draft':
-                return 'bg-gray-100 text-gray-800';
-            case 'pending':
-                return 'bg-yellow-100 text-yellow-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
-    };
+    }, [searchTerm, selectedCategory]);
 
     return (
         <div className="p-6 bg-gray-50">
@@ -249,7 +226,7 @@ const Blogs: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="relative">
                         <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-3 text-gray-400"/>
                         <input
@@ -274,18 +251,6 @@ const Blogs: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    <div>
-                        <select
-                            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
-                        >
-                            <option value="All">All Status</option>
-                            {STATUS_FILTERS.slice(1).map(status => (
-                                <option key={status} value={status}>{status}</option>
-                            ))}
-                        </select>
-                    </div>
                 </div>
             </div>
 
@@ -303,9 +268,6 @@ const Blogs: React.FC = () => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Author
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                            </th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
                             </th>
@@ -322,12 +284,6 @@ const Blogs: React.FC = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-500">{post.author}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(post.status)}`}>
-                      {post.status}
-                    </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                                     <button
@@ -362,77 +318,39 @@ const Blogs: React.FC = () => {
                 </div>
             </div>
 
-            <div
-                className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-xl shadow-sm">
-                <div className="flex-1 flex justify-between sm:hidden">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="flex items-center justify-between mt-2 px-6 py-4 text-xs text-gray-500 border-t">
+                    <span>Displaying {Math.min(indexOfFirstPost + 1, totalPosts)}-{Math.min(indexOfLastPost, totalPosts)} of {totalPosts.toLocaleString()} posts</span>
+                </div>
+            </div>
+
+            {totalPosts > 0 && totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8">
                     <button
                         onClick={handlePreviousPage}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Previous
+                        className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                    >
+                        Prev
                     </button>
+                    {Array.from({length: totalPages}, (_, i) => (
+                        <button
+                            key={i + 1}
+                            onClick={() => handlePageChange(i + 1)}
+                            className={`px-3 py-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
                     <button
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
-                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                    >
                         Next
                     </button>
                 </div>
-                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                    <div>
-                        <p className="text-sm text-gray-700">
-                            Showing <span className="font-medium">{indexOfFirstPost + 1}</span> to <span
-                            className="font-medium">{Math.min(indexOfLastPost, totalPosts)}</span> of{' '}
-                            <span className="font-medium">{totalPosts}</span> results
-                        </p>
-                    </div>
-                    <div>
-                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                             aria-label="Pagination">
-                            <button
-                                onClick={handlePreviousPage}
-                                disabled={currentPage === 1}
-                                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Previous
-                            </button>
-                            
-                            {/* Page numbers */}
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNumber: number;
-                                if (totalPages <= 5) {
-                                    pageNumber = i + 1;
-                                } else if (currentPage <= 3) {
-                                    pageNumber = i + 1;
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNumber = totalPages - 4 + i;
-                                } else {
-                                    pageNumber = currentPage - 2 + i;
-                                }
-                                
-                                return (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => handlePageChange(pageNumber)}
-                                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                            currentPage === pageNumber
-                                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                        }`}>
-                                        {pageNumber}
-                                    </button>
-                                );
-                            })}
-                            
-                            <button
-                                onClick={handleNextPage}
-                                disabled={currentPage === totalPages}
-                                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Next
-                            </button>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+            )}
 
             <PostDetailModal
                 post={selectedPost}
