@@ -9,13 +9,22 @@ import angryIcon from '../../assets/icons/angry.svg';
 import ReminderSettingsPopup from '../../components/feature/Popup/ReminderSettingsPopup';
 import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
 import api from '../../api/axios';
-import {Doughnut} from 'react-chartjs-2';
-import {ArcElement, Chart as ChartJS, Tooltip} from 'chart.js';
+import {Line} from 'react-chartjs-2';
+import {
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LinearScale,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip
+} from 'chart.js';
 import { usePublicBlogs } from '../../api/hooks';
 import { SimpleBlogDTO } from '../../api/services/blogService';
 import '../../styles/pages/cycle-dashboard.css';
 
-ChartJS.register(ArcElement, Tooltip);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
@@ -264,38 +273,119 @@ const Dashboard: React.FC = () => {
         console.log('Recent blogs:', recentBlogs);
     }, [recentBlogs]);
 
-    const chartData = cycles.length > 0 && prediction ? {
-        labels: ['Period', 'Fertile', 'Other'],
-        datasets:
-        [
-            {
-                data: [prediction.avgPeriod, 6, prediction.avgCycle - prediction.avgPeriod - 6],
-                backgroundColor: ['#f472b6', '#34d399', '#fbbf24'],
-                borderWidth: 1
-            }
-        ]
-    } : {
-        labels: ['Period', 'Fertile', 'Other'],
+    const chartData = cycles.length > 0 ? (() => {
+        const sortedCycles = [...cycles]
+            .filter(c => c.cycleLength && c.cycleLength > 0)
+            .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime())
+            .slice(-6);
+
+        const labels = sortedCycles.map((_, index) => `Chu kỳ ${index + 1}`);
+        const cycleLengths = sortedCycles.map(c => c.cycleLength);
+
+        return {
+            labels,
+            datasets: [
+                {
+                    label: 'Độ dài chu kỳ (ngày)',
+                    data: cycleLengths,
+                    borderColor: '#ec4899',
+                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                    tension: 0.4,
+                    pointBackgroundColor: '#ec4899',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: true
+                }
+            ]
+        };
+    })() : {
+        labels: ['Chu kỳ 1', 'Chu kỳ 2', 'Chu kỳ 3', 'Chu kỳ 4', 'Chu kỳ 5'],
         datasets: [
             {
-                data: [5, 6, 17],
-                backgroundColor: ['#f472b6', '#34d399', '#fbbf24'],
-                borderWidth: 1
+                label: 'Độ dài chu kỳ (ngày)',
+                data: [28, 27, 30, 26, 29],
+                borderColor: '#ec4899',
+                backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                tension: 0.4,
+                pointBackgroundColor: '#ec4899',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                fill: true
             }
         ]
     };
 
     const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-            legend: {display: false}
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(236, 72, 153, 0.9)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                borderColor: '#ec4899',
+                borderWidth: 1,
+                cornerRadius: 8,
+                displayColors: false
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: '#9ca3af',
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            y: {
+                beginAtZero: false,
+                min: 20,
+                max: 35,
+                grid: {
+                    color: 'rgba(156, 163, 175, 0.3)'
+                },
+                ticks: {
+                    color: '#9ca3af',
+                    font: {
+                        size: 12
+                    },
+                    callback: function(value: any) {
+                        return value;
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Số ngày',
+                    color: '#9ca3af',
+                    font: {
+                        size: 12
+                    }
+                }
+            }
+        },
+        elements: {
+            point: {
+                hoverBackgroundColor: '#ec4899'
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index' as const
         }
     };
 
-    const chartLegends = [
-        {color: '#f472b6', label: 'Period'},
-        {color: '#34d399', label: 'Fertile'},
-        {color: '#fbbf24', label: 'Other'}
-    ];
+
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
@@ -350,30 +440,13 @@ const Dashboard: React.FC = () => {
                         </button>
                     </div>
                     <div className="flex flex-col items-center justify-center flex-1 w-full">
-                        <div className="flex flex-row items-center justify-center w-full gap-8 mb-6">
-                            <div className="w-32 h-32 flex items-center justify-center">
-                                <Doughnut data={chartData} options={chartOptions}/>
-                            </div>
-                            <div className="flex flex-col gap-2 justify-center">
-                                {chartLegends.map(l => (
-                                    <div key={l.label} className="flex items-center gap-2">
-                                        <span className="inline-block w-4 h-4 rounded-full"
-                                              style={{background: l.color}}></span>
-                                        <span className="text-gray-700 text-sm font-medium">{l.label}</span>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="w-full h-64 mb-4">
+                            <Line data={chartData} options={chartOptions}/>
                         </div>
-                        {prediction && (
-                            <div className="text-center w-full">
-                                <div className="text-gray-500 text-sm">Ovulation: <span
-                                    className="text-pink-600 font-bold">{prediction.ovulation}</span></div>
-                                <div className="text-gray-500 text-sm">Next period: <span
-                                    className="text-pink-600 font-bold">{prediction.nextPeriod}</span></div>
-                                <div className="text-gray-500 text-sm">Fertile window: <span
-                                    className="text-pink-600 font-bold">{prediction.fertileWindow}</span></div>
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                            <span className="inline-block w-4 h-4 rounded-full bg-pink-500"></span>
+                            <span className="text-gray-700 text-sm font-medium">Độ dài chu kỳ (ngày)</span>
+                        </div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-6">
