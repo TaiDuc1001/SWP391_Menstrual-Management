@@ -148,7 +148,9 @@ public class AccountController {
                 request.getRole(),
                 request.getName(),
                 request.getPhoneNumber(),
-                request.getStatus()
+                request.getStatus(),
+                request.getSpecialization(),
+                request.getPrice()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(account);
         } catch (RuntimeException e) {
@@ -166,7 +168,9 @@ public class AccountController {
                 request.getRole(),
                 request.getName(),
                 request.getPhoneNumber(),
-                request.getStatus()
+                request.getStatus(),
+                request.getSpecialization(),
+                request.getPrice()
             );
             return ResponseEntity.ok(account);
         } catch (RuntimeException e) {

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import swp391.com.backend.feature.account.data.Role;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +17,8 @@ public class AdminAccountUpdateRequest {
     private Boolean status;
     private String name;
     private String phoneNumber;
+    
+    // Doctor specific fields
+    private String specialization;
+    private BigDecimal price;
 }

@@ -8,6 +8,8 @@ export interface Account {
     name: string;
     phoneNumber: string | null;
     avatar: string | null;
+    specialization?: string; // For DOCTOR role
+    price?: number; // For DOCTOR role
 }
 
 export interface AccountForUI {
@@ -19,6 +21,8 @@ export interface AccountForUI {
     phone: string;
     status: string;
     avatar: string;
+    specialization?: string; // For DOCTOR role
+    price?: number; // For DOCTOR role
 }
 
 export interface CreateAccountRequest {
@@ -28,6 +32,8 @@ export interface CreateAccountRequest {
     name: string;
     phoneNumber: string;
     status: boolean;
+    specialization?: string; // For DOCTOR role
+    price?: number; // For DOCTOR role
 }
 
 export interface UpdateAccountRequest {
@@ -37,6 +43,8 @@ export interface UpdateAccountRequest {
     status: boolean;
     name: string;
     phoneNumber: string;
+    specialization?: string; // For DOCTOR role
+    price?: number; // For DOCTOR role
 }
 
 const mapAccountToUI = (account: Account): AccountForUI => ({
@@ -47,7 +55,9 @@ const mapAccountToUI = (account: Account): AccountForUI => ({
     role: account.role,
     phone: account.phoneNumber || 'N/A',
     status: account.status ? 'Active' : 'Inactive',
-    avatar: account.avatar || ''
+    avatar: account.avatar || '',
+    specialization: account.specialization,
+    price: account.price
 });
 
 export const accountService = {

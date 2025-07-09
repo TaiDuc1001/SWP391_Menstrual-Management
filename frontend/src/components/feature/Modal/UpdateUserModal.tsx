@@ -9,6 +9,17 @@ interface UpdateUserModalProps {
     user: AccountForUI | null;
 }
 
+interface FormErrors {
+    email?: string;
+    password?: string;
+    role?: string;
+    name?: string;
+    phoneNumber?: string;
+    status?: string;
+    specialization?: string;
+    price?: string;
+}
+
 const roleOptions = [
     { value: 'CUSTOMER', label: 'Customer' },
     { value: 'DOCTOR', label: 'Doctor' },
@@ -29,10 +40,12 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
         role: 'CUSTOMER',
         name: '',
         phoneNumber: '',
-        status: true
+        status: true,
+        specialization: '',
+        price: undefined
     });
 
-    const [errors, setErrors] = useState<Partial<UpdateAccountRequest>>({});
+    const [errors, setErrors] = useState<FormErrors>({});
     const [serverError, setServerError] = useState<string | null>(null);
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
@@ -44,7 +57,9 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                 role: user.role as UpdateAccountRequest['role'] || 'CUSTOMER',
                 name: user.name || '',
                 phoneNumber: user.phone === 'N/A' || !user.phone ? '' : user.phone,
-                status: user.status === 'Active'
+                status: user.status === 'Active',
+                specialization: user.specialization || '',
+                price: user.price
             });
             // Clear any previous errors when loading new user data
             setErrors({});
@@ -53,7 +68,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
     }, [user, isOpen]);
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<UpdateAccountRequest> = {};
+        const newErrors: FormErrors = {};
 
         if (!formData.email) {
             newErrors.email = 'Email is required';
@@ -71,6 +86,16 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                 newErrors.phoneNumber = 'Phone number is required';
             } else if (!/^\d{10,11}$/.test(formData.phoneNumber)) {
                 newErrors.phoneNumber = 'Phone number must be 10-11 digits';
+            }
+        }
+
+        // Validate doctor specific fields
+        if (formData.role === 'DOCTOR') {
+            if (!formData.specialization) {
+                newErrors.specialization = 'Specialization is required for doctors';
+            }
+            if (!formData.price || formData.price <= 0) {
+                newErrors.price = 'Price must be greater than 0 for doctors';
             }
         }
 
@@ -423,6 +448,56 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                                                     {errors.phoneNumber}
                                                 </p>}
                                             </div>
+                                        )}
+
+                                        {formData.role === 'DOCTOR' && (
+                                            <>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Specialization *
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.specialization || ''}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, specialization: e.target.value }))}
+                                                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                                                            errors.specialization ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                        placeholder="Enter specialization (e.g., Gynecology, Obstetrics)"
+                                                        disabled={loading}
+                                                    />
+                                                    {errors.specialization && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        {errors.specialization}
+                                                    </p>}
+                                                </div>
+                                                
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Price (VND) *
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="1000"
+                                                        value={formData.price || ''}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || undefined }))}
+                                                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                                                            errors.price ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                        placeholder="Enter consultation price"
+                                                        disabled={loading}
+                                                    />
+                                                    {errors.price && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        {errors.price}
+                                                    </p>}
+                                                </div>
+                                            </>
                                         )}
 
                                         <div className="flex items-center bg-white rounded-lg p-2 border border-gray-200">

@@ -19,6 +19,7 @@ import swp391.com.backend.feature.staff.data.StaffRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,6 +126,8 @@ public class AccountService {
                 case DOCTOR:
                     Doctor doctor = (Doctor) actor;
                     dto.setName(doctor.getName());
+                    dto.setSpecialization(doctor.getSpecialization());
+                    dto.setPrice(doctor.getPrice());
                     // Doctor doesn't have phone number field
                     break;
                 case STAFF:
@@ -159,7 +162,7 @@ public class AccountService {
                 .toList();
     }
 
-    public AccountManagementDTO createAccountWithProfile(String email, String password, Role role, String name, String phoneNumber, Boolean status) {
+    public AccountManagementDTO createAccountWithProfile(String email, String password, Role role, String name, String phoneNumber, Boolean status, String specialization, BigDecimal price) {
         // Check if email already exists
         if (accountRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists: " + email);
@@ -190,6 +193,8 @@ public class AccountService {
                     Doctor doctor = Doctor.builder()
                             .account(account)
                             .name(name)
+                            .specialization(specialization)
+                            .price(price)
                             .build();
                     doctorRepository.save(doctor);
                     break;
@@ -217,8 +222,12 @@ public class AccountService {
         return getAccountWithProfile(account.getId());
     }
 
+    public AccountManagementDTO createAccountWithProfile(String email, String password, Role role, String name, String phoneNumber, Boolean status) {
+        return createAccountWithProfile(email, password, role, name, phoneNumber, status, null, null);
+    }
+
     @Transactional
-    public AccountManagementDTO updateAccountWithProfile(Long id, String email, String password, Role role, String name, String phoneNumber, Boolean status) {
+    public AccountManagementDTO updateAccountWithProfile(Long id, String email, String password, Role role, String name, String phoneNumber, Boolean status, String specialization, BigDecimal price) {
         Account account = findAccountById(id);
         Role oldRole = account.getRole();
         
@@ -239,16 +248,20 @@ public class AccountService {
         // Handle profile changes based on role
         if (oldRole != role) {
             // Role changed - need to handle profile transition
-            handleRoleTransitionSafely(id, oldRole, role, name, phoneNumber);
+            handleRoleTransitionSafely(id, oldRole, role, name, phoneNumber, specialization, price);
         } else {
             // Same role - just update existing profile
-            updateExistingProfile(id, role, name, phoneNumber);
+            updateExistingProfile(id, role, name, phoneNumber, specialization, price);
         }
         
         return getAccountWithProfile(id);
     }
 
-    private void handleRoleTransitionSafely(Long accountId, Role oldRole, Role newRole, String name, String phoneNumber) {
+    public AccountManagementDTO updateAccountWithProfile(Long id, String email, String password, Role role, String name, String phoneNumber, Boolean status) {
+        return updateAccountWithProfile(id, email, password, role, name, phoneNumber, status, null, null);
+    }
+
+    private void handleRoleTransitionSafely(Long accountId, Role oldRole, Role newRole, String name, String phoneNumber, String specialization, BigDecimal price) {
         // First delete old profile using a separate transaction
         deleteOldProfile(accountId, oldRole);
         
@@ -261,7 +274,7 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         
         // Create new profile with proper account reference
-        createNewProfileWithAccount(freshAccount, newRole, name, phoneNumber);
+        createNewProfileWithAccount(freshAccount, newRole, name, phoneNumber, specialization, price);
     }
 
     private void deleteOldProfile(Long accountId, Role oldRole) {
@@ -305,7 +318,7 @@ public class AccountService {
         }
     }
 
-    private void createNewProfileWithAccount(Account account, Role newRole, String name, String phoneNumber) {
+    private void createNewProfileWithAccount(Account account, Role newRole, String name, String phoneNumber, String specialization, BigDecimal price) {
         // Create profile entities with proper Account reference to avoid hibernate issues
         switch (newRole) {
             case CUSTOMER:
@@ -320,6 +333,8 @@ public class AccountService {
                 Doctor doctor = Doctor.builder()
                         .account(account)
                         .name(name)
+                        .specialization(specialization)
+                        .price(price)
                         .build();
                 doctorRepository.save(doctor);
                 break;
@@ -340,7 +355,7 @@ public class AccountService {
         }
     }
 
-    private void updateExistingProfile(Long accountId, Role role, String name, String phoneNumber) {
+    private void updateExistingProfile(Long accountId, Role role, String name, String phoneNumber, String specialization, BigDecimal price) {
         try {
             Actor actor = getActorByAccountId(accountId);
             switch (role) {
@@ -353,7 +368,8 @@ public class AccountService {
                 case DOCTOR:
                     Doctor doctor = (Doctor) actor;
                     doctor.setName(name);
-                    // Doctor doesn't have phone number field
+                    doctor.setSpecialization(specialization);
+                    doctor.setPrice(price);
                     doctorRepository.save(doctor);
                     break;
                 case STAFF:
