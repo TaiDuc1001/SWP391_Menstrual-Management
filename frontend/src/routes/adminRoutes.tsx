@@ -1,7 +1,6 @@
 import React from 'react';
 import {RouteConfig} from '../types/routes';
 import {Navigate} from 'react-router-dom';
-
 import Dashboard from '../pages/Admin/Dashboard';
 import Accounts from '../pages/Admin/Account/Accounts';
 import Blogs from '../pages/Admin/Blog/Blogs';
@@ -21,7 +20,8 @@ export const adminPaths: RouteConfig[] = [
         label: 'Dashboard',
         iconName: 'FaHome',
         showInSidebar: true
-    }, {
+    }, 
+    {
         path: '/admin/accounts',
         element: <Accounts/>,
         label: 'Accounts',
@@ -29,26 +29,13 @@ export const adminPaths: RouteConfig[] = [
         showInSidebar: true
     },
     {
-        path: '/admin/accounts/customer/:id'
-    },
-    {
-        path: '/admin/accounts/doctor/:id'
-    }, {
-        path: '/admin/accounts/staff/:id'
-    },
-    {
         path: '/admin/examinations',
         element: <Examinations/>,
         label: 'Examinations',
-        iconName: 'FaFlask',
+        iconName: 'FaClipboard',
         showInSidebar: true
     },
     {
-        path: '/admin/examinations/:id'
-    },
-    {
-        path: '/admin/examinations/:id/result'
-    }, {
         path: '/admin/blogs',
         element: <Blogs/>,
         label: 'Blogs',
@@ -56,15 +43,11 @@ export const adminPaths: RouteConfig[] = [
         showInSidebar: true
     },
     {
-        path: '/admin/blogs/:id'
-    }, {
         path: '/admin/panels',
         element: <TestPanels/>,
         label: 'Test Panels',
-        iconName: 'FaCogs',
+        iconName: 'FaFlask',
         showInSidebar: true
-    }, {
-        path: '/admin/panels/:id'
     },
     {
         path: '/admin/reports',
