@@ -41,12 +41,25 @@ const CycleChart: React.FC = () => {
 
     const chartData = cycles.length > 0 ? (() => {
         const sortedCycles = [...cycles]
-            .filter(c => c.cycleLength && c.cycleLength > 0)
-            .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime())
-            .slice(-6);
+            .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
 
-        const labels = sortedCycles.map((_, index) => `Chu kỳ ${index + 1}`);
-        const cycleLengths = sortedCycles.map(c => c.cycleLength);
+        const cyclesWithActualDays = sortedCycles.map((cycle, index) => {
+            const start = new Date(cycle.cycleStartDate);
+            const nextCycle = sortedCycles[index + 1];
+            
+            const actualCycleDays = nextCycle
+                ? Math.ceil((new Date(nextCycle.cycleStartDate).getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
+                : null;
+
+            return {
+                ...cycle,
+                actualCycleDays
+            };
+        }).filter(c => c.actualCycleDays && c.actualCycleDays > 0);
+
+        const displayCycles = cyclesWithActualDays.slice(-6);
+        const labels = displayCycles.map((_, index) => `Chu kỳ ${index + 1}`);
+        const cycleLengths = displayCycles.map(c => c.actualCycleDays);
 
         return {
             labels,
