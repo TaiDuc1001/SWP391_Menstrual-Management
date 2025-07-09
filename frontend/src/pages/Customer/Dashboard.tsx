@@ -738,7 +738,7 @@ const Dashboard: React.FC = () => {
                             )}
                         </div>
                         <button className="px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 transition-colors duration-200 font-medium mt-2"
-                                onClick={() => navigate('/customer/appointments')}>Xem chi tiết
+                                onClick={() => navigate('/customer/appointments')}>View Detail
                         </button>
                     </div>
                 </div>
