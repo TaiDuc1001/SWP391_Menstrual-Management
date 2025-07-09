@@ -491,7 +491,7 @@ const Dashboard: React.FC = () => {
                             )}
                         </div>
                         <button className="text-pink-500 hover:underline text-sm mt-2 w-max"
-                                onClick={() => navigate('/customer/sti-test')}>View Tests
+                                onClick={() => navigate('/customer/sti-tests')}>View Tests
                         </button>
                     </div>
                     <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
