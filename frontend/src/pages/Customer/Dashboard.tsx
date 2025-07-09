@@ -43,6 +43,59 @@ const Dashboard: React.FC = () => {
     const [prediction, setPrediction] = useState<any>(null);
     const [recentBlogs, setRecentBlogs] = useState<SimpleBlogDTO[]>([]);
 
+    // Function to fetch appointments data
+    const fetchAppointments = async () => {
+        try {
+            const res = await api.get('/appointments');
+            console.log('Appointments raw data:', res.data);
+            // Get 3 most recent appointments (excluding cancelled ones)
+            const recentAppointments = res.data
+                .filter((a: any) => {
+                    // Filter out cancelled appointments only
+                    return a.appointmentStatus !== 'CANCELLED';
+                })
+                .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 3); // Take only first 3 most recent appointments
+            
+            console.log('Recent appointments:', recentAppointments);
+            
+            // Fetch doctor ratings for each appointment
+            const appointmentsWithRatings = await Promise.all(
+                recentAppointments.map(async (a: any) => {
+                    try {
+                        const ratingResponse = await api.get(`/appointments/doctor/${a.doctorId}/average-rating`);
+                        const { averageRating } = ratingResponse.data;
+                        return {
+                            id: a.id,
+                            name: a.doctorName,
+                            date: new Date(a.date).toLocaleDateString('en-GB'),
+                            time: a.timeRange || a.slot || '',
+                            avatar: '',
+                            rating: averageRating ? Math.round(averageRating * 10) / 10 : 0,
+                            status: a.appointmentStatus
+                        };
+                    } catch (error) {
+                        // If rating fetch fails, use default rating
+                        return {
+                            id: a.id,
+                            name: a.doctorName,
+                            date: new Date(a.date).toLocaleDateString('en-GB'),
+                            time: a.timeRange || a.slot || '',
+                            avatar: '',
+                            rating: 0,
+                            status: a.appointmentStatus
+                        };
+                    }
+                })
+            );
+            
+            setAppointments(appointmentsWithRatings);
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+            setAppointments([]);
+        }
+    };
+
     useEffect(() => {
         let isMounted = true; // Flag to prevent setState after unmount
         
@@ -69,77 +122,7 @@ const Dashboard: React.FC = () => {
                 setDaysToOvulation(0);
             });
         // Fetch appointments with error handling
-        api.get('/appointments')
-            .then(res => {
-                console.log('Appointments raw data:', res.data);
-                // Filter upcoming appointments (not cancelled, not finished, in the future)
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                const upcomingAppointments = res.data
-                    .filter((a: any) => {
-                        // Filter out cancelled and finished appointments
-                        if (a.appointmentStatus === 'CANCELLED' || a.appointmentStatus === 'FINISHED') {
-                            return false;
-                        }
-                        
-                        // Filter appointments from today onwards
-                        const appointmentDate = new Date(a.date);
-                        return appointmentDate >= today;
-                    })
-                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                    .slice(0, 3); // Take only first 3 upcoming appointments
-                
-                console.log('Filtered upcoming appointments:', upcomingAppointments);
-                
-                // Fetch doctor ratings for each appointment
-                Promise.all(
-                    upcomingAppointments.map(async (a: any) => {
-                        try {
-                            const ratingResponse = await api.get(`/appointments/doctor/${a.doctorId}/average-rating`);
-                            const { averageRating } = ratingResponse.data;
-                            return {
-                                id: a.id,
-                                name: a.doctorName,
-                                date: new Date(a.date).toLocaleDateString('en-GB'),
-                                time: a.timeRange || a.slot || '',
-                                avatar: '',
-                                rating: averageRating ? Math.round(averageRating * 10) / 10 : 0
-                            };
-                        } catch (error) {
-                            // If rating fetch fails, use default rating
-                            return {
-                                id: a.id,
-                                name: a.doctorName,
-                                date: new Date(a.date).toLocaleDateString('en-GB'),
-                                time: a.timeRange || a.slot || '',
-                                avatar: '',
-                                rating: 0
-                            };
-                        }
-                    })
-                ).then(appointmentsWithRatings => {
-                    if (!isMounted) return;
-                    setAppointments(appointmentsWithRatings);
-                }).catch(error => {
-                    if (!isMounted) return;
-                    console.error('Error processing appointments with ratings:', error);
-                    // Fallback: set appointments without ratings
-                    setAppointments(upcomingAppointments.map((a: any) => ({
-                        id: a.id,
-                        name: a.doctorName,
-                        date: new Date(a.date).toLocaleDateString('en-GB'),
-                        time: a.timeRange || a.slot || '',
-                        avatar: '',
-                        rating: 0
-                    })));
-                });
-            })
-            .catch(error => {
-                if (!isMounted) return;
-                console.error('Error fetching appointments:', error);
-                setAppointments([]);
-            });
+        fetchAppointments();
         // Fetch upcoming examinations with error handling
         api.get('/examinations')
             .then(res => {
@@ -221,6 +204,21 @@ const Dashboard: React.FC = () => {
         // Cleanup function to prevent setState after unmount
         return () => {
             isMounted = false;
+        };
+    }, []);
+
+    // Refresh appointments when page becomes visible (e.g., returning from booking)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                fetchAppointments();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
 
@@ -525,20 +523,34 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
                         <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                            <img src={hospitalIcon} alt="Doctor" className="w-5 h-5"/> Upcoming appointments
+                            <img src={hospitalIcon} alt="Doctor" className="w-5 h-5"/> Recent appointments
                         </div>
                         <div className="flex flex-col gap-2">
                             {appointments.map((a) => (
-                                <div key={a.id} className="flex items-center gap-3">
-                                    <div
-                                        className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-pink-500">{a.name?.split(' ')[1]?.[0] || 'D'}</div>
-                                    <div>
-                                        <div className="font-semibold text-gray-700">{a.name} <span
-                                            className="text-yellow-400">{'★'.repeat(Math.round(a.rating))}</span></div>
-                                        <div className="text-xs text-gray-500">{a.date}, {a.time}</div>
+                                <div key={a.id} className="flex flex-col gap-1 bg-pink-50 rounded-lg p-2">
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-pink-500">{a.name?.split(' ')[1]?.[0] || 'D'}</div>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between items-center">
+                                                <span className="font-semibold text-gray-700">{a.name} <span
+                                                    className="text-yellow-400">{'★'.repeat(Math.round(a.rating))}</span></span>
+                                                <span
+                                                    className={`text-xs px-2 py-1 rounded-full ${
+                                                        a.status === 'SCHEDULED' ? 'bg-blue-200 text-blue-700' :
+                                                        a.status === 'FINISHED' ? 'bg-green-200 text-green-700' :
+                                                        a.status === 'IN_PROGRESS' ? 'bg-yellow-200 text-yellow-700' :
+                                                        'bg-gray-200 text-gray-700'
+                                                    }`}>{a.status}</span>
+                                            </div>
+                                            <div className="text-xs text-gray-500">{a.date}, {a.time}</div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
+                            {appointments.length === 0 && (
+                                <div className="text-gray-400 text-sm">Không có cuộc hẹn tư vấn nào</div>
+                            )}
                         </div>
                         <button className="text-pink-500 hover:underline text-sm mt-2 w-max"
                                 onClick={() => navigate('/customer/appointments')}>Xem chi tiết
