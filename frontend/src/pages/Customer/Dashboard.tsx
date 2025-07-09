@@ -9,7 +9,7 @@ import angryIcon from '../../assets/icons/angry.svg';
 import ReminderSettingsPopup from '../../components/feature/Popup/ReminderSettingsPopup';
 import SuccessPopup from '../../components/feature/Popup/SuccessPopup';
 import api from '../../api/axios';
-import {Line} from 'react-chartjs-2';
+import {Line, Bar} from 'react-chartjs-2';
 import {
     CategoryScale,
     Chart as ChartJS,
@@ -17,6 +17,7 @@ import {
     LinearScale,
     LineElement,
     PointElement,
+    BarElement,
     Title,
     Tooltip
 } from 'chart.js';
@@ -24,7 +25,7 @@ import { usePublicBlogs } from '../../api/hooks';
 import { SimpleBlogDTO } from '../../api/services/blogService';
 import '../../styles/pages/cycle-dashboard.css';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
@@ -42,6 +43,7 @@ const Dashboard: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [prediction, setPrediction] = useState<any>(null);
     const [recentBlogs, setRecentBlogs] = useState<SimpleBlogDTO[]>([]);
+    const [currentChart, setCurrentChart] = useState<'cycle' | 'menstruation'>('cycle');
 
     // Function to fetch appointments data
     const fetchAppointments = async () => {
@@ -295,6 +297,183 @@ const Dashboard: React.FC = () => {
         ]
     };
 
+    const getCurrentUserId = (): string => {
+        try {
+            const userInfo = localStorage.getItem('userInfo');
+            if (userInfo) {
+                const parsedInfo = JSON.parse(userInfo);
+                return parsedInfo.id?.toString() || 'default';
+            }
+        } catch (error) {
+            console.error('Error getting user ID:', error);
+        }
+        return 'default';
+    };
+
+    const getSymptomsStorageKey = (): string => {
+        const userId = getCurrentUserId();
+        return `menstrual_symptoms_${userId}`;
+    };
+
+    const getMenstruationPeriodsFromSymptoms = () => {
+        const symptomsKey = getSymptomsStorageKey();
+        const storedSymptoms = localStorage.getItem(symptomsKey);
+        const menstruationData: { [key: string]: number } = {};
+        
+        if (storedSymptoms) {
+            try {
+                const symptoms = JSON.parse(storedSymptoms);
+                const menstruationPeriods: { [key: string]: Set<string> } = {};
+                
+                Object.entries(symptoms).forEach(([dateKey, symptomData]: [string, any]) => {
+                    if (symptomData.period === 'Menstruating') {
+                        const date = new Date(dateKey);
+                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        
+                        if (!menstruationPeriods[monthKey]) {
+                            menstruationPeriods[monthKey] = new Set();
+                        }
+                        menstruationPeriods[monthKey].add(dateKey);
+                    }
+                });
+                
+                Object.entries(menstruationPeriods).forEach(([monthKey, dates]) => {
+                    menstruationData[monthKey] = dates.size;
+                });
+            } catch (error) {
+                console.error('Error parsing symptoms data:', error);
+            }
+        }
+        
+        return menstruationData;
+    };
+
+    const getMenstruationPeriodsFromCycles = () => {
+        const menstruationData: { [key: string]: number } = {};
+        
+        cycles.forEach((cycle, index) => {
+            const startDate = new Date(cycle.cycleStartDate);
+            const periodDuration = cycle.periodDuration || 5;
+            
+            const monthKey = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
+            menstruationData[`Chu kỳ ${index + 1}`] = periodDuration;
+        });
+        
+        return menstruationData;
+    };
+
+    const getCombinedMenstruationData = () => {
+        const symptomsData = getMenstruationPeriodsFromSymptoms();
+        const cyclesData = getMenstruationPeriodsFromCycles();
+        
+        return Object.keys(cyclesData).length > 0 ? cyclesData : symptomsData;
+    };
+
+    const menstruationChartData = (() => {
+        const combinedData = getCombinedMenstruationData();
+        const labels = Object.keys(combinedData);
+        const data = Object.values(combinedData);
+
+        if (labels.length === 0) {
+            return {
+                labels: ['Chu kỳ 1', 'Chu kỳ 2', 'Chu kỳ 3', 'Chu kỳ 4', 'Chu kỳ 5', 'Chu kỳ 6'],
+                datasets: [
+                    {
+                        label: 'Số ngày hành kinh',
+                        data: [5, 4, 6, 3, 5, 4],
+                        backgroundColor: '#ff5a7a',
+                        borderColor: '#ff5a7a',
+                        borderWidth: 0,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }
+                ]
+            };
+        }
+
+        return {
+            labels,
+            datasets: [
+                {
+                    label: 'Số ngày hành kinh',
+                    data,
+                    backgroundColor: '#ff5a7a',
+                    borderColor: '#ff5a7a',
+                    borderWidth: 0,
+                    borderRadius: 4,
+                    borderSkipped: false
+                }
+            ]
+        };
+    })();
+
+    const menstruationChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                borderColor: '#ff5a7a',
+                borderWidth: 1,
+                cornerRadius: 8,
+                displayColors: false,
+                callbacks: {
+                    label: function(context: any) {
+                        return `Số ngày hành kinh: ${context.parsed.y}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: '#6b7280',
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                max: 7,
+                grid: {
+                    color: 'rgba(156, 163, 175, 0.3)'
+                },
+                ticks: {
+                    color: '#6b7280',
+                    font: {
+                        size: 12
+                    },
+                    stepSize: 1,
+                    callback: function(value: any) {
+                        return `${value} ngày`;
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Số ngày',
+                    color: '#6b7280',
+                    font: {
+                        size: 12
+                    }
+                }
+            }
+        },
+        elements: {
+            bar: {
+                borderWidth: 0
+            }
+        }
+    };
+
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -416,12 +595,41 @@ const Dashboard: React.FC = () => {
                         </button>
                     </div>
                     <div className="flex flex-col items-center justify-center flex-1 w-full">
+                        <div className="flex items-center justify-between w-full mb-4">
+                            <button 
+                                onClick={() => setCurrentChart(currentChart === 'cycle' ? 'menstruation' : 'cycle')}
+                                className="p-2 rounded-full hover:bg-pink-100 transition-colors"
+                            >
+                                <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <div className="flex-1 text-center">
+                                <h3 className="text-sm font-medium text-gray-700">
+                                    {currentChart === 'cycle' ? 'Độ dài chu kỳ' : 'Thời gian hành kinh'}
+                                </h3>
+                            </div>
+                            <button 
+                                onClick={() => setCurrentChart(currentChart === 'cycle' ? 'menstruation' : 'cycle')}
+                                className="p-2 rounded-full hover:bg-pink-100 transition-colors"
+                            >
+                                <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
                         <div className="w-full h-64 mb-4">
-                            <Line data={chartData} options={chartOptions}/>
+                            {currentChart === 'cycle' ? (
+                                <Line data={chartData} options={chartOptions}/>
+                            ) : (
+                                <Bar data={menstruationChartData} options={menstruationChartOptions}/>
+                            )}
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="inline-block w-4 h-4 rounded-full bg-pink-500"></span>
-                            <span className="text-gray-700 text-sm font-medium">Độ dài chu kỳ (ngày)</span>
+                            <span className={`inline-block w-4 h-4 rounded-full ${currentChart === 'cycle' ? 'bg-pink-500' : 'bg-red-400'}`}></span>
+                            <span className="text-gray-700 text-sm font-medium">
+                                {currentChart === 'cycle' ? 'Độ dài chu kỳ (ngày)' : 'Số ngày hành kinh'}
+                            </span>
                         </div>
                     </div>
                 </div>
