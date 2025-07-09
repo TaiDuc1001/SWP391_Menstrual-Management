@@ -71,6 +71,7 @@ export const examinationService = {
     createExamination: async (panelId: number, data: { date: string; slot: string; note?: string }) => {
         try {
             const response = await api.post(`/panels/${panelId}`, data);
+            window.dispatchEvent(new CustomEvent('examinationBooked'));
             return { data: response.data, error: null };
         } catch (error: any) {
             const isConflict = error.response?.status === 409;

@@ -96,6 +96,33 @@ const Dashboard: React.FC = () => {
         }
     };
 
+    const fetchExaminations = async () => {
+        try {
+            const res = await api.get('/examinations');
+            console.log('Examinations raw data:', res.data);
+            
+            const recentExaminations = res.data
+                .filter((e: any) => {
+                    return e.examinationStatus !== 'CANCELLED';
+                })
+                .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 3)
+                .map((e: any) => ({
+                    id: e.id,
+                    name: e.panelName || e.name || 'Health Screening',
+                    date: new Date(e.date).toLocaleDateString('en-GB'),
+                    time: e.timeRange || 'TBD',
+                    place: e.place || e.location || 'Medical Center',
+                    status: e.examinationStatus || 'Scheduled'
+                }));
+            
+            setExaminations(recentExaminations);
+        } catch (error) {
+            console.error('Error fetching examinations:', error);
+            setExaminations([]);
+        }
+    };
+
     useEffect(() => {
         let isMounted = true; // Flag to prevent setState after unmount
         
@@ -123,70 +150,7 @@ const Dashboard: React.FC = () => {
             });
         // Fetch appointments with error handling
         fetchAppointments();
-        // Fetch upcoming examinations with error handling
-        api.get('/examinations')
-            .then(res => {
-                console.log('Examinations raw data:', res.data);
-                
-                // Temporarily show all examinations to debug
-                const allExaminations = res.data
-                    .map((e: any) => ({
-                        id: e.id,
-                        name: e.panelName || e.name || 'Health Screening',
-                        date: new Date(e.date).toLocaleDateString('en-GB'),
-                        time: e.timeRange || 'TBD',
-                        place: e.place || e.location || 'Medical Center',
-                        status: e.examinationStatus || 'Unknown',
-                        rawStatus: e.examinationStatus,
-                        rawDate: e.date
-                    }))
-                    .slice(0, 5); // Show first 5 for debugging
-                
-                console.log('All examinations (debug):', allExaminations);
-                
-                // Now filter for actual upcoming ones
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                const upcomingExaminations = res.data
-                    .filter((e: any) => {
-                        console.log(`Exam ${e.id}: status=${e.examinationStatus}, date=${e.date}`);
-                        
-                        // Skip if cancelled
-                        if (e.examinationStatus === 'CANCELLED') {
-                            console.log(`Exam ${e.id} skipped: cancelled`);
-                            return false;
-                        }
-                        
-                        // Include all non-completed examinations for now
-                        if (e.examinationStatus === 'COMPLETED') {
-                            console.log(`Exam ${e.id} skipped: completed`);
-                            return false;
-                        }
-                        
-                        console.log(`Exam ${e.id} included`);
-                        return true;
-                    })
-                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                    .slice(0, 3) // Take only first 3 upcoming
-                    .map((e: any) => ({
-                        id: e.id,
-                        name: e.panelName || e.name || 'Health Screening',
-                        date: new Date(e.date).toLocaleDateString('en-GB'),
-                        time: e.timeRange || 'TBD',
-                        place: e.place || e.location || 'Medical Center',
-                        status: e.examinationStatus || 'Scheduled'
-                    }));
-                
-                if (!isMounted) return;
-                console.log('Upcoming examinations found:', upcomingExaminations);
-                setExaminations(upcomingExaminations);
-            })
-            .catch(error => {
-                if (!isMounted) return;
-                console.error('Error fetching examinations:', error);
-                setExaminations([]);
-            });
+        fetchExaminations();
 
         // Fetch all cycles data for prediction with error handling
         api.get('/cycles')
@@ -212,6 +176,7 @@ const Dashboard: React.FC = () => {
         const handleVisibilityChange = () => {
             if (!document.hidden) {
                 fetchAppointments();
+                fetchExaminations();
             }
         };
 
@@ -503,7 +468,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
                         <div className="flex items-center gap-2 text-pink-500 font-semibold">
-                            <img src={calendarIcon} alt="Calendar" className="w-5 h-5"/> Upcoming examinations
+                            <img src={calendarIcon} alt="Calendar" className="w-5 h-5"/> Recent examinations
                         </div>
                         <div className="flex flex-col gap-2">
                             {examinations.map((e, idx) => (
@@ -511,15 +476,23 @@ const Dashboard: React.FC = () => {
                                     <div className="flex justify-between items-center">
                                         <span className="font-semibold text-pink-600">{e.name}</span>
                                         <span
-                                            className={`text-xs px-2 py-1 rounded-full ${e.status === 'In Progress' || e.status === 'Pending' ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-500'}`}>{e.status}</span>
+                                            className={`text-xs px-2 py-1 rounded-full ${
+                                                e.status === 'SCHEDULED' ? 'bg-blue-200 text-blue-700' :
+                                                e.status === 'COMPLETED' ? 'bg-green-200 text-green-700' :
+                                                e.status === 'IN_PROGRESS' ? 'bg-yellow-200 text-yellow-700' :
+                                                'bg-gray-200 text-gray-700'
+                                            }`}>{e.status}</span>
                                     </div>
                                     <div className="text-xs text-gray-500">{e.place} | {e.date} - {e.time}</div>
                                 </div>
                             ))}
                             {examinations.length === 0 && (
-                                <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm sắp tới</div>
+                                <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm nào</div>
                             )}
                         </div>
+                        <button className="text-pink-500 hover:underline text-sm mt-2 w-max"
+                                onClick={() => navigate('/customer/sti-test')}>View Tests
+                        </button>
                     </div>
                     <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-3">
                         <div className="flex items-center gap-2 text-pink-500 font-semibold">
