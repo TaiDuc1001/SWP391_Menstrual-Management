@@ -108,13 +108,15 @@ const Dashboard: React.FC = () => {
                     getSystemNotifications()
                 ]);
                 setDashboardData(dashboard);
-                // Map backend months (1-12) to labels
-                setRevenueData(
-                    (monthlyRevenue as MonthlyRevenue[]).map(item => ({
-                        month: monthLabels[item.month - 1],
-                        revenue: item.revenue
-                    }))
-                );
+                // Map backend months (1-12) to labels, fill 0 if missing
+                const revenueArr = Array.from({ length: 12 }, (_, i) => {
+                    const found = (monthlyRevenue as MonthlyRevenue[]).find(item => item.month === i + 1);
+                    return {
+                        month: monthLabels[i],
+                        revenue: found ? found.revenue : 0
+                    };
+                });
+                setRevenueData(revenueArr);
                 setServiceData(serviceDist as ServiceDistribution[]);
                 setRecentActivities(activities);
                 setSystemNotifications(notifications);
@@ -126,7 +128,6 @@ const Dashboard: React.FC = () => {
                 setLoading(false);
             }
         };
-        
         fetchDashboardData();
         
         // Set up periodic refresh for notifications - every 60 seconds

@@ -67,12 +67,15 @@ const Reports: React.FC = () => {
                     (await import('../../../api/services/adminDashboardService')).getAdminServiceDistribution(),
                 ]);
                 setDashboard(dashboardRes);
-                setRevenueData(
-                    (monthlyRevenue as any[]).map(item => ({
-                        month: monthLabels[item.month - 1],
-                        revenue: item.revenue
-                    }))
-                );
+                // Chuẩn hóa dữ liệu 12 tháng, nếu thiếu thì fill 0
+                const revenueArr = Array.from({ length: 12 }, (_, i) => {
+                    const found = (monthlyRevenue as any[]).find((item) => item.month === i + 1);
+                    return {
+                        month: monthLabels[i],
+                        revenue: found ? found.revenue : 0
+                    };
+                });
+                setRevenueData(revenueArr);
                 setServiceDistribution(serviceDist as any[]);
             } catch (err) {
                 setError('Failed to load dashboard data.');
@@ -138,8 +141,10 @@ const Reports: React.FC = () => {
         users: dashboard.userGrowthByMonth[idx]?.newUsers || 0,
     }));
 
+    // Format tiền giống Dashboard (VND, có dấu phẩy)
     const formatRevenue = (value: number) => {
-        return `${(value / 1000000).toFixed(0)}M`;
+        if (typeof value !== 'number' || isNaN(value)) return '';
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
     };
 
     return (
@@ -201,8 +206,11 @@ const Reports: React.FC = () => {
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                 <XAxis dataKey="month" stroke="#64748b" />
-                                <YAxis stroke="#64748b" tickFormatter={formatRevenue} />
-                                <Tooltip contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} formatter={(value: number) => [`${formatRevenue(Number(value))} VNĐ`, 'Doanh thu']}/>
+                                <YAxis stroke="#64748b" tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(v))} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} 
+                                    formatter={(value: number) => [formatRevenue(Number(value)), 'Doanh thu']}
+                                />
                                 <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>
                         </ResponsiveContainer>
