@@ -322,7 +322,10 @@ const Reports: React.FC = () => {
                         </h2>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={getFilteredData(revenueData)}>
+                                <AreaChart 
+                                    data={getFilteredData(revenueData)}
+                                    margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
+                                >
                                     <defs>
                                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
@@ -338,6 +341,7 @@ const Reports: React.FC = () => {
                                         angle={timeRange === '30days' ? -45 : 0}
                                         textAnchor={timeRange === '30days' ? 'end' : 'middle'}
                                         height={timeRange === '30days' ? 60 : 30}
+                                        padding={{ left: 10, right: 10 }}
                                     />
                                     <YAxis stroke="#64748b" tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(v))} />
                                     <Tooltip 
@@ -386,7 +390,10 @@ const Reports: React.FC = () => {
                         <h2 className="text-xl font-semibold mb-6">Appointments</h2>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={getFilteredData(appointmentsData)}>
+                                <BarChart 
+                                    data={getFilteredData(appointmentsData)}
+                                    margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
+                                >
                                     <CartesianGrid strokeDasharray="3 3"/>
                                     <XAxis 
                                         dataKey={xAxisKey} 
@@ -395,6 +402,7 @@ const Reports: React.FC = () => {
                                         angle={timeRange === '30days' ? -45 : 0}
                                         textAnchor={timeRange === '30days' ? 'end' : 'middle'}
                                         height={timeRange === '30days' ? 60 : 30}
+                                        padding={{ left: 10, right: 10 }}
                                     />
                                     <YAxis allowDecimals={false}/>
                                     <Tooltip
@@ -411,7 +419,10 @@ const Reports: React.FC = () => {
                         <h2 className="text-xl font-semibold mb-6">User Growth</h2>
                         <div className="h-80">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={getFilteredData(userGrowthData)}>
+                                <AreaChart 
+                                    data={getFilteredData(userGrowthData)}
+                                    margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
+                                >
                                     <CartesianGrid strokeDasharray="3 3"/>
                                     <XAxis 
                                         dataKey={xAxisKey} 
@@ -420,6 +431,7 @@ const Reports: React.FC = () => {
                                         angle={timeRange === '30days' ? -45 : 0}
                                         textAnchor={timeRange === '30days' ? 'end' : 'middle'}
                                         height={timeRange === '30days' ? 60 : 30}
+                                        padding={{ left: 10, right: 10 }}
                                     />
                                     <YAxis allowDecimals={false}/>
                                     <Tooltip
