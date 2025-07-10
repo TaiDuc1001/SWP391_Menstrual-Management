@@ -71,7 +71,7 @@ const DoctorRatingHistory: React.FC = () => {
                         <tr>
                             <th>Date</th>
                             <th>Patient</th>
-                            <th>Score</th>
+                            <th>Stars</th>
                             <th>Feedback</th>
                         </tr>
                     </thead>
@@ -92,7 +92,7 @@ const DoctorRatingHistory: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-            {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
+                {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
         </div>
     );
 };

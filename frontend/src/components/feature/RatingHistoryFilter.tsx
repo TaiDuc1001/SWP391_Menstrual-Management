@@ -12,11 +12,11 @@ const RatingHistoryFilter: React.FC<RatingHistoryFilterProps> = ({ star, setStar
   return (
     <div className="flex flex-wrap gap-3 mb-6 items-end bg-pink-50 rounded-xl px-4 py-3 shadow-sm">
       <div className="flex gap-2 items-center">
-        <span className="font-semibold text-pink-600">Số sao:</span>
+        <span className="font-semibold text-pink-600">Stars:</span>
         <button
           className={`px-2 py-1 rounded-lg text-sm font-medium border transition-all duration-150 ${star === '' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white border-pink-200 text-pink-600 hover:bg-pink-100'}`}
           onClick={() => setStar('')}
-        >Tất cả</button>
+        >All</button>
         {stars.map(s => (
           <button
             key={s}
