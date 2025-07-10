@@ -5,7 +5,7 @@ import {Navigate} from 'react-router-dom';
 import Dashboard from '../pages/Doctor/Dashboard';
 import MyProfile from '../pages/Doctor/MyProfile';
 import ManageProfile from '../pages/Doctor/ManageProfile';
-import SetupProfile from '../pages/Doctor/SetupProfile';
+
 import Appointments from '../pages/Doctor/Appointment/Appointments';
 import DoctorRescheduleRequests from '../pages/Doctor/Reschedule/RescheduleRequests';
 import DoctorProfileGuard from '../components/DoctorProfileGuard';
@@ -16,11 +16,7 @@ export const doctorPaths: RouteConfig[] = [
         element: <Navigate to="/doctor/dashboard" replace/>,
         showInSidebar: false
     },
-    {
-        path: '/doctor/setup-profile',
-        element: <SetupProfile/>,
-        showInSidebar: false
-    },
+
     {
         path: '/doctor/manage-profile',
         element: <ManageProfile/>,
