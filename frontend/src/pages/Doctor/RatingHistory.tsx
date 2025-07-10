@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/pages/rating-history.css';
+import RatingHistoryFilter from '../../components/feature/RatingHistoryFilter';
 import { doctorRatingService } from '../../api/services/doctorRatingService';
 import { doctorService } from '../../api/services/doctorService';
 
@@ -17,6 +18,7 @@ const DoctorRatingHistory: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [doctorId, setDoctorId] = useState<number | null>(null);
+    const [star, setStar] = useState<number | ''>('');
 
     useEffect(() => {
         doctorService.getDoctorProfile()
@@ -45,9 +47,24 @@ const DoctorRatingHistory: React.FC = () => {
     if (loading) return <div className="doctor-rating-history-container doctor-rating-history-empty">Loading rating history...</div>;
     if (error) return <div className="doctor-rating-history-container doctor-rating-history-empty text-red-500">{error}</div>;
 
+    // Filter ratings by week, month, year
+    const getFilteredRatings = () => {
+        let filtered = ratings;
+        if (star !== '') {
+            filtered = filtered.filter(item => item.score === star);
+        }
+        return filtered;
+    };
+
+    const filteredRatings = getFilteredRatings();
+
     return (
         <div className="doctor-rating-history-container">
             <div className="doctor-rating-history-title">Rating History</div>
+            <RatingHistoryFilter
+                star={star}
+                setStar={setStar}
+            />
             <div className="doctor-rating-history-table-wrapper">
                 <table className="doctor-rating-history-table">
                     <thead>
@@ -59,7 +76,7 @@ const DoctorRatingHistory: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {ratings.map((item) => (
+                        {filteredRatings.map((item) => (
                             <tr key={item.appointmentId}>
                                 <td>{new Date(item.date).toLocaleDateString()}</td>
                                 <td>{item.patientName}</td>
@@ -75,7 +92,7 @@ const DoctorRatingHistory: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-            {ratings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
+            {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
         </div>
     );
 };
