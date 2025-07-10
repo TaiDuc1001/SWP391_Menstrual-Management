@@ -69,11 +69,11 @@ const DoctorDashboard: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Lấy tất cả appointments
+        // Get all appointments
         const appointmentsRes = await doctorDashboardService.getTodayAppointments();
         const appointments = appointmentsRes.data || [];
         
-        // Tính thống kê
+        // Calculate statistics
         const today = new Date().toISOString().slice(0, 10);
         const todayApts = appointments.filter((a: any) => a.date === today);
         const completed = appointments.filter((a: any) => a.appointmentStatus === 'FINISHED').length;
@@ -85,7 +85,7 @@ const DoctorDashboard: React.FC = () => {
           a.appointmentStatus === 'IN_PROGRESS'
         ).length;
 
-        // Lấy số bệnh nhân unique
+        // Get unique patients count
         const uniquePatients = new Set(appointments.map((a: any) => a.customerId)).size;
 
         setStats({
@@ -95,7 +95,7 @@ const DoctorDashboard: React.FC = () => {
           pendingAppointments: pending,
         });
 
-        // Lấy lịch hẹn sắp tới
+        // Get upcoming appointments
         const now = new Date();
         const upcoming = appointments
           .filter((a: any) => {
@@ -115,7 +115,7 @@ const DoctorDashboard: React.FC = () => {
           }));
         setUpcomingAppointments(upcoming);
 
-        // Lấy bệnh nhân gần đây
+        // Get recent patients
         const finished = appointments
           .filter((a: any) => a.appointmentStatus === 'FINISHED')
           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -128,7 +128,7 @@ const DoctorDashboard: React.FC = () => {
           }));
         setRecentPatients(finished);
 
-        // Tạo dữ liệu biểu đồ tuần
+        // Create weekly chart data
         const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const weekStats = weekDays.map((day, idx) => {
           const count = appointments.filter((a: any) => {

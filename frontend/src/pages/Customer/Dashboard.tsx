@@ -255,14 +255,14 @@ const Dashboard: React.FC = () => {
         }).filter(c => c.actualCycleDays && c.actualCycleDays > 0);
 
         const displayCycles = cyclesWithActualDays.slice(-6);
-        const labels = displayCycles.map((_, index) => `Chu kỳ ${index + 1}`);
+        const labels = displayCycles.map((_, index) => `Cycle ${index + 1}`);
         const cycleLengths = displayCycles.map(c => c.actualCycleDays);
 
         return {
             labels,
             datasets: [
                 {
-                    label: 'Độ dài chu kỳ (ngày)',
+                    label: 'Cycle length (days)',
                     data: cycleLengths,
                     borderColor: '#ec4899',
                     backgroundColor: 'rgba(236, 72, 153, 0.1)',
@@ -277,10 +277,10 @@ const Dashboard: React.FC = () => {
             ]
         };
     })() : {
-        labels: ['Chu kỳ 1', 'Chu kỳ 2', 'Chu kỳ 3', 'Chu kỳ 4', 'Chu kỳ 5'],
+        labels: ['Cycle 1', 'Cycle 2', 'Cycle 3', 'Cycle 4', 'Cycle 5'],
         datasets: [
             {
-                label: 'Độ dài chu kỳ (ngày)',
+                label: 'Cycle length (days)',
                 data: [28, 27, 30, 26, 29],
                 borderColor: '#ec4899',
                 backgroundColor: 'rgba(236, 72, 153, 0.1)',
@@ -359,7 +359,7 @@ const Dashboard: React.FC = () => {
             const periodDuration = cycle.periodDuration || 5;
             
             const monthKey = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
-            menstruationData[`Chu kỳ ${index + 1}`] = periodDuration;
+            menstruationData[`Cycle ${index + 1}`] = periodDuration;
         });
         
         return menstruationData;
@@ -379,10 +379,10 @@ const Dashboard: React.FC = () => {
 
         if (labels.length === 0) {
             return {
-                labels: ['Chu kỳ 1', 'Chu kỳ 2', 'Chu kỳ 3', 'Chu kỳ 4', 'Chu kỳ 5', 'Chu kỳ 6'],
+                labels: ['Cycle 1', 'Cycle 2', 'Cycle 3', 'Cycle 4', 'Cycle 5', 'Cycle 6'],
                 datasets: [
                     {
-                        label: 'Số ngày hành kinh',
+                        label: 'Menstrual days',
                         data: [5, 4, 6, 3, 5, 4],
                         backgroundColor: '#ff5a7a',
                         borderColor: '#ff5a7a',
@@ -398,7 +398,7 @@ const Dashboard: React.FC = () => {
             labels,
             datasets: [
                 {
-                    label: 'Số ngày hành kinh',
+                    label: 'Menstrual days',
                     data,
                     backgroundColor: '#ff5a7a',
                     borderColor: '#ff5a7a',
@@ -427,7 +427,7 @@ const Dashboard: React.FC = () => {
                 displayColors: false,
                 callbacks: {
                     label: function(context: any) {
-                        return `Số ngày hành kinh: ${context.parsed.y}`;
+                        return `Menstrual days: ${context.parsed.y}`;
                     }
                 }
             }
@@ -457,12 +457,12 @@ const Dashboard: React.FC = () => {
                     },
                     stepSize: 1,
                     callback: function(value: any) {
-                        return `${value} ngày`;
+                        return `${value} days`;
                     }
                 },
                 title: {
                     display: true,
-                    text: 'Số ngày',
+                    text: 'Days',
                     color: '#6b7280',
                     font: {
                         size: 12
@@ -524,7 +524,7 @@ const Dashboard: React.FC = () => {
                 },
                 title: {
                     display: true,
-                    text: 'Số ngày',
+                    text: 'Days',
                     color: '#9ca3af',
                     font: {
                         size: 12
@@ -550,10 +550,9 @@ const Dashboard: React.FC = () => {
             <div
                 className="flex flex-col md:flex-row justify-between items-center bg-white rounded-2xl shadow p-6 mb-6">
                 <div>
-                    <h2 className="text-xl font-bold text-pink-600 mb-1">Xin chào, {userName} <span
+                    <h2 className="text-xl font-bold text-pink-600 mb-1">Hello, {userName} <span
                         className="inline-block">👋</span></h2>
-                    <p className="text-gray-500">Hôm nay bạn cảm thấy thế nào? Hãy kiểm tra nhanh sức khỏe & cập nhật
-                        lịch chu kỳ nhé!</p>
+                    <p className="text-gray-500">How are you feeling today? Let's do a quick health check & update your cycle calendar!</p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
                     <button
@@ -674,7 +673,7 @@ const Dashboard: React.FC = () => {
                     <div className="flex flex-col items-center justify-center flex-1 w-full">
                         <div className="text-center mb-6">
                             <h3 className="text-lg font-semibold text-gray-700">
-                                {currentChart === 'cycle' ? 'Độ dài chu kỳ' : 'Thời gian hành kinh'}
+                                {currentChart === 'cycle' ? 'Cycle Length' : 'Menstrual Period Duration'}
                             </h3>
                         </div>
                         <div className="relative w-full h-96 mb-6">
@@ -709,7 +708,7 @@ const Dashboard: React.FC = () => {
                         <div className="flex items-center gap-2">
                             <span className={`inline-block w-4 h-4 rounded-full ${currentChart === 'cycle' ? 'bg-pink-500' : 'bg-red-400'}`}></span>
                             <span className="text-gray-700 text-sm font-medium">
-                                {currentChart === 'cycle' ? 'Độ dài chu kỳ (ngày)' : 'Số ngày hành kinh'}
+                                {currentChart === 'cycle' ? 'Cycle length (days)' : 'Menstrual days'}
                             </span>
                         </div>
                     </div>
@@ -742,7 +741,7 @@ const Dashboard: React.FC = () => {
                             ))}
                             {recentBlogs.length === 0 && (
                                 <div className="text-gray-400 text-sm text-center py-4 border border-gray-100 rounded-lg">
-                                    Không có bài viết nào
+                                    No articles available
                                 </div>
                             )}
                         </div>
@@ -774,7 +773,7 @@ const Dashboard: React.FC = () => {
                                 </div>
                             ))}
                             {examinations.length === 0 && (
-                                <div className="text-gray-400 text-sm">Không có cuộc hẹn xét nghiệm nào</div>
+                                <div className="text-gray-400 text-sm">No examination appointments</div>
                             )}
                         </div>
                         <button className="px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 transition-colors duration-200 font-medium mt-2"
@@ -809,7 +808,7 @@ const Dashboard: React.FC = () => {
                                 </div>
                             ))}
                             {appointments.length === 0 && (
-                                <div className="text-gray-400 text-sm">Không có cuộc hẹn tư vấn nào</div>
+                                <div className="text-gray-400 text-sm">No consultation appointments</div>
                             )}
                         </div>
                         <button className="px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 transition-colors duration-200 font-medium mt-2"

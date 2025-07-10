@@ -39,14 +39,14 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
-  // Thống kê nhanh
+  // Quick statistics
   const total = examinations.length;
   const sampled = examinations.filter(e => e.examinationStatus === 'SAMPLED').length;
   const inProgress = examinations.filter(e => e.examinationStatus === 'IN_PROGRESS').length;
   const examined = examinations.filter(e => e.examinationStatus === 'EXAMINED').length;
   const completed = examinations.filter(e => e.examinationStatus === 'COMPLETED').length;
 
-  // Lấy 5 mẫu mới nhất
+  // Get 5 latest samples
   const latest = [...examinations].sort((a, b) => b.id - a.id).slice(0, 5);
 
   return (
