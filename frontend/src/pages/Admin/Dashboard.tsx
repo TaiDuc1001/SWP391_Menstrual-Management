@@ -1,5 +1,5 @@
-import React from 'react';
-import {FaCalendarAlt, FaChartLine, FaDollarSign, FaFlask, FaStethoscope, FaUser} from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import {FaBlog, FaCalendarAlt, FaChartLine, FaDollarSign, FaFlask, FaStethoscope, FaUser} from 'react-icons/fa';
 import {
     Area,
     AreaChart,
@@ -13,13 +13,25 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
+import { getAdminDashboardData } from '../../api/services';
 
-const stats = [
-    {icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: 1200},
-    {icon: FaStethoscope, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Doctors', value: 35},
-    {icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Appointments', value: 210},
-    {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Test Services', value: 18},
-    {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Monthly Revenue', value: '120M'},
+// Interface for dashboard data from API
+interface DashboardData {
+    totalAccounts: number;
+    totalBlogs: number;
+    totalAppointments: number;
+    totalTestServices: number;
+    totalRevenue: number;
+    growthRate: number;
+}
+
+// Default stats for when data is loading
+const defaultStats = [
+    {icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: '---'},
+    {icon: FaBlog, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Blogs', value: '---'},
+    {icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Appointments', value: '---'},
+    {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Test Services', value: '18'},
+    {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Revenue', value: '---'},
     {icon: FaChartLine, color: 'text-indigo-500', bgColor: 'bg-indigo-100', label: 'Growth', value: '+15%'},
 ];
 
@@ -50,6 +62,39 @@ const recentActivities = [
 ];
 
 const Dashboard: React.FC = () => {
+    const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch dashboard data when component mounts
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                const data = await getAdminDashboardData();
+                setDashboardData(data);
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching dashboard data:', err);
+                setError('Failed to load dashboard data. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    // Prepare stats based on the fetched data
+    const stats = dashboardData ? [
+        {icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: dashboardData.totalAccounts.toLocaleString()},
+        {icon: FaBlog, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Blogs', value: dashboardData.totalBlogs.toLocaleString()},
+        {icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Appointments', value: dashboardData.totalAppointments.toLocaleString()},
+        {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Test Services', value: dashboardData.totalTestServices.toLocaleString()},
+        {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Revenue', value: new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(dashboardData.totalRevenue)},
+        {icon: FaChartLine, color: 'text-indigo-500', bgColor: 'bg-indigo-100', label: 'Growth', value: `+${dashboardData.growthRate}%`}
+    ] : defaultStats;
+
     return (
         <div className="p-6 bg-gray-50">
             <div className="flex justify-between items-center mb-6">
@@ -64,10 +109,16 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                    <p>{error}</p>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
                 {stats.map((stat) => (
                     <div key={stat.label}
-                         className={`bg-white rounded-xl shadow-sm p-6 flex flex-col items-center ${stat.bgColor} border border-gray-100`}>
+                         className={`bg-white rounded-xl shadow-sm p-6 flex flex-col items-center ${stat.bgColor} border border-gray-100 ${loading ? 'animate-pulse' : ''}`}>
                         {React.createElement(stat.icon as React.ElementType, {className: `${stat.color} text-3xl mb-2`})}
                         <div className="text-2xl font-bold mt-2">{stat.value}</div>
                         <div className="text-gray-600 mt-1 text-sm text-center">{stat.label}</div>
