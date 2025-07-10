@@ -1,6 +1,3 @@
-import React from 'react';
-import {useNavigate} from 'react-router-dom';
-import {FaCalendarAlt, FaChartLine, FaDollarSign, FaFlask, FaStethoscope, FaUser} from 'react-icons/fa';
 import React, { useEffect, useState, ComponentType, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -88,6 +85,7 @@ const Dashboard: React.FC = () => {
 
     const handleViewAllTips = () => {
         navigate('/admin/blogs');
+    };
 
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
