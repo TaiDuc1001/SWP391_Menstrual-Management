@@ -229,6 +229,21 @@ const Reports: React.FC = () => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
     };
 
+    // Format dates for daily views
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' }).format(date);
+    };
+
+    // Formatter for X-axis labels - compacts dates in daily view
+    const formatXAxis = (value: string) => {
+        if (timeRange === '7days' || timeRange === '30days') {
+            return formatDate(value);
+        }
+        return value; // Return month name for monthly views
+    };
+
     // Handler for exporting PDF with current time range
     const handleExportPDF = async () => {
         if (reportRef.current) {
@@ -315,11 +330,21 @@ const Reports: React.FC = () => {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                    <XAxis dataKey={xAxisKey} stroke="#64748b" interval={0} />
+                                    <XAxis 
+                                        dataKey={xAxisKey} 
+                                        stroke="#64748b" 
+                                        interval={timeRange === '30days' ? 2 : 0}  
+                                        tickFormatter={formatXAxis}
+                                        angle={timeRange === '30days' ? -45 : 0}
+                                        textAnchor={timeRange === '30days' ? 'end' : 'middle'}
+                                        height={timeRange === '30days' ? 60 : 30}
+                                    />
                                     <YAxis stroke="#64748b" tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(v))} />
                                     <Tooltip 
                                         contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} 
                                         formatter={(value: number) => [formatRevenue(Number(value)), 'Doanh thu']}
+                                        labelFormatter={timeRange === '7days' || timeRange === '30days' ? 
+                                            (label) => new Date(label).toLocaleDateString('vi-VN') : undefined}
                                     />
                                     <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                                 </AreaChart>
@@ -363,9 +388,19 @@ const Reports: React.FC = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={getFilteredData(appointmentsData)}>
                                     <CartesianGrid strokeDasharray="3 3"/>
-                                    <XAxis dataKey={xAxisKey} interval={0}/>
+                                    <XAxis 
+                                        dataKey={xAxisKey} 
+                                        interval={timeRange === '30days' ? 2 : 0}
+                                        tickFormatter={formatXAxis}
+                                        angle={timeRange === '30days' ? -45 : 0}
+                                        textAnchor={timeRange === '30days' ? 'end' : 'middle'}
+                                        height={timeRange === '30days' ? 60 : 30}
+                                    />
                                     <YAxis allowDecimals={false}/>
-                                    <Tooltip/>
+                                    <Tooltip
+                                        labelFormatter={timeRange === '7days' || timeRange === '30days' ? 
+                                            (label) => new Date(label).toLocaleDateString('vi-VN') : undefined}
+                                    />
                                     <Bar dataKey="appointments" fill="#00C49F" name="Số lượt khám"/>
                                 </BarChart>
                             </ResponsiveContainer>
@@ -378,9 +413,19 @@ const Reports: React.FC = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={getFilteredData(userGrowthData)}>
                                     <CartesianGrid strokeDasharray="3 3"/>
-                                    <XAxis dataKey={xAxisKey} interval={0}/>
+                                    <XAxis 
+                                        dataKey={xAxisKey} 
+                                        interval={timeRange === '30days' ? 2 : 0}
+                                        tickFormatter={formatXAxis}
+                                        angle={timeRange === '30days' ? -45 : 0}
+                                        textAnchor={timeRange === '30days' ? 'end' : 'middle'}
+                                        height={timeRange === '30days' ? 60 : 30}
+                                    />
                                     <YAxis allowDecimals={false}/>
-                                    <Tooltip/>
+                                    <Tooltip
+                                        labelFormatter={timeRange === '7days' || timeRange === '30days' ? 
+                                            (label) => new Date(label).toLocaleDateString('vi-VN') : undefined}
+                                    />
                                     <Area
                                         type="monotone"
                                         dataKey="users"
