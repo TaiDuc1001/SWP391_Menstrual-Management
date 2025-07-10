@@ -508,3 +508,57 @@
   color: white;
   border-color: #be185d;
 }
+
+/* Checkbox styles for Period Day */
+.symptom-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.period-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-label {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.checkmark {
+  position: relative;
+  height: 20px;
+  width: 20px;
+  background-color: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-label:hover .checkmark {
+  background-color: #fce7f3;
+  border-color: #ec4899;
+}
+
+.period-checkbox:checked + .checkbox-label .checkmark {
+  background-color: #ec4899;
+  border-color: #be185d;
+}
+
+.period-checkbox:checked + .checkbox-label .checkmark:after {
+  content: "";
+  position: absolute;
+  display: block;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}

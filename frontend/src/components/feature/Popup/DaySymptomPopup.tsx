@@ -254,26 +254,24 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                 
                 <div className="symptom-section">
                     <div className="symptom-row">
-                        <div className="symptom-icon periods-icon">🩸</div>
+                        <div className="symptom-icon periods-icon">🍓</div>
                         <span className="symptom-label">Period Day</span>
-                        <div className="symptom-toggle">
-                            <div 
-                                className={`toggle-option ${periods ? 'active' : ''}`}
-                                onClick={() => setPeriods(true)}
-                            >
-                                Yes
-                            </div>
-                            <div 
-                                className={`toggle-option ${!periods ? 'active' : ''}`}
-                                onClick={() => setPeriods(false)}
-                            >
-                                No
-                            </div>
+                        <div className="symptom-checkbox">
+                            <input 
+                                type="checkbox" 
+                                id="period-checkbox"
+                                checked={periods}
+                                onChange={(e) => setPeriods(e.target.checked)}
+                                className="period-checkbox"
+                            />
+                            <label htmlFor="period-checkbox" className="checkbox-label">
+                                <span className="checkmark"></span>
+                            </label>
                         </div>
                     </div>
 
                     <div className="symptom-row">
-                        <div className="symptom-icon">💗</div>
+                        <div className="symptom-icon">🩸</div>
                         <span className="symptom-label">Flow Level</span>
                         <div className="flow-options">
                             {[1, 2, 3, 4, 5].map(level => (
@@ -288,7 +286,7 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
 
                     <div className="symptom-dropdown-container">
                         <div className="symptom-main-row" onClick={() => setShowSymptomDropdown(!showSymptomDropdown)}>
-                            <div className="symptom-icon">💎</div>
+                            <div className="symptom-icon">🤕</div>
                             <span className="symptom-label">Symptoms</span>
                             <div className={`symptom-display ${symptoms.length > 0 ? 'active' : ''}`}>
                                 {symptoms.length > 0 ? symptoms.length : ''}
