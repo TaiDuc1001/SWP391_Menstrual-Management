@@ -93,7 +93,8 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
             className="bg-gradient-to-r from-pink-50/90 via-white/80 to-pink-100/80 backdrop-blur-lg px-10 py-5 flex items-center justify-between border-b border-pink-100 sticky top-0 z-50 transition-all duration-300 animate-fade-in">
             <div className="flex items-center flex-1 gap-10">
                 <img src={logo} alt="Logo"
-                     className="h-12 w-auto mr-10 drop-shadow-lg hover:scale-105 transition-transform duration-200"/>
+                     className="h-12 w-auto mr-10 drop-shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
+                     onClick={() => navigate(getDashboardPath())}/>
                 <div className="h-10 w-px bg-pink-100 mx-2 hidden md:block"/>
                 <nav className="navbar">
                     <ul className="flex gap-3 md:gap-6">
