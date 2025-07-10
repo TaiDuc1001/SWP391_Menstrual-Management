@@ -9,10 +9,14 @@ export {examinationService} from './examinationService';
 export {accountService} from './accountService';
 export {blogService} from './blogService';
 export {publicBlogService} from './publicBlogService';
+export {getAdminDashboardData} from './dashboardService';
+export {getAdminMonthlyRevenue, getAdminServiceDistribution} from './adminDashboardService';
 export {panelService} from './panelService';
 export * from './cycleService';
 export * from './aiService';
 export * from './cycleSymptomService';
+export {getRecentActivities} from './recentActivityService';
+export {getSystemNotifications} from './systemNotificationService';
 
 export type {User, UserFilters} from './userService';
 export type {Appointment, AppointmentFilters} from './appointmentService';
