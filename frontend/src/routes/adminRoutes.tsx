@@ -7,6 +7,7 @@ import Blogs from '../pages/Admin/Blog/Blogs';
 import Examinations from '../pages/Admin/Examination/Examinations';
 import TestPanels from '../pages/Admin/TestPanel/TestPanels';
 import Reports from '../pages/Admin/Statistic/Reports';
+import Activities from '../pages/Admin/Activities';
 
 export const adminPaths: RouteConfig[] = [
     {
@@ -55,5 +56,12 @@ export const adminPaths: RouteConfig[] = [
         label: 'Reports',
         iconName: 'FaChartBar',
         showInSidebar: true
+    },
+    {
+        path: '/admin/activities',
+        element: <Activities/>,
+        label: 'Activities',
+        iconName: 'FaHistory',
+        showInSidebar: false
     },
 ];

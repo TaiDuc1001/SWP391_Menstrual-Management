@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import swp391.com.backend.feature.dashboard.dto.AdminDashboardDTO;
+import swp391.com.backend.feature.dashboard.dto.RecentActivityDTO;
+import swp391.com.backend.feature.dashboard.dto.SystemNotificationDTO;
 import swp391.com.backend.feature.dashboard.service.AdminDashboardService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/dashboard")
@@ -31,5 +35,23 @@ public class AdminDashboardController {
     @GetMapping("/service-distribution")
     public ResponseEntity<java.util.List<AdminDashboardService.ServiceDistribution>> getServiceDistribution() {
         return ResponseEntity.ok(adminDashboardService.getServiceDistribution());
+    }
+
+    // Endpoint for recent activities
+    @GetMapping("/recent-activities")
+    public ResponseEntity<List<RecentActivityDTO>> getRecentActivities() {
+        return ResponseEntity.ok(adminDashboardService.getRecentActivities());
+    }
+
+    // Endpoint for all activities 
+    @GetMapping("/all-activities")
+    public ResponseEntity<List<RecentActivityDTO>> getAllActivities() {
+        return ResponseEntity.ok(adminDashboardService.getAllActivities());
+    }
+
+    // Endpoint for system notifications
+    @GetMapping("/notifications")
+    public ResponseEntity<List<SystemNotificationDTO>> getSystemNotifications() {
+        return ResponseEntity.ok(adminDashboardService.getSystemNotifications());
     }
 }

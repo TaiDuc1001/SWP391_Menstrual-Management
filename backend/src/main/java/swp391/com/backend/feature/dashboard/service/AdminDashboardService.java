@@ -7,9 +7,17 @@ import swp391.com.backend.feature.appointment.data.AppointmentRepository;
 import swp391.com.backend.feature.appointment.data.AppointmentStatus;
 import swp391.com.backend.feature.blog.data.BlogRepository;
 import swp391.com.backend.feature.dashboard.dto.AdminDashboardDTO;
+import swp391.com.backend.feature.dashboard.dto.RecentActivityDTO;
+import swp391.com.backend.feature.dashboard.dto.SystemNotificationDTO;
 import swp391.com.backend.feature.examination.data.ExaminationRepository;
 import swp391.com.backend.feature.examination.data.ExaminationStatus;
-import swp391.com.backend.feature.panel.data.PanelRepository;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +94,6 @@ public class AdminDashboardService {
     private final BlogRepository blogRepository;
     private final AppointmentRepository appointmentRepository;
     private final ExaminationRepository examinationRepository;
-    private final PanelRepository panelRepository;
 
     public AdminDashboardDTO getDashboardData() {
         // Get actual counts from repositories
@@ -121,5 +128,179 @@ public class AdminDashboardService {
                 .totalRevenue(totalRevenue)
                 .growthRate(0)
                 .build();
+    }
+    
+    // Recent Activities
+    public List<RecentActivityDTO> getRecentActivities() {
+        List<RecentActivityDTO> activities = new ArrayList<>();
+        
+        // Lấy appointments gần đây (5 ngày qua) - sử dụng date thay vì createdAt
+        LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
+        
+        appointmentRepository.findAll().stream()
+            .filter(app -> app.getDate() != null && app.getDate().isAfter(fiveDaysAgo.toLocalDate()))
+            .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
+            .limit(5)
+            .forEach(app -> {
+                String customerName = app.getCustomer() != null ? app.getCustomer().getName() : "Unknown";
+                String doctorName = app.getDoctor() != null ? app.getDoctor().getName() : "Unknown Doctor";
+                activities.add(RecentActivityDTO.builder()
+                    .time(app.getDate().atStartOfDay().format(DateTimeFormatter.ofPattern("MM/dd")))
+                    .action("Appointment: " + customerName + " with Dr. " + doctorName)
+                    .type("appointment")
+                    .timestamp(app.getDate().atStartOfDay())
+                    .build());
+            });
+        
+        // Lấy examinations gần đây - sử dụng date thay vì updatedAt
+        examinationRepository.findAll().stream()
+            .filter(exam -> exam.getDate() != null && exam.getDate().isAfter(fiveDaysAgo.toLocalDate()))
+            .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
+            .limit(5)
+            .forEach(exam -> {
+                String customerName = exam.getCustomer() != null ? exam.getCustomer().getName() : "Unknown";
+                String panelName = exam.getPanel() != null ? exam.getPanel().getPanelName() : "Unknown Panel";
+                String statusText = exam.getExaminationStatus() != null ? exam.getExaminationStatus().toString() : "Unknown";
+                activities.add(RecentActivityDTO.builder()
+                    .time(exam.getDate().atStartOfDay().format(DateTimeFormatter.ofPattern("MM/dd")))
+                    .action("STI Test: " + customerName + " - " + panelName + " (" + statusText + ")")
+                    .type("sti-test")
+                    .timestamp(exam.getDate().atStartOfDay())
+                    .build());
+            });
+        
+        // Lấy blogs được tạo gần đây - Blog có createdAt
+        blogRepository.findAll().stream()
+            .filter(blog -> blog.getCreatedAt() != null && blog.getCreatedAt().isAfter(fiveDaysAgo))
+            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+            .limit(3)
+            .forEach(blog -> {
+                activities.add(RecentActivityDTO.builder()
+                    .time(blog.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")))
+                    .action("New blog: " + blog.getTitle())
+                    .type("blog")
+                    .timestamp(blog.getCreatedAt())
+                    .build());
+            });
+        
+    // Sắp xếp theo thời gian mới nhất và lấy 10 hoạt động gần nhất
+        return activities.stream()
+            .sorted(Comparator.comparing(RecentActivityDTO::getTimestamp).reversed())
+            .limit(10)
+            .collect(Collectors.toList());
+    }
+    
+    // All Activities (for Activities page)
+    public List<RecentActivityDTO> getAllActivities() {
+        List<RecentActivityDTO> activities = new ArrayList<>();
+        
+        // Lấy tất cả appointments (30 ngày qua)
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        
+        appointmentRepository.findAll().stream()
+            .filter(app -> app.getDate() != null && app.getDate().isAfter(thirtyDaysAgo.toLocalDate()))
+            .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
+            .forEach(app -> {
+                String customerName = app.getCustomer() != null ? app.getCustomer().getName() : "Unknown";
+                String doctorName = app.getDoctor() != null ? app.getDoctor().getName() : "Unknown Doctor";
+                String statusText = app.getAppointmentStatus() != null ? app.getAppointmentStatus().toString() : "Unknown";
+                activities.add(RecentActivityDTO.builder()
+                    .time(app.getDate().atStartOfDay().format(DateTimeFormatter.ofPattern("MM/dd")))
+                    .action("Appointment: " + customerName + " with Dr. " + doctorName + " (" + statusText + ")")
+                    .type("appointment")
+                    .timestamp(app.getDate().atStartOfDay())
+                    .build());
+            });
+        
+        // Lấy tất cả examinations (30 ngày qua)
+        examinationRepository.findAll().stream()
+            .filter(exam -> exam.getDate() != null && exam.getDate().isAfter(thirtyDaysAgo.toLocalDate()))
+            .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
+            .forEach(exam -> {
+                String customerName = exam.getCustomer() != null ? exam.getCustomer().getName() : "Unknown";
+                String panelName = exam.getPanel() != null ? exam.getPanel().getPanelName() : "Unknown Panel";
+                String statusText = exam.getExaminationStatus() != null ? exam.getExaminationStatus().toString() : "Unknown";
+                activities.add(RecentActivityDTO.builder()
+                    .time(exam.getDate().atStartOfDay().format(DateTimeFormatter.ofPattern("MM/dd")))
+                    .action("STI Test: " + customerName + " - " + panelName + " (" + statusText + ")")
+                    .type("sti-test")
+                    .timestamp(exam.getDate().atStartOfDay())
+                    .build());
+            });
+        
+        // Lấy tất cả blogs (30 ngày qua)
+        blogRepository.findAll().stream()
+            .filter(blog -> blog.getCreatedAt() != null && blog.getCreatedAt().isAfter(thirtyDaysAgo))
+            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+            .forEach(blog -> {
+                activities.add(RecentActivityDTO.builder()
+                    .time(blog.getCreatedAt().format(DateTimeFormatter.ofPattern("MM/dd HH:mm")))
+                    .action("New blog: " + blog.getTitle())
+                    .type("blog")
+                    .timestamp(blog.getCreatedAt())
+                    .build());
+            });
+        
+        // Sắp xếp theo thời gian mới nhất
+        return activities.stream()
+            .sorted(Comparator.comparing(RecentActivityDTO::getTimestamp).reversed())
+            .collect(Collectors.toList());
+    }
+    
+    // System Notifications
+    public List<SystemNotificationDTO> getSystemNotifications() {
+        List<SystemNotificationDTO> notifications = new ArrayList<>();
+        
+        // Kiểm tra accounts pending approval
+        long pendingAccounts = accountRepository.findAll().stream()
+            .filter(account -> !account.getStatus()) // status = false means pending
+            .count();
+        
+        if (pendingAccounts > 0) {
+            notifications.add(SystemNotificationDTO.builder()
+                .message("There are " + pendingAccounts + " accounts pending approval")
+                .type("warning")
+                .priority("medium")
+                .isRead(false)
+                .build());
+        }
+        
+        // Kiểm tra examinations cần xử lý
+        long pendingExams = examinationRepository.findAll().stream()
+            .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.SAMPLED)
+            .count();
+        
+        if (pendingExams > 0) {
+            notifications.add(SystemNotificationDTO.builder()
+                .message(pendingExams + " examinations are waiting to be processed")
+                .type("info")
+                .priority("medium")
+                .isRead(false)
+                .build());
+        }
+        
+        // Kiểm tra appointments cần confirm
+        long pendingAppointments = appointmentRepository.findAll().stream()
+            .filter(app -> app.getAppointmentStatus() == AppointmentStatus.BOOKED)
+            .count();
+        
+        if (pendingAppointments > 0) {
+            notifications.add(SystemNotificationDTO.builder()
+                .message(pendingAppointments + " appointments are waiting for confirmation")
+                .type("info")
+                .priority("low")
+                .isRead(false)
+                .build());
+        }
+        
+        // Thông báo hệ thống (có thể config từ admin)
+        notifications.add(SystemNotificationDTO.builder()
+            .message("System maintenance scheduled for tonight at 23:00")
+            .type("error")
+            .priority("high")
+            .isRead(false)
+            .build());
+        
+        return notifications;
     }
 }

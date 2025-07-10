@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {FaBlog, FaCalendarAlt, FaChartLine, FaDollarSign, FaFlask, FaStethoscope, FaUser} from 'react-icons/fa';
 import {
     Area,
@@ -13,7 +14,8 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import { getAdminDashboardData, getAdminMonthlyRevenue, getAdminServiceDistribution } from '../../api/services';
+import { getAdminDashboardData, getAdminMonthlyRevenue, getAdminServiceDistribution, getRecentActivities, getSystemNotifications } from '../../api/services';
+import { RecentActivityDTO, SystemNotificationDTO } from '../../types/dashboard';
 
 // Interface for dashboard data from API
 interface DashboardData {
@@ -43,17 +45,13 @@ const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
-const recentActivities = [
-    {time: '10:30', action: 'New appointment from Nguyen Van A', type: 'appointment'},
-    {time: '09:15', action: 'Dr. Tran B completed an examination', type: 'exam'},
-    {time: '08:45', action: 'Updated test service information', type: 'service'},
-    {time: '08:00', action: 'Daily revenue report created', type: 'report'},
-];
-
 const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
     const [serviceData, setServiceData] = useState<ServiceDistribution[]>([]);
+    const [recentActivities, setRecentActivities] = useState<RecentActivityDTO[]>([]);
+    const [systemNotifications, setSystemNotifications] = useState<SystemNotificationDTO[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -62,10 +60,12 @@ const Dashboard: React.FC = () => {
         const fetchDashboardData = async () => {
             try {
                 setLoading(true);
-                const [dashboard, monthlyRevenue, serviceDist] = await Promise.all([
+                const [dashboard, monthlyRevenue, serviceDist, activities, notifications] = await Promise.all([
                     getAdminDashboardData(),
                     getAdminMonthlyRevenue(new Date().getFullYear()),
-                    getAdminServiceDistribution()
+                    getAdminServiceDistribution(),
+                    getRecentActivities(),
+                    getSystemNotifications()
                 ]);
                 setDashboardData(dashboard);
                 // Map backend months (1-12) to labels
@@ -76,6 +76,8 @@ const Dashboard: React.FC = () => {
                     }))
                 );
                 setServiceData(serviceDist as ServiceDistribution[]);
+                setRecentActivities(activities);
+                setSystemNotifications(notifications);
                 setError(null);
             } catch (err) {
                 console.error('Error fetching dashboard data:', err);
@@ -192,7 +194,12 @@ const Dashboard: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                    <button className="mt-4 w-full py-2 text-blue-600 hover:text-blue-700 text-center">
+                    <button 
+                        onClick={() => {
+                            navigate('/admin/activities');
+                        }}
+                        className="mt-4 w-full py-2 text-blue-600 hover:text-blue-700 text-center border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
                         View all activities
                     </button>
                 </div>
@@ -200,15 +207,26 @@ const Dashboard: React.FC = () => {
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-semibold mb-6 text-gray-800">System Notifications</h2>
                     <div className="space-y-4">
-                        <div className="p-4 bg-yellow-50 border border-yellow-100 rounded-lg">
-                            <p className="text-yellow-800">There are 3 accounts pending approval</p>
-                        </div>
-                        <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                            <p className="text-blue-800">2 services are about to expire promotions</p>
-                        </div>
-                        <div className="p-4 bg-red-50 border border-red-100 rounded-lg">
-                            <p className="text-red-800">The system will be maintained at 23:00 today</p>
-                        </div>
+                        {systemNotifications.map((notification, idx) => (
+                            <div key={idx} className={`p-4 rounded-lg border ${
+                                notification.type === 'error' ? 'bg-red-50 border-red-100' :
+                                notification.type === 'warning' ? 'bg-yellow-50 border-yellow-100' :
+                                'bg-blue-50 border-blue-100'
+                            }`}>
+                                <p className={`${
+                                    notification.type === 'error' ? 'text-red-800' :
+                                    notification.type === 'warning' ? 'text-yellow-800' :
+                                    'text-blue-800'
+                                } ${notification.priority === 'high' ? 'font-semibold' : ''}`}>
+                                    {notification.message}
+                                </p>
+                            </div>
+                        ))}
+                        {systemNotifications.length === 0 && (
+                            <div className="p-4 bg-gray-50 border border-gray-100 rounded-lg">
+                                <p className="text-gray-600">No notifications at the moment</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

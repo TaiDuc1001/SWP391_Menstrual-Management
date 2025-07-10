@@ -9,3 +9,8 @@ export const getAdminServiceDistribution = async () => {
     const response = await api.get('/admin/dashboard/service-distribution');
     return response.data;
 };
+
+export const getAllActivities = async () => {
+    const response = await api.get('/admin/dashboard/all-activities');
+    return response.data;
+};
