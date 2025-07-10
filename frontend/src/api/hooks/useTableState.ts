@@ -97,6 +97,18 @@ export const useTableState = <T extends Record<string, any>>(
             const aValue = a[sortConfig.key];
             const bValue = b[sortConfig.key];
 
+            // Handle Date objects specifically
+            if (aValue instanceof Date && bValue instanceof Date) {
+                const timeDiff = aValue.getTime() - bValue.getTime();
+                return sortConfig.direction === 'asc' ? timeDiff : -timeDiff;
+            }
+
+            // Handle null/undefined values
+            if (aValue == null && bValue == null) return 0;
+            if (aValue == null) return 1;
+            if (bValue == null) return -1;
+
+            // Handle regular comparisons
             if (aValue < bValue) {
                 return sortConfig.direction === 'asc' ? -1 : 1;
             }
