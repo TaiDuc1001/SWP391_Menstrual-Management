@@ -42,6 +42,23 @@ const Reports: React.FC = () => {
     if (loading) return <div>Loading...</div>;
     if (!dashboard) return <div>No data</div>;
 
+    // Tính phần trăm thay đổi động cho Appointments và New Users
+    const getPercentChange = (current: number, prev: number) => {
+        if (prev === 0) return current === 0 ? 0 : 100;
+        return ((current - prev) / prev * 100);
+    };
+
+    // Lấy tháng hiện tại (theo dữ liệu)
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth)?.count || 0;
+    const prevApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth - 1)?.count || 0;
+    const appPercent = getPercentChange(currentApp, prevApp);
+
+    const currentUser = dashboard.userGrowthByMonth?.find((u: any) => u.month === currentMonth)?.newUsers || 0;
+    const prevUser = dashboard.userGrowthByMonth?.find((u: any) => u.month === currentMonth - 1)?.newUsers || 0;
+    const userPercent = getPercentChange(currentUser, prevUser);
+
     // Metrics
     const metrics: Metric[] = [
         {
@@ -54,15 +71,15 @@ const Reports: React.FC = () => {
         {
             title: 'Appointments',
             value: dashboard.totalAppointments.toLocaleString('vi-VN'),
-            change: '+8.2%', // Có thể tính toán thêm nếu muốn
-            isPositive: true,
+            change: (appPercent > 0 ? '+' : '') + appPercent.toFixed(1) + '%',
+            isPositive: appPercent >= 0,
             icon: CalendarIcon,
         },
         {
             title: 'New Users',
             value: dashboard.userGrowthByMonth.reduce((sum: number, u: any) => sum + u.newUsers, 0).toLocaleString('vi-VN'),
-            change: '+15.3%', // Có thể tính toán thêm nếu muốn
-            isPositive: true,
+            change: (userPercent > 0 ? '+' : '') + userPercent.toFixed(1) + '%',
+            isPositive: userPercent >= 0,
             icon: ArrowTrendingUpIcon,
         },
     ];
@@ -230,19 +247,19 @@ const Reports: React.FC = () => {
                         <ul className="mt-3 space-y-3">
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Satisfaction Rate</span>
-                                <span className="font-medium text-green-600">95%</span>
+                                <span className="font-medium text-green-600">{dashboard.satisfactionRate}%</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Return Rate</span>
-                                <span className="font-medium text-blue-600">78%</span>
+                                <span className="font-medium text-blue-600">{dashboard.returnRate}%</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Avg. Wait Time</span>
-                                <span className="font-medium">15 mins</span>
+                                <span className="font-medium">{dashboard.avgWaitTime} mins</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Avg. Rating</span>
-                                <span className="font-medium text-yellow-600">4.8/5</span>
+                                <span className="font-medium text-yellow-600">{dashboard.avgRating}/5</span>
                             </li>
                         </ul>
                     </div>
@@ -251,19 +268,19 @@ const Reports: React.FC = () => {
                         <ul className="mt-3 space-y-3">
                             <li className="flex justify-between">
                                 <span className="text-gray-600">New Users</span>
-                                <span className="font-medium">+320</span>
+                                <span className="font-medium">+{dashboard.userGrowthByMonth.reduce((sum: number, u: any) => sum + u.newUsers, 0)}</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Active Users</span>
-                                <span className="font-medium">1,245</span>
+                                <span className="font-medium">{dashboard.activeUsers.toLocaleString('vi-VN')}</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Avg. Interactions/User</span>
-                                <span className="font-medium">3.2</span>
+                                <span className="font-medium">{dashboard.avgInteractionsPerUser}</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Avg. Session Time</span>
-                                <span className="font-medium">12:35</span>
+                                <span className="font-medium">{dashboard.avgSessionTime}</span>
                             </li>
                         </ul>
                     </div>
@@ -272,19 +289,19 @@ const Reports: React.FC = () => {
                         <ul className="mt-3 space-y-3">
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Uptime</span>
-                                <span className="font-medium text-green-600">99.9%</span>
+                                <span className="font-medium text-green-600">{dashboard.uptime}%</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Response Time</span>
-                                <span className="font-medium">0.8s</span>
+                                <span className="font-medium">{dashboard.responseTime}s</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">System Errors</span>
-                                <span className="font-medium text-red-600">0.1%</span>
+                                <span className="font-medium text-red-600">{dashboard.systemErrors}%</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Bandwidth</span>
-                                <span className="font-medium">85%</span>
+                                <span className="font-medium">{dashboard.bandwidth}%</span>
                             </li>
                         </ul>
                     </div>
