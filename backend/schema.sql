@@ -5,8 +5,17 @@ CREATE TABLE accounts (
     id BIGINT PRIMARY KEY,
     email VARCHAR(255) UNIQUE,
     password VARCHAR(255),
-    status TINYINT(1)
+    status TINYINT(1),
+    created_at DATETIME
 );
+
+-- Sample Data for Accounts
+INSERT INTO accounts (id, email, password, status, created_at) VALUES
+  (1, 'admin@example.com', 'adminpass', 1, '2025-07-01 08:00:00'),
+  (2, 'doctor1@example.com', 'doctorpass', 1, '2025-07-02 09:00:00'),
+  (3, 'customer1@example.com', 'customerpass', 1, '2025-07-03 10:00:00'),
+  (4, 'customer2@example.com', 'customerpass', 1, '2025-06-15 11:00:00'),
+  (5, 'doctor2@example.com', 'doctorpass', 1, '2025-05-20 12:00:00');
 
 -- Customers Table
 CREATE TABLE customers (

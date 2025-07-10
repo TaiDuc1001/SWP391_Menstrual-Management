@@ -1,5 +1,10 @@
 import { api } from '..';
 
+export const getAdminDashboard = async () => {
+    const response = await api.get('/admin/dashboard');
+    return response.data;
+};
+
 export const getAdminMonthlyRevenue = async (year: number) => {
     const response = await api.get(`/admin/dashboard/monthly-revenue?year=${year}`);
     return response.data;

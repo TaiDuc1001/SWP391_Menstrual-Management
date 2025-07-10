@@ -18,6 +18,8 @@ const DoctorRatingHistory: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [doctorId, setDoctorId] = useState<number | null>(null);
+    const [filterType, setFilterType] = useState<'week' | 'month' | 'year'>('week');
+    const [selectedDate, setSelectedDate] = useState<string>('');
     const [star, setStar] = useState<number | ''>('');
 
     useEffect(() => {
@@ -50,6 +52,27 @@ const DoctorRatingHistory: React.FC = () => {
     // Filter ratings by week, month, year
     const getFilteredRatings = () => {
         let filtered = ratings;
+        if (selectedDate) {
+            const selected = new Date(selectedDate);
+            filtered = filtered.filter(item => {
+                const d = new Date(item.date);
+                if (filterType === 'year') {
+                    return d.getFullYear() === selected.getFullYear();
+                }
+                if (filterType === 'month') {
+                    return d.getFullYear() === selected.getFullYear() && d.getMonth() === selected.getMonth();
+                }
+                if (filterType === 'week') {
+                    const getWeek = (date: Date) => {
+                        const firstDay = new Date(date.getFullYear(), 0, 1);
+                        const pastDaysOfYear = (date.valueOf() - firstDay.valueOf()) / 86400000;
+                        return Math.ceil((pastDaysOfYear + firstDay.getDay() + 1) / 7);
+                    };
+                    return d.getFullYear() === selected.getFullYear() && getWeek(d) === getWeek(selected);
+                }
+                return true;
+            });
+        }
         if (star !== '') {
             filtered = filtered.filter(item => item.score === star);
         }
@@ -62,6 +85,10 @@ const DoctorRatingHistory: React.FC = () => {
         <div className="doctor-rating-history-container">
             <div className="doctor-rating-history-title">Rating History</div>
             <RatingHistoryFilter
+                filterType={filterType}
+                setFilterType={setFilterType}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
                 star={star}
                 setStar={setStar}
             />
@@ -71,7 +98,7 @@ const DoctorRatingHistory: React.FC = () => {
                         <tr>
                             <th>Date</th>
                             <th>Patient</th>
-                            <th>Stars</th>
+                            <th>Score</th>
                             <th>Feedback</th>
                         </tr>
                     </thead>
@@ -92,7 +119,7 @@ const DoctorRatingHistory: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-                {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
+            {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
         </div>
     );
 };

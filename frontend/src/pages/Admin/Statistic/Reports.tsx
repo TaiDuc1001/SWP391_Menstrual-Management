@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Area,
     AreaChart,
@@ -15,23 +15,7 @@ import {
     YAxis
 } from 'recharts';
 import {ArrowDownTrayIcon, ArrowTrendingUpIcon, CalendarIcon, ChartBarIcon,} from '@heroicons/react/24/outline';
-
-const revenueData = [
-    {month: 'Jan', revenue: 120000000, appointments: 150, users: 800},
-    {month: 'Feb', revenue: 150000000, appointments: 180, users: 950},
-    {month: 'Mar', revenue: 180000000, appointments: 220, users: 1100},
-    {month: 'Apr', revenue: 160000000, appointments: 190, users: 1300},
-    {month: 'May', revenue: 200000000, appointments: 250, users: 1500},
-    {month: 'Jun', revenue: 250000000, appointments: 300, users: 1800},
-];
-
-const serviceDistribution = [
-    {name: 'Gynecological Exam', value: 35},
-    {name: 'Testing', value: 25},
-    {name: 'Consultation', value: 20},
-    {name: 'Ultrasound', value: 15},
-    {name: 'Other', value: 5},
-];
+import { getAdminDashboard } from '../../../api/services/adminDashboardService';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -45,30 +29,54 @@ interface Metric {
 
 const Reports: React.FC = () => {
     const [timeRange, setTimeRange] = useState('6months');
+    const [dashboard, setDashboard] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        getAdminDashboard().then(data => {
+            setDashboard(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (!dashboard) return <div>No data</div>;
+
+    // Metrics
     const metrics: Metric[] = [
         {
             title: 'Total Revenue',
-            value: '1.06 Billion VND',
-            change: '+12.5%',
-            isPositive: true,
+            value: dashboard.totalRevenue.toLocaleString('vi-VN') + ' VND',
+            change: (dashboard.growthRate > 0 ? '+' : '') + dashboard.growthRate + '%',
+            isPositive: dashboard.growthRate >= 0,
             icon: ChartBarIcon,
         },
         {
             title: 'Appointments',
-            value: '1,290',
-            change: '+8.2%',
+            value: dashboard.totalAppointments.toLocaleString('vi-VN'),
+            change: '+8.2%', // Có thể tính toán thêm nếu muốn
             isPositive: true,
             icon: CalendarIcon,
         },
         {
             title: 'New Users',
-            value: '1,800',
-            change: '+15.3%',
+            value: dashboard.userGrowthByMonth.reduce((sum: number, u: any) => sum + u.newUsers, 0).toLocaleString('vi-VN'),
+            change: '+15.3%', // Có thể tính toán thêm nếu muốn
             isPositive: true,
             icon: ArrowTrendingUpIcon,
         },
     ];
+
+    // Revenue chart data
+    const revenueData = dashboard.appointmentsByMonth.map((item: any, idx: number) => ({
+        month: `Th${item.month}`,
+        revenue: dashboard.monthlyRevenue ? dashboard.monthlyRevenue[idx]?.revenue || 0 : 0,
+        appointments: item.count,
+        users: dashboard.userGrowthByMonth[idx]?.newUsers || 0,
+    }));
+
+    // Service distribution (nên lấy từ API riêng nếu có)
+    const serviceDistribution = dashboard.serviceDistribution || [];
 
     const formatRevenue = (value: number) => {
         return `${(value / 1000000).toFixed(0)}M`;
@@ -154,7 +162,7 @@ const Reports: React.FC = () => {
                                     dataKey="value"
                                     label
                                 >
-                                    {serviceDistribution.map((entry, index) => (
+                                    {serviceDistribution.map((entry: any, index: number) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
                                     ))}
                                 </Pie>
@@ -209,7 +217,7 @@ const Reports: React.FC = () => {
                     <div>
                         <h3 className="text-lg font-medium text-gray-900">Top Services</h3>
                         <ul className="mt-3 space-y-3">
-                            {serviceDistribution.map((service, index) => (
+                            {serviceDistribution.map((service: any, index: number) => (
                                 <li key={index} className="flex justify-between">
                                     <span className="text-gray-600">{service.name}</span>
                                     <span className="font-medium">{service.value}%</span>

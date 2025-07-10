@@ -9,6 +9,8 @@ import swp391.com.backend.feature.blog.data.BlogRepository;
 import swp391.com.backend.feature.dashboard.dto.AdminDashboardDTO;
 import swp391.com.backend.feature.dashboard.dto.RecentActivityDTO;
 import swp391.com.backend.feature.dashboard.dto.SystemNotificationDTO;
+import swp391.com.backend.feature.dashboard.dto.UserGrowthDTO;
+import swp391.com.backend.feature.dashboard.dto.AppointmentCountDTO;
 import swp391.com.backend.feature.examination.data.ExaminationRepository;
 import swp391.com.backend.feature.examination.data.ExaminationStatus;
 
@@ -102,8 +104,6 @@ public class AdminDashboardService {
         long totalAccounts = accountRepository.count();
         long totalBlogs = blogRepository.count();
         long totalAppointments = appointmentRepository.count();
-
-        // Số mẫu xét nghiệm (tất cả trạng thái)
         long totalExaminations = examinationRepository.count();
 
         // Tổng doanh thu (từ tất cả các phiếu xét nghiệm và lịch hẹn đã hoàn thành)
@@ -113,14 +113,46 @@ public class AdminDashboardService {
                             exam.getExaminationStatus() == ExaminationStatus.EXAMINED)
             .mapToDouble(exam -> exam.getPanel().getPrice().doubleValue())
             .sum();
-
         double appointmentRevenue = appointmentRepository.findAll().stream()
             .filter(app -> app.getAppointmentStatus() == AppointmentStatus.FINISHED)
             .filter(app -> app.getDoctor() != null && app.getDoctor().getPrice() != null)
             .mapToDouble(app -> app.getDoctor().getPrice().doubleValue())
             .sum();
-
         double totalRevenue = examinationRevenue + appointmentRevenue;
+
+        // User growth by month (12 months)
+        List<UserGrowthDTO> userGrowthByMonth = new ArrayList<>();
+        java.time.Year currentYear = java.time.Year.now();
+        for (int m = 1; m <= 12; m++) {
+            final int month = m;
+            long newUsers = accountRepository.findAll().stream()
+                .filter(acc -> acc.getCreatedAt() != null && acc.getCreatedAt().getYear() == currentYear.getValue() && acc.getCreatedAt().getMonthValue() == month)
+                .count();
+            userGrowthByMonth.add(new UserGrowthDTO(month, newUsers));
+        }
+
+        // Appointments by month (12 months)
+        List<AppointmentCountDTO> appointmentsByMonth = new ArrayList<>();
+        for (int m = 1; m <= 12; m++) {
+            final int month = m;
+            long count = appointmentRepository.findAll().stream()
+                .filter(app -> app.getDate() != null && app.getDate().getYear() == currentYear.getValue() && app.getDate().getMonthValue() == month)
+                .count();
+            appointmentsByMonth.add(new AppointmentCountDTO(month, count));
+        }
+
+        // Dummy/placeholder values for advanced metrics (replace with real calculations)
+        double satisfactionRate = 95.0;
+        double returnRate = 78.0;
+        double avgWaitTime = 15.0;
+        double avgRating = 4.8;
+        long activeUsers = 1245;
+        double avgInteractionsPerUser = 3.2;
+        double avgSessionTime = 12.58; // minutes
+        double uptime = 99.9;
+        double responseTime = 0.8;
+        double systemErrors = 0.1;
+        double bandwidth = 85.0;
 
         return AdminDashboardDTO.builder()
                 .totalAccounts(totalAccounts)
@@ -129,6 +161,19 @@ public class AdminDashboardService {
                 .totalTestServices(totalExaminations)
                 .totalRevenue(totalRevenue)
                 .growthRate(0)
+                .userGrowthByMonth(userGrowthByMonth)
+                .appointmentsByMonth(appointmentsByMonth)
+                .satisfactionRate(satisfactionRate)
+                .returnRate(returnRate)
+                .avgWaitTime(avgWaitTime)
+                .avgRating(avgRating)
+                .activeUsers(activeUsers)
+                .avgInteractionsPerUser(avgInteractionsPerUser)
+                .avgSessionTime(avgSessionTime)
+                .uptime(uptime)
+                .responseTime(responseTime)
+                .systemErrors(systemErrors)
+                .bandwidth(bandwidth)
                 .build();
     }
     
