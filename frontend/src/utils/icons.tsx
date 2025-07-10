@@ -1,4 +1,5 @@
 import homeIcon from '../assets/icons/home.svg';
+import starIcon from '../assets/icons/Star_balck.svg';
 import calendarIcon from '../assets/icons/calendar.svg';
 import cameraIcon from '../assets/icons/camera.svg';
 import tubeIcon from '../assets/icons/tube.svg';
@@ -15,6 +16,8 @@ export const getIcon = (iconName: string): string | null => {
     switch (iconName) {
         case 'FaHome':
             return homeIcon;
+        case 'FaStar':
+            return starIcon;
         case 'FaInfoCircle':
             return contentIcon;
         case 'FaCogs':

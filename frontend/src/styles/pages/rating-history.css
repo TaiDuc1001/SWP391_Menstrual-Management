@@ -1,0 +1,71 @@
+.doctor-rating-history-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 32px 24px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 32px 0 rgba(255, 0, 128, 0.08), 0 1.5px 8px 0 rgba(0,0,0,0.04);
+  border: 1.5px solid #ffe0f0;
+}
+.doctor-rating-history-title {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #e91e63;
+  margin-bottom: 28px;
+  letter-spacing: -1px;
+  text-align: left;
+}
+.doctor-rating-history-table-wrapper {
+  max-height: 380px;
+  overflow-y: auto;
+  border-radius: 16px;
+  box-shadow: none;
+}
+.doctor-rating-history-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+}
+.doctor-rating-history-table th {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #e91e63;
+  background: #fff0fa;
+  padding: 12px 8px;
+  border-bottom: 2px solid #ffe0f0;
+  text-align: left;
+}
+.doctor-rating-history-table td {
+  font-size: 1.04rem;
+  color: #222;
+  padding: 14px 8px;
+  border-bottom: 1px solid #f3e6ef;
+  vertical-align: top;
+}
+.doctor-rating-history-table tr:last-child td {
+  border-bottom: none;
+}
+.doctor-rating-history-score {
+  font-weight: 700;
+  color: #ffb300;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.doctor-rating-history-star {
+  width: 20px;
+  height: 20px;
+  color: #ffb300;
+  display: inline-block;
+}
+.doctor-rating-history-feedback {
+  white-space: pre-line;
+  line-height: 1.6;
+}
+.doctor-rating-history-empty {
+  text-align: center;
+  color: #bdbdbd;
+  padding: 40px 0 24px 0;
+  font-size: 1.1rem;
+}
