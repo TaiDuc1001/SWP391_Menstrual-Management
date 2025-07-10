@@ -306,80 +306,84 @@ const Reports: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-6">Detailed Statistics</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">Top Services</h3>
-                        <ul className="mt-3 space-y-3">
+            <div className="bg-white rounded-2xl shadow-md p-8 mt-8">
+                <h2 className="text-2xl font-bold mb-8 text-gray-900">Detailed Statistics</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Top Services */}
+                    <div className="border-r border-gray-100 pr-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Top Services</h3>
+                        <ul className="space-y-4">
                             {serviceDistribution.map((service: any, index: number) => (
-                                <li key={index} className="flex justify-between">
-                                    <span className="text-gray-600">{service.name}</span>
-                                    <span className="font-medium">{service.value}%</span>
+                                <li key={index} className="flex items-center justify-between">
+                                    <span className="text-gray-700 font-medium">{service.name}</span>
+                                    <span className="font-bold text-blue-600">{service.value}%</span>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">Activity Metrics</h3>
-                        <ul className="mt-3 space-y-3">
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Satisfaction Rate</span>
-                                <span className="font-medium text-green-600">{dashboard.satisfactionRate}%</span>
+                    {/* Activity Metrics */}
+                    <div className="border-r border-gray-100 px-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Activity Metrics</h3>
+                        <ul className="space-y-4">
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Satisfaction Rate</span>
+                                <span className="font-bold text-green-600">{dashboard.satisfactionRate}%</span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Return Rate</span>
-                                <span className="font-medium text-blue-600">{dashboard.returnRate}%</span>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Return Rate</span>
+                                <span className="font-bold text-blue-600">{dashboard.returnRate}%</span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Wait Time</span>
-                                <span className="font-medium">{dashboard.avgWaitTime} mins</span>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Avg. Wait Time</span>
+                                <span className="font-bold text-gray-900">{dashboard.avgWaitTime} <span className="font-normal text-gray-500">mins</span></span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Rating</span>
-                                <span className="font-medium text-yellow-600">{dashboard.avgRating}/5</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">User Analysis</h3>
-                        <ul className="mt-3 space-y-3">
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">New Users</span>
-                                <span className="font-medium">+{userGrowthData.reduce((sum, u) => sum + u.users, 0)}</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Active Users</span>
-                                <span className="font-medium">{dashboard.activeUsers.toLocaleString('vi-VN')}</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Interactions/User</span>
-                                <span className="font-medium">{dashboard.avgInteractionsPerUser}</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Session Time</span>
-                                <span className="font-medium">{dashboard.avgSessionTime}</span>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Avg. Rating</span>
+                                <span className="font-bold text-yellow-600">{dashboard.avgRating}/5</span>
                             </li>
                         </ul>
                     </div>
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">System Performance</h3>
-                        <ul className="mt-3 space-y-3">
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Uptime</span>
-                                <span className="font-medium text-green-600">{dashboard.uptime}%</span>
+                    {/* User Analysis */}
+                    <div className="border-r border-gray-100 px-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">User Analysis</h3>
+                        <ul className="space-y-4">
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">New Users</span>
+                                <span className="font-bold text-green-700">+{userGrowthData.reduce((sum, u) => sum + u.users, 0)}</span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Response Time</span>
-                                <span className="font-medium">{dashboard.responseTime}s</span>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Active Users</span>
+                                <span className="font-bold text-blue-700">{dashboard.activeUsers.toLocaleString('vi-VN')}</span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">System Errors</span>
-                                <span className="font-medium text-red-600">{dashboard.systemErrors}%</span>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Avg. Interactions/User</span>
+                                <span className="font-bold text-gray-900">{dashboard.avgInteractionsPerUser}</span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Bandwidth</span>
-                                <span className="font-medium">{dashboard.bandwidth}%</span>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Avg. Session Time</span>
+                                <span className="font-bold text-gray-900">{dashboard.avgSessionTime}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    {/* System Performance */}
+                    <div className="pl-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">System Performance</h3>
+                        <ul className="space-y-4">
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Uptime</span>
+                                <span className="font-bold text-green-600">{dashboard.uptime}%</span>
+                            </li>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Response Time</span>
+                                <span className="font-bold text-gray-900">{dashboard.responseTime}<span className="font-normal text-gray-500">s</span></span>
+                            </li>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">System Errors</span>
+                                <span className="font-bold text-red-600">{dashboard.systemErrors}%</span>
+                            </li>
+                            <li className="flex items-center justify-between">
+                                <span className="text-gray-700">Bandwidth</span>
+                                <span className="font-bold text-blue-600">{dashboard.bandwidth}%</span>
                             </li>
                         </ul>
                     </div>
