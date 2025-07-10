@@ -1,3 +1,5 @@
+
+
 package swp391.com.backend.feature.appointment.controller;
 
 import lombok.RequiredArgsConstructor;
@@ -79,7 +81,7 @@ public class AppointmentsController {
             appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
         }
 
-        Appointment updatedAppointment = appointmentsService.updateAppointment(id, appointment);
+        appointmentsService.updateAppointment(id, appointment);
         
         String frontendUrl = "http://localhost:3000/customer/payment-return";
         if (queryParams.containsKey("vnp_ResponseCode")) {
@@ -275,4 +277,14 @@ public class AppointmentsController {
         return ResponseEntity.ok(results);
     }
 
+
+    @GetMapping("/doctor/rating-history")
+    public ResponseEntity<List<AppointmentDTO>> getDoctorRatingHistory(@RequestParam Long doctorId) {
+        List<AppointmentDTO> results = appointmentsService.getAppointmentsByDoctorId(doctorId)
+            .stream()
+            .filter(a -> a.getScore() != null)
+            .map(appointmentMapper::toDTO)
+            .toList();
+        return ResponseEntity.ok(results);
+    }
 }
