@@ -58,9 +58,10 @@ const PredictionsAnalysisPopup: React.FC<PredictionsAnalysisPopupProps> = ({
         }
 
         const flowLevelMessages = {
+            0: 'Không có',
             1: 'Rất ít',
             2: 'Ít',
-            3: 'Bình thường',
+            3: 'Vừa phải',
             4: 'Nhiều',
             5: 'Rất nhiều'
         };

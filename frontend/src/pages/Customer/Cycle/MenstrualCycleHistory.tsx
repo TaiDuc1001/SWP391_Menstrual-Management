@@ -121,7 +121,7 @@ const MenstrualCycleHistory: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-4 mb-4 items-center">
                 <h2 className="text-2xl font-bold text-pink-600 flex items-center gap-2 mb-2">
                     <span className="inline-block w-6 h-6 bg-pink-400 rounded-full mr-2"></span>
-                    Lịch sử chu kỳ
+                    Cycle History
                 </h2>
                 <div className="flex-1 flex gap-2 justify-end">
                     <SearchInput value={search} onChange={setSearch}
@@ -134,7 +134,7 @@ const MenstrualCycleHistory: React.FC = () => {
                 <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-lg text-gray-700 flex items-center gap-2">
                         <span className="inline-block w-4 h-4 bg-pink-400 rounded-full"></span>
-                        Lịch sử chu kỳ
+                        Cycle History
                     </h3>
                     <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-pink-500 font-semibold text-sm">

@@ -55,9 +55,10 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     ];
 
     const flowLevelMessages = {
+        0: 'No flow',
         1: 'Very light flow',
         2: 'Light flow',
-        3: 'Normal flow',
+        3: 'Medium flow',
         4: 'Heavy flow',
         5: 'Very heavy flow'
     };
@@ -164,14 +165,9 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
     };
 
     const handleFlowLevelSelect = (level: number) => {
-        if (flowLevel === level) {
-            setFlowLevel(0);
-            setToastMessage('Flow level selection canceled');
-        } else {
-            setFlowLevel(level);
-            const message = flowLevelMessages[level as keyof typeof flowLevelMessages];
-            setToastMessage(message);
-        }
+        setFlowLevel(level);
+        const message = flowLevelMessages[level as keyof typeof flowLevelMessages];
+        setToastMessage(message);
         setShowToast(true);
     };
 
@@ -247,9 +243,6 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
             <div className="symptom-popup-container">
                 <div className="symptom-popup-header">
                     <h3 className="symptom-popup-title">Symptom Notes</h3>
-                    <button className="close-button" onClick={onClose}>
-                        ×
-                    </button>
                 </div>
                 
                 <div className="symptom-section">
@@ -273,14 +266,15 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
                     <div className="symptom-row">
                         <div className="symptom-icon">🩸</div>
                         <span className="symptom-label">Flow Level</span>
-                        <div className="flow-options">
-                            {[1, 2, 3, 4, 5].map(level => (
-                                <div 
-                                    key={level} 
-                                    className={`flow-dot ${flowLevel >= level ? 'active' : ''}`}
-                                    onClick={() => handleFlowLevelSelect(level)}
-                                ></div>
-                            ))}
+                        <div className="flow-slider-container">
+                            <input
+                                type="range"
+                                min="0"
+                                max="5"
+                                value={flowLevel}
+                                onChange={(e) => handleFlowLevelSelect(parseInt(e.target.value))}
+                                className="flow-slider"
+                            />
                         </div>
                     </div>
 
