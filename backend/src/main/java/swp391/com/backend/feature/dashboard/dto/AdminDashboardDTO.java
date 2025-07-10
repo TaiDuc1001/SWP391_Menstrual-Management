@@ -1,6 +1,7 @@
 package swp391.com.backend.feature.dashboard.dto;
 
 import lombok.Builder;
+import java.util.List;
 
 @Builder
 public record AdminDashboardDTO(
@@ -9,6 +10,20 @@ public record AdminDashboardDTO(
     long totalAppointments,
     long totalTestServices,
     double totalRevenue,
-    double growthRate
-) {
-}
+    double growthRate,
+    List<UserGrowthDTO> userGrowthByMonth,
+    List<AppointmentCountDTO> appointmentsByMonth,
+    double satisfactionRate,
+    double returnRate,
+    double avgWaitTime,
+    double avgRating,
+    long activeUsers,
+    double avgInteractionsPerUser,
+    double avgSessionTime,
+    double uptime,
+    double responseTime,
+    double systemErrors,
+    double bandwidth
+) {}
+
+// DTO phụ trợ đã được tách ra file riêng

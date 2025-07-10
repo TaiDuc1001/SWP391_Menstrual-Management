@@ -108,13 +108,15 @@ const Dashboard: React.FC = () => {
                     getSystemNotifications()
                 ]);
                 setDashboardData(dashboard);
-                // Map backend months (1-12) to labels
-                setRevenueData(
-                    (monthlyRevenue as MonthlyRevenue[]).map(item => ({
-                        month: monthLabels[item.month - 1],
-                        revenue: item.revenue
-                    }))
-                );
+                // Map backend months (1-12) to labels, fill 0 if missing
+                const revenueArr = Array.from({ length: 12 }, (_, i) => {
+                    const found = (monthlyRevenue as MonthlyRevenue[]).find(item => item.month === i + 1);
+                    return {
+                        month: monthLabels[i],
+                        revenue: found ? found.revenue : 0
+                    };
+                });
+                setRevenueData(revenueArr);
                 setServiceData(serviceDist as ServiceDistribution[]);
                 setRecentActivities(activities);
                 setSystemNotifications(notifications);
@@ -126,7 +128,6 @@ const Dashboard: React.FC = () => {
                 setLoading(false);
             }
         };
-        
         fetchDashboardData();
         
         // Set up periodic refresh for notifications - every 60 seconds
@@ -247,7 +248,16 @@ const Dashboard: React.FC = () => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="month" stroke="#64748b" />
+                                <XAxis 
+                                    dataKey="month" 
+                                    stroke="#64748b" 
+                                    ticks={monthLabels}
+                                    interval={0}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={60}
+                                    padding={{ left: 10, right: 10 }}
+                                />
                                 <YAxis stroke="#64748b" />
                                 <Tooltip contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} />
                                 <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />

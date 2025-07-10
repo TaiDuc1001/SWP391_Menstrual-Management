@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
     Area,
     AreaChart,
@@ -14,24 +14,36 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
+import { FaChartLine, FaStethoscope } from 'react-icons/fa';
 import {ArrowDownTrayIcon, ArrowTrendingUpIcon, CalendarIcon, ChartBarIcon,} from '@heroicons/react/24/outline';
+import {
+  getAdminDashboard,
+  getAdminMonthlyRevenue,
+  getAdminServiceDistribution,
+  getAdminDailyRevenue,
+  getAdminDailyAppointments,
+  getAdminDailyUserGrowth
+} from '../../../api/services/adminDashboardService';
+import { exportNodeToPDF } from '../../../utils/exportPdf';
+// For html2canvas fallback if needed
+// import html2canvas from 'html2canvas';
 
-const revenueData = [
-    {month: 'Jan', revenue: 120000000, appointments: 150, users: 800},
-    {month: 'Feb', revenue: 150000000, appointments: 180, users: 950},
-    {month: 'Mar', revenue: 180000000, appointments: 220, users: 1100},
-    {month: 'Apr', revenue: 160000000, appointments: 190, users: 1300},
-    {month: 'May', revenue: 200000000, appointments: 250, users: 1500},
-    {month: 'Jun', revenue: 250000000, appointments: 300, users: 1800},
-];
+// Wrapper giống Dashboard
+import { IconType } from 'react-icons';
 
-const serviceDistribution = [
-    {name: 'Gynecological Exam', value: 35},
-    {name: 'Testing', value: 25},
-    {name: 'Consultation', value: 20},
-    {name: 'Ultrasound', value: 15},
-    {name: 'Other', value: 5},
-];
+interface IconWrapperProps {
+  icon: IconType;
+  className?: string;
+}
+const IconWrapper = ({ icon, className }: IconWrapperProps) => {
+  // react-icons IconType is a function that returns JSX.Element
+  // TypeScript sometimes fails to infer, so cast to any
+  const IconComponent = icon as any;
+  return IconComponent ? <IconComponent className={className} /> : null;
+};
+
+// Màu giống Dashboard
+const DASHBOARD_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -44,34 +56,215 @@ interface Metric {
 }
 
 const Reports: React.FC = () => {
-    const [timeRange, setTimeRange] = useState('6months');
 
+    const [timeRange, setTimeRange] = useState('6months');
+    const reportRef = useRef<HTMLDivElement>(null);
+    // For PDF: include all chart data, not just by month
+    // Filtered data for export based on timeRange
+    const getFilteredData = (data: any[]) => {
+        if (timeRange === '7days') {
+            // Lấy 7 phần tử cuối cùng
+            return data.slice(-7);
+        } else if (timeRange === '30days') {
+            // Lấy 30 phần tử cuối cùng
+            return data.slice(-30);
+        } else if (timeRange === '6months') {
+            return data.slice(-6);
+        } else if (timeRange === '1year') {
+            return data;
+        }
+        return data;
+    };
+    const [dashboard, setDashboard] = useState<any>(null);
+    const [revenueData, setRevenueData] = useState<any[]>([]);
+    const [serviceDistribution, setServiceDistribution] = useState<any[]>([]);
+    const [appointmentsData, setAppointmentsData] = useState<any[]>([]);
+    const [userGrowthData, setUserGrowthData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Helper to get date range for daily endpoints
+    const getDateRange = (days: number) => {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - (days - 1));
+      return {
+        startDate: start.toISOString().slice(0, 10),
+        endDate: end.toISOString().slice(0, 10)
+      };
+    };
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          // Always get dashboard summary and service distribution
+          const [dashboardRes, serviceDist] = await Promise.all([
+            getAdminDashboard(),
+            getAdminServiceDistribution(),
+          ]);
+          setDashboard(dashboardRes);
+          setServiceDistribution(serviceDist);
+
+          if (timeRange === '7days' || timeRange === '30days') {
+            const days = timeRange === '7days' ? 7 : 30;
+            const { startDate, endDate } = getDateRange(days);
+            // Fetch daily data for each chart separately
+            const [dailyRevenue, dailyAppointments, dailyUserGrowth] = await Promise.all([
+              getAdminDailyRevenue(startDate, endDate),
+              getAdminDailyAppointments(startDate, endDate),
+              getAdminDailyUserGrowth(startDate, endDate),
+            ]);
+            // Revenue chart
+            setRevenueData(dailyRevenue.map((item: any) => ({
+              date: item.date,
+              revenue: item.revenue
+            })));
+            // Appointments chart
+            setAppointmentsData(dailyAppointments.map((item: any) => ({
+              date: item.date,
+              appointments: item.count
+            })));
+            // User Growth chart
+            setUserGrowthData(dailyUserGrowth.map((item: any) => ({
+              date: item.date,
+              users: item.newUsers
+            })));
+          } else {
+            // Monthly data for 6 months/1 year
+            const year = new Date().getFullYear();
+            // Revenue
+            const monthlyRevenue = await getAdminMonthlyRevenue(year);
+            setRevenueData(Array.from({ length: 12 }, (_, i) => {
+              const found = (monthlyRevenue as any[]).find((item) => item.month === i + 1);
+              return {
+                month: monthLabels[i],
+                revenue: found ? found.revenue : 0
+              };
+            }));
+            // Appointments
+            setAppointmentsData(Array.from({ length: 12 }, (_, i) => {
+              const found = dashboardRes.appointmentsByMonth?.find((item: any) => item.month === i + 1);
+              return {
+                month: monthLabels[i],
+                appointments: found ? found.count : 0
+              };
+            }));
+            // User Growth
+            setUserGrowthData(Array.from({ length: 12 }, (_, i) => {
+              const found = dashboardRes.userGrowthByMonth?.find((item: any) => item.month === i + 1);
+              return {
+                month: monthLabels[i],
+                users: found ? found.newUsers : 0
+              };
+            }));
+          }
+        } catch (err) {
+          setError('Failed to load dashboard data.');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }, [timeRange]);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
+    if (!dashboard) return <div>No data</div>;
+
+    // Tính phần trăm thay đổi động cho Appointments và New Users
+    const getPercentChange = (current: number, prev: number) => {
+        if (prev === 0) return current === 0 ? 0 : 100;
+        return ((current - prev) / prev * 100);
+    };
+
+    // Lấy tháng hiện tại (theo dữ liệu)
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth)?.count || 0;
+    const prevApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth - 1)?.count || 0;
+    const appPercent = getPercentChange(currentApp, prevApp);
+
+    // Lấy từ userGrowthData đã chuẩn hóa để không bị mất tháng
+    const currentUser = userGrowthData[currentMonth - 1]?.users || 0;
+    const prevUser = userGrowthData[currentMonth - 2]?.users || 0;
+    const userPercent = getPercentChange(currentUser, prevUser);
+
+    // Metrics
     const metrics: Metric[] = [
         {
             title: 'Total Revenue',
-            value: '1.06 Billion VND',
-            change: '+12.5%',
-            isPositive: true,
+            value: dashboard.totalRevenue.toLocaleString('vi-VN') + ' VND',
+            change: (dashboard.growthRate > 0 ? '+' : '') + dashboard.growthRate + '%',
+            isPositive: dashboard.growthRate >= 0,
             icon: ChartBarIcon,
         },
         {
             title: 'Appointments',
-            value: '1,290',
-            change: '+8.2%',
-            isPositive: true,
+            value: dashboard.totalAppointments.toLocaleString('vi-VN'),
+            change: (appPercent > 0 ? '+' : '') + appPercent.toFixed(1) + '%',
+            isPositive: appPercent >= 0,
             icon: CalendarIcon,
         },
         {
             title: 'New Users',
-            value: '1,800',
-            change: '+15.3%',
-            isPositive: true,
+            value: userGrowthData.reduce((sum, u) => sum + u.users, 0).toLocaleString('vi-VN'),
+            change: (userPercent > 0 ? '+' : '') + userPercent.toFixed(1) + '%',
+            isPositive: userPercent >= 0,
             icon: ArrowTrendingUpIcon,
         },
     ];
 
+
+
+    // X-axis key for charts
+    const xAxisKey = timeRange === '7days' || timeRange === '30days' ? 'date' : 'month';
+
+    // Format tiền giống Dashboard (VND, có dấu phẩy)
     const formatRevenue = (value: number) => {
-        return `${(value / 1000000).toFixed(0)}M`;
+        if (typeof value !== 'number' || isNaN(value)) return '';
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
+    };
+
+    // Format dates for daily views
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' }).format(date);
+    };
+
+    // Formatter for X-axis labels - compacts dates in daily view
+    const formatXAxis = (value: string) => {
+        if (timeRange === '7days' || timeRange === '30days') {
+            return formatDate(value);
+        }
+        return value; // Return month name for monthly views
+    };
+
+    // Handler for exporting PDF with current time range
+    const handleExportPDF = async () => {
+        if (reportRef.current) {
+            let filename = 'Report_';
+            switch (timeRange) {
+                case '7days': filename += 'Last7Days'; break;
+                case '30days': filename += 'Last30Days'; break;
+                case '6months': filename += 'Last6Months'; break;
+                case '1year': filename += 'Last1Year'; break;
+                default: filename += 'Custom';
+            }
+            filename += `_${new Date().toISOString().slice(0,10)}.pdf`;
+            // Scroll to top to ensure all charts are visible
+            window.scrollTo(0, 0);
+            // Wait a bit for charts to render fully (esp. recharts)
+            setTimeout(async () => {
+                if (reportRef.current) {
+                    await exportNodeToPDF(reportRef.current as HTMLElement, filename);
+                }
+            }, 500);
+        }
     };
 
     return (
@@ -89,196 +282,295 @@ const Reports: React.FC = () => {
                         <option value="6months">Last 6 months</option>
                         <option value="1year">Last 1 year</option>
                     </select>
-                    <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        onClick={handleExportPDF}
+                    >
                         <ArrowDownTrayIcon className="h-5 w-5 mr-2"/>
                         Export Report
                     </button>
                 </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                {metrics.map((metric, index) => (
-                    <div key={index} className="bg-white rounded-xl shadow-sm p-6">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-gray-500 text-sm">{metric.title}</p>
-                                <h3 className="text-2xl font-bold mt-1">{metric.value}</h3>
-                                <p className={`flex items-center mt-1 ${
-                                    metric.isPositive ? 'text-green-600' : 'text-red-600'
-                                }`}>
-                                    {metric.change}
-                                    <span className="text-gray-500 text-sm ml-2">vs. previous period</span>
-                                </p>
+            {/* PDF Exportable Content */}
+            {/* PDF Exportable Content: include all charts, not just month */}
+            <div ref={reportRef}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    {metrics.map((metric, index) => (
+                        <div key={index} className="bg-white rounded-xl shadow-sm p-6">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-gray-500 text-sm">{metric.title}</p>
+                                    <h3 className="text-2xl font-bold mt-1">{metric.value}</h3>
+                                    <p className={`flex items-center mt-1 ${
+                                        metric.isPositive ? 'text-green-600' : 'text-red-600'
+                                    }`}>
+                                        {metric.change}
+                                        <span className="text-gray-500 text-sm ml-2">vs. previous period</span>
+                                    </p>
+                                </div>
+                                <metric.icon className="h-8 w-8 text-gray-400"/>
                             </div>
-                            <metric.icon className="h-8 w-8 text-gray-400"/>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                    {/* Revenue Trend Chart (Dashboard style) */}
+                    <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                        <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
+                            <IconWrapper icon={FaChartLine} className="mr-2 text-blue-600" /> Revenue Trend
+                        </h2>
+                        <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart 
+                                    data={getFilteredData(revenueData)}
+                                    margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
+                                >
+                                    <defs>
+                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                    <XAxis 
+                                        dataKey={xAxisKey} 
+                                        stroke="#64748b" 
+                                        interval={timeRange === '30days' ? 2 : 0}  
+                                        tickFormatter={formatXAxis}
+                                        angle={timeRange === '30days' ? -45 : 0}
+                                        textAnchor={timeRange === '30days' ? 'end' : 'middle'}
+                                        height={timeRange === '30days' ? 60 : 30}
+                                        padding={{ left: 10, right: 10 }}
+                                    />
+                                    <YAxis stroke="#64748b" tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(v))} />
+                                    <Tooltip 
+                                        contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} 
+                                        formatter={(value: number) => [formatRevenue(Number(value)), 'Doanh thu']}
+                                        labelFormatter={timeRange === '7days' || timeRange === '30days' ? 
+                                            (label) => new Date(label).toLocaleDateString('vi-VN') : undefined}
+                                    />
+                                    <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
-                ))}
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">Revenue Over Time</h2>
-                    <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={revenueData}>
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis dataKey="month"/>
-                                <YAxis tickFormatter={formatRevenue}/>
-                                <Tooltip formatter={(value: number) => [`${formatRevenue(value)} VNĐ`, 'Doanh thu']}/>
-                                <Area
-                                    type="monotone"
-                                    dataKey="revenue"
-                                    stroke="#8884d8"
-                                    fill="#8884d8"
-                                    fillOpacity={0.3}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                    {/* Service Distribution Chart (Dashboard style) */}
+                    <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                        <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
+                            <IconWrapper icon={FaStethoscope} className="mr-2 text-blue-600" /> Service Distribution
+                        </h2>
+                        <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={getFilteredData(serviceDistribution)}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={80}
+                                        outerRadius={110}
+                                        fill="#8884d8"
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        label
+                                    >
+                                        {getFilteredData(serviceDistribution).map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={DASHBOARD_COLORS[index % DASHBOARD_COLORS.length]}/>
+                                        ))}
+                                    </Pie>
+                                    <Tooltip contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} />
+                                    <Legend verticalAlign="bottom" height={36} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
-                </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">Service Distribution</h2>
-                    <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={serviceDistribution}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                    label
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                        <h2 className="text-xl font-semibold mb-6">Appointments</h2>
+                        <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart 
+                                    data={getFilteredData(appointmentsData)}
+                                    margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
                                 >
-                                    {serviceDistribution.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
-                                    ))}
-                                </Pie>
-                                <Tooltip/>
-                                <Legend/>
-                            </PieChart>
-                        </ResponsiveContainer>
+                                    <CartesianGrid strokeDasharray="3 3"/>
+                                    <XAxis 
+                                        dataKey={xAxisKey} 
+                                        interval={timeRange === '30days' ? 2 : 0}
+                                        tickFormatter={formatXAxis}
+                                        angle={timeRange === '30days' ? -45 : 0}
+                                        textAnchor={timeRange === '30days' ? 'end' : 'middle'}
+                                        height={timeRange === '30days' ? 60 : 30}
+                                        padding={{ left: 10, right: 10 }}
+                                    />
+                                    <YAxis allowDecimals={false}/>
+                                    <Tooltip
+                                        labelFormatter={timeRange === '7days' || timeRange === '30days' ? 
+                                            (label) => new Date(label).toLocaleDateString('vi-VN') : undefined}
+                                    />
+                                    <Bar dataKey="appointments" fill="#00C49F" name="Số lượt khám"/>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                        <h2 className="text-xl font-semibold mb-6">User Growth</h2>
+                        <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart 
+                                    data={getFilteredData(userGrowthData)}
+                                    margin={{ top: 10, right: 20, left: 10, bottom: 20 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3"/>
+                                    <XAxis 
+                                        dataKey={xAxisKey} 
+                                        interval={timeRange === '30days' ? 2 : 0}
+                                        tickFormatter={formatXAxis}
+                                        angle={timeRange === '30days' ? -45 : 0}
+                                        textAnchor={timeRange === '30days' ? 'end' : 'middle'}
+                                        height={timeRange === '30days' ? 60 : 30}
+                                        padding={{ left: 10, right: 10 }}
+                                    />
+                                    <YAxis allowDecimals={false}/>
+                                    <Tooltip
+                                        labelFormatter={timeRange === '7days' || timeRange === '30days' ? 
+                                            (label) => new Date(label).toLocaleDateString('vi-VN') : undefined}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="users"
+                                        stroke="#0088FE"
+                                        fill="#0088FE"
+                                        fillOpacity={0.3}
+                                        name="Số người dùng"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">Appointments by Month</h2>
-                    <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={revenueData}>
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis dataKey="month"/>
-                                <YAxis/>
-                                <Tooltip/>
-                                <Bar dataKey="appointments" fill="#00C49F" name="Số lượt khám"/>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">User Growth</h2>
-                    <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={revenueData}>
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis dataKey="month"/>
-                                <YAxis/>
-                                <Tooltip/>
-                                <Area
-                                    type="monotone"
-                                    dataKey="users"
-                                    stroke="#0088FE"
-                                    fill="#0088FE"
-                                    fillOpacity={0.3}
-                                    name="Số người dùng"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-6">Detailed Statistics</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">Top Services</h3>
-                        <ul className="mt-3 space-y-3">
-                            {serviceDistribution.map((service, index) => (
-                                <li key={index} className="flex justify-between">
-                                    <span className="text-gray-600">{service.name}</span>
-                                    <span className="font-medium">{service.value}%</span>
+                <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                    <h2 className="text-xl font-bold mb-6 text-gray-800">Detailed Statistics</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <ChartBarIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                Top Services
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                {getFilteredData(serviceDistribution).map((service: any, index: number) => (
+                                    <li key={index} className="flex justify-between items-center">
+                                        <span className="text-gray-600 flex items-center">
+                                            <span className={`w-3 h-3 rounded-full mr-2 inline-block`} 
+                                                style={{backgroundColor: DASHBOARD_COLORS[index % DASHBOARD_COLORS.length]}} />
+                                            {service.name}
+                                        </span>
+                                        <span className="font-medium text-gray-800 bg-white px-3 py-1 rounded-full shadow-sm">
+                                            {service.value}%
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <ArrowTrendingUpIcon className="h-5 w-5 mr-2 text-green-500" />
+                                Activity Metrics
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Satisfaction Rate</span>
+                                    <span className="font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.satisfactionRate}%
+                                    </span>
                                 </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">Activity Metrics</h3>
-                        <ul className="mt-3 space-y-3">
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Satisfaction Rate</span>
-                                <span className="font-medium text-green-600">95%</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Return Rate</span>
-                                <span className="font-medium text-blue-600">78%</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Wait Time</span>
-                                <span className="font-medium">15 mins</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Rating</span>
-                                <span className="font-medium text-yellow-600">4.8/5</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">User Analysis</h3>
-                        <ul className="mt-3 space-y-3">
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">New Users</span>
-                                <span className="font-medium">+320</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Active Users</span>
-                                <span className="font-medium">1,245</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Interactions/User</span>
-                                <span className="font-medium">3.2</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Avg. Session Time</span>
-                                <span className="font-medium">12:35</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">System Performance</h3>
-                        <ul className="mt-3 space-y-3">
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Uptime</span>
-                                <span className="font-medium text-green-600">99.9%</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Response Time</span>
-                                <span className="font-medium">0.8s</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">System Errors</span>
-                                <span className="font-medium text-red-600">0.1%</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-600">Bandwidth</span>
-                                <span className="font-medium">85%</span>
-                            </li>
-                        </ul>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Return Rate</span>
+                                    <span className="font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.returnRate}%
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Avg. Wait Time</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.avgWaitTime} mins
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Avg. Rating</span>
+                                    <span className="font-medium text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full shadow-sm flex items-center">
+                                        {dashboard.avgRating}/5
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <CalendarIcon className="h-5 w-5 mr-2 text-indigo-500" />
+                                User Analysis
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">New Users</span>
+                                    <span className="font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full shadow-sm flex items-center">
+                                        +{getFilteredData(userGrowthData).reduce((sum, u) => sum + u.users, 0)}
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Active Users</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.activeUsers.toLocaleString('vi-VN')}
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Avg. Interactions/User</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.avgInteractionsPerUser}
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Avg. Session Time</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.avgSessionTime}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <IconWrapper icon={FaChartLine} className="mr-2 text-purple-500" />
+                                System Performance
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Uptime</span>
+                                    <span className="font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.uptime}%
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Response Time</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.responseTime}s
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">System Errors</span>
+                                    <span className="font-medium text-red-600 bg-red-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.systemErrors}%
+                                    </span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <span className="text-gray-600">Bandwidth</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.bandwidth}%
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

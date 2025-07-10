@@ -69,4 +69,37 @@ public class AdminDashboardController {
         adminDashboardService.markAllNotificationsAsRead();
         return ResponseEntity.ok().build();
     }
+
+    // Endpoint: daily revenue
+    @GetMapping("/daily-revenue")
+    public ResponseEntity<java.util.List<AdminDashboardService.DailyRevenue>> getDailyRevenue(
+        @RequestParam String startDate,
+        @RequestParam String endDate
+    ) {
+        java.time.LocalDate fromDate = java.time.LocalDate.parse(startDate);
+        java.time.LocalDate toDate = java.time.LocalDate.parse(endDate);
+        return ResponseEntity.ok(adminDashboardService.getDailyRevenue(fromDate, toDate));
+    }
+
+    // Endpoint: daily appointments
+    @GetMapping("/daily-appointments")
+    public ResponseEntity<java.util.List<AdminDashboardService.DailyAppointmentCount>> getDailyAppointments(
+        @RequestParam String startDate,
+        @RequestParam String endDate
+    ) {
+        java.time.LocalDate fromDate = java.time.LocalDate.parse(startDate);
+        java.time.LocalDate toDate = java.time.LocalDate.parse(endDate);
+        return ResponseEntity.ok(adminDashboardService.getDailyAppointments(fromDate, toDate));
+    }
+
+    // Endpoint: daily user growth
+    @GetMapping("/daily-user-growth")
+    public ResponseEntity<java.util.List<AdminDashboardService.DailyUserGrowth>> getDailyUserGrowth(
+        @RequestParam String startDate,
+        @RequestParam String endDate
+    ) {
+        java.time.LocalDate fromDate = java.time.LocalDate.parse(startDate);
+        java.time.LocalDate toDate = java.time.LocalDate.parse(endDate);
+        return ResponseEntity.ok(adminDashboardService.getDailyUserGrowth(fromDate, toDate));
+    }
 }
