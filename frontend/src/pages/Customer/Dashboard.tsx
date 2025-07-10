@@ -35,7 +35,6 @@ const Dashboard: React.FC = () => {
     const [ovulationDate, setOvulationDate] = useState('');
     const [daysToOvulation, setDaysToOvulation] = useState(0);
     const [cycleStatus, setCycleStatus] = useState('');
-    const [cycleEmojis, setCycleEmojis] = useState([strawberyyIcon, bloodIcon, angryIcon]);
     const [appointments, setAppointments] = useState<any[]>([]);
     const [examinations, setExaminations] = useState<any[]>([]);
     const [cycles, setCycles] = useState<any[]>([]);
@@ -139,7 +138,6 @@ const Dashboard: React.FC = () => {
                 setCycleStatus(cycle.status || '');
                 setOvulationDate(cycle.ovulationDate || '');
                 setDaysToOvulation(cycle.daysToOvulation || 0);
-                setCycleEmojis([strawberyyIcon, bloodIcon, angryIcon]);
             })
             .catch(error => {
                 if (!isMounted) return;
@@ -313,6 +311,11 @@ const Dashboard: React.FC = () => {
     const getSymptomsStorageKey = (): string => {
         const userId = getCurrentUserId();
         return `menstrual_symptoms_${userId}`;
+    };
+
+    const getDetailedSymptomsStorageKey = (): string => {
+        const userId = getCurrentUserId();
+        return `menstrual_symptoms_detailed_${userId}`;
     };
 
     const getMenstruationPeriodsFromSymptoms = () => {
@@ -577,19 +580,93 @@ const Dashboard: React.FC = () => {
                         onClick={() => navigate('/customer/cycle-chart')}>
                         View Cycle
                     </button>
-                    <div className="text-gray-500 text-sm">Starting date: <span
-                        className="text-pink-600 font-bold">{cycleStart}</span></div>
+                    <div className="text-gray-500 text-sm">Today: <span
+                        className="text-pink-600 font-bold">{new Date().toLocaleDateString('en-GB')}</span></div>
                     <div className="bg-pink-100 rounded-xl p-4 flex flex-col items-center">
                         <div className="text-2xl font-bold text-pink-600 mb-1">{cycleStatus}</div>
                         <div className="text-2xl flex gap-2">
-                            {cycleEmojis.map((icon, idx) => (
-                                <img key={`emoji-${idx}`} src={icon} alt="cycle emoji" className="w-7 h-7 inline"/>
-                            ))}
+                            {(() => {
+                                const today = new Date();
+                                const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                                const symptomsKey = getSymptomsStorageKey();
+                                const storedSymptoms = localStorage.getItem(symptomsKey);
+                                const detailedStorageKey = getDetailedSymptomsStorageKey();
+                                const detailedSaved = localStorage.getItem(detailedStorageKey);
+                                const dayNotesSaved = localStorage.getItem('menstrual_day_notes');
+                                const icons = [];
+                                
+                                let hasSymptoms = false;
+                                let hasFlow = false;
+                                let hasNote = false;
+                                
+                                if (storedSymptoms) {
+                                    try {
+                                        const symptoms = JSON.parse(storedSymptoms);
+                                        const todaySymptom = symptoms[todayKey];
+                                        
+                                        if (todaySymptom) {
+                                            if (todaySymptom.symptom && todaySymptom.symptom !== 'None') {
+                                                hasSymptoms = true;
+                                            }
+                                            if (todaySymptom.period === 'Menstruating' || todaySymptom.flow) {
+                                                hasFlow = true;
+                                            }
+                                        }
+                                    } catch (error) {
+                                        console.error('Error parsing symptoms:', error);
+                                    }
+                                }
+                                
+                                if (detailedSaved) {
+                                    try {
+                                        const detailedData = JSON.parse(detailedSaved);
+                                        const dayDetailedData = detailedData[todayKey];
+                                        
+                                        if (dayDetailedData) {
+                                            if (dayDetailedData.symptoms && dayDetailedData.symptoms.length > 0) {
+                                                hasSymptoms = true;
+                                            }
+                                            if (dayDetailedData.periods || dayDetailedData.flowLevel > 0) {
+                                                hasFlow = true;
+                                            }
+                                        }
+                                    } catch (error) {
+                                        console.error('Error parsing detailed symptoms:', error);
+                                    }
+                                }
+                                
+                                if (dayNotesSaved) {
+                                    try {
+                                        const dayNotes = JSON.parse(dayNotesSaved);
+                                        if (dayNotes[todayKey] && dayNotes[todayKey].trim() !== '') {
+                                            hasNote = true;
+                                        }
+                                    } catch (error) {
+                                        console.error('Error parsing day notes:', error);
+                                    }
+                                }
+                                
+                                if (hasNote) {
+                                    icons.push(<img key="angry" src={angryIcon} alt="has note" className="w-7 h-7 inline"/>);
+                                }
+                                
+                                if (hasFlow) {
+                                    icons.push(<img key="blood" src={bloodIcon} alt="menstruating" className="w-7 h-7 inline"/>);
+                                }
+                                
+                                if (hasSymptoms) {
+                                    icons.push(<img key="strawberry" src={strawberyyIcon} alt="has symptoms" className="w-7 h-7 inline"/>);
+                                }
+                                
+                                if (icons.length === 0) {
+                                    icons.push(<img key="default" src={strawberyyIcon} alt="default" className="w-7 h-7 inline"/>);
+                                }
+                                
+                                return icons;
+                            })()}
                         </div>
                     </div>
-                    <div className="flex justify-between items-center mt-2">
-                        <span className="text-gray-500 text-sm">Ovulation: <span
-                            className="text-pink-600 font-bold">{ovulationDate}</span></span>
+                    <div className="flex justify-end items-center mt-2">
                         <button className="px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 transition-colors duration-200 font-medium"
                                 onClick={() => navigate('/customer/menstrual-cycles')}>View Calendar
                         </button>
