@@ -1,3 +1,4 @@
+
 package swp391.com.backend.feature.dashboard.service;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,84 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdminDashboardService {
+    // DTO cho dữ liệu daily
+    public static class DailyRevenue {
+        public String date; // yyyy-MM-dd
+        public double revenue;
+        public DailyRevenue(String date, double revenue) {
+            this.date = date;
+            this.revenue = revenue;
+        }
+    }
+    public static class DailyAppointmentCount {
+        public String date;
+        public long count;
+        public DailyAppointmentCount(String date, long count) {
+            this.date = date;
+            this.count = count;
+        }
+    }
+    public static class DailyUserGrowth {
+        public String date;
+        public long newUsers;
+        public DailyUserGrowth(String date, long newUsers) {
+            this.date = date;
+            this.newUsers = newUsers;
+        }
+    }
+
+    // Service method trả về dữ liệu daily theo khoảng ngày
+    public List<DailyRevenue> getDailyRevenue(java.time.LocalDate from, java.time.LocalDate to) {
+        List<DailyRevenue> result = new ArrayList<>();
+        java.time.LocalDate date = from;
+        while (!date.isAfter(to)) {
+            final java.time.LocalDate currentDate = date;
+            double revenue = examinationRepository.findAll().stream()
+                .filter(exam -> exam.getPanel() != null && exam.getPanel().getPrice() != null)
+                .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.COMPLETED ||
+                                exam.getExaminationStatus() == ExaminationStatus.EXAMINED)
+                .filter(exam -> exam.getDate() != null && exam.getDate().isEqual(currentDate))
+                .mapToDouble(exam -> exam.getPanel().getPrice().doubleValue())
+                .sum();
+            revenue += appointmentRepository.findAll().stream()
+                .filter(app -> app.getAppointmentStatus() == AppointmentStatus.FINISHED)
+                .filter(app -> app.getDoctor() != null && app.getDoctor().getPrice() != null)
+                .filter(app -> app.getDate() != null && app.getDate().isEqual(currentDate))
+                .mapToDouble(app -> app.getDoctor().getPrice().doubleValue())
+                .sum();
+            result.add(new DailyRevenue(currentDate.toString(), revenue));
+            date = date.plusDays(1);
+        }
+        return result;
+    }
+
+    public List<DailyAppointmentCount> getDailyAppointments(java.time.LocalDate from, java.time.LocalDate to) {
+        List<DailyAppointmentCount> result = new ArrayList<>();
+        java.time.LocalDate date = from;
+        while (!date.isAfter(to)) {
+            final java.time.LocalDate currentDate = date;
+            long count = appointmentRepository.findAll().stream()
+                .filter(app -> app.getDate() != null && app.getDate().isEqual(currentDate))
+                .count();
+            result.add(new DailyAppointmentCount(currentDate.toString(), count));
+            date = date.plusDays(1);
+        }
+        return result;
+    }
+
+    public List<DailyUserGrowth> getDailyUserGrowth(java.time.LocalDate from, java.time.LocalDate to) {
+        List<DailyUserGrowth> result = new ArrayList<>();
+        java.time.LocalDate date = from;
+        while (!date.isAfter(to)) {
+            final java.time.LocalDate currentDate = date;
+            long newUsers = accountRepository.findAll().stream()
+                .filter(acc -> acc.getCreatedAt() != null && acc.getCreatedAt().toLocalDate().isEqual(currentDate))
+                .count();
+            result.add(new DailyUserGrowth(currentDate.toString(), newUsers));
+            date = date.plusDays(1);
+        }
+        return result;
+    }
     // Doanh thu từng tháng trong năm hiện tại
     public java.util.List<MonthlyRevenue> getMonthlyRevenue(int year) {
         java.util.Map<Integer, Double> revenueByMonth = new java.util.HashMap<>();

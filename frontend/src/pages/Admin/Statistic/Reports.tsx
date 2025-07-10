@@ -16,7 +16,14 @@ import {
 } from 'recharts';
 import { FaChartLine, FaStethoscope } from 'react-icons/fa';
 import {ArrowDownTrayIcon, ArrowTrendingUpIcon, CalendarIcon, ChartBarIcon,} from '@heroicons/react/24/outline';
-import { getAdminDashboard } from '../../../api/services/adminDashboardService';
+import {
+  getAdminDashboard,
+  getAdminMonthlyRevenue,
+  getAdminServiceDistribution,
+  getAdminDailyRevenue,
+  getAdminDailyAppointments,
+  getAdminDailyUserGrowth
+} from '../../../api/services/adminDashboardService';
 import { exportNodeToPDF } from '../../../utils/exportPdf';
 // For html2canvas fallback if needed
 // import html2canvas from 'html2canvas';
@@ -69,62 +76,100 @@ const Reports: React.FC = () => {
         return data;
     };
     const [dashboard, setDashboard] = useState<any>(null);
-    const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
+    const [revenueData, setRevenueData] = useState<any[]>([]);
     const [serviceDistribution, setServiceDistribution] = useState<any[]>([]);
-    const [appointmentsData, setAppointmentsData] = useState<{month: string, appointments: number}[]>([]);
-    const [userGrowthData, setUserGrowthData] = useState<{month: string, users: number}[]>([]);
+    const [appointmentsData, setAppointmentsData] = useState<any[]>([]);
+    const [userGrowthData, setUserGrowthData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+    // Helper to get date range for daily endpoints
+    const getDateRange = (days: number) => {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - (days - 1));
+      return {
+        startDate: start.toISOString().slice(0, 10),
+        endDate: end.toISOString().slice(0, 10)
+      };
+    };
+
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const [dashboardRes, monthlyRevenue, serviceDist] = await Promise.all([
-                    (await import('../../../api/services/dashboardService')).getAdminDashboardData(),
-                    (await import('../../../api/services/adminDashboardService')).getAdminMonthlyRevenue(new Date().getFullYear()),
-                    (await import('../../../api/services/adminDashboardService')).getAdminServiceDistribution(),
-                ]);
-                setDashboard(dashboardRes);
-                // Chuẩn hóa dữ liệu 12 tháng cho revenue
-                const revenueArr = Array.from({ length: 12 }, (_, i) => {
-                    const found = (monthlyRevenue as any[]).find((item) => item.month === i + 1);
-                    return {
-                        month: monthLabels[i],
-                        revenue: found ? found.revenue : 0
-                    };
-                });
-                setRevenueData(revenueArr);
-                setServiceDistribution(serviceDist as any[]);
-                // Chuẩn hóa dữ liệu 12 tháng cho Appointments
-                const appointmentsArr = Array.from({ length: 12 }, (_, i) => {
-                    const found = dashboardRes.appointmentsByMonth?.find((item: any) => item.month === i + 1);
-                    return {
-                        month: monthLabels[i],
-                        appointments: found ? found.count : 0
-                    };
-                });
-                setAppointmentsData(appointmentsArr);
-                // Chuẩn hóa dữ liệu 12 tháng cho User Growth
-                const userGrowthArr = Array.from({ length: 12 }, (_, i) => {
-                    const found = dashboardRes.userGrowthByMonth?.find((item: any) => item.month === i + 1);
-                    return {
-                        month: monthLabels[i],
-                        users: found ? found.newUsers : 0
-                    };
-                });
-                setUserGrowthData(userGrowthArr);
-            } catch (err) {
-                setError('Failed to load dashboard data.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDashboardData();
-    }, []);
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          // Always get dashboard summary and service distribution
+          const [dashboardRes, serviceDist] = await Promise.all([
+            getAdminDashboard(),
+            getAdminServiceDistribution(),
+          ]);
+          setDashboard(dashboardRes);
+          setServiceDistribution(serviceDist);
+
+          if (timeRange === '7days' || timeRange === '30days') {
+            const days = timeRange === '7days' ? 7 : 30;
+            const { startDate, endDate } = getDateRange(days);
+            // Fetch daily data for each chart separately
+            const [dailyRevenue, dailyAppointments, dailyUserGrowth] = await Promise.all([
+              getAdminDailyRevenue(startDate, endDate),
+              getAdminDailyAppointments(startDate, endDate),
+              getAdminDailyUserGrowth(startDate, endDate),
+            ]);
+            // Revenue chart
+            setRevenueData(dailyRevenue.map((item: any) => ({
+              date: item.date,
+              revenue: item.revenue
+            })));
+            // Appointments chart
+            setAppointmentsData(dailyAppointments.map((item: any) => ({
+              date: item.date,
+              appointments: item.count
+            })));
+            // User Growth chart
+            setUserGrowthData(dailyUserGrowth.map((item: any) => ({
+              date: item.date,
+              users: item.newUsers
+            })));
+          } else {
+            // Monthly data for 6 months/1 year
+            const year = new Date().getFullYear();
+            // Revenue
+            const monthlyRevenue = await getAdminMonthlyRevenue(year);
+            setRevenueData(Array.from({ length: 12 }, (_, i) => {
+              const found = (monthlyRevenue as any[]).find((item) => item.month === i + 1);
+              return {
+                month: monthLabels[i],
+                revenue: found ? found.revenue : 0
+              };
+            }));
+            // Appointments
+            setAppointmentsData(Array.from({ length: 12 }, (_, i) => {
+              const found = dashboardRes.appointmentsByMonth?.find((item: any) => item.month === i + 1);
+              return {
+                month: monthLabels[i],
+                appointments: found ? found.count : 0
+              };
+            }));
+            // User Growth
+            setUserGrowthData(Array.from({ length: 12 }, (_, i) => {
+              const found = dashboardRes.userGrowthByMonth?.find((item: any) => item.month === i + 1);
+              return {
+                month: monthLabels[i],
+                users: found ? found.newUsers : 0
+              };
+            }));
+          }
+        } catch (err) {
+          setError('Failed to load dashboard data.');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }, [timeRange]);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
@@ -174,13 +219,9 @@ const Reports: React.FC = () => {
     ];
 
 
-    // Revenue chart data for extra charts (appointments, users)
-    const revenueExtraData = dashboard.appointmentsByMonth.map((item: any, idx: number) => ({
-        month: monthLabels[item.month - 1],
-        revenue: dashboard.monthlyRevenue ? dashboard.monthlyRevenue[idx]?.revenue || 0 : 0,
-        appointments: item.count,
-        users: dashboard.userGrowthByMonth[idx]?.newUsers || 0,
-    }));
+
+    // X-axis key for charts
+    const xAxisKey = timeRange === '7days' || timeRange === '30days' ? 'date' : 'month';
 
     // Format tiền giống Dashboard (VND, có dấu phẩy)
     const formatRevenue = (value: number) => {
@@ -274,7 +315,7 @@ const Reports: React.FC = () => {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                    <XAxis dataKey="month" stroke="#64748b" interval={0} />
+                                    <XAxis dataKey={xAxisKey} stroke="#64748b" interval={0} />
                                     <YAxis stroke="#64748b" tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(v))} />
                                     <Tooltip 
                                         contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} 
@@ -322,7 +363,7 @@ const Reports: React.FC = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={getFilteredData(appointmentsData)}>
                                     <CartesianGrid strokeDasharray="3 3"/>
-                                    <XAxis dataKey="month" interval={0}/>
+                                    <XAxis dataKey={xAxisKey} interval={0}/>
                                     <YAxis allowDecimals={false}/>
                                     <Tooltip/>
                                     <Bar dataKey="appointments" fill="#00C49F" name="Số lượt khám"/>
@@ -337,7 +378,7 @@ const Reports: React.FC = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={getFilteredData(userGrowthData)}>
                                     <CartesianGrid strokeDasharray="3 3"/>
-                                    <XAxis dataKey="month" interval={0}/>
+                                    <XAxis dataKey={xAxisKey} interval={0}/>
                                     <YAxis allowDecimals={false}/>
                                     <Tooltip/>
                                     <Area
