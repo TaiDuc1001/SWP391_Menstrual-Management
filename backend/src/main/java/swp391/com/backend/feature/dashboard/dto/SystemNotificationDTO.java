@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SystemNotificationDTO {
+    private String id;
     private String message;
     private String type; // warning, info, error
     private String priority; // high, medium, low

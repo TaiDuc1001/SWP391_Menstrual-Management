@@ -14,7 +14,8 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import { getAdminDashboardData, getAdminMonthlyRevenue, getAdminServiceDistribution, getRecentActivities, getSystemNotifications } from '../../api/services';
+import { getAdminDashboardData, getAdminMonthlyRevenue, getAdminServiceDistribution, getRecentActivities } from '../../api/services';
+import { getSystemNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../../api/services/systemNotificationService';
 import { RecentActivityDTO, SystemNotificationDTO } from '../../types/dashboard';
 
 // Interface for dashboard data from API
@@ -86,7 +87,22 @@ const Dashboard: React.FC = () => {
                 setLoading(false);
             }
         };
+        
         fetchDashboardData();
+        
+        // Set up periodic refresh for notifications - every 60 seconds
+        const notificationRefreshInterval = setInterval(async () => {
+            try {
+                const notifications = await getSystemNotifications();
+                setSystemNotifications(notifications);
+            } catch (err) {
+                console.error('Error refreshing notifications:', err);
+            }
+        }, 60000);
+        
+        return () => {
+            clearInterval(notificationRefreshInterval);
+        };
     }, []);
 
     // Helper to format growth rate with correct sign
@@ -104,6 +120,20 @@ const Dashboard: React.FC = () => {
         {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Total Examinations', value: dashboardData.totalTestServices.toLocaleString()},
         {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Revenue', value: new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(dashboardData.totalRevenue)}
     ] : defaultStats;
+
+    const handleMarkAsRead = async (id: string) => {
+        try {
+            await markNotificationAsRead(id);
+            // Update local state to reflect change immediately
+            setSystemNotifications(prev => 
+                prev.map(notif => 
+                    notif.id === id ? { ...notif, isRead: true } : notif
+                )
+            );
+        } catch (err) {
+            console.error('Error marking notification as read:', err);
+        }
+    };
 
     return (
         <div className="p-6 bg-gray-50">
@@ -205,21 +235,74 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6 text-gray-800">System Notifications</h2>
-                    <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold text-gray-800">System Notifications</h2>
+                        {systemNotifications.length > 0 && (
+                            <button 
+                                onClick={async () => {
+                                    try {
+                                        await markAllNotificationsAsRead();
+                                        // Update local state to reflect all notifications as read
+                                        setSystemNotifications(prev => 
+                                            prev.map(notif => ({ ...notif, isRead: true }))
+                                        );
+                                    } catch (err) {
+                                        console.error('Error marking all notifications as read:', err);
+                                    }
+                                }}
+                                className="text-sm text-blue-600 hover:text-blue-800"
+                            >
+                                Mark all as read
+                            </button>
+                        )}
+                    </div>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
                         {systemNotifications.map((notification, idx) => (
-                            <div key={idx} className={`p-4 rounded-lg border ${
-                                notification.type === 'error' ? 'bg-red-50 border-red-100' :
-                                notification.type === 'warning' ? 'bg-yellow-50 border-yellow-100' :
-                                'bg-blue-50 border-blue-100'
-                            }`}>
-                                <p className={`${
-                                    notification.type === 'error' ? 'text-red-800' :
-                                    notification.type === 'warning' ? 'text-yellow-800' :
-                                    'text-blue-800'
-                                } ${notification.priority === 'high' ? 'font-semibold' : ''}`}>
-                                    {notification.message}
-                                </p>
+                            <div 
+                                key={idx} 
+                                className={`p-4 rounded-lg border relative ${
+                                    notification.isRead ? 'opacity-70' : ''
+                                } ${
+                                    notification.type === 'error' ? 'bg-red-50 border-red-100' :
+                                    notification.type === 'warning' ? 'bg-yellow-50 border-yellow-100' :
+                                    notification.type === 'info' ? 'bg-blue-50 border-blue-100' :
+                                    'bg-gray-50 border-gray-100'
+                                }`}
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className={`${
+                                            notification.type === 'error' ? 'text-red-800' :
+                                            notification.type === 'warning' ? 'text-yellow-800' :
+                                            notification.type === 'info' ? 'text-blue-800' :
+                                            'text-gray-800'
+                                        } ${notification.priority === 'high' ? 'font-semibold' : ''} 
+                                        ${notification.isRead ? 'text-opacity-70' : ''}`}>
+                                            {notification.message}
+                                        </p>
+                                        {notification.priority === 'high' && (
+                                            <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-1">
+                                                High Priority
+                                            </span>
+                                        )}
+                                    </div>
+                                    {!notification.isRead && (
+                                        <button
+                                            onClick={() => handleMarkAsRead(notification.id)}
+                                            className="text-gray-400 hover:text-gray-600 ml-2"
+                                            title="Mark as read"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
+                                {notification.isRead && (
+                                    <div className="absolute top-2 right-2">
+                                        <span className="text-xs text-gray-400">Read</span>
+                                    </div>
+                                )}
                             </div>
                         ))}
                         {systemNotifications.length === 0 && (

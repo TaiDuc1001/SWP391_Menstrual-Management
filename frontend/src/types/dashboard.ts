@@ -6,6 +6,7 @@ export interface RecentActivityDTO {
 }
 
 export interface SystemNotificationDTO {
+    id: string;
     message: string;
     type: 'info' | 'warning' | 'error';
     priority: 'low' | 'medium' | 'high';

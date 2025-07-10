@@ -3,6 +3,7 @@ package swp391.com.backend.feature.dashboard.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,5 +54,19 @@ public class AdminDashboardController {
     @GetMapping("/notifications")
     public ResponseEntity<List<SystemNotificationDTO>> getSystemNotifications() {
         return ResponseEntity.ok(adminDashboardService.getSystemNotifications());
+    }
+    
+    // Endpoint to mark a notification as read
+    @GetMapping("/notifications/{id}/mark-read")
+    public ResponseEntity<Void> markNotificationAsRead(@PathVariable String id) {
+        adminDashboardService.markNotificationAsRead(id);
+        return ResponseEntity.ok().build();
+    }
+    
+    // Endpoint to mark all notifications as read
+    @GetMapping("/notifications/mark-all-read")
+    public ResponseEntity<Void> markAllNotificationsAsRead() {
+        adminDashboardService.markAllNotificationsAsRead();
+        return ResponseEntity.ok().build();
     }
 }

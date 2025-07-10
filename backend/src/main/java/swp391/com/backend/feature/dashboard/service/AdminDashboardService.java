@@ -16,7 +16,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -257,25 +259,67 @@ public class AdminDashboardService {
             .count();
         
         if (pendingAccounts > 0) {
+            String id = "accounts-pending-" + pendingAccounts;
             notifications.add(SystemNotificationDTO.builder()
-                .message("There are " + pendingAccounts + " accounts pending approval")
+                .id(id)
+                .message(pendingAccounts + (pendingAccounts > 1 ? " accounts are" : " account is") + " pending approval")
                 .type("warning")
                 .priority("medium")
-                .isRead(false)
+                .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
         
-        // Kiểm tra examinations cần xử lý
-        long pendingExams = examinationRepository.findAll().stream()
+        // Separate notifications for different examination states that need attention
+        
+        // 1. SAMPLED examinations that need processing
+        long sampledExams = examinationRepository.findAll().stream()
             .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.SAMPLED)
             .count();
         
-        if (pendingExams > 0) {
+        if (sampledExams > 0) {
+            String id = "examinations-sampled-" + sampledExams;
             notifications.add(SystemNotificationDTO.builder()
-                .message(pendingExams + " examinations are waiting to be processed")
+                .id(id)
+                .message(sampledExams + (sampledExams > 1 ? " examinations have" : " examination has") + " samples ready for analysis")
                 .type("info")
-                .priority("medium")
-                .isRead(false)
+                .priority(sampledExams > 5 ? "high" : "medium")
+                .isRead(notificationReadStatus.getOrDefault(id, false))
+                .build());
+        }
+        
+        // 2. EXAMINED examinations that need final review/approval
+        long examinedExams = examinationRepository.findAll().stream()
+            .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.EXAMINED)
+            .count();
+        
+        if (examinedExams > 0) {
+            String id = "examinations-examined-" + examinedExams;
+            notifications.add(SystemNotificationDTO.builder()
+                .id(id)
+                .message(examinedExams + (examinedExams > 1 ? " examinations need" : " examination needs") + " final approval")
+                .type("warning")
+                .priority("high")
+                .isRead(notificationReadStatus.getOrDefault(id, false))
+                .build());
+        }
+        
+        // 3. Overdue PENDING examinations
+        long overdueExams = examinationRepository.findAll().stream()
+            .filter(exam -> 
+                exam.getExaminationStatus() == ExaminationStatus.PENDING &&
+                exam.getDate() != null && 
+                exam.getDate().isBefore(java.time.LocalDate.now())
+            )
+            .count();
+        
+        if (overdueExams > 0) {
+            String id = "examinations-overdue-" + overdueExams;
+            notifications.add(SystemNotificationDTO.builder()
+                .id(id)
+                .message(overdueExams + (overdueExams > 1 ? " overdue examinations require" : " overdue examination requires") + " attention")
+                .type("error")
+                .priority("high")
+                .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
         
@@ -285,22 +329,64 @@ public class AdminDashboardService {
             .count();
         
         if (pendingAppointments > 0) {
+            String id = "appointments-pending-" + pendingAppointments;
             notifications.add(SystemNotificationDTO.builder()
-                .message(pendingAppointments + " appointments are waiting for confirmation")
+                .id(id)
+                .message(pendingAppointments + (pendingAppointments > 1 ? " appointments are" : " appointment is") + " waiting for confirmation")
                 .type("info")
-                .priority("low")
-                .isRead(false)
+                .priority(pendingAppointments > 10 ? "high" : "low")
+                .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
         
-        // Thông báo hệ thống (có thể config từ admin)
-        notifications.add(SystemNotificationDTO.builder()
-            .message("System maintenance scheduled for tonight at 23:00")
-            .type("error")
-            .priority("high")
-            .isRead(false)
-            .build());
+        // Check for appointments scheduled for today
+        long todayAppointments = appointmentRepository.findAll().stream()
+            .filter(app -> app.getDate() != null && app.getDate().equals(java.time.LocalDate.now()))
+            .filter(app -> app.getAppointmentStatus() != AppointmentStatus.CANCELLED 
+                    && app.getAppointmentStatus() != AppointmentStatus.FINISHED)
+            .count();
+            
+        if (todayAppointments > 0) {
+            String id = "appointments-today-" + todayAppointments;
+            notifications.add(SystemNotificationDTO.builder()
+                .id(id)
+                .message(todayAppointments + (todayAppointments > 1 ? " appointments" : " appointment") + " scheduled for today")
+                .type("warning")
+                .priority("medium")
+                .isRead(notificationReadStatus.getOrDefault(id, false))
+                .build());
+        }
+        
+        // Add system maintenance notification if scheduled
+        // In a real system, this would come from a configuration or scheduled maintenance table
+        // For demo purposes, we'll check if today is a maintenance day (e.g., first day of the month)
+        if (java.time.LocalDate.now().getDayOfMonth() == 1) {
+            String id = "system-maintenance-monthly";
+            notifications.add(SystemNotificationDTO.builder()
+                .id(id)
+                .message("System maintenance scheduled for tonight at 23:00")
+                .type("error")
+                .priority("medium")
+                .isRead(notificationReadStatus.getOrDefault(id, false))
+                .build());
+        }
         
         return notifications;
+    }
+    
+    // System Notifications repository for storing read status
+    private final Map<String, Boolean> notificationReadStatus = new HashMap<>();
+    
+    // Mark notification as read
+    public void markNotificationAsRead(String id) {
+        notificationReadStatus.put(id, true);
+    }
+    
+    // Mark all notifications as read
+    public void markAllNotificationsAsRead() {
+        List<SystemNotificationDTO> notifications = getSystemNotifications();
+        for (SystemNotificationDTO notification : notifications) {
+            notificationReadStatus.put(notification.getId(), true);
+        }
     }
 }
