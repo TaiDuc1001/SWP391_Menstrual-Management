@@ -248,7 +248,16 @@ const Dashboard: React.FC = () => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="month" stroke="#64748b" />
+                                <XAxis 
+                                    dataKey="month" 
+                                    stroke="#64748b" 
+                                    ticks={monthLabels}
+                                    interval={0}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={60}
+                                    padding={{ left: 10, right: 10 }}
+                                />
                                 <YAxis stroke="#64748b" />
                                 <Tooltip contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} />
                                 <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
