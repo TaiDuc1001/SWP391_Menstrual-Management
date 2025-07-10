@@ -1,13 +1,30 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import { DoctorProfile } from '../../api/services/doctorService';
 import { useDoctorProfile } from '../../api/hooks/useDoctorProfile';
+import { doctorRatingService } from '../../api/services/doctorRatingService';
 
 const MyProfile: React.FC = () => {
     const navigate = useNavigate();
     const { profile, loading } = useDoctorProfile();
+    const [averageRating, setAverageRating] = useState<number | null>(null);
+    const [totalRatings, setTotalRatings] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (typeof profile?.id === 'number') {
+            doctorRatingService.getDoctorAverageRating(profile.id)
+                .then(res => {
+                    setAverageRating(res.data.averageRating);
+                    setTotalRatings(res.data.totalRatings);
+                })
+                .catch(() => {
+                    setAverageRating(null);
+                    setTotalRatings(null);
+                });
+        }
+    }, [profile]);
 
     const calculateCompletionPercentage = (profile: DoctorProfile): number => {
         let completed = 0;
@@ -83,6 +100,15 @@ const MyProfile: React.FC = () => {
                             <span className="font-semibold text-gray-700">
                                 {profile.price > 0 ? `${profile.price.toLocaleString('vi-VN')} VND` : 'Not set'}
                             </span>
+                        </div>
+                        {/* Doctor Rating */}
+                        <div className="text-base text-gray-500 flex items-center justify-center md:justify-start gap-2 mt-2">
+                            <span>⭐</span>
+                            <span>Avg. Rating:</span>
+                            <span className="font-semibold text-yellow-600">
+                                {averageRating !== null ? averageRating.toFixed(1) : 'N/A'}
+                            </span>
+                            <span>({totalRatings !== null ? totalRatings : 0} ratings)</span>
                         </div>
                     </div>
                 </div>
