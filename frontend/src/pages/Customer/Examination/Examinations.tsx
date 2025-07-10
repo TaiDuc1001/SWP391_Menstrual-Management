@@ -123,7 +123,8 @@ const Examinations: React.FC = () => {
         handleSort,
         sortConfig
     } = useTableState(filteredRecords, {
-        initialPageSize: TESTS_PER_PAGE
+        initialPageSize: TESTS_PER_PAGE,
+        initialSortConfig: { key: 'rawDate', direction: 'desc' }
     });
 
     const handleSelectAllWrapper = (checked: boolean) => {
@@ -140,7 +141,7 @@ const Examinations: React.FC = () => {
                     data = [];
                 }
             }
-            setTestRecords(data.map((order: any) => {
+            const mapped = data.map((order: any) => {
                 // Format status for display using the centralized function
                 const status = formatExaminationStatus(order.examinationStatus || '');
 
@@ -152,8 +153,19 @@ const Examinations: React.FC = () => {
                     panels: order.panelName || 'No info',
                     statusRaw: order.examinationStatus || '',
                     status: status,
+                    rawDate: order.date ? new Date(order.date) : null, // Keep raw date for sorting
                 };
-            }));
+            });
+            
+            // Sort by date descending (newest first)
+            const sortedMapped = mapped.sort((a: any, b: any) => {
+                if (!a.rawDate && !b.rawDate) return 0;
+                if (!a.rawDate) return 1;
+                if (!b.rawDate) return -1;
+                return b.rawDate.getTime() - a.rawDate.getTime();
+            });
+            
+            setTestRecords(sortedMapped);
         }).catch((error: any) => {
             console.error('Error fetching examinations:', error);
             setTestRecords([]);

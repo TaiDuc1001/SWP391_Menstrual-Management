@@ -90,7 +90,8 @@ const AppointmentHistory: React.FC = () => {
         handleSort,
         sortConfig
     } = useTableState(filteredRecords, {
-        initialPageSize: 5
+        initialPageSize: 5,
+        initialSortConfig: { key: 'rawDate', direction: 'desc' }
     });
 
     useEffect(() => {
@@ -127,9 +128,19 @@ const AppointmentHistory: React.FC = () => {
                         slot: slotTime,
                         slotCode: item.slot,
                         slotTime: slotTime,
+                        rawDate: item.date ? new Date(item.date) : null, // Keep raw date for sorting
                     };
                 });
-                setAppointments(mapped);
+                
+                // Sort by date descending (newest first)
+                const sortedMapped = mapped.sort((a: any, b: any) => {
+                    if (!a.rawDate && !b.rawDate) return 0;
+                    if (!a.rawDate) return 1;
+                    if (!b.rawDate) return -1;
+                    return b.rawDate.getTime() - a.rawDate.getTime();
+                });
+                
+                setAppointments(sortedMapped);
                 setLoading(false);
             })
             .catch((error) => {
@@ -167,9 +178,19 @@ const AppointmentHistory: React.FC = () => {
                     slot: slotTime,
                     slotCode: item.slot,
                     slotTime: slotTime,
+                    rawDate: item.date ? new Date(item.date) : null, // Keep raw date for sorting
                 };
             });
-            setAppointments(mapped);
+            
+            // Sort by date descending (newest first)
+            const sortedMapped = mapped.sort((a: any, b: any) => {
+                if (!a.rawDate && !b.rawDate) return 0;
+                if (!a.rawDate) return 1;
+                if (!b.rawDate) return -1;
+                return b.rawDate.getTime() - a.rawDate.getTime();
+            });
+            
+            setAppointments(sortedMapped);
             // alert('Meeting is starting! You can now join the meeting.');
         } catch (error) {
             console.error('Error confirming appointment:', error);
