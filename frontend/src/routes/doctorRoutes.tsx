@@ -14,13 +14,7 @@ import DoctorProfileGuard from '../components/DoctorProfileGuard';
 import DoctorRatingHistory from '../pages/Doctor/RatingHistory';
 
 export const doctorPaths: RouteConfig[] = [
-    {
-        path: '/doctor/rating-history',
-        element: <DoctorProfileGuard><DoctorRatingHistory/></DoctorProfileGuard>,
-        label: 'Rating History',
-        iconName: 'FaStar',
-        showInSidebar: true
-    },
+    // ...existing code...
     {
         path: '/doctor',
         element: <Navigate to="/doctor/dashboard" replace/>,
@@ -56,6 +50,13 @@ export const doctorPaths: RouteConfig[] = [
         path: '/doctor/appointments/:id'
     },    {
         path: '/doctor/appointments/:id/customer'
+    },
+    {
+        path: '/doctor/rating-history',
+        element: <DoctorProfileGuard><DoctorRatingHistory/></DoctorProfileGuard>,
+        label: 'Rating History',
+        iconName: 'FaStar',
+        showInSidebar: true
     },
     {
         path: '/doctor/profile',
