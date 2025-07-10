@@ -10,6 +10,7 @@ export {accountService} from './accountService';
 export {blogService} from './blogService';
 export {publicBlogService} from './publicBlogService';
 export {getAdminDashboardData} from './dashboardService';
+export {getAdminMonthlyRevenue, getAdminServiceDistribution} from './adminDashboardService';
 export {panelService} from './panelService';
 export * from './cycleService';
 export * from './aiService';

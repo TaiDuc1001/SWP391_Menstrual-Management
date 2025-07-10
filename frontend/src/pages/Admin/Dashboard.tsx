@@ -13,7 +13,7 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import { getAdminDashboardData } from '../../api/services';
+import { getAdminDashboardData, getAdminMonthlyRevenue, getAdminServiceDistribution } from '../../api/services';
 
 // Interface for dashboard data from API
 interface DashboardData {
@@ -30,27 +30,16 @@ const defaultStats = [
     {icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: '---'},
     {icon: FaBlog, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Blogs', value: '---'},
     {icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Appointments', value: '---'},
-    {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Test Services', value: '18'},
+    {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Total Examinations', value: '---'},
     {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Revenue', value: '---'},
-    {icon: FaChartLine, color: 'text-indigo-500', bgColor: 'bg-indigo-100', label: 'Growth', value: '+15%'},
 ];
 
-const revenueData = [
-    {month: 'Jan', revenue: 65},
-    {month: 'Feb', revenue: 72},
-    {month: 'Mar', revenue: 80},
-    {month: 'Apr', revenue: 95},
-    {month: 'May', revenue: 88},
-    {month: 'Jun', revenue: 120},
-];
 
-const serviceData = [
-    {name: 'HPV Test', value: 35},
-    {name: 'Health Consultation', value: 25},
-    {name: 'Gynecological Exam', value: 20},
-    {name: 'Ultrasound', value: 15},
-    {name: 'Other Services', value: 5},
-];
+// Types for chart data
+interface MonthlyRevenue { month: number; revenue: number; }
+interface ServiceDistribution { name: string; value: number; }
+
+const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -63,6 +52,8 @@ const recentActivities = [
 
 const Dashboard: React.FC = () => {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+    const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
+    const [serviceData, setServiceData] = useState<ServiceDistribution[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -71,8 +62,20 @@ const Dashboard: React.FC = () => {
         const fetchDashboardData = async () => {
             try {
                 setLoading(true);
-                const data = await getAdminDashboardData();
-                setDashboardData(data);
+                const [dashboard, monthlyRevenue, serviceDist] = await Promise.all([
+                    getAdminDashboardData(),
+                    getAdminMonthlyRevenue(new Date().getFullYear()),
+                    getAdminServiceDistribution()
+                ]);
+                setDashboardData(dashboard);
+                // Map backend months (1-12) to labels
+                setRevenueData(
+                    (monthlyRevenue as MonthlyRevenue[]).map(item => ({
+                        month: monthLabels[item.month - 1],
+                        revenue: item.revenue
+                    }))
+                );
+                setServiceData(serviceDist as ServiceDistribution[]);
                 setError(null);
             } catch (err) {
                 console.error('Error fetching dashboard data:', err);
@@ -81,18 +84,23 @@ const Dashboard: React.FC = () => {
                 setLoading(false);
             }
         };
-
         fetchDashboardData();
     }, []);
+
+    // Helper to format growth rate with correct sign
+    const formatGrowthRate = (rate: number) => {
+        if (rate > 0) return `+${rate}%`;
+        if (rate < 0) return `${rate}%`;
+        return '0%';
+    };
 
     // Prepare stats based on the fetched data
     const stats = dashboardData ? [
         {icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: dashboardData.totalAccounts.toLocaleString()},
         {icon: FaBlog, color: 'text-green-500', bgColor: 'bg-green-100', label: 'Blogs', value: dashboardData.totalBlogs.toLocaleString()},
         {icon: FaCalendarAlt, color: 'text-yellow-500', bgColor: 'bg-yellow-100', label: 'Appointments', value: dashboardData.totalAppointments.toLocaleString()},
-        {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Test Services', value: dashboardData.totalTestServices.toLocaleString()},
-        {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Revenue', value: new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(dashboardData.totalRevenue)},
-        {icon: FaChartLine, color: 'text-indigo-500', bgColor: 'bg-indigo-100', label: 'Growth', value: `+${dashboardData.growthRate}%`}
+        {icon: FaFlask, color: 'text-pink-500', bgColor: 'bg-pink-100', label: 'Total Examinations', value: dashboardData.totalTestServices.toLocaleString()},
+        {icon: FaDollarSign, color: 'text-purple-500', bgColor: 'bg-purple-100', label: 'Revenue', value: new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(dashboardData.totalRevenue)}
     ] : defaultStats;
 
     return (
@@ -136,8 +144,7 @@ const Dashboard: React.FC = () => {
                                 <XAxis dataKey="month"/>
                                 <YAxis/>
                                 <Tooltip/>
-                                <Area type="monotone" dataKey="revenue" stroke="#8884d8" fill="#8884d8"
-                                      fillOpacity={0.3}/>
+                                <Area type="monotone" dataKey="revenue" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3}/>
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
