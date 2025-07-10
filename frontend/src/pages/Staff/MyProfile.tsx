@@ -1,143 +1,65 @@
-import React, {useState} from 'react';
-import {Button} from '../../components';
+import React, {useState, useEffect} from 'react';
 import {StaffProfile} from '../../types';
+import { staffService } from '../../api/services/staffService';
+import { getCurrentStaffId } from '../../utils/auth';
 
 const MyProfile: React.FC = () => {
-    const [profile, setProfile] = useState<StaffProfile>({
-        id: 1,
-        name: 'Staff Member',
-        email: 'staff@example.com',
-        phone: '+1234567890',
-        position: 'Staff',
-        department: 'Administration',
-        joinDate: '2024-01-01'
-    });
+    const [profile, setProfile] = useState<StaffProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedProfile, setEditedProfile] = useState<StaffProfile>(profile);
+    useEffect(() => {
+        const staffId = getCurrentStaffId();
+        if (!staffId) {
+            setError('Staff ID not found. Please login again.');
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        staffService.getStaffProfile(staffId)
+            .then(res => {
+                setProfile(res.data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setError('Failed to load profile');
+                setLoading(false);
+            });
+    }, []);
 
-    const handleEdit = () => {
-        setIsEditing(true);
-        setEditedProfile(profile);
-    };
+    if (loading) return <div className="flex justify-center items-center h-64 text-lg font-semibold">Loading...</div>;
+    if (error) return <div className="flex justify-center items-center h-64 text-red-500 font-semibold">{error}</div>;
+    if (!profile) return null;
 
-    const handleSave = () => {
-        setProfile(editedProfile);
-        setIsEditing(false);
-    };
+    // Only show fields that have value
+    const infoFields = [
+        { label: 'Name', value: profile.name },
+        { label: 'Email', value: profile.email },
+        { label: 'Phone', value: profile.phone },
+        { label: 'Position', value: profile.position },
+        { label: 'Department', value: profile.department },
+        { label: 'Join Date', value: profile.joinDate },
+    ].filter(field => field.value && field.value.trim() !== '');
 
-    const handleCancel = () => {
-        setIsEditing(false);
-        setEditedProfile(profile);
-    };
-
-    const handleInputChange = (field: keyof StaffProfile, value: string) => {
-        setEditedProfile(prev => ({
-            ...prev,
-            [field]: value
-        }));
-    };
     return (
-        <div className="staff-profile">
-            <div className="staff-profile__header">
-                <h1>My Profile</h1>
-                {!isEditing && (
-                    <Button onClick={handleEdit} variant="primary">
-                        Edit Profile
-                    </Button>
-                )}
-            </div>
-
-            <div className="staff-profile__content">
-                <div className="staff-profile__section">
-                    <h2>Personal Information</h2>
-
-                    <div className="staff-profile__field">
-                        <label>Name</label>
-                        {isEditing ? (
-                            <input
-                                type="text"
-                                value={editedProfile.name}
-                                onChange={(e) => handleInputChange('name', e.target.value)}
-                                className="staff-profile__input"
-                            />
+        <div className="flex flex-col items-center w-full py-8">
+            <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl border border-gray-200">
+                <h1 className="text-3xl font-bold mb-6 text-center text-pink-600">My Profile</h1>
+                <div className="border rounded-lg p-6 bg-gray-50">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Personal Information</h2>
+                    <div className="space-y-4">
+                        {infoFields.length === 0 ? (
+                            <div className="text-gray-400 italic">No information available.</div>
                         ) : (
-                            <span>{profile.name}</span>
+                            infoFields.map(field => (
+                                <div key={field.label} className="flex flex-col sm:flex-row sm:items-center">
+                                    <span className="w-40 font-medium text-gray-600">{field.label}</span>
+                                    <span className="text-gray-900 ml-2 mt-1 sm:mt-0">{field.value}</span>
+                                </div>
+                            ))
                         )}
-                    </div>
-
-                    <div className="staff-profile__field">
-                        <label>Email</label>
-                        {isEditing ? (
-                            <input
-                                type="email"
-                                value={editedProfile.email}
-                                onChange={(e) => handleInputChange('email', e.target.value)}
-                                className="staff-profile__input"
-                            />
-                        ) : (
-                            <span>{profile.email}</span>
-                        )}
-                    </div>
-
-                    <div className="staff-profile__field">
-                        <label>Phone</label>
-                        {isEditing ? (
-                            <input
-                                type="tel"
-                                value={editedProfile.phone}
-                                onChange={(e) => handleInputChange('phone', e.target.value)}
-                                className="staff-profile__input"
-                            />
-                        ) : (
-                            <span>{profile.phone}</span>
-                        )}
-                    </div>
-
-                    <div className="staff-profile__field">
-                        <label>Position</label>
-                        {isEditing ? (
-                            <input
-                                type="text"
-                                value={editedProfile.position}
-                                onChange={(e) => handleInputChange('position', e.target.value)}
-                                className="staff-profile__input"
-                            />
-                        ) : (
-                            <span>{profile.position}</span>
-                        )}
-                    </div>
-
-                    <div className="staff-profile__field">
-                        <label>Department</label>
-                        {isEditing ? (
-                            <input
-                                type="text"
-                                value={editedProfile.department}
-                                onChange={(e) => handleInputChange('department', e.target.value)}
-                                className="staff-profile__input"
-                            />
-                        ) : (
-                            <span>{profile.department}</span>
-                        )}
-                    </div>
-
-                    <div className="staff-profile__field">
-                        <label>Join Date</label>
-                        <span>{profile.joinDate}</span>
                     </div>
                 </div>
-
-                {isEditing && (
-                    <div className="staff-profile__actions">
-                        <Button onClick={handleSave} variant="primary">
-                            Save Changes
-                        </Button>
-                        <Button onClick={handleCancel} variant="secondary">
-                            Cancel
-                        </Button>
-                    </div>
-                )}
             </div>
         </div>
     );

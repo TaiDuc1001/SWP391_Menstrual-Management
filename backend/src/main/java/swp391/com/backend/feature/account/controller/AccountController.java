@@ -115,7 +115,6 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    // Admin CRUD operations for account management
     
     @GetMapping("/admin")
     public ResponseEntity<List<AccountManagementDTO>> getAllAccountsForAdmin() {
@@ -171,16 +170,6 @@ public class AccountController {
             return ResponseEntity.ok(account);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-    
-    @DeleteMapping("/admin/{id}")
-    public ResponseEntity<?> deleteAccountByAdmin(@PathVariable Long id) {
-        try {
-            Account deletedAccount = accountService.deleteAccount(id);
-            return ResponseEntity.ok(Map.of("message", "Account deleted successfully", "email", deletedAccount.getEmail()));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         }
     }
 }

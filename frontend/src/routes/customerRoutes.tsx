@@ -58,6 +58,19 @@ export const customerPaths: RouteConfig[] = [
     {path: '/customer/menstrual-cycles/all', element: <ProfileGuard><MenstrualCyclesAll/></ProfileGuard>},
 
     {
+        path: '/customer/sti-tests',
+        element: <ProfileGuard><Examinations/></ProfileGuard>,
+        label: 'STI Tests',
+        iconName: 'FaFlask',
+        showInSidebar: true
+    },    {path: '/customer/sti-tests/:id', element: <ProfileGuard><ExaminationDetail/></ProfileGuard>},
+    {path: '/customer/sti-tests/packages', element: <ProfileGuard><Panels/></ProfileGuard>},
+    {path: '/customer/sti-tests/packages/:id', element: <ProfileGuard><PanelDetail/></ProfileGuard>},
+    {path: '/customer/sti-tests/book', element: <ProfileGuard><ExaminationBooking/></ProfileGuard>},
+    {path: '/customer/vnpay-examination-checkout/:examinationId', element: <ProfileGuard><VNPayExaminationCheckout/></ProfileGuard>},
+    {path: '/customer/examination-payment-return', element: <ProfileGuard><ExaminationPaymentReturn/></ProfileGuard>},
+
+    {
         path: '/customer/appointments',
         element: <ProfileGuard><Appointments/></ProfileGuard>,
         label: 'Appointments',
@@ -71,19 +84,6 @@ export const customerPaths: RouteConfig[] = [
     {path: '/customer/vnpay-checkout/:appointmentId', element: <ProfileGuard><VNPayCheckout/></ProfileGuard>},
     {path: '/customer/payment-return', element: <ProfileGuard><PaymentReturn/></ProfileGuard>},
     {path: '/customer/doctors/:id', element: <ProfileGuard><DoctorDetail/></ProfileGuard>},
-
-    {
-        path: '/customer/sti-tests',
-        element: <ProfileGuard><Examinations/></ProfileGuard>,
-        label: 'STI Tests',
-        iconName: 'FaFlask',
-        showInSidebar: true
-    },    {path: '/customer/sti-tests/:id', element: <ProfileGuard><ExaminationDetail/></ProfileGuard>},
-    {path: '/customer/sti-tests/packages', element: <ProfileGuard><Panels/></ProfileGuard>},
-    {path: '/customer/sti-tests/packages/:id', element: <ProfileGuard><PanelDetail/></ProfileGuard>},
-    {path: '/customer/sti-tests/book', element: <ProfileGuard><ExaminationBooking/></ProfileGuard>},
-    {path: '/customer/vnpay-examination-checkout/:examinationId', element: <ProfileGuard><VNPayExaminationCheckout/></ProfileGuard>},
-    {path: '/customer/examination-payment-return', element: <ProfileGuard><ExaminationPaymentReturn/></ProfileGuard>},
 
     {path: '/customer/profile', element: <ProfileGuard><MyProfile/></ProfileGuard>},
     {path: '/customer/complete-profile', element: <CompleteProfile/>, showInSidebar: false},

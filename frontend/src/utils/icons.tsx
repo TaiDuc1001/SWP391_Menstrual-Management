@@ -8,6 +8,8 @@ import settingIcon from '../assets/icons/setting.svg';
 import contentIcon from '../assets/icons/content.svg';
 import phoneIcon from '../assets/icons/phone.svg';
 import keyIcon from '../assets/icons/key.svg';
+import clipboard from '../assets/icons/clipboard.svg';
+import chartBar from '../assets/icons/chart-bar.svg';
 
 export const getIcon = (iconName: string): string | null => {
     switch (iconName) {
@@ -33,6 +35,10 @@ export const getIcon = (iconName: string): string | null => {
             return multiUserIcon;
         case 'FaKey':
             return keyIcon;
+        case 'FaClipboard':
+            return clipboard; 
+        case 'FaChartBar':
+            return chartBar;
         default:
             return null;
     }

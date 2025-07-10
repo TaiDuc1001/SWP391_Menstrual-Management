@@ -225,6 +225,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                     errors.name ? 'border-red-300 bg-red-50' : ''
                                                 }`}
                                                 placeholder="Enter full name"
+                                                autoComplete="off"
                                                 disabled={loading}
                                             />
                                             {errors.name && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -247,6 +248,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                     errors.email || (serverError && serverError.toLowerCase().includes('email')) ? 'border-red-300 bg-red-50' : ''
                                                 }`}
                                                 placeholder="Enter email address"
+                                                autoComplete="off"
                                                 disabled={loading}
                                             />
                                             {errors.email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -280,6 +282,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                 errors.password ? 'border-red-300 bg-red-50' : ''
                                             }`}
                                             placeholder="Enter password"
+                                            autoComplete="new-password"
                                             disabled={loading}
                                         />
                                         {errors.password && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -386,6 +389,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                         errors.phoneNumber ? 'border-red-300 bg-red-50' : ''
                                                     }`}
                                                     placeholder="Enter phone number"
+                                                    autoComplete="off"
                                                     disabled={loading}
                                                 />
                                                 {errors.phoneNumber && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">

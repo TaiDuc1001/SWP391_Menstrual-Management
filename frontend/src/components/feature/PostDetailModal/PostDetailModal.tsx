@@ -6,9 +6,7 @@ interface Post {
     title: string;
     category: string;
     author: string;
-    status: 'published' | 'draft' | 'pending';
     createdAt: string;
-    views: number;
     content?: string;
 }
 
@@ -41,16 +39,6 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({post, onClose}) => {
                                     <span>Category: <span className="font-medium">{post.category}</span></span>
                                     <span>•</span>
                                     <span>Created: <span className="font-medium">{post.createdAt}</span></span>
-                                    <span>•</span>
-                                    <span><span className="font-medium">{post.views.toLocaleString()}</span> views</span>
-                                    <span>•</span>
-                                    <span className={`px-2 py-1 text-xs rounded-full ${
-                                        post.status === 'published' ? 'bg-green-100 text-green-800' :
-                                        post.status === 'draft' ? 'bg-gray-100 text-gray-800' :
-                                        'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                        {post.status}
-                                    </span>
                                 </div>
                             </div>
                             <button

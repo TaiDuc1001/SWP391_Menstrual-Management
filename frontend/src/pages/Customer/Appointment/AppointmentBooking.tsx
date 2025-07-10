@@ -35,6 +35,28 @@ const AppointmentBooking: React.FC = () => {
 
     const customerId = 3;
 
+    // Get current date and minimum allowed date
+    const getCurrentDate = () => {
+        const now = new Date();
+        return now.toISOString().split('T')[0];
+    };
+
+    const getMinDate = () => {
+        // Allow booking from tomorrow onwards
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+    };
+
+    // Validate if selected date is in the future
+    const isDateInFuture = (dateString: string) => {
+        const selectedDate = new Date(dateString);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
+        return selectedDate > today;
+    };
+
     useEffect(() => {
         return () => {
             if (redirectTimeout) {
@@ -126,10 +148,29 @@ const AppointmentBooking: React.FC = () => {
         ...Array.from(new Set(advisors.map(a => a.specialization))).map(s => ({value: s, label: s}))
     ];    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Enhanced validation
         if (!selectedAdvisor || !selectedDate || !selectedTime) {
             setShowSlotError(!selectedTime);
             return;
         }
+
+        // Validate date is in the future
+        if (!isDateInFuture(selectedDate)) {
+            alert('You can only book appointments for future dates. Please select a date starting from tomorrow.');
+            return;
+        }
+
+        // Validate the selected date is not older than current date
+        const selectedDateObj = new Date(selectedDate);
+        const currentDate = new Date();
+        if (selectedDateObj < currentDate) {
+            alert('Cannot book appointment for past dates. Please select a future date.');
+            setSelectedDate('');
+            setSelectedTime('');
+            return;
+        }
+
         setShowSlotError(false);
         setLoading(true);
         
@@ -278,13 +319,22 @@ const AppointmentBooking: React.FC = () => {
                                     className="border rounded px-4 py-2 text-lg"
                                     value={selectedDate}
                                     onChange={e => {
-                                        setSelectedDate(e.target.value)
-                                        setSelectedTime('')
+                                        const newDate = e.target.value;
+                                        // Additional validation on change
+                                        if (newDate && !isDateInFuture(newDate)) {
+                                            alert('Please select a future date. You can only book appointments starting from tomorrow.');
+                                            return;
+                                        }
+                                        setSelectedDate(newDate);
+                                        setSelectedTime('');
                                     }}
-                                    min={new Date().toISOString().split('T')[0]}
+                                    min={getMinDate()}
                                     required
                                     style={{width: 220}}
                                 />
+                                <div className="text-xs text-gray-500 mt-1">
+                                    You can book appointments starting from tomorrow ({new Date(getMinDate()).toLocaleDateString('vi-VN')})
+                                </div>
                             </div>                            <div className="mb-6">
                                 <div className="font-semibold text-gray-700 mb-2">Choose your time</div>
                                 {loadingSlots ? (
