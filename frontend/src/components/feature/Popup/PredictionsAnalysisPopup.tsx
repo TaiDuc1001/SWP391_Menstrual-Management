@@ -27,49 +27,78 @@ const PredictionsAnalysisPopup: React.FC<PredictionsAnalysisPopupProps> = ({
         });
     };
 
-    const calculateNextPeriod = () => {
-        if (!cycles || cycles.length === 0) return null;
-        
-        const sortedCycles = cycles.sort((a, b) => 
-            new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime()
-        );
-        
-        const lastCycle = sortedCycles[sortedCycles.length - 1];
-        if (!lastCycle) return null;
-        
-        const avgCycleLength = cycles.length > 1 
-            ? cycles.reduce((sum, cycle) => sum + (cycle.cycleLength || 28), 0) / cycles.length
-            : 28;
-        
-        const lastCycleDate = new Date(lastCycle.cycleStartDate);
-        const nextPeriodDate = new Date(lastCycleDate.getTime() + avgCycleLength * 24 * 60 * 60 * 1000);
-        
-        return nextPeriodDate.toLocaleDateString('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
-
-    const analyzeStatus = () => {
-        if (!cycles || cycles.length === 0) return 'No data';
-        
-        if (cycles.length === 1) return 'Normal';
-        
-        const cycleLengths = cycles.map(cycle => cycle.cycleLength || 28);
-        const avgLength = cycleLengths.reduce((sum, length) => sum + length, 0) / cycleLengths.length;
-        
-        if (avgLength >= 21 && avgLength <= 35) {
-            return 'Normal';
-        } else if (avgLength < 21) {
-            return 'Short cycle';
-        } else {
-            return 'Long cycle';
+    const getCurrentUserId = (): string => {
+        try {
+            const userProfile = localStorage.getItem('userProfile');
+            if (userProfile) {
+                const parsed = JSON.parse(userProfile);
+                return parsed.id?.toString() || 'default';
+            }
+        } catch (error) {
+            console.error('Error getting user ID:', error);
         }
+        return 'default';
     };
 
-    const nextPeriod = calculateNextPeriod();
-    const cycleStatus = analyzeStatus();
+    const getStorageKey = (): string => {
+        const userId = getCurrentUserId();
+        return `menstrual_symptoms_detailed_${userId}`;
+    };
+
+    const getFlowLevelData = () => {
+        if (!selectedDate) return null;
+        
+        const storageKey = getStorageKey();
+        const saved = localStorage.getItem(storageKey);
+        const savedData = saved ? JSON.parse(saved) : {};
+        const dayData = savedData[selectedDate];
+        
+        if (!dayData || !dayData.flowLevel || dayData.flowLevel === 0) {
+            return null;
+        }
+
+        const flowLevelMessages = {
+            1: 'Rất ít',
+            2: 'Ít',
+            3: 'Bình thường',
+            4: 'Nhiều',
+            5: 'Rất nhiều'
+        };
+
+        return {
+            level: dayData.flowLevel,
+            message: flowLevelMessages[dayData.flowLevel as keyof typeof flowLevelMessages]
+        };
+    };
+
+    const getCrampsLevelData = () => {
+        if (!selectedDate) return null;
+        
+        const storageKey = getStorageKey();
+        const saved = localStorage.getItem(storageKey);
+        const savedData = saved ? JSON.parse(saved) : {};
+        const dayData = savedData[selectedDate];
+        
+        if (!dayData || !dayData.crampsLevel || dayData.crampsLevel === 0) {
+            return null;
+        }
+
+        const crampsLevelMessages = {
+            1: 'Về cơ bản không đau',
+            2: 'Hơi đau',
+            3: 'Rất đau',
+            4: 'Cực đau',
+            5: 'Đau không chịu nổi'
+        };
+
+        return {
+            level: dayData.crampsLevel,
+            message: crampsLevelMessages[dayData.crampsLevel as keyof typeof crampsLevelMessages]
+        };
+    };
+
+    const flowData = getFlowLevelData();
+    const crampsData = getCrampsLevelData();
 
     return (
         <Popup open={open} onClose={onClose} className="predictions-analysis-popup">
@@ -81,23 +110,34 @@ const PredictionsAnalysisPopup: React.FC<PredictionsAnalysisPopupProps> = ({
                 </div>
 
                 <div className="prediction-items">
-                    <div className="prediction-item">
-                        <div className="prediction-icon period-icon"></div>
-                        <div className="prediction-text">
-                            <span className="prediction-label">Next period expected</span>
-                            <span className="prediction-status normal">Normal</span>
+                    {flowData && (
+                        <div className="symptom-card">
+                            <div className="symptom-header">
+                                <div className="symptom-icon flow-icon"></div>
+                                <span className="symptom-title">Lượng kinh</span>
+                            </div>
+                            <div className="symptom-content">
+                                <span className="symptom-description">Lượng kinh lần này</span>
+                                <span className="symptom-value" style={{ color: '#ff69b4' }}>
+                                    {flowData.message}
+                                </span>
+                            </div>
                         </div>
-                        <div className="prediction-date-value">{nextPeriod || '12/06/2024'}</div>
-                    </div>
-
-                    <div className="prediction-item">
-                        <div className="prediction-icon cycle-icon"></div>
-                        <div className="prediction-text">
-                            <span className="prediction-label">Cycle alert</span>
-                            <span className="prediction-status normal">Normal</span>
+                    )}
+                    {crampsData && (
+                        <div className="symptom-card">
+                            <div className="symptom-header">
+                                <div className="symptom-icon cramps-icon"></div>
+                                <span className="symptom-title">Đau bụng kinh</span>
+                            </div>
+                            <div className="symptom-content">
+                                <span className="symptom-description">Đau bụng kinh lần này</span>
+                                <span className="symptom-value" style={{ color: '#ff69b4' }}>
+                                    {crampsData.message}
+                                </span>
+                            </div>
                         </div>
-                        <div className="prediction-value">{cycleStatus}</div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="action-buttons">

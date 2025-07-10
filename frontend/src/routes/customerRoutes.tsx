@@ -3,6 +3,8 @@ import {Navigate} from 'react-router-dom';
 import ProfileGuard from '../components/ProfileGuard';
 
 import Dashboard from '../pages/Customer/Dashboard';
+import CustomerBlogs from '../pages/Customer/Blogs';
+import CycleChart from '../pages/Customer/CycleChart';
 
 import MenstrualCycles from '../pages/Customer/Cycle/MenstrualCycleDashboard';
 import MenstrualCyclesAll from '../pages/Customer/Cycle/MenstrualCycleHistory';
@@ -35,6 +37,16 @@ export const customerPaths: RouteConfig[] = [
     },
 
     {path: '/customer/dashboard', element: <ProfileGuard><Dashboard/></ProfileGuard>, label: 'Dashboard', iconName: 'FaHome', showInSidebar: true},
+
+    {path: '/customer/cycle-chart', element: <ProfileGuard><CycleChart/></ProfileGuard>, showInSidebar: false},
+
+    {
+        path: '/customer/health-tips',
+        element: <ProfileGuard><CustomerBlogs/></ProfileGuard>,
+        label: 'Health Tips',
+        iconName: 'FaLightbulb',
+        showInSidebar: false
+    },
 
     {
         path: '/customer/menstrual-cycles',

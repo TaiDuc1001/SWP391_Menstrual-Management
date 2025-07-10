@@ -1,28 +1,30 @@
 .symptom-popup-container {
   width: 100%;
-  max-width: 28rem;
+  max-width: 42rem;
   margin: 0 auto;
   background: white;
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 2rem;
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
+  border: 3px solid #e2e8f0;
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .symptom-popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .symptom-popup-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #1f2937;
 }
-
+ 
 .close-button {
   width: 2rem;
   height: 2rem;
@@ -47,19 +49,20 @@
 .symptom-section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .symptom-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem;
+  padding: 1rem 1.25rem;
   border-radius: 0.75rem;
   cursor: pointer;
   transition: background-color 0.2s;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #e2e8f0;
+  margin: 0.25rem 0;
 }
 
 .symptom-row:hover {
@@ -202,8 +205,9 @@
 
 .discharge-display {
   min-width: 1.75rem;
+  width: 1.75rem;
   height: 1.75rem;
-  border-radius: 1rem;
+  border-radius: 50%;
   background: #fce7f3;
   color: #ec4899;
   display: flex;
@@ -214,7 +218,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid transparent;
-  padding: 0 0.5rem;
+  padding: 0;
   white-space: nowrap;
 }
 
@@ -224,6 +228,9 @@
 }
 
 .discharge-display.active {
+  width: auto;
+  border-radius: 1rem;
+  padding: 0 0.5rem;
   background: #ec4899;
   color: white;
   border-color: #be185d;
@@ -231,8 +238,9 @@
 
 .weight-display {
   min-width: 1.75rem;
+  width: 1.75rem;
   height: 1.75rem;
-  border-radius: 1rem;
+  border-radius: 50%;
   background: #fce7f3;
   color: #ec4899;
   display: flex;
@@ -243,19 +251,22 @@
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid transparent;
-  padding: 0 0.5rem;
+  padding: 0;
   white-space: nowrap;
+}
+
+.weight-display.active {
+  width: auto;
+  border-radius: 1rem;
+  padding: 0 0.5rem;
+  background: #ec4899;
+  color: white;
+  border-color: #be185d;
 }
 
 .weight-display:hover {
   background: #fbcfe8;
   transform: scale(1.05);
-}
-
-.weight-display.active {
-  background: #ec4899;
-  color: white;
-  border-color: #be185d;
 }
 
 .symptom-status {
@@ -344,28 +355,210 @@
 }
 
 .temperature-display {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s;
+  min-width: 1.75rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: #fce7f3;
+  color: #ec4899;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
   cursor: pointer;
-  min-width: 2.5rem;
-  text-align: center;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  padding: 0;
+  white-space: nowrap;
 }
 
 .temperature-display:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
+  background: #fbcfe8;
+  transform: scale(1.05);
 }
 
 .temperature-display.active {
+  width: auto;
+  border-radius: 1rem;
+  padding: 0 0.5rem;
   background: #ec4899;
   color: white;
+  border-color: #be185d;
+}
+
+.symptom-dropdown-container {
+  position: relative;
+}
+
+.symptom-main-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid #e2e8f0;
+  margin: 0.25rem 0;
+}
+
+.symptom-main-row:hover {
+  background: #f3f4f6;
+}
+
+.symptom-display {
+  margin-left: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  min-width: 2rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.symptom-display.active {
+  background: #fef3f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.symptom-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+
+.symptom-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.symptom-option:last-child {
+  border-bottom: none;
+}
+
+.symptom-option:hover {
+  background: #f9fafb;
+}
+
+.symptom-option.selected {
+  background: #fef3f2;
+  color: #dc2626;
+}
+
+.symptom-option-text {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.symptom-option.selected .symptom-option-text {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.symptom-check {
+  color: #dc2626;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.symptom-simple-display {
+  min-width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 1rem;
+  background: #fce7f3;
+  color: #ec4899;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+.symptom-simple-display:hover {
+  background: #fbcfe8;
+  transform: scale(1.05);
+}
+
+.symptom-simple-display.active {
+  background: #ec4899;
+  color: white;
+  border-color: #be185d;
+}
+
+/* Checkbox styles for Period Day */
+.symptom-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.period-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-label {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.checkmark {
+  position: relative;
+  height: 20px;
+  width: 20px;
+  background-color: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-label:hover .checkmark {
+  background-color: #fce7f3;
   border-color: #ec4899;
-  filter: grayscale(0);
-  opacity: 1;
+}
+
+.period-checkbox:checked + .checkbox-label .checkmark {
+  background-color: #ec4899;
+  border-color: #be185d;
+}
+
+.period-checkbox:checked + .checkbox-label .checkmark:after {
+  content: "";
+  position: absolute;
+  display: block;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }

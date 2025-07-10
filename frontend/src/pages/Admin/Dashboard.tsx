@@ -1,3 +1,6 @@
+import React from 'react';
+import {useNavigate} from 'react-router-dom';
+import {FaCalendarAlt, FaChartLine, FaDollarSign, FaFlask, FaStethoscope, FaUser} from 'react-icons/fa';
 import React, { useEffect, useState, ComponentType, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -82,6 +85,10 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+
+    const handleViewAllTips = () => {
+        navigate('/admin/blogs');
+
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
     const [serviceData, setServiceData] = useState<ServiceDistribution[]>([]);
@@ -168,7 +175,6 @@ const Dashboard: React.FC = () => {
             console.error('Error marking notification as read:', err);
         }
     };
-
     // Get current date for welcome message
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('en-US', {
@@ -185,7 +191,6 @@ const Dashboard: React.FC = () => {
         if (hour < 18) return 'Good Afternoon';
         return 'Good Evening';
     };
-
     return (
         <div className="p-6 lg:p-8 bg-gradient-to-br from-blue-50 via-white to-blue-50 min-h-screen">
             {/* Welcome header */}
@@ -214,7 +219,6 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
             )}
-
             {/* Stats Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
                 {stats.map((stat) => (
@@ -440,7 +444,20 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
-
+            <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h2 className="text-xl font-semibold text-gray-800">Health Tips Management</h2>
+                        <p className="text-gray-600 mt-1">Manage and view all health tips and blog content</p>
+                    </div>
+                    <button 
+                        onClick={handleViewAllTips}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        View all Tips
+                    </button>
+                </div>
+            </div>
             <style>
                 {`
                     .custom-scrollbar::-webkit-scrollbar {

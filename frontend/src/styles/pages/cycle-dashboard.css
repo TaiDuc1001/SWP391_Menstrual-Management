@@ -64,3 +64,11 @@
     top: -3px !important;
     right: -3px !important;
 }
+
+.chart-view-cycle-btn {
+    @apply absolute bottom-2 right-2 px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 transition-colors duration-200 font-medium;
+}
+
+.dashboard-view-btn {
+    @apply px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 transition-colors duration-200 font-medium;
+}
