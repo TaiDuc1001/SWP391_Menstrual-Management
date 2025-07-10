@@ -243,9 +243,6 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
             <div className="symptom-popup-container">
                 <div className="symptom-popup-header">
                     <h3 className="symptom-popup-title">Symptom Notes</h3>
-                    <button className="close-button" onClick={onClose}>
-                        ×
-                    </button>
                 </div>
                 
                 <div className="symptom-section">
