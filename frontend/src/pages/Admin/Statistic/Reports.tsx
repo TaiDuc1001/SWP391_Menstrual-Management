@@ -14,8 +14,26 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
+import { FaChartLine, FaStethoscope } from 'react-icons/fa';
 import {ArrowDownTrayIcon, ArrowTrendingUpIcon, CalendarIcon, ChartBarIcon,} from '@heroicons/react/24/outline';
 import { getAdminDashboard } from '../../../api/services/adminDashboardService';
+
+// Wrapper giống Dashboard
+import { IconType } from 'react-icons';
+
+interface IconWrapperProps {
+  icon: IconType;
+  className?: string;
+}
+const IconWrapper = ({ icon, className }: IconWrapperProps) => {
+  // react-icons IconType is a function that returns JSX.Element
+  // TypeScript sometimes fails to infer, so cast to any
+  const IconComponent = icon as any;
+  return IconComponent ? <IconComponent className={className} /> : null;
+};
+
+// Màu giống Dashboard
+const DASHBOARD_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -28,18 +46,45 @@ interface Metric {
 }
 
 const Reports: React.FC = () => {
+
     const [timeRange, setTimeRange] = useState('6months');
     const [dashboard, setDashboard] = useState<any>(null);
+    const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
+    const [serviceDistribution, setServiceDistribution] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     useEffect(() => {
-        getAdminDashboard().then(data => {
-            setDashboard(data);
-            setLoading(false);
-        });
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const [dashboardRes, monthlyRevenue, serviceDist] = await Promise.all([
+                    (await import('../../../api/services/dashboardService')).getAdminDashboardData(),
+                    (await import('../../../api/services/adminDashboardService')).getAdminMonthlyRevenue(new Date().getFullYear()),
+                    (await import('../../../api/services/adminDashboardService')).getAdminServiceDistribution(),
+                ]);
+                setDashboard(dashboardRes);
+                setRevenueData(
+                    (monthlyRevenue as any[]).map(item => ({
+                        month: monthLabels[item.month - 1],
+                        revenue: item.revenue
+                    }))
+                );
+                setServiceDistribution(serviceDist as any[]);
+            } catch (err) {
+                setError('Failed to load dashboard data.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDashboardData();
     }, []);
 
     if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
     if (!dashboard) return <div>No data</div>;
 
     // Tính phần trăm thay đổi động cho Appointments và New Users
@@ -84,16 +129,14 @@ const Reports: React.FC = () => {
         },
     ];
 
-    // Revenue chart data
-    const revenueData = dashboard.appointmentsByMonth.map((item: any, idx: number) => ({
-        month: `Th${item.month}`,
+
+    // Revenue chart data for extra charts (appointments, users)
+    const revenueExtraData = dashboard.appointmentsByMonth.map((item: any, idx: number) => ({
+        month: monthLabels[item.month - 1],
         revenue: dashboard.monthlyRevenue ? dashboard.monthlyRevenue[idx]?.revenue || 0 : 0,
         appointments: item.count,
         users: dashboard.userGrowthByMonth[idx]?.newUsers || 0,
     }));
-
-    // Service distribution (nên lấy từ API riêng nếu có)
-    const serviceDistribution = dashboard.serviceDistribution || [];
 
     const formatRevenue = (value: number) => {
         return `${(value / 1000000).toFixed(0)}M`;
@@ -141,30 +184,36 @@ const Reports: React.FC = () => {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">Revenue Over Time</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                {/* Revenue Trend Chart (Dashboard style) */}
+                <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                    <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
+                        <IconWrapper icon={FaChartLine} className="mr-2 text-blue-600" /> Revenue Trend
+                    </h2>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={revenueData}>
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis dataKey="month"/>
-                                <YAxis tickFormatter={formatRevenue}/>
-                                <Tooltip formatter={(value: number) => [`${formatRevenue(value)} VNĐ`, 'Doanh thu']}/>
-                                <Area
-                                    type="monotone"
-                                    dataKey="revenue"
-                                    stroke="#8884d8"
-                                    fill="#8884d8"
-                                    fillOpacity={0.3}
-                                />
+                                <defs>
+                                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                <XAxis dataKey="month" stroke="#64748b" />
+                                <YAxis stroke="#64748b" tickFormatter={formatRevenue} />
+                                <Tooltip contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} formatter={(value: number) => [`${formatRevenue(Number(value))} VNĐ`, 'Doanh thu']}/>
+                                <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">Service Distribution</h2>
+                {/* Service Distribution Chart (Dashboard style) */}
+                <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                    <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
+                        <IconWrapper icon={FaStethoscope} className="mr-2 text-blue-600" /> Service Distribution
+                    </h2>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -172,19 +221,19 @@ const Reports: React.FC = () => {
                                     data={serviceDistribution}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
+                                    innerRadius={80}
+                                    outerRadius={110}
                                     fill="#8884d8"
                                     paddingAngle={5}
                                     dataKey="value"
                                     label
                                 >
                                     {serviceDistribution.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
+                                        <Cell key={`cell-${index}`} fill={DASHBOARD_COLORS[index % DASHBOARD_COLORS.length]}/>
                                     ))}
                                 </Pie>
-                                <Tooltip/>
-                                <Legend/>
+                                <Tooltip contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} />
+                                <Legend verticalAlign="bottom" height={36} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
