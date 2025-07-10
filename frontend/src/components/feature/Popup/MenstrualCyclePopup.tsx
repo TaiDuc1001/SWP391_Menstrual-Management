@@ -70,11 +70,11 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
             <span className="inline-block w-7 h-7 bg-pink-100 rounded-full flex items-center justify-center">
               <img src={pen} alt="Pen" className="w-4 h-4"/>
             </span>
-                        {isPreviousMonth ? 'Khai Báo Chu Kỳ Kinh' : 'Menstrual Cycle Declaration'}
+                        {isPreviousMonth ? 'Menstrual Cycle Declaration' : 'Menstrual Cycle Declaration'}
                     </div>
                     <div className="mb-5">
                         <label className="block text-gray-700 mb-2 font-medium">
-                            {isPreviousMonth ? 'Ngày bắt đầu kỳ kinh' : 'Start date of period'}
+                            {isPreviousMonth ? 'Start date of period' : 'Start date of period'}
                         </label>
                         <input
                             type="date"
@@ -88,7 +88,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
                     </div>
                     <div className="mb-5">
                         <label className="block text-gray-700 mb-2 font-medium">
-                            {isPreviousMonth ? 'Số ngày hành kinh' : 'Number of period days'}
+                            {isPreviousMonth ? 'Number of period days' : 'Number of period days'}
                         </label>
                         <input
                             type="number"
@@ -118,7 +118,7 @@ const MenstrualCyclePopup: React.FC<MenstrualCyclePopupProps> = ({open, onClose,
                         <button type="submit"
                                 className="bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded px-8 py-2 transition-all text-base shadow"
                                 style={{minWidth: 140}}>
-                            {isPreviousMonth ? 'Lưu chu kỳ' : 'Save cycle'}
+                            {isPreviousMonth ? 'Save cycle' : 'Save cycle'}
                         </button>
                     </div>
                 </form>
