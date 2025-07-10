@@ -52,6 +52,7 @@ const Reports: React.FC = () => {
     const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
     const [serviceDistribution, setServiceDistribution] = useState<any[]>([]);
     const [appointmentsData, setAppointmentsData] = useState<{month: string, appointments: number}[]>([]);
+    const [userGrowthData, setUserGrowthData] = useState<{month: string, users: number}[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -87,6 +88,15 @@ const Reports: React.FC = () => {
                     };
                 });
                 setAppointmentsData(appointmentsArr);
+                // Chuẩn hóa dữ liệu 12 tháng cho User Growth
+                const userGrowthArr = Array.from({ length: 12 }, (_, i) => {
+                    const found = dashboardRes.userGrowthByMonth?.find((item: any) => item.month === i + 1);
+                    return {
+                        month: monthLabels[i],
+                        users: found ? found.newUsers : 0
+                    };
+                });
+                setUserGrowthData(userGrowthArr);
             } catch (err) {
                 setError('Failed to load dashboard data.');
             } finally {
@@ -113,8 +123,9 @@ const Reports: React.FC = () => {
     const prevApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth - 1)?.count || 0;
     const appPercent = getPercentChange(currentApp, prevApp);
 
-    const currentUser = dashboard.userGrowthByMonth?.find((u: any) => u.month === currentMonth)?.newUsers || 0;
-    const prevUser = dashboard.userGrowthByMonth?.find((u: any) => u.month === currentMonth - 1)?.newUsers || 0;
+    // Lấy từ userGrowthData đã chuẩn hóa để không bị mất tháng
+    const currentUser = userGrowthData[currentMonth - 1]?.users || 0;
+    const prevUser = userGrowthData[currentMonth - 2]?.users || 0;
     const userPercent = getPercentChange(currentUser, prevUser);
 
     // Metrics
@@ -135,7 +146,7 @@ const Reports: React.FC = () => {
         },
         {
             title: 'New Users',
-            value: dashboard.userGrowthByMonth.reduce((sum: number, u: any) => sum + u.newUsers, 0).toLocaleString('vi-VN'),
+            value: userGrowthData.reduce((sum, u) => sum + u.users, 0).toLocaleString('vi-VN'),
             change: (userPercent > 0 ? '+' : '') + userPercent.toFixed(1) + '%',
             isPositive: userPercent >= 0,
             icon: ArrowTrendingUpIcon,
@@ -215,7 +226,7 @@ const Reports: React.FC = () => {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="month" stroke="#64748b" />
+                                <XAxis dataKey="month" stroke="#64748b" interval={0} />
                                 <YAxis stroke="#64748b" tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(v))} />
                                 <Tooltip 
                                     contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }} 
@@ -263,7 +274,7 @@ const Reports: React.FC = () => {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={appointmentsData}>
                                 <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis dataKey="month"/>
+                                <XAxis dataKey="month" interval={0}/>
                                 <YAxis allowDecimals={false}/>
                                 <Tooltip/>
                                 <Bar dataKey="appointments" fill="#00C49F" name="Số lượt khám"/>
@@ -276,15 +287,9 @@ const Reports: React.FC = () => {
                     <h2 className="text-xl font-semibold mb-6">User Growth</h2>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={Array.from({ length: 12 }, (_, i) => {
-                                const found = dashboard.userGrowthByMonth?.find((item: any) => item.month === i + 1);
-                                return {
-                                    month: monthLabels[i],
-                                    users: found ? found.newUsers : 0
-                                };
-                            })}>
+                            <AreaChart data={userGrowthData}>
                                 <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis dataKey="month"/>
+                                <XAxis dataKey="month" interval={0}/>
                                 <YAxis allowDecimals={false}/>
                                 <Tooltip/>
                                 <Area
@@ -341,7 +346,7 @@ const Reports: React.FC = () => {
                         <ul className="mt-3 space-y-3">
                             <li className="flex justify-between">
                                 <span className="text-gray-600">New Users</span>
-                                <span className="font-medium">+{dashboard.userGrowthByMonth.reduce((sum: number, u: any) => sum + u.newUsers, 0)}</span>
+                                <span className="font-medium">+{userGrowthData.reduce((sum, u) => sum + u.users, 0)}</span>
                             </li>
                             <li className="flex justify-between">
                                 <span className="text-gray-600">Active Users</span>
