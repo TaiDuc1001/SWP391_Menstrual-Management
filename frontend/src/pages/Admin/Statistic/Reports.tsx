@@ -51,6 +51,7 @@ const Reports: React.FC = () => {
     const [dashboard, setDashboard] = useState<any>(null);
     const [revenueData, setRevenueData] = useState<{month: string, revenue: number}[]>([]);
     const [serviceDistribution, setServiceDistribution] = useState<any[]>([]);
+    const [appointmentsData, setAppointmentsData] = useState<{month: string, appointments: number}[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -67,7 +68,7 @@ const Reports: React.FC = () => {
                     (await import('../../../api/services/adminDashboardService')).getAdminServiceDistribution(),
                 ]);
                 setDashboard(dashboardRes);
-                // Chuẩn hóa dữ liệu 12 tháng, nếu thiếu thì fill 0
+                // Chuẩn hóa dữ liệu 12 tháng cho revenue
                 const revenueArr = Array.from({ length: 12 }, (_, i) => {
                     const found = (monthlyRevenue as any[]).find((item) => item.month === i + 1);
                     return {
@@ -77,6 +78,15 @@ const Reports: React.FC = () => {
                 });
                 setRevenueData(revenueArr);
                 setServiceDistribution(serviceDist as any[]);
+                // Chuẩn hóa dữ liệu 12 tháng cho Appointments
+                const appointmentsArr = Array.from({ length: 12 }, (_, i) => {
+                    const found = dashboardRes.appointmentsByMonth?.find((item: any) => item.month === i + 1);
+                    return {
+                        month: monthLabels[i],
+                        appointments: found ? found.count : 0
+                    };
+                });
+                setAppointmentsData(appointmentsArr);
             } catch (err) {
                 setError('Failed to load dashboard data.');
             } finally {
@@ -251,10 +261,10 @@ const Reports: React.FC = () => {
                     <h2 className="text-xl font-semibold mb-6">Appointments by Month</h2>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={revenueData}>
+                            <BarChart data={appointmentsData}>
                                 <CartesianGrid strokeDasharray="3 3"/>
                                 <XAxis dataKey="month"/>
-                                <YAxis/>
+                                <YAxis allowDecimals={false}/>
                                 <Tooltip/>
                                 <Bar dataKey="appointments" fill="#00C49F" name="Số lượt khám"/>
                             </BarChart>
@@ -266,10 +276,16 @@ const Reports: React.FC = () => {
                     <h2 className="text-xl font-semibold mb-6">User Growth</h2>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={revenueData}>
+                            <AreaChart data={Array.from({ length: 12 }, (_, i) => {
+                                const found = dashboard.userGrowthByMonth?.find((item: any) => item.month === i + 1);
+                                return {
+                                    month: monthLabels[i],
+                                    users: found ? found.newUsers : 0
+                                };
+                            })}>
                                 <CartesianGrid strokeDasharray="3 3"/>
                                 <XAxis dataKey="month"/>
-                                <YAxis/>
+                                <YAxis allowDecimals={false}/>
                                 <Tooltip/>
                                 <Area
                                     type="monotone"
