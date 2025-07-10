@@ -639,12 +639,10 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="flex flex-col gap-6">
                     <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-4">
-                        <div className="flex items-center gap-2 text-gray-800 font-semibold">
-                            <div className="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
-                                <svg className="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                </svg>
-                            </div>
+                        <div className="flex items-center gap-2 text-pink-500 font-semibold">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 2C5.58 2 2 5.58 2 10C2 14.42 5.58 18 10 18C14.42 18 18 14.42 18 10C18 5.58 14.42 2 10 2ZM10 16.5C6.41 16.5 3.5 13.59 3.5 10C3.5 6.41 6.41 3.5 10 3.5C13.59 3.5 16.5 6.41 16.5 10C16.5 13.59 13.59 16.5 10 16.5ZM10.75 7H9.25V11.25L13 13.27L13.75 12.04L10.75 10.32V7Z" fill="#000"/>
+                            </svg>
                             Tips for Health
                         </div>
                         <div className="flex flex-col gap-3">
