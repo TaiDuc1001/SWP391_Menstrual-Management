@@ -452,80 +452,122 @@ const Reports: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-semibold mb-6">Detailed Statistics</h2>
+                <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                    <h2 className="text-xl font-bold mb-6 text-gray-800">Detailed Statistics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-900">Top Services</h3>
-                            <ul className="mt-3 space-y-3">
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <ChartBarIcon className="h-5 w-5 mr-2 text-blue-500" />
+                                Top Services
+                            </h3>
+                            <ul className="mt-3 space-y-4">
                                 {getFilteredData(serviceDistribution).map((service: any, index: number) => (
-                                    <li key={index} className="flex justify-between">
-                                        <span className="text-gray-600">{service.name}</span>
-                                        <span className="font-medium">{service.value}%</span>
+                                    <li key={index} className="flex justify-between items-center">
+                                        <span className="text-gray-600 flex items-center">
+                                            <span className={`w-3 h-3 rounded-full mr-2 inline-block`} 
+                                                style={{backgroundColor: DASHBOARD_COLORS[index % DASHBOARD_COLORS.length]}} />
+                                            {service.name}
+                                        </span>
+                                        <span className="font-medium text-gray-800 bg-white px-3 py-1 rounded-full shadow-sm">
+                                            {service.value}%
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-900">Activity Metrics</h3>
-                            <ul className="mt-3 space-y-3">
-                                <li className="flex justify-between">
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <ArrowTrendingUpIcon className="h-5 w-5 mr-2 text-green-500" />
+                                Activity Metrics
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Satisfaction Rate</span>
-                                    <span className="font-medium text-green-600">{dashboard.satisfactionRate}%</span>
+                                    <span className="font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.satisfactionRate}%
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Return Rate</span>
-                                    <span className="font-medium text-blue-600">{dashboard.returnRate}%</span>
+                                    <span className="font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.returnRate}%
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Avg. Wait Time</span>
-                                    <span className="font-medium">{dashboard.avgWaitTime} mins</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.avgWaitTime} mins
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Avg. Rating</span>
-                                    <span className="font-medium text-yellow-600">{dashboard.avgRating}/5</span>
+                                    <span className="font-medium text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full shadow-sm flex items-center">
+                                        {dashboard.avgRating}/5
+                                    </span>
                                 </li>
                             </ul>
                         </div>
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-900">User Analysis</h3>
-                            <ul className="mt-3 space-y-3">
-                                <li className="flex justify-between">
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <CalendarIcon className="h-5 w-5 mr-2 text-indigo-500" />
+                                User Analysis
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">New Users</span>
-                                    <span className="font-medium">+{getFilteredData(userGrowthData).reduce((sum, u) => sum + u.users, 0)}</span>
+                                    <span className="font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full shadow-sm flex items-center">
+                                        +{getFilteredData(userGrowthData).reduce((sum, u) => sum + u.users, 0)}
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Active Users</span>
-                                    <span className="font-medium">{dashboard.activeUsers.toLocaleString('vi-VN')}</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.activeUsers.toLocaleString('vi-VN')}
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Avg. Interactions/User</span>
-                                    <span className="font-medium">{dashboard.avgInteractionsPerUser}</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.avgInteractionsPerUser}
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Avg. Session Time</span>
-                                    <span className="font-medium">{dashboard.avgSessionTime}</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.avgSessionTime}
+                                    </span>
                                 </li>
                             </ul>
                         </div>
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-900">System Performance</h3>
-                            <ul className="mt-3 space-y-3">
-                                <li className="flex justify-between">
+                        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                <IconWrapper icon={FaChartLine} className="mr-2 text-purple-500" />
+                                System Performance
+                            </h3>
+                            <ul className="mt-3 space-y-4">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Uptime</span>
-                                    <span className="font-medium text-green-600">{dashboard.uptime}%</span>
+                                    <span className="font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.uptime}%
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Response Time</span>
-                                    <span className="font-medium">{dashboard.responseTime}s</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.responseTime}s
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">System Errors</span>
-                                    <span className="font-medium text-red-600">{dashboard.systemErrors}%</span>
+                                    <span className="font-medium text-red-600 bg-red-50 px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.systemErrors}%
+                                    </span>
                                 </li>
-                                <li className="flex justify-between">
+                                <li className="flex justify-between items-center">
                                     <span className="text-gray-600">Bandwidth</span>
-                                    <span className="font-medium">{dashboard.bandwidth}%</span>
+                                    <span className="font-medium bg-white px-3 py-1 rounded-full shadow-sm">
+                                        {dashboard.bandwidth}%
+                                    </span>
                                 </li>
                             </ul>
                         </div>
