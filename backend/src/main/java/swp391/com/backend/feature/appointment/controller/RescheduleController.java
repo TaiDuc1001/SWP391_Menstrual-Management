@@ -10,6 +10,9 @@ import swp391.com.backend.feature.appointment.mapper.RescheduleMapper;
 import swp391.com.backend.feature.appointment.service.RescheduleService;
 
 import java.util.List;
+import swp391.com.backend.common.util.AuthenticationUtil;
+
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,6 +22,7 @@ public class RescheduleController {
     
     private final RescheduleService rescheduleService;
     private final RescheduleMapper rescheduleMapper;
+    private final AuthenticationUtil authenticationUtil;
 
     /**
      * Customer tạo reschedule request
@@ -39,9 +43,13 @@ public class RescheduleController {
     /**
      * Doctor xem danh sách reschedule requests pending
      */
-    @GetMapping("/doctor/{doctorId}/pending")
-    public ResponseEntity<List<RescheduleRequestDTO>> getPendingRescheduleRequestsForDoctor(@PathVariable Long doctorId) {
-        List<RescheduleRequest> requests = rescheduleService.getPendingRescheduleRequestsForDoctor(doctorId);
+    @GetMapping("/doctor/pending")
+    public ResponseEntity<List<RescheduleRequestDTO>> getPendingRescheduleRequestsForDoctor() {
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("RescheduleController.getPendingRescheduleRequestsForDoctor: Getting pending requests for doctor ID: " + currentDoctorId);
+        
+        List<RescheduleRequest> requests = rescheduleService.getPendingRescheduleRequestsForDoctor(currentDoctorId);
         List<RescheduleRequestDTO> responseDTOs = rescheduleMapper.toDTOList(requests);
         return ResponseEntity.ok(responseDTOs);
     }
@@ -49,9 +57,13 @@ public class RescheduleController {
     /**
      * Doctor xem tất cả reschedule requests
      */
-    @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<RescheduleRequestDTO>> getRescheduleRequestsForDoctor(@PathVariable Long doctorId) {
-        List<RescheduleRequest> requests = rescheduleService.getRescheduleRequestsForDoctor(doctorId);
+    @GetMapping("/doctor")
+    public ResponseEntity<List<RescheduleRequestDTO>> getRescheduleRequestsForDoctor() {
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("RescheduleController.getRescheduleRequestsForDoctor: Getting all requests for doctor ID: " + currentDoctorId);
+        
+        List<RescheduleRequest> requests = rescheduleService.getRescheduleRequestsForDoctor(currentDoctorId);
         List<RescheduleRequestDTO> responseDTOs = rescheduleMapper.toDTOList(requests);
         return ResponseEntity.ok(responseDTOs);
     }

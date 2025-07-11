@@ -25,8 +25,8 @@ const DoctorRescheduleRequests: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState({ title: '', message: '' });
     const [errorMessage, setErrorMessage] = useState({ title: '', message: '' });
 
-    // Assuming doctor ID is 1 for now (in real app, get from auth context)
-    const doctorId = 1;
+    // Remove hardcoded doctor ID - now using authentication header
+    // const doctorId = 1;
 
     useEffect(() => {
         fetchRescheduleRequests();
@@ -35,7 +35,7 @@ const DoctorRescheduleRequests: React.FC = () => {
     const fetchRescheduleRequests = async () => {
         try {
             setLoading(true);
-            const data = await rescheduleService.getPendingRescheduleRequestsForDoctor(doctorId);
+            const data = await rescheduleService.getPendingRescheduleRequestsForDoctor();
             setRequests(data);
         } catch (err) {
             console.error('Error fetching reschedule requests:', err);
