@@ -116,6 +116,15 @@ class DoctorProfileService {
         this.loading = false;
         this.notify();
     }
+
+    // Reset instance để tạo instance mới khi cần
+    static resetInstance() {
+        if (DoctorProfileService.instance) {
+            DoctorProfileService.instance.clearCache();
+            DoctorProfileService.instance = null as any;
+        }
+    }
 }
 
 export const doctorProfileService = DoctorProfileService.getInstance();
+export { DoctorProfileService };

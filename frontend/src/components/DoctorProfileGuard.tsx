@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useDoctorProfile } from '../api/hooks/useDoctorProfile';
+import { getCurrentUserProfile } from '../utils/auth';
 
 interface DoctorProfileGuardProps {
     children: React.ReactNode;
@@ -9,6 +10,7 @@ interface DoctorProfileGuardProps {
 const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isProfileComplete, setIsProfileComplete] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
     const location = useLocation();
     const { checkProfileComplete } = useDoctorProfile();
 
@@ -25,6 +27,20 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
+                // Get current user to ensure we're checking the right profile
+                const userProfile = getCurrentUserProfile();
+                const userId = userProfile?.profile?.id;
+                
+                // If user changed, force reload
+                if (userId && userId !== currentUserId) {
+                    setCurrentUserId(userId);
+                    console.log('DoctorProfileGuard: User changed, checking profile for user:', userId);
+                    
+                    // Clear any cached profile data for the previous user
+                    const { doctorProfileService } = await import('../api/services/doctorProfileService');
+                    doctorProfileService.clearCache();
+                }
+                
                 console.log('DoctorProfileGuard: Checking profile completion status...');
                 const result = await checkProfileComplete();
                 setIsProfileComplete(result.isComplete);
@@ -44,7 +60,7 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
             setIsLoading(false);
             setIsProfileComplete(true); // Allow access to profile routes
         }
-    }, [isAllowedRoute, checkProfileComplete]);
+    }, [isAllowedRoute, checkProfileComplete, currentUserId]);
 
     if (isLoading) {
         return (

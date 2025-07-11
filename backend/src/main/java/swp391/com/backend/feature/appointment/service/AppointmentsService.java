@@ -9,6 +9,7 @@ import swp391.com.backend.feature.appointment.exception.AppointmentConflictExcep
 import swp391.com.backend.feature.doctor.service.DoctorService;
 import swp391.com.backend.feature.doctor.data.Doctor;
 import swp391.com.backend.feature.schedule.data.Slot;
+import swp391.com.backend.common.util.AuthenticationUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,15 +22,18 @@ import java.util.stream.Collectors;
 public class AppointmentsService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorService doctorService;
+    private final AuthenticationUtil authenticationUtil;
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
 
     public List<Appointment> getAppointmentsForDoctor() {
-        // TODO: Get doctor ID from security context
-        // For now, return all appointments - this should be changed in production
-        return appointmentRepository.findAppointmentsForDoctor();
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("AppointmentsService.getAppointmentsForDoctor: Getting appointments for doctor ID: " + currentDoctorId);
+        
+        return appointmentRepository.findAppointmentsByDoctorId(currentDoctorId);
     }
 
     public List<Appointment> getAppointmentsByDoctorId(Long doctorId) {

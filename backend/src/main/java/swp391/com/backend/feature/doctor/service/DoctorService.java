@@ -45,7 +45,14 @@ public class DoctorService {
         
         // Check if doctor profile already exists
         if (doctorRepository.findById(accountId).isPresent()) {
-            throw new IllegalStateException("Doctor profile already exists for account: " + accountId);
+            // Update existing doctor profile instead of throwing exception
+            Doctor existingDoctor = doctorRepository.findById(accountId).get();
+            Doctor updatedDoctor = existingDoctor.toBuilder()
+                    .name(name)
+                    .specialization(specialization)
+                    .price(price)
+                    .build();
+            return doctorRepository.save(updatedDoctor);
         }
         
         Doctor doctor = Doctor.builder()
@@ -55,6 +62,10 @@ public class DoctorService {
                 .price(price)
                 .build();
         
+        return doctorRepository.save(doctor);
+    }
+
+    public Doctor createOrUpdateDoctor(Doctor doctor) {
         return doctorRepository.save(doctor);
     }
 }

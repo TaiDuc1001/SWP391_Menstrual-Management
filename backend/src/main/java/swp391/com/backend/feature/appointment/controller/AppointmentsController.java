@@ -18,6 +18,7 @@ import swp391.com.backend.feature.doctor.data.Doctor;
 import swp391.com.backend.feature.appointment.service.AppointmentsService;
 import swp391.com.backend.feature.customer.service.CustomerService;
 import swp391.com.backend.feature.doctor.service.DoctorService;
+import swp391.com.backend.common.util.AuthenticationUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class AppointmentsController {
     private final AppointmentMapper appointmentMapper;
     private final DoctorService doctorService;
     private final CustomerService customerService;
+    private final AuthenticationUtil authenticationUtil;
 
     @GetMapping
     public ResponseEntity<List<SimpleAppointmentDTO>> getAllAppointments() {
@@ -41,10 +43,16 @@ public class AppointmentsController {
     }
     @GetMapping("/doctor")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsForDoctor() {
-        List<AppointmentDTO> results = appointmentsService.getAppointmentsForDoctor()
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("AppointmentsController.getAppointmentsForDoctor: Looking for appointments for doctor ID: " + currentDoctorId);
+        
+        List<AppointmentDTO> results = appointmentsService.getAppointmentsByDoctorId(currentDoctorId)
                 .stream()
                 .map(appointmentMapper::toDTO)
                 .toList();
+        
+        System.out.println("AppointmentsController.getAppointmentsForDoctor: Found " + results.size() + " appointments for doctor ID: " + currentDoctorId);
         return ResponseEntity.ok(results);
     }
 
@@ -268,6 +276,23 @@ public class AppointmentsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/doctor/my-average-rating")
+    public ResponseEntity<Map<String, Object>> getMyAverageRating() {
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("AppointmentsController.getMyAverageRating: Getting average rating for doctor ID: " + currentDoctorId);
+        
+        Double averageRating = appointmentsService.getAverageRatingByDoctorId(currentDoctorId);
+        Long totalRatings = appointmentsService.getTotalRatingsByDoctorId(currentDoctorId);
+        
+        Map<String, Object> response = Map.of(
+            "averageRating", averageRating != null ? averageRating : 0.0,
+            "totalRatings", totalRatings != null ? totalRatings : 0L
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/debug/all-with-ratings")
     public ResponseEntity<List<AppointmentDTO>> getAllAppointmentsWithRatings() {
         List<AppointmentDTO> results = appointmentsService.getAllAppointments()
@@ -279,8 +304,12 @@ public class AppointmentsController {
 
 
     @GetMapping("/doctor/rating-history")
-    public ResponseEntity<List<AppointmentDTO>> getDoctorRatingHistory(@RequestParam Long doctorId) {
-        List<AppointmentDTO> results = appointmentsService.getAppointmentsByDoctorId(doctorId)
+    public ResponseEntity<List<AppointmentDTO>> getDoctorRatingHistory() {
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("AppointmentsController.getDoctorRatingHistory: Getting rating history for doctor ID: " + currentDoctorId);
+        
+        List<AppointmentDTO> results = appointmentsService.getAppointmentsByDoctorId(currentDoctorId)
             .stream()
             .filter(a -> a.getScore() != null)
             .map(appointmentMapper::toDTO)

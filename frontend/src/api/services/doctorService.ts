@@ -105,6 +105,11 @@ export const doctorService = {
     removeAuthToken: () => {
         delete api.defaults.headers.common['Authorization'];
         localStorage.removeItem('doctor_token');
+        // Clear doctor profile cache khi remove token
+        const { doctorProfileService } = require('./doctorProfileService');
+        if (doctorProfileService) {
+            doctorProfileService.clearCache();
+        }
     },
 
     // Initialize auth from localStorage

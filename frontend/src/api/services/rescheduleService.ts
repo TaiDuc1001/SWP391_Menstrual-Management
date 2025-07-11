@@ -43,14 +43,14 @@ export const rescheduleService = {
     },
 
     // Get pending reschedule requests for doctor
-    async getPendingRescheduleRequestsForDoctor(doctorId: number): Promise<RescheduleRequest[]> {
-        const response = await api.get(`/reschedule/doctor/${doctorId}/pending`);
+    async getPendingRescheduleRequestsForDoctor(): Promise<RescheduleRequest[]> {
+        const response = await api.get(`/reschedule/doctor/pending`);
         return response.data;
     },
 
     // Get all reschedule requests for doctor
-    async getRescheduleRequestsForDoctor(doctorId: number): Promise<RescheduleRequest[]> {
-        const response = await api.get(`/reschedule/doctor/${doctorId}`);
+    async getRescheduleRequestsForDoctor(): Promise<RescheduleRequest[]> {
+        const response = await api.get(`/reschedule/doctor`);
         return response.data;
     },
 

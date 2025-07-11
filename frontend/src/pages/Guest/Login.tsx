@@ -6,6 +6,7 @@ import eyeIcon from '../../assets/icons/eye.svg';
 import googleIcon from '../../assets/icons/google.svg';
 import facebookIcon from '../../assets/icons/facebook.svg';
 import api from '../../api/axios';
+import { prepareForNewUser } from '../../utils/auth';
 
 interface LoginProps {
     onLogin: (role: string) => void;
@@ -25,12 +26,16 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
             const response = await api.post('/accounts/login', {email, password});
             const returnedRole = response.data.role?.toLowerCase();
             
-            // Clear any existing user data before storing new user data
-            localStorage.removeItem('userProfile');
-            localStorage.removeItem('doctor_token');
+            console.log('Login response:', response.data);
+            console.log('User role:', returnedRole);
+            console.log('User profile:', response.data.profile);
+            
+            // Prepare for new user login - clear all previous data
+            await prepareForNewUser(returnedRole);
             
             // Store new user data
             localStorage.setItem('userProfile', JSON.stringify(response.data));
+            console.log('Stored user profile in localStorage:', JSON.stringify(response.data));
             
             onLogin(returnedRole);
             switch (returnedRole) {
