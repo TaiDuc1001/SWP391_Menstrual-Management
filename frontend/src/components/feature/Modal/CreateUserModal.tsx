@@ -53,12 +53,11 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             newErrors.name = 'Name is required';
         }
 
-        // Only require phone number for CUSTOMER role
         if (formData.role === 'CUSTOMER') {
             if (!formData.phoneNumber) {
                 newErrors.phoneNumber = 'Phone number is required';
-            } else if (!/^\d{10,11}$/.test(formData.phoneNumber)) {
-                newErrors.phoneNumber = 'Phone number must be 10-11 digits';
+            } else if (!/^0\d{9}$/.test(formData.phoneNumber)) {
+                newErrors.phoneNumber = 'Phone number must be 10 digits starting with 0.';
             }
         }
 
@@ -73,7 +72,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             return;
         }
 
-        setServerError(null); // Clear previous server errors
+        setServerError(null); 
 
         try {
             // For non-customer roles, ensure phone number is empty
@@ -88,16 +87,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             console.error('Error creating user:', error);
             const errorMessage = error.message || 'Failed to create user. Please try again.';
             setServerError(errorMessage);
-            
-            // If it's an email duplicate error, also highlight the email field
-            if (errorMessage.toLowerCase().includes('email') && 
-                (errorMessage.toLowerCase().includes('exists') || 
-                 errorMessage.toLowerCase().includes('tồn tại'))) {
-                setErrors(prev => ({
-                    ...prev,
-                    email: 'Email này đã được sử dụng'
-                }));
-            }
         }
     };
 
@@ -384,13 +373,20 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                 <input
                                                     type="tel"
                                                     value={formData.phoneNumber}
-                                                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                                    onChange={(e) => {
+                                                        // Only allow digits and ensure it starts with 0
+                                                        const value = e.target.value.replace(/\D/g, '');
+                                                        if (value.length <= 10 && (value === '' || value.startsWith('0'))) {
+                                                            handleInputChange('phoneNumber', value);
+                                                        }
+                                                    }}
                                                     className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${
                                                         errors.phoneNumber ? 'border-red-300 bg-red-50' : ''
                                                     }`}
-                                                    placeholder="Enter phone number"
+                                                    placeholder="0123456789"
                                                     autoComplete="off"
                                                     disabled={loading}
+                                                    maxLength={10}
                                                 />
                                                 {errors.phoneNumber && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
                                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
