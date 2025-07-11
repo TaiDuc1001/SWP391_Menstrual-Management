@@ -57,7 +57,7 @@ export const formatName = (firstName?: string, lastName?: string): string => {
 };
 
 
-export const formatCurrency = (amount: number, currency = 'USD'): string => {
+export const formatCurrency = (amount: number, currency = 'VND'): string => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency,

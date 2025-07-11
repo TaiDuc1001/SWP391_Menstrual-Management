@@ -133,7 +133,7 @@ const UpdateTestResult: React.FC = () => {
         (item.customerName.toLowerCase().includes(search.toLowerCase()) ||
             item.panelName.toLowerCase().includes(search.toLowerCase()) ||
             String(item.id).toLowerCase().includes(search.toLowerCase()))
-    );
+    ).reverse();
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;

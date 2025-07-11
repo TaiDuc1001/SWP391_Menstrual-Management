@@ -184,7 +184,7 @@ const Panels: React.FC = () => {
                                 </span>
                                 {pkg.price && (
                                     <span className="font-bold text-pink-600 text-base">
-                                        {pkg.price.toLocaleString()} USD
+                                        {pkg.price.toLocaleString()} VND
                                     </span>
                                 )}
                             </div>

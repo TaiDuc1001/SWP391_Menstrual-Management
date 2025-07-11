@@ -18,7 +18,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
     onSuccess
 }) => {
     const [score, setScore] = useState<number>(currentScore);
-    const [feedback, setFeedback] = useState<string>(currentFeedback);
+    const [feedback, setFeedback] = useState<string>(currentFeedback ?? '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -93,7 +93,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
                             Feedback (Optional):
                         </label>
                         <textarea
-                            value={feedback}
+                            value={feedback ?? ''}
                             onChange={(e) => setFeedback(e.target.value)}
                             placeholder="Share your experience with the doctor..."
                             rows={4}
