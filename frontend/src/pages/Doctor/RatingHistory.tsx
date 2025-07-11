@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/pages/rating-history.css';
-import RatingHistoryFilter from '../../components/feature/RatingHistoryFilter';
 import { doctorRatingService } from '../../api/services/doctorRatingService';
 import { doctorService } from '../../api/services/doctorService';
 
@@ -18,8 +17,6 @@ const DoctorRatingHistory: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [doctorId, setDoctorId] = useState<number | null>(null);
-    const [filterType, setFilterType] = useState<'week' | 'month' | 'year'>('week');
-    const [selectedDate, setSelectedDate] = useState<string>('');
     const [star, setStar] = useState<number | ''>('');
 
     useEffect(() => {
@@ -28,7 +25,7 @@ const DoctorRatingHistory: React.FC = () => {
                 setDoctorId(res.data.id);
             })
             .catch(() => {
-                setError('Không lấy được thông tin bác sĩ');
+                setError('Failed to get doctor information');
                 setLoading(false);
             });
     }, []);
@@ -49,30 +46,9 @@ const DoctorRatingHistory: React.FC = () => {
     if (loading) return <div className="doctor-rating-history-container doctor-rating-history-empty">Loading rating history...</div>;
     if (error) return <div className="doctor-rating-history-container doctor-rating-history-empty text-red-500">{error}</div>;
 
-    // Filter ratings by week, month, year
+    // Filter ratings by star rating only
     const getFilteredRatings = () => {
         let filtered = ratings;
-        if (selectedDate) {
-            const selected = new Date(selectedDate);
-            filtered = filtered.filter(item => {
-                const d = new Date(item.date);
-                if (filterType === 'year') {
-                    return d.getFullYear() === selected.getFullYear();
-                }
-                if (filterType === 'month') {
-                    return d.getFullYear() === selected.getFullYear() && d.getMonth() === selected.getMonth();
-                }
-                if (filterType === 'week') {
-                    const getWeek = (date: Date) => {
-                        const firstDay = new Date(date.getFullYear(), 0, 1);
-                        const pastDaysOfYear = (date.valueOf() - firstDay.valueOf()) / 86400000;
-                        return Math.ceil((pastDaysOfYear + firstDay.getDay() + 1) / 7);
-                    };
-                    return d.getFullYear() === selected.getFullYear() && getWeek(d) === getWeek(selected);
-                }
-                return true;
-            });
-        }
         if (star !== '') {
             filtered = filtered.filter(item => item.score === star);
         }
@@ -84,21 +60,36 @@ const DoctorRatingHistory: React.FC = () => {
     return (
         <div className="doctor-rating-history-container">
             <div className="doctor-rating-history-title">Rating History</div>
-            <RatingHistoryFilter
-                filterType={filterType}
-                setFilterType={setFilterType}
-                selectedDate={selectedDate}
-                setSelectedDate={setSelectedDate}
-                star={star}
-                setStar={setStar}
-            />
+            
+            {/* Simple Star Filter */}
+            <div className="flex gap-3 mb-6 items-center bg-pink-50 rounded-xl px-4 py-3 shadow-sm">
+                <div className="flex gap-2 items-center">
+                    <span className="font-semibold text-pink-600">Filter by rating:</span>
+                    <button
+                        className={`px-3 py-1 rounded-lg text-sm font-medium border transition-all duration-150 ${star === '' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white border-pink-200 text-pink-600 hover:bg-pink-100'}`}
+                        onClick={() => setStar('')}
+                    >
+                        All
+                    </button>
+                    {[5, 4, 3, 2, 1].map(s => (
+                        <button
+                            key={s}
+                            className={`px-2 py-1 rounded-lg text-sm font-medium border flex items-center gap-1 transition-all duration-150 ${star === s ? 'bg-yellow-400 text-white border-yellow-400' : 'bg-white border-pink-200 text-yellow-600 hover:bg-yellow-100'}`}
+                            onClick={() => setStar(s)}
+                        >
+                            {s} <span className="inline-block text-yellow-400 align-middle" style={{fontSize: '1.1em', marginLeft: 2}}>★</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div className="doctor-rating-history-table-wrapper">
                 <table className="doctor-rating-history-table">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Patient</th>
-                            <th>Score</th>
+                            <th>Rating</th>
                             <th>Feedback</th>
                         </tr>
                     </thead>
@@ -119,7 +110,7 @@ const DoctorRatingHistory: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-            {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings yet.</div>}
+            {filteredRatings.length === 0 && <div className="doctor-rating-history-empty">No ratings found.</div>}
         </div>
     );
 };
