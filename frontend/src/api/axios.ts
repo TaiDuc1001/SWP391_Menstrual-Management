@@ -5,7 +5,7 @@ const api = axios.create({
     baseURL: url,
 });
 
-// Add request interceptor to include auth token and customer ID
+// Add request interceptor to include auth token and user ID
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('authToken');
@@ -13,17 +13,34 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
         
-        // Add customer ID for authenticated requests
+        // Add user ID for authenticated requests based on role
         try {
             const userProfile = localStorage.getItem('userProfile');
             if (userProfile) {
                 const parsed = JSON.parse(userProfile);
-                if (parsed.role === 'CUSTOMER' && parsed.profile?.id) {
-                    config.headers['X-Customer-ID'] = parsed.profile.id.toString();
+                console.log('Axios interceptor - parsed user profile:', parsed);
+                
+                if (parsed.profile?.id) {
+                    // Add role-specific headers
+                    if (parsed.role === 'CUSTOMER') {
+                        config.headers['X-Customer-ID'] = parsed.profile.id.toString();
+                        console.log('Added X-Customer-ID header:', parsed.profile.id);
+                    } else if (parsed.role === 'DOCTOR') {
+                        config.headers['X-Doctor-ID'] = parsed.profile.id.toString();
+                        console.log('Added X-Doctor-ID header:', parsed.profile.id);
+                    }
+                    
+                    // Also add generic user ID header for backward compatibility
+                    config.headers['X-User-ID'] = parsed.profile.id.toString();
+                    console.log('Added X-User-ID header:', parsed.profile.id);
+                } else {
+                    console.log('Axios interceptor - no profile ID found in user profile');
                 }
+            } else {
+                console.log('Axios interceptor - no user profile found in localStorage');
             }
         } catch (error) {
-            console.warn('Failed to parse user profile for customer ID:', error);
+            console.warn('Failed to parse user profile for user ID:', error);
         }
         
         return config;

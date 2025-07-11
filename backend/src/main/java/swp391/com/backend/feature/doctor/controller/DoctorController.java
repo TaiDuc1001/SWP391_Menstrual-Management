@@ -11,6 +11,7 @@ import swp391.com.backend.feature.doctor.dto.DoctorProfileDTO;
 import swp391.com.backend.feature.doctor.dto.SimpleDoctorDTO;
 import swp391.com.backend.feature.doctor.mapper.DoctorMapper;
 import swp391.com.backend.feature.doctor.service.DoctorService;
+import swp391.com.backend.common.util.AuthenticationUtil;
 
 import java.util.List;
 
@@ -19,7 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorController {
     private final DoctorService doctorService;
-    private final DoctorMapper doctorMapper;    @GetMapping
+    private final DoctorMapper doctorMapper;
+    private final AuthenticationUtil authenticationUtil;    @GetMapping
     public ResponseEntity<List<SimpleDoctorDTO>> getAllDoctors() {
         List<SimpleDoctorDTO> doctors = doctorService.getAllDoctors()
                 .stream()
@@ -56,58 +58,112 @@ public class DoctorController {
 
     @GetMapping("/profile")
     public ResponseEntity<DoctorProfileDTO> getDoctorProfile() {
-        // For now, return a mock profile for doctor ID 1
-        // In a real implementation, you would get the current authenticated doctor
-        Doctor doctor = doctorService.findDoctorById(1L);
-        DoctorProfileDTO profileDTO = DoctorProfileDTO.builder()
-                .id(doctor.getId())
-                .name(doctor.getName())
-                .specialization(doctor.getSpecialization())
-                .price(doctor.getPrice() != null ? doctor.getPrice().intValue() : 0)
-                .isProfileComplete(isProfileComplete(doctor))
-                .build();
-        return ResponseEntity.ok(profileDTO);
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
+        System.out.println("DoctorController.getDoctorProfile: Looking for doctor with ID: " + currentDoctorId);
+        
+        try {
+            Doctor doctor = doctorService.findDoctorById(currentDoctorId);
+            System.out.println("DoctorController.getDoctorProfile: Found doctor: " + doctor.getName());
+            
+            DoctorProfileDTO profileDTO = DoctorProfileDTO.builder()
+                    .id(doctor.getId())
+                    .name(doctor.getName())
+                    .specialization(doctor.getSpecialization())
+                    .price(doctor.getPrice() != null ? doctor.getPrice().intValue() : 0)
+                    .isProfileComplete(isProfileComplete(doctor))
+                    .build();
+            return ResponseEntity.ok(profileDTO);
+        } catch (Exception e) {
+            System.out.println("DoctorController.getDoctorProfile: Doctor not found with ID: " + currentDoctorId + ", error: " + e.getMessage());
+            
+            // If doctor not found, return empty profile for profile creation
+            DoctorProfileDTO emptyProfile = DoctorProfileDTO.builder()
+                    .id(currentDoctorId)
+                    .name("")
+                    .specialization("")
+                    .price(0)
+                    .isProfileComplete(false)
+                    .build();
+            return ResponseEntity.ok(emptyProfile);
+        }
     }
 
     @PutMapping("/profile")
     public ResponseEntity<DoctorProfileDTO> updateDoctorProfile(@RequestBody DoctorProfileDTO profileDTO) {
-        // For now, update doctor ID 1
-        // In a real implementation, you would get the current authenticated doctor
-        Doctor doctor = doctorService.findDoctorById(1L);
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         
-        Doctor updatedDoctor = doctor.toBuilder()
-                .name(profileDTO.getName())
-                .specialization(profileDTO.getSpecialization())
-                .price(profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null)
-                .build();
-        
-        Doctor savedDoctor = doctorService.updateDoctor(1L, updatedDoctor);
-        
-        DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
-                .id(savedDoctor.getId())
-                .name(savedDoctor.getName())
-                .specialization(savedDoctor.getSpecialization())
-                .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
-                .isProfileComplete(isProfileComplete(savedDoctor))
-                .build();
-        
-        return ResponseEntity.ok(responseDTO);
+        try {
+            Doctor doctor = doctorService.findDoctorById(currentDoctorId);
+            
+            Doctor updatedDoctor = doctor.toBuilder()
+                    .name(profileDTO.getName())
+                    .specialization(profileDTO.getSpecialization())
+                    .price(profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null)
+                    .build();
+            
+            Doctor savedDoctor = doctorService.updateDoctor(currentDoctorId, updatedDoctor);
+            
+            DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
+                    .id(savedDoctor.getId())
+                    .name(savedDoctor.getName())
+                    .specialization(savedDoctor.getSpecialization())
+                    .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
+                    .isProfileComplete(isProfileComplete(savedDoctor))
+                    .build();
+            
+            return ResponseEntity.ok(responseDTO);
+        } catch (Exception e) {
+            // If doctor doesn't exist, create profile using doctor service method
+            try {
+                Doctor savedDoctor = doctorService.createDoctorForAccount(
+                        currentDoctorId,
+                        profileDTO.getName(),
+                        profileDTO.getSpecialization(),
+                        profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null
+                );
+                
+                DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
+                        .id(savedDoctor.getId())
+                        .name(savedDoctor.getName())
+                        .specialization(savedDoctor.getSpecialization())
+                        .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
+                        .isProfileComplete(isProfileComplete(savedDoctor))
+                        .build();
+                
+                return ResponseEntity.ok(responseDTO);
+            } catch (Exception createException) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
     }
 
     @GetMapping("/profile/check-complete")
     public ResponseEntity<DoctorProfileCompleteDTO> checkProfileComplete() {
-        // For now, check doctor ID 1
-        // In a real implementation, you would get the current authenticated doctor
-        Doctor doctor = doctorService.findDoctorById(1L);
-        boolean isComplete = isProfileComplete(doctor);
-        int percentage = calculateCompletionPercentage(doctor);
+        // Get the current authenticated doctor ID from request header
+        Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         
-        DoctorProfileCompleteDTO responseDTO = DoctorProfileCompleteDTO.builder()
-                .isComplete(isComplete)
-                .percentage(percentage)
-                .build();
-        
-        return ResponseEntity.ok(responseDTO);
+        try {
+            Doctor doctor = doctorService.findDoctorById(currentDoctorId);
+            boolean isComplete = isProfileComplete(doctor);
+            int percentage = calculateCompletionPercentage(doctor);
+            
+            DoctorProfileCompleteDTO responseDTO = DoctorProfileCompleteDTO.builder()
+                    .isComplete(isComplete)
+                    .percentage(percentage)
+                    .build();
+            
+            return ResponseEntity.ok(responseDTO);
+        } catch (Exception e) {
+            // If doctor not found, return incomplete profile
+            DoctorProfileCompleteDTO responseDTO = DoctorProfileCompleteDTO.builder()
+                    .isComplete(false)
+                    .percentage(0)
+                    .build();
+            
+            return ResponseEntity.ok(responseDTO);
+        }
     }
 
     @PostMapping("/admin/{accountId}")
