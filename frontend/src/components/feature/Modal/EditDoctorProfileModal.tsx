@@ -66,11 +66,12 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
             newErrors.specialization = 'Specialization is required';
         }
 
-        if (!formData.price || formData.price <= 0) {
-            newErrors.price = 'Consultation fee must be greater than 0';
-        } else if (formData.price > 2000000) {
-            newErrors.price = 'Consultation fee cannot exceed 2,000,000 VND';
+        if (!formData.price || formData.price < 100000) {
+            newErrors.price = 'Consultation fee must be at least 100,000 VND';
+        } else if (formData.price > 1000000) {
+            newErrors.price = 'Consultation fee cannot exceed 1,000,000 VND';
         }
+
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -78,12 +79,12 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 
     const handleInputChange = (field: keyof ProfileFormData, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        
+
         // Clear error when user starts typing
         if (errors[field as keyof ProfileFormErrors]) {
             setErrors(prev => ({ ...prev, [field as keyof ProfileFormErrors]: undefined }));
         }
-        
+
         // Clear server error
         if (serverError) {
             setServerError(null);
@@ -92,7 +93,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             return;
         }
@@ -127,20 +128,22 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
     const calculateCompletion = (): number => {
         let completed = 0;
         let total = 3;
-        
-        if (formData.name.trim()) completed++;
+
+        if (formData.name.trim().length >= 2) completed++;
         if (formData.specialization.trim()) completed++;
-        if (formData.price > 0) completed++;
-        
+        if (formData.price >= 100000 && formData.price <= 1000000) completed++;
+
         return Math.round((completed / total) * 100);
     };
 
+
     const isFormValid = (): boolean => {
-        return formData.name.trim().length >= 2 && 
-               formData.specialization.trim().length > 0 && 
-               formData.price > 0 && 
-               formData.price <= 2000000;
+        return formData.name.trim().length >= 2 &&
+            formData.specialization.trim().length > 0 &&
+            formData.price >= 100000 &&
+            formData.price <= 1000000;
     };
+
 
     if (!isOpen || !user || !profile) return null;
 
@@ -188,11 +191,10 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                 </label>
                                 <input
                                     type="text"
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                                        errors.name 
-                                            ? 'border-red-300 bg-red-50' 
-                                            : 'border-gray-300'
-                                    }`}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name
+                                        ? 'border-red-300 bg-red-50'
+                                        : 'border-gray-300'
+                                        }`}
                                     value={formData.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
                                     placeholder="Enter doctor's full name"
@@ -209,11 +211,10 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                     Medical Specialization *
                                 </label>
                                 <select
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                                        errors.specialization 
-                                            ? 'border-red-300 bg-red-50' 
-                                            : 'border-gray-300'
-                                    }`}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.specialization
+                                        ? 'border-red-300 bg-red-50'
+                                        : 'border-gray-300'
+                                        }`}
                                     value={formData.specialization}
                                     onChange={(e) => handleInputChange('specialization', e.target.value)}
                                     disabled={loading}
@@ -239,21 +240,20 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                     type="number"
                                     min="0"
                                     step="10000"
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                                        errors.price 
-                                            ? 'border-red-300 bg-red-50' 
-                                            : 'border-gray-300'
-                                    }`}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.price
+                                        ? 'border-red-300 bg-red-50'
+                                        : 'border-gray-300'
+                                        }`}
                                     value={formData.price > 0 ? formData.price : ''}
                                     onChange={(e) => handleInputChange('price', e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
-                                    placeholder="500000"
+                                    placeholder="Enter amount between 100,000 and 1,000,000"
                                     disabled={loading}
                                 />
                                 {errors.price && (
                                     <p className="text-red-600 text-sm mt-1">{errors.price}</p>
                                 )}
                                 <p className="text-gray-500 text-sm mt-1">
-                                    Recommended range: 200,000 - 2,000,000 VND
+                                    Recommended range: 100,000 - 1,000,000 VND
                                 </p>
                             </div>
                         </div>

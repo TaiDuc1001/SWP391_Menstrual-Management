@@ -100,14 +100,42 @@ const Accounts: React.FC = () => {
         }
     };
 
-    const handleCreateUser = async (userData: CreateAccountRequest) => {
+    const handleCreateUser = async (userData: CreateAccountRequest, doctorProfile?: Partial<DoctorProfile>) => {
         setIsCreating(true);
         try {
+            // For DOCTOR role, include doctor profile data in the main request
+            if (userData.role === 'DOCTOR' && doctorProfile) {
+                // Update the userData with doctor profile information
+                userData.name = doctorProfile.name || userData.name;
+            }
+            
             const result = await createAccount(userData);
             
             if (result.success) {
+                // If user is a doctor and has profile data, update the doctor profile with specialization and price
+                if (userData.role === 'DOCTOR' && doctorProfile && result.data) {
+                    try {
+                        const updateResult = await doctorService.adminUpdateDoctorProfile(result.data.id, {
+                            name: doctorProfile.name!,
+                            specialization: doctorProfile.specialization!,
+                            price: doctorProfile.price!
+                        });
+                    } catch (profileError: any) {
+                        console.error('Error updating doctor profile:', profileError);
+                        // Account was created but profile update failed - show partial success message
+                        showError('Partial Success', `Account for ${userData.name} was created but doctor profile update failed. You can update the profile later.`);
+                        setShowCreateModal(false);
+                        await fetchAccounts(); // Refresh the accounts list
+                        return;
+                    }
+                }
+                
                 setShowCreateModal(false);
-                showSuccess('User Created', `Account for ${userData.name} has been created successfully.`);
+                const successMessage = userData.role === 'DOCTOR' && doctorProfile 
+                    ? `Account and doctor profile for ${userData.name} have been created successfully.`
+                    : `Account for ${userData.name} has been created successfully.`;
+                showSuccess('User Created', successMessage);
+                await fetchAccounts(); // Refresh the accounts list
             } else {
                 let errorMessage = result.error || 'Failed to create user. Please try again.';
                 
@@ -201,7 +229,6 @@ const Accounts: React.FC = () => {
                 await fetchAccounts(); // Refresh the accounts list
             }
         } catch (error: any) {
-            console.error('Error updating doctor profile:', error);
             let errorMessage = 'Failed to update doctor profile. Please try again.';
             
             if (error.response?.data?.message) {
@@ -325,14 +352,14 @@ const Accounts: React.FC = () => {
                 <table className="w-full table-fixed text-sm">
                     <thead>
                         <tr className="bg-gray-50 text-gray-700">
-                            <th className="p-2 border w-3">No</th>
-                            <th className="p-2 border w-20">Name</th>
-                            <th className="p-2 border w-20">Email</th>
-                            <th className="p-2 border w-10">Password</th>
-                            <th className="p-2 border w-12">Role</th>
-                            <th className="p-2 border w-12">Phone</th>
+                            <th className="p-2 border w-12">No</th>
+                            <th className="p-2 border w-32">Name</th>
+                            <th className="p-2 border w-48">Email</th>
+                            <th className="p-2 border w-20">Password</th>
+                            <th className="p-2 border w-20">Role</th>
+                            <th className="p-2 border w-24">Phone</th>
                             <th className="p-2 border w-20">Status</th>
-                            <th className="p-2 border w-16">Actions</th>
+                            <th className="p-2 border w-20">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -348,19 +375,21 @@ const Accounts: React.FC = () => {
                             paginatedUsers.map((user: AccountForUI, idx: number) => (
                                 <tr key={user.id} className="hover:bg-gray-50">
                                     <td className="p-2 border text-center">{startIdx + idx + 1}</td>
-                                    <td className="p-2 border flex items-center gap-2">
-                                        <img 
-                                            src={user.avatar} 
-                                            alt="avatar" 
-                                            className="w-7 h-7 rounded-full border"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.src = generateAvatarUrl(user.name);
-                                            }}
-                                        />
-                                        <span>{user.name}</span>
+                                    <td className="p-2 border">
+                                        <div className="flex items-center gap-2">
+                                            <img 
+                                                src={user.avatar} 
+                                                alt="avatar" 
+                                                className="w-6 h-6 rounded-full border flex-shrink-0"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = generateAvatarUrl(user.name);
+                                                }}
+                                            />
+                                            <span className="truncate" title={user.name}>{user.name}</span>
+                                        </div>
                                     </td>
-                                    <td className="p-2 border">{user.email}</td>
+                                    <td className="p-2 border truncate" title={user.email}>{user.email}</td>
                                     <td className="p-2 border text-center">********</td>
                                     <td className="p-2 border text-center">
                                         <span

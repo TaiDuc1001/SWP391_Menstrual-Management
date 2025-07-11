@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { CreateAccountRequest } from '../../../api/services/accountService';
+import { DoctorProfile } from '../../../api/services/doctorService';
+import { SPECIALIZATIONS } from '../../../constants/doctorProfile';
+
+interface DoctorProfileErrors {
+    name?: string;
+    specialization?: string;
+    price?: string;
+}
 
 interface CreateUserModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (userData: CreateAccountRequest) => Promise<void>;
+    onSubmit: (userData: CreateAccountRequest, doctorProfile?: Partial<DoctorProfile>) => Promise<void>;
     loading?: boolean;
 }
 
@@ -15,11 +23,11 @@ const roleOptions = [
     { value: 'ADMIN', label: 'Admin' }
 ];
 
-const CreateUserModal: React.FC<CreateUserModalProps> = ({ 
-    isOpen, 
-    onClose, 
-    onSubmit, 
-    loading = false 
+const CreateUserModal: React.FC<CreateUserModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    loading = false
 }) => {
     const [formData, setFormData] = useState<CreateAccountRequest>({
         email: '',
@@ -30,12 +38,20 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         status: true
     });
 
+    const [doctorProfileData, setDoctorProfileData] = useState<Partial<DoctorProfile>>({
+        name: '',
+        specialization: '',
+        price: 0
+    });
+
     const [errors, setErrors] = useState<Partial<CreateAccountRequest>>({});
+    const [doctorProfileErrors, setDoctorProfileErrors] = useState<DoctorProfileErrors>({});
     const [serverError, setServerError] = useState<string | null>(null);
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
     const validateForm = (): boolean => {
         const newErrors: Partial<CreateAccountRequest> = {};
+        const newDoctorProfileErrors: DoctorProfileErrors = {};
 
         if (!formData.email) {
             newErrors.email = 'Email is required';
@@ -61,18 +77,30 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             }
         }
 
+        // Validate doctor profile if role is DOCTOR
+        if (formData.role === 'DOCTOR') {
+            if (!doctorProfileData.specialization) {
+                newDoctorProfileErrors.specialization = 'Specialization is required';
+            }
+            if (!doctorProfileData.price || doctorProfileData.price <= 0 || doctorProfileData.price < 100000 || doctorProfileData.price > 1000000) {
+                newDoctorProfileErrors.price = 'Price must be between 100,000 and 1,000,000 VND';
+            }
+        }
+
+
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        setDoctorProfileErrors(newDoctorProfileErrors);
+        return Object.keys(newErrors).length === 0 && Object.keys(newDoctorProfileErrors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             return;
         }
 
-        setServerError(null); 
+        setServerError(null);
 
         try {
             // For non-customer roles, ensure phone number is empty
@@ -80,8 +108,14 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             if (formData.role !== 'CUSTOMER') {
                 submitData.phoneNumber = '';
             }
-            
-            await onSubmit(submitData);
+
+            // Prepare doctor profile data if role is DOCTOR
+            const doctorData = formData.role === 'DOCTOR' ? {
+                ...doctorProfileData,
+                name: formData.name 
+            } : undefined;
+
+            await onSubmit(submitData, doctorData);
             handleClose();
         } catch (error: any) {
             console.error('Error creating user:', error);
@@ -99,7 +133,13 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             phoneNumber: '',
             status: true
         });
+        setDoctorProfileData({
+            name: '',
+            specialization: '',
+            price: 0
+        });
         setErrors({});
+        setDoctorProfileErrors({});
         setServerError(null);
         setIsRoleDropdownOpen(false);
         onClose();
@@ -110,7 +150,15 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             ...prev,
             [field]: value
         }));
-        
+
+        // Update doctor profile name when user name changes
+        if (field === 'name' && typeof value === 'string') {
+            setDoctorProfileData(prev => ({
+                ...prev,
+                name: value
+            }));
+        }
+
         // Clear error when user starts typing
         if (errors[field]) {
             setErrors(prev => ({
@@ -118,7 +166,27 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                 [field]: undefined
             }));
         }
-        
+
+        // Clear server error when user starts typing
+        if (serverError) {
+            setServerError(null);
+        }
+    };
+
+    const handleDoctorProfileChange = (field: keyof DoctorProfile, value: string | number) => {
+        setDoctorProfileData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+
+        // Clear error when user starts typing
+        if (field in doctorProfileErrors && doctorProfileErrors[field as keyof DoctorProfileErrors]) {
+            setDoctorProfileErrors(prev => ({
+                ...prev,
+                [field]: undefined
+            }));
+        }
+
         // Clear server error when user starts typing
         if (serverError) {
             setServerError(null);
@@ -153,7 +221,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div 
+        <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
             onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
@@ -200,7 +268,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                         </svg>
                                         User Information
                                     </h3>
-                                    
+
                                     <div className="space-y-3">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -210,9 +278,8 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                 type="text"
                                                 value={formData.name}
                                                 onChange={(e) => handleInputChange('name', e.target.value)}
-                                                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                    errors.name ? 'border-red-300 bg-red-50' : ''
-                                                }`}
+                                                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.name ? 'border-red-300 bg-red-50' : ''
+                                                    }`}
                                                 placeholder="Enter full name"
                                                 autoComplete="off"
                                                 disabled={loading}
@@ -233,9 +300,8 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                 type="email"
                                                 value={formData.email}
                                                 onChange={(e) => handleInputChange('email', e.target.value)}
-                                                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                    errors.email || (serverError && serverError.toLowerCase().includes('email')) ? 'border-red-300 bg-red-50' : ''
-                                                }`}
+                                                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors.email || (serverError && serverError.toLowerCase().includes('email')) ? 'border-red-300 bg-red-50' : ''
+                                                    }`}
                                                 placeholder="Enter email address"
                                                 autoComplete="off"
                                                 disabled={loading}
@@ -258,7 +324,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                         </svg>
                                         Security
                                     </h3>
-                                    
+
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Password *
@@ -267,9 +333,8 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                             type="password"
                                             value={formData.password}
                                             onChange={(e) => handleInputChange('password', e.target.value)}
-                                            className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
-                                                errors.password ? 'border-red-300 bg-red-50' : ''
-                                            }`}
+                                            className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${errors.password ? 'border-red-300 bg-red-50' : ''
+                                                }`}
                                             placeholder="Enter password"
                                             autoComplete="new-password"
                                             disabled={loading}
@@ -295,7 +360,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                         </svg>
                                         Role & Settings
                                     </h3>
-                                    
+
                                     <div className="space-y-3">
                                         <div className="relative role-dropdown">
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -308,19 +373,17 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                 disabled={loading}
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                        formData.role === 'ADMIN' ? 'bg-red-100 text-red-800' :
+                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${formData.role === 'ADMIN' ? 'bg-red-100 text-red-800' :
                                                         formData.role === 'STAFF' ? 'bg-blue-100 text-blue-800' :
-                                                        formData.role === 'DOCTOR' ? 'bg-green-100 text-green-800' :
-                                                        'bg-purple-100 text-purple-800'
-                                                    }`}>
+                                                            formData.role === 'DOCTOR' ? 'bg-green-100 text-green-800' :
+                                                                'bg-purple-100 text-purple-800'
+                                                        }`}>
                                                         {selectedRole?.label}
                                                     </span>
                                                 </div>
                                                 <svg
-                                                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                                                        isRoleDropdownOpen ? 'rotate-180' : ''
-                                                    }`}
+                                                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180' : ''
+                                                        }`}
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -328,7 +391,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                                 </svg>
                                             </button>
-                                            
+
                                             {isRoleDropdownOpen && (
                                                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto">
                                                     {roleOptions.map((option) => (
@@ -336,18 +399,16 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                             key={option.value}
                                                             type="button"
                                                             onClick={() => handleRoleSelect(option.value as CreateAccountRequest['role'])}
-                                                            className={`w-full px-3 py-2 text-left hover:bg-orange-50 focus:bg-orange-50 focus:outline-none flex items-center transition-colors duration-150 ${
-                                                                formData.role === option.value 
-                                                                    ? 'bg-orange-100 text-orange-900' 
-                                                                    : 'text-gray-900'
-                                                            }`}
+                                                            className={`w-full px-3 py-2 text-left hover:bg-orange-50 focus:bg-orange-50 focus:outline-none flex items-center transition-colors duration-150 ${formData.role === option.value
+                                                                ? 'bg-orange-100 text-orange-900'
+                                                                : 'text-gray-900'
+                                                                }`}
                                                         >
-                                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-2 ${
-                                                                option.value === 'ADMIN' ? 'bg-red-100 text-red-800' :
+                                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-2 ${option.value === 'ADMIN' ? 'bg-red-100 text-red-800' :
                                                                 option.value === 'STAFF' ? 'bg-blue-100 text-blue-800' :
-                                                                option.value === 'DOCTOR' ? 'bg-green-100 text-green-800' :
-                                                                'bg-purple-100 text-purple-800'
-                                                            }`}>
+                                                                    option.value === 'DOCTOR' ? 'bg-green-100 text-green-800' :
+                                                                        'bg-purple-100 text-purple-800'
+                                                                }`}>
                                                                 {option.label}
                                                             </span>
                                                             {formData.role === option.value && (
@@ -363,9 +424,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                     ))}
                                                 </div>
                                             )}
-                                        </div>
-
-                                        {formData.role === 'CUSTOMER' && (
+                                        </div>                                        {formData.role === 'CUSTOMER' && (
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Phone Number *
@@ -380,9 +439,8 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                             handleInputChange('phoneNumber', value);
                                                         }
                                                     }}
-                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${
-                                                        errors.phoneNumber ? 'border-red-300 bg-red-50' : ''
-                                                    }`}
+                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.phoneNumber ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
                                                     placeholder="0123456789"
                                                     autoComplete="off"
                                                     disabled={loading}
@@ -408,15 +466,81 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                             />
                                             <label htmlFor="status" className="ml-2 flex items-center">
                                                 <span className="text-sm font-medium text-gray-900">Active status</span>
-                                                <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                    formData.status ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                                }`}>
+                                                <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${formData.status ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                                    }`}>
                                                     {formData.status ? 'Active' : 'Inactive'}
                                                 </span>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Doctor Profile Section - Only show when role is DOCTOR */}
+                                {formData.role === 'DOCTOR' && (
+                                    <div className="bg-green-50 rounded-lg p-4">
+                                        <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                                            <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            Doctor Profile
+                                        </h3>
+
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Specialization *
+                                                </label>
+                                                <select
+                                                    value={doctorProfileData.specialization || ''}
+                                                    onChange={(e) => handleDoctorProfileChange('specialization', e.target.value)}
+                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${doctorProfileErrors.specialization ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                    disabled={loading}
+                                                >
+                                                    <option value="">Select specialization</option>
+                                                    {SPECIALIZATIONS.map((specialization) => (
+                                                        <option key={specialization} value={specialization}>
+                                                            {specialization}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {doctorProfileErrors.specialization && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {doctorProfileErrors.specialization}
+                                                </p>}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Consultation Price (VND) *
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    value={doctorProfileData.price || ''}
+                                                    onChange={(e) => {
+                                                        const value = parseFloat(e.target.value) || 0;
+                                                        handleDoctorProfileChange('price', value);
+                                                    }}
+                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${doctorProfileErrors.price ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                    placeholder="100000"
+                                                    min="100000"
+                                                    max="1000000"
+                                                    step="50000"
+                                                    disabled={loading}
+                                                />
+                                                {doctorProfileErrors.price && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {doctorProfileErrors.price}
+                                                </p>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </form>
