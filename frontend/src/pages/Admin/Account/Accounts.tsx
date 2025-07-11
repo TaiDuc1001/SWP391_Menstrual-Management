@@ -8,11 +8,15 @@ import { AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../
 import { useAccounts } from '../../../api/hooks';
 import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
+import UserDetailModal from '../../../components/feature/Modal/UserDetailModal';
+import EditDoctorProfileModal from '../../../components/feature/Modal/EditDoctorProfileModal';
 import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
 import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
 import { DropdownSelect } from '../../../components';
 import { applyPagination } from '../../../utils';
 import { generateAvatarUrl } from '../../../utils/avatar';
+import { doctorService, DoctorProfile } from '../../../api/services/doctorService';
+import eyeIcon from '../../../assets/icons/eye.svg';
 
 
 const roles = [
@@ -45,9 +49,13 @@ const Accounts: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showDoctorProfileModal, setShowDoctorProfileModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<AccountForUI | null>(null);
+    const [selectedDoctorProfile, setSelectedDoctorProfile] = useState<DoctorProfile | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     
 
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
@@ -92,14 +100,42 @@ const Accounts: React.FC = () => {
         }
     };
 
-    const handleCreateUser = async (userData: CreateAccountRequest) => {
+    const handleCreateUser = async (userData: CreateAccountRequest, doctorProfile?: Partial<DoctorProfile>) => {
         setIsCreating(true);
         try {
+            // For DOCTOR role, include doctor profile data in the main request
+            if (userData.role === 'DOCTOR' && doctorProfile) {
+                // Update the userData with doctor profile information
+                userData.name = doctorProfile.name || userData.name;
+            }
+            
             const result = await createAccount(userData);
             
             if (result.success) {
+                // If user is a doctor and has profile data, update the doctor profile with specialization and price
+                if (userData.role === 'DOCTOR' && doctorProfile && result.data) {
+                    try {
+                        const updateResult = await doctorService.adminUpdateDoctorProfile(result.data.id, {
+                            name: doctorProfile.name!,
+                            specialization: doctorProfile.specialization!,
+                            price: doctorProfile.price!
+                        });
+                    } catch (profileError: any) {
+                        console.error('Error updating doctor profile:', profileError);
+                        // Account was created but profile update failed - show partial success message
+                        showError('Partial Success', `Account for ${userData.name} was created but doctor profile update failed. You can update the profile later.`);
+                        setShowCreateModal(false);
+                        await fetchAccounts(); // Refresh the accounts list
+                        return;
+                    }
+                }
+                
                 setShowCreateModal(false);
-                showSuccess('User Created', `Account for ${userData.name} has been created successfully.`);
+                const successMessage = userData.role === 'DOCTOR' && doctorProfile 
+                    ? `Account and doctor profile for ${userData.name} have been created successfully.`
+                    : `Account for ${userData.name} has been created successfully.`;
+                showSuccess('User Created', successMessage);
+                await fetchAccounts(); // Refresh the accounts list
             } else {
                 let errorMessage = result.error || 'Failed to create user. Please try again.';
                 
@@ -138,8 +174,6 @@ const Accounts: React.FC = () => {
                     errorMessage = 'This phone number is already used by another account. Please use a different phone number.';
                 } else if (result.error?.includes('Duplicate entry') && result.error?.includes('email')) {
                     errorMessage = 'This email address is already used by another account. Please use a different email address.';
-                } else if (result.error?.includes('foreign key constraint fails')) {
-                    errorMessage = 'Cannot update role due to existing data dependencies. Please contact system administrator.';
                 } else if (result.error?.includes('could not execute statement')) {
                     errorMessage = 'An unexpected error occurred during the operation. Please ensure the information is valid and try again.';
                 }
@@ -156,6 +190,57 @@ const Accounts: React.FC = () => {
     const handleEditUser = (user: AccountForUI) => {
         setSelectedUser(user);
         setShowUpdateModal(true);
+    };
+
+    const handleViewDetails = (user: AccountForUI) => {
+        setSelectedUser(user);
+        setShowDetailModal(true);
+    };
+
+    const handleEditUserFromDetail = (user: AccountForUI) => {
+        setShowDetailModal(false);
+        setSelectedUser(user);
+        setShowUpdateModal(true);
+    };
+
+    const handleEditDoctorProfile = (user: AccountForUI, profile: DoctorProfile) => {
+        setSelectedUser(user);
+        setSelectedDoctorProfile(profile);
+        setShowDetailModal(false);
+        setShowDoctorProfileModal(true);
+    };
+
+    const handleUpdateDoctorProfile = async (profileData: Partial<DoctorProfile>) => {
+        if (!selectedUser) return;
+
+        setIsUpdatingProfile(true);
+        try {
+            const result = await doctorService.adminUpdateDoctorProfile(selectedUser.id, {
+                name: profileData.name!,
+                specialization: profileData.specialization!,
+                price: profileData.price!
+            });
+
+            if (result) {
+                setShowDoctorProfileModal(false);
+                setSelectedUser(null);
+                setSelectedDoctorProfile(null);
+                showSuccess('Profile Updated', `Doctor profile for ${profileData.name} has been updated successfully.`);
+                await fetchAccounts(); // Refresh the accounts list
+            }
+        } catch (error: any) {
+            let errorMessage = 'Failed to update doctor profile. Please try again.';
+            
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            showError('Update Failed', errorMessage);
+        } finally {
+            setIsUpdatingProfile(false);
+        }
     };
 
     const filteredUsers = users.filter((user: AccountForUI) =>
@@ -267,14 +352,14 @@ const Accounts: React.FC = () => {
                 <table className="w-full table-fixed text-sm">
                     <thead>
                         <tr className="bg-gray-50 text-gray-700">
-                            <th className="p-2 border w-3">No</th>
-                            <th className="p-2 border w-20">Name</th>
-                            <th className="p-2 border w-20">Email</th>
-                            <th className="p-2 border w-10">Password</th>
-                            <th className="p-2 border w-12">Role</th>
-                            <th className="p-2 border w-12">Phone</th>
+                            <th className="p-2 border w-12">No</th>
+                            <th className="p-2 border w-32">Name</th>
+                            <th className="p-2 border w-48">Email</th>
+                            <th className="p-2 border w-20">Password</th>
+                            <th className="p-2 border w-20">Role</th>
+                            <th className="p-2 border w-24">Phone</th>
                             <th className="p-2 border w-20">Status</th>
-                            <th className="p-2 border w-12">Actions</th>
+                            <th className="p-2 border w-20">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -290,19 +375,21 @@ const Accounts: React.FC = () => {
                             paginatedUsers.map((user: AccountForUI, idx: number) => (
                                 <tr key={user.id} className="hover:bg-gray-50">
                                     <td className="p-2 border text-center">{startIdx + idx + 1}</td>
-                                    <td className="p-2 border flex items-center gap-2">
-                                        <img 
-                                            src={user.avatar} 
-                                            alt="avatar" 
-                                            className="w-7 h-7 rounded-full border"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.src = generateAvatarUrl(user.name);
-                                            }}
-                                        />
-                                        <span>{user.name}</span>
+                                    <td className="p-2 border">
+                                        <div className="flex items-center gap-2">
+                                            <img 
+                                                src={user.avatar} 
+                                                alt="avatar" 
+                                                className="w-6 h-6 rounded-full border flex-shrink-0"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = generateAvatarUrl(user.name);
+                                                }}
+                                            />
+                                            <span className="truncate" title={user.name}>{user.name}</span>
+                                        </div>
                                     </td>
-                                    <td className="p-2 border">{user.email}</td>
+                                    <td className="p-2 border truncate" title={user.email}>{user.email}</td>
                                     <td className="p-2 border text-center">********</td>
                                     <td className="p-2 border text-center">
                                         <span
@@ -314,6 +401,13 @@ const Accounts: React.FC = () => {
                                     <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
                                     <td className="p-2 border text-center">
                                         <div className="flex justify-center items-center gap-1">
+                                            <button 
+                                                title="View Details"
+                                                onClick={() => handleViewDetails(user)}
+                                                className="hover:opacity-70 transition p-1"
+                                            >
+                                                <img src={eyeIcon} alt="view" className="w-4 h-4"/>
+                                            </button>
                                             <button 
                                                 title="Edit User"
                                                 onClick={() => handleEditUser(user)}
@@ -378,6 +472,30 @@ const Accounts: React.FC = () => {
                 onSubmit={handleUpdateUser}
                 loading={isUpdating}
                 user={selectedUser}
+            />
+
+            <UserDetailModal
+                isOpen={showDetailModal}
+                onClose={() => {
+                    setShowDetailModal(false);
+                    setSelectedUser(null);
+                }}
+                user={selectedUser}
+                onEditUser={handleEditUserFromDetail}
+                onEditDoctorProfile={handleEditDoctorProfile}
+            />
+
+            <EditDoctorProfileModal
+                isOpen={showDoctorProfileModal}
+                onClose={() => {
+                    setShowDoctorProfileModal(false);
+                    setSelectedUser(null);
+                    setSelectedDoctorProfile(null);
+                }}
+                onSubmit={handleUpdateDoctorProfile}
+                loading={isUpdatingProfile}
+                user={selectedUser}
+                profile={selectedDoctorProfile}
             />
 
             <SuccessNotification

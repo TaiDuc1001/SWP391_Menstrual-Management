@@ -1,5 +1,6 @@
 package swp391.com.backend.feature.account.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,7 +140,7 @@ public class AccountController {
     }
     
     @PostMapping("/admin")
-    public ResponseEntity<?> createAccountByAdmin(@RequestBody AdminAccountCreateRequest request) {
+    public ResponseEntity<?> createAccountByAdmin(@Valid @RequestBody AdminAccountCreateRequest request) {
         try {
             AccountManagementDTO account = accountService.createAccountWithProfile(
                 request.getEmail(),
@@ -156,13 +157,12 @@ public class AccountController {
     }
     
     @PutMapping("/admin/{id}")
-    public ResponseEntity<?> updateAccountByAdmin(@PathVariable Long id, @RequestBody AdminAccountUpdateRequest request) {
+    public ResponseEntity<?> updateAccountByAdmin(@PathVariable Long id, @Valid @RequestBody AdminAccountUpdateRequest request) {
         try {
-            AccountManagementDTO account = accountService.updateAccountWithProfile(
+            AccountManagementDTO account = accountService.updateAccountWithoutRoleChange(
                 id,
                 request.getEmail(),
                 request.getPassword(),
-                request.getRole(),
                 request.getName(),
                 request.getPhoneNumber(),
                 request.getStatus()

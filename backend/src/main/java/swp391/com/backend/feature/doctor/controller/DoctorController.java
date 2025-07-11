@@ -110,6 +110,26 @@ public class DoctorController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @PostMapping("/admin/{accountId}")
+    public ResponseEntity<DoctorDTO> createDoctorProfile(
+            @PathVariable Long accountId,
+            @RequestBody DoctorProfileDTO profileDTO) {
+        try {
+            Doctor doctor = doctorService.createDoctorForAccount(
+                    accountId,
+                    profileDTO.getName(),
+                    profileDTO.getSpecialization(),
+                    profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null
+            );
+            DoctorDTO doctorDTO = doctorMapper.toDTO(doctor);
+            return ResponseEntity.status(HttpStatus.CREATED).body(doctorDTO);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     private boolean isProfileComplete(Doctor doctor) {
         return doctor.getName() != null && !doctor.getName().trim().isEmpty() &&
                doctor.getSpecialization() != null && !doctor.getSpecialization().trim().isEmpty() &&

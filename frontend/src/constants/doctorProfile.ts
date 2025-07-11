@@ -43,16 +43,16 @@ export const ERROR_MESSAGES = {
 };
 
 export const SPECIALIZATIONS = [
-    'Sản phụ khoa',
-    'Nội tiết - Tuyến vú',
-    'Nội khoa tổng quát',
-    'Tâm lý học',
-    'Dinh dưỡng',
-    'Y học gia đình',
-    'Da liễu',
-    'Tim mạch',
-    'Tiêu hóa',
-    'Hô hấp'
+    'Obstetrics and Gynecology (OB-GYN)',
+    'Female Endocrinology',
+    'Reproductive Endocrinology and Infertility',
+    'Family Planning',
+    'Prenatal and Postnatal Care',
+    'Gynecologic Oncology',
+    'Sexual and Reproductive Health',
+    'Reproductive Genetics Counseling',
+    'Women\'s Mental Health Counseling',
+    'Sexually Transmitted Infections (STIs) Specialist'
 ];
 
 export const WORKING_HOURS_OPTIONS = [

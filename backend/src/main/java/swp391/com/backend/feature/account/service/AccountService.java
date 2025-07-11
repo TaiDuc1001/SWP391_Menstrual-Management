@@ -132,6 +132,11 @@ public class AccountService {
             throw new RuntimeException("Email already exists: " + email);
         }
 
+        // Validate phone number for customer role
+        if (role == Role.CUSTOMER && phoneNumber != null && !phoneNumber.isEmpty() && !phoneNumber.matches("^0\\d{9}$")) {
+            throw new RuntimeException("Phone number must be 10 digits starting with 0.");
+        }
+
         Account account = Account.builder()
                 .email(email)
                 .password(password)
@@ -172,6 +177,30 @@ public class AccountService {
         } else {
             updateExistingProfile(id, role, name, phoneNumber);
         }
+
+        return getAccountWithProfile(id);
+    }
+
+    @Transactional
+    public AccountManagementDTO updateAccountWithoutRoleChange(Long id, String email, String password, String name, String phoneNumber, Boolean status) {
+        Account account = findAccountById(id);
+        
+        if (!account.getEmail().equals(email) && accountRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists: " + email);
+        }
+
+        // Validate phone number for customer role
+        if (account.getRole() == Role.CUSTOMER && phoneNumber != null && !phoneNumber.isEmpty() && !phoneNumber.matches("^0\\d{9}$")) {
+            throw new RuntimeException("Phone number must be 10 digits starting with 0.");
+        }
+
+        account.setEmail(email);
+        account.setPassword((password != null && !password.isEmpty()) ? password : account.getPassword());
+        account.setStatus(status);
+
+        account = accountRepository.save(account);
+
+        updateExistingProfile(id, account.getRole(), name, phoneNumber);
 
         return getAccountWithProfile(id);
     }
