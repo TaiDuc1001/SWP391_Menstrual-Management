@@ -138,8 +138,6 @@ const Accounts: React.FC = () => {
                     errorMessage = 'This phone number is already used by another account. Please use a different phone number.';
                 } else if (result.error?.includes('Duplicate entry') && result.error?.includes('email')) {
                     errorMessage = 'This email address is already used by another account. Please use a different email address.';
-                } else if (result.error?.includes('foreign key constraint fails')) {
-                    errorMessage = 'Cannot update role due to existing data dependencies. Please contact system administrator.';
                 } else if (result.error?.includes('could not execute statement')) {
                     errorMessage = 'An unexpected error occurred during the operation. Please ensure the information is valid and try again.';
                 }

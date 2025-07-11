@@ -158,11 +158,10 @@ public class AccountController {
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateAccountByAdmin(@PathVariable Long id, @RequestBody AdminAccountUpdateRequest request) {
         try {
-            AccountManagementDTO account = accountService.updateAccountWithProfile(
+            AccountManagementDTO account = accountService.updateAccountWithoutRoleChange(
                 id,
                 request.getEmail(),
                 request.getPassword(),
-                request.getRole(),
                 request.getName(),
                 request.getPhoneNumber(),
                 request.getStatus()

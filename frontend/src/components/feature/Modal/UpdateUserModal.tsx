@@ -9,13 +9,6 @@ interface UpdateUserModalProps {
     user: AccountForUI | null;
 }
 
-const roleOptions = [
-    { value: 'CUSTOMER', label: 'Customer' },
-    { value: 'DOCTOR', label: 'Doctor' },
-    { value: 'STAFF', label: 'Staff' },
-    { value: 'ADMIN', label: 'Admin' }
-];
-
 const UpdateUserModal: React.FC<UpdateUserModalProps> = ({ 
     isOpen, 
     onClose, 
@@ -26,7 +19,6 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
     const [formData, setFormData] = useState<UpdateAccountRequest>({
         email: '',
         password: '',
-        role: 'CUSTOMER',
         name: '',
         phoneNumber: '',
         status: true
@@ -34,19 +26,16 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
 
     const [errors, setErrors] = useState<Partial<UpdateAccountRequest>>({});
     const [serverError, setServerError] = useState<string | null>(null);
-    const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
     useEffect(() => {
         if (user && isOpen) {
             setFormData({
                 email: user.email || '',
-                password: '', // Don't pre-fill password for security
-                role: user.role as UpdateAccountRequest['role'] || 'CUSTOMER',
+                password: '',
                 name: user.name || '',
                 phoneNumber: user.phone === 'N/A' || !user.phone ? '' : user.phone,
                 status: user.status === 'Active'
             });
-            // Clear any previous errors when loading new user data
             setErrors({});
             setServerError(null);
         }
@@ -65,8 +54,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             newErrors.name = 'Name is required';
         }
 
-        // Only require phone number for CUSTOMER role
-        if (formData.role === 'CUSTOMER') {
+        if (user?.role === 'CUSTOMER') {
             if (!formData.phoneNumber) {
                 newErrors.phoneNumber = 'Phone number is required';
             } else if (!/^\d{10,11}$/.test(formData.phoneNumber)) {
@@ -74,7 +62,6 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             }
         }
 
-        // Password is optional for updates
         if (formData.password && formData.password.length < 6) {
             newErrors.password = 'Password must be at least 6 characters';
         }
@@ -90,18 +77,15 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             return;
         }
 
-        setServerError(null); // Clear previous server errors
+        setServerError(null); 
 
         try {
-            // Prepare data for submission - remove empty password
             const submitData = { ...formData };
             if (!submitData.password || submitData.password.trim() === '') {
-                // Don't send password field if it's empty
                 delete (submitData as any).password;
             }
             
-            // For non-customer roles, ensure phone number is empty or not sent
-            if (formData.role !== 'CUSTOMER') {
+            if (user?.role !== 'CUSTOMER') {
                 submitData.phoneNumber = '';
             }
             
@@ -116,8 +100,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             console.error('Error details:', error);
             const errorMessage = error.message || 'Failed to update user. Please try again.';
             setServerError(errorMessage);
-            
-            // If it's an email duplicate error, also highlight the email field
+        
             if (errorMessage.toLowerCase().includes('email') && 
                 (errorMessage.toLowerCase().includes('exists') || 
                  errorMessage.toLowerCase().includes('tồn tại'))) {
@@ -133,14 +116,12 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
         setFormData({
             email: '',
             password: '',
-            role: 'CUSTOMER',
             name: '',
             phoneNumber: '',
             status: true
         });
         setErrors({});
         setServerError(null);
-        setIsRoleDropdownOpen(false);
         onClose();
     };
 
@@ -157,37 +138,11 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                 [field]: undefined
             }));
         }
-        
-        // Clear server error when user starts typing
+
         if (serverError) {
             setServerError(null);
         }
     };
-
-    const handleRoleSelect = (role: UpdateAccountRequest['role']) => {
-        handleInputChange('role', role);
-        setIsRoleDropdownOpen(false);
-    };
-
-    const selectedRole = roleOptions.find(option => option.value === formData.role);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            if (!target.closest('.role-dropdown')) {
-                setIsRoleDropdownOpen(false);
-            }
-        };
-
-        if (isRoleDropdownOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isRoleDropdownOpen]);
 
     if (!isOpen) return null;
 
@@ -322,86 +277,37 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
 
                             {/* Right Column */}
                             <div className="space-y-4">
-                                {/* Contact & Role Section */}
+                                {/* Contact & Settings Section */}
                                 <div className="bg-orange-50 rounded-lg p-4">
                                     <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
                                         <svg className="w-4 h-4 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
-                                        Role & Settings
+                                        Contact & Settings
                                     </h3>
                                     
                                     <div className="space-y-3">
-                                        <div className="relative role-dropdown">
+                                        <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Role *
+                                                Role
                                             </label>
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:border-gray-400 transition-all duration-200 flex items-center justify-between"
-                                                disabled={loading}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                                        formData.role === 'ADMIN' ? 'bg-red-100 text-red-800' :
-                                                        formData.role === 'STAFF' ? 'bg-blue-100 text-blue-800' :
-                                                        formData.role === 'DOCTOR' ? 'bg-green-100 text-green-800' :
-                                                        'bg-purple-100 text-purple-800'
-                                                    }`}>
-                                                        {selectedRole?.label}
-                                                    </span>
-                                                </div>
-                                                <svg
-                                                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                                                        isRoleDropdownOpen ? 'rotate-180' : ''
-                                                    }`}
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                </svg>
-                                            </button>
-                                            
-                                            {isRoleDropdownOpen && (
-                                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto">
-                                                    {roleOptions.map((option) => (
-                                                        <button
-                                                            key={option.value}
-                                                            type="button"
-                                                            onClick={() => handleRoleSelect(option.value as UpdateAccountRequest['role'])}
-                                                            className={`w-full px-3 py-2 text-left hover:bg-orange-50 focus:bg-orange-50 focus:outline-none flex items-center transition-colors duration-150 ${
-                                                                formData.role === option.value 
-                                                                    ? 'bg-orange-100 text-orange-900' 
-                                                                    : 'text-gray-900'
-                                                            }`}
-                                                        >
-                                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mr-2 ${
-                                                                option.value === 'ADMIN' ? 'bg-red-100 text-red-800' :
-                                                                option.value === 'STAFF' ? 'bg-blue-100 text-blue-800' :
-                                                                option.value === 'DOCTOR' ? 'bg-green-100 text-green-800' :
-                                                                'bg-purple-100 text-purple-800'
-                                                            }`}>
-                                                                {option.label}
-                                                            </span>
-                                                            {formData.role === option.value && (
-                                                                <svg
-                                                                    className="w-4 h-4 text-orange-600 ml-auto"
-                                                                    fill="currentColor"
-                                                                    viewBox="0 0 20 20"
-                                                                >
-                                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                                </svg>
-                                                            )}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
+                                            <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 flex items-center">
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                                    user?.role === 'ADMIN' ? 'bg-red-100 text-red-800' :
+                                                    user?.role === 'STAFF' ? 'bg-blue-100 text-blue-800' :
+                                                    user?.role === 'DOCTOR' ? 'bg-green-100 text-green-800' :
+                                                    'bg-purple-100 text-purple-800'
+                                                }`}>
+                                                    {user?.role === 'ADMIN' ? 'Admin' :
+                                                     user?.role === 'STAFF' ? 'Staff' :
+                                                     user?.role === 'DOCTOR' ? 'Doctor' :
+                                                     'Customer'}
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        {formData.role === 'CUSTOMER' && (
+                                        {user?.role === 'CUSTOMER' && (
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                                     Phone Number *

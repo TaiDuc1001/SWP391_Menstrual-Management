@@ -176,6 +176,25 @@ public class AccountService {
         return getAccountWithProfile(id);
     }
 
+    @Transactional
+    public AccountManagementDTO updateAccountWithoutRoleChange(Long id, String email, String password, String name, String phoneNumber, Boolean status) {
+        Account account = findAccountById(id);
+        
+        if (!account.getEmail().equals(email) && accountRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists: " + email);
+        }
+
+        account.setEmail(email);
+        account.setPassword((password != null && !password.isEmpty()) ? password : account.getPassword());
+        account.setStatus(status);
+
+        account = accountRepository.save(account);
+
+        updateExistingProfile(id, account.getRole(), name, phoneNumber);
+
+        return getAccountWithProfile(id);
+    }
+
     private void handleRoleTransitionSafely(Long accountId, Role oldRole, Role newRole, String name, String phoneNumber) {
         if (oldRole == Role.STAFF || newRole == Role.STAFF) {
             handleStaffRoleTransition(accountId, oldRole, newRole, name, phoneNumber);

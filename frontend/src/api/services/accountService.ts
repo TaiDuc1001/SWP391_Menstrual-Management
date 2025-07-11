@@ -34,7 +34,6 @@ export interface CreateAccountRequest {
 export interface UpdateAccountRequest {
     email: string;
     password: string;
-    role: 'CUSTOMER' | 'DOCTOR' | 'STAFF' | 'ADMIN';
     status: boolean;
     name: string;
     phoneNumber: string;
@@ -68,36 +67,30 @@ export const accountService = {
             return response.data;
         } catch (error: any) {
             console.error('Error creating account:', error);
-            
-            // Extract error message from different possible response formats
             const errorMessage = error.response?.data?.message || 
                                error.response?.data?.error || 
                                error.response?.data || 
                                error.message;
             
             console.log('Backend error message:', errorMessage);
-            
-            // Handle specific email already exists error - check for the exact backend message
+
             if (typeof errorMessage === 'string' && 
                 errorMessage.includes('Email already exists:')) {
                 const email = errorMessage.split('Email already exists: ')[1] || 'this';
                 throw new Error(`Email ${email} already exists. Please use a different email.`);
             }
             
-            // Fallback for other email duplicate patterns
             if (typeof errorMessage === 'string' && 
                 (errorMessage.toLowerCase().includes('email') && 
                  (errorMessage.toLowerCase().includes('exists') || 
                   errorMessage.toLowerCase().includes('duplicate')))) {
                 throw new Error('Email already exists. Please use a different email.');
             }
-            
-            // Handle other backend validation errors
+
             if (errorMessage && typeof errorMessage === 'string') {
                 throw new Error(errorMessage);
             }
-            
-            // Handle network or other errors
+
             if (error.response?.status === 400) {
                 throw new Error('Invalid data. Please check your information.');
             }
@@ -119,8 +112,7 @@ export const accountService = {
         } catch (error: any) {
             console.error('Error updating account:', error);
             console.error('Error response:', error);
-            
-            // Extract error message from different possible response formats
+
             const errorMessage = error.response?.data?.message || 
                                error.response?.data?.error || 
                                error.response?.data || 
@@ -128,27 +120,23 @@ export const accountService = {
             
             console.log('Backend error message:', errorMessage);
             
-            // Handle specific email already exists error - check for the exact backend message
             if (typeof errorMessage === 'string' && 
                 errorMessage.includes('Email already exists:')) {
                 const email = errorMessage.split('Email already exists: ')[1] || 'this';
                 throw new Error(`Email ${email} already exists. Please use a different email.`);
             }
-            
-            // Fallback for other email duplicate patterns
+
             if (typeof errorMessage === 'string' && 
                 (errorMessage.toLowerCase().includes('email') && 
                  (errorMessage.toLowerCase().includes('exists') || 
                   errorMessage.toLowerCase().includes('duplicate')))) {
                 throw new Error('Email already exists. Please use a different email.');
             }
-            
-            // Handle other backend validation errors
+
             if (errorMessage && typeof errorMessage === 'string') {
                 throw new Error(errorMessage);
             }
             
-            // Handle network or other errors
             if (error.response?.status === 400) {
                 throw new Error('Invalid data. Please check your information.');
             }
