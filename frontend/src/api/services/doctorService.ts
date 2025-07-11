@@ -54,6 +54,11 @@ export const doctorService = {
         return api.put(`/doctors/${id}`, doctor);
     },
 
+    // Admin update doctor profile
+    adminUpdateDoctorProfile: (id: number, profileData: { name: string; specialization: string; price: number }) => {
+        return api.put(`/doctors/${id}`, profileData);
+    },
+
     deleteDoctor: (id: number) => {
         return api.delete(`/doctors/${id}`);
     },

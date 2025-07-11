@@ -8,11 +8,15 @@ import { AccountForUI, CreateAccountRequest, UpdateAccountRequest } from '../../
 import { useAccounts } from '../../../api/hooks';
 import CreateUserModal from '../../../components/feature/Modal/CreateUserModal';
 import UpdateUserModal from '../../../components/feature/Modal/UpdateUserModal';
+import UserDetailModal from '../../../components/feature/Modal/UserDetailModal';
+import EditDoctorProfileModal from '../../../components/feature/Modal/EditDoctorProfileModal';
 import SuccessNotification from '../../../components/feature/Notification/SuccessNotification';
 import ErrorNotification from '../../../components/feature/Notification/ErrorNotification';
 import { DropdownSelect } from '../../../components';
 import { applyPagination } from '../../../utils';
 import { generateAvatarUrl } from '../../../utils/avatar';
+import { doctorService, DoctorProfile } from '../../../api/services/doctorService';
+import eyeIcon from '../../../assets/icons/eye.svg';
 
 
 const roles = [
@@ -45,9 +49,13 @@ const Accounts: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showDoctorProfileModal, setShowDoctorProfileModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<AccountForUI | null>(null);
+    const [selectedDoctorProfile, setSelectedDoctorProfile] = useState<DoctorProfile | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     
 
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
@@ -154,6 +162,58 @@ const Accounts: React.FC = () => {
     const handleEditUser = (user: AccountForUI) => {
         setSelectedUser(user);
         setShowUpdateModal(true);
+    };
+
+    const handleViewDetails = (user: AccountForUI) => {
+        setSelectedUser(user);
+        setShowDetailModal(true);
+    };
+
+    const handleEditUserFromDetail = (user: AccountForUI) => {
+        setShowDetailModal(false);
+        setSelectedUser(user);
+        setShowUpdateModal(true);
+    };
+
+    const handleEditDoctorProfile = (user: AccountForUI, profile: DoctorProfile) => {
+        setSelectedUser(user);
+        setSelectedDoctorProfile(profile);
+        setShowDetailModal(false);
+        setShowDoctorProfileModal(true);
+    };
+
+    const handleUpdateDoctorProfile = async (profileData: Partial<DoctorProfile>) => {
+        if (!selectedUser) return;
+
+        setIsUpdatingProfile(true);
+        try {
+            const result = await doctorService.adminUpdateDoctorProfile(selectedUser.id, {
+                name: profileData.name!,
+                specialization: profileData.specialization!,
+                price: profileData.price!
+            });
+
+            if (result) {
+                setShowDoctorProfileModal(false);
+                setSelectedUser(null);
+                setSelectedDoctorProfile(null);
+                showSuccess('Profile Updated', `Doctor profile for ${profileData.name} has been updated successfully.`);
+                await fetchAccounts(); // Refresh the accounts list
+            }
+        } catch (error: any) {
+            console.error('Error updating doctor profile:', error);
+            let errorMessage = 'Failed to update doctor profile. Please try again.';
+            
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            showError('Update Failed', errorMessage);
+        } finally {
+            setIsUpdatingProfile(false);
+        }
     };
 
     const filteredUsers = users.filter((user: AccountForUI) =>
@@ -272,7 +332,7 @@ const Accounts: React.FC = () => {
                             <th className="p-2 border w-12">Role</th>
                             <th className="p-2 border w-12">Phone</th>
                             <th className="p-2 border w-20">Status</th>
-                            <th className="p-2 border w-12">Actions</th>
+                            <th className="p-2 border w-16">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -312,6 +372,13 @@ const Accounts: React.FC = () => {
                                     <td className="p-2 border text-center">{getStatusBadge(user.status)}</td>
                                     <td className="p-2 border text-center">
                                         <div className="flex justify-center items-center gap-1">
+                                            <button 
+                                                title="View Details"
+                                                onClick={() => handleViewDetails(user)}
+                                                className="hover:opacity-70 transition p-1"
+                                            >
+                                                <img src={eyeIcon} alt="view" className="w-4 h-4"/>
+                                            </button>
                                             <button 
                                                 title="Edit User"
                                                 onClick={() => handleEditUser(user)}
@@ -376,6 +443,30 @@ const Accounts: React.FC = () => {
                 onSubmit={handleUpdateUser}
                 loading={isUpdating}
                 user={selectedUser}
+            />
+
+            <UserDetailModal
+                isOpen={showDetailModal}
+                onClose={() => {
+                    setShowDetailModal(false);
+                    setSelectedUser(null);
+                }}
+                user={selectedUser}
+                onEditUser={handleEditUserFromDetail}
+                onEditDoctorProfile={handleEditDoctorProfile}
+            />
+
+            <EditDoctorProfileModal
+                isOpen={showDoctorProfileModal}
+                onClose={() => {
+                    setShowDoctorProfileModal(false);
+                    setSelectedUser(null);
+                    setSelectedDoctorProfile(null);
+                }}
+                onSubmit={handleUpdateDoctorProfile}
+                loading={isUpdatingProfile}
+                user={selectedUser}
+                profile={selectedDoctorProfile}
             />
 
             <SuccessNotification
