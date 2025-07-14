@@ -11,4 +11,5 @@ public class DoctorDTO implements ActorDTO {
     private String name;
     private String specialization;
     private BigDecimal price;
+    private Integer experience; // Số năm kinh nghiệm
 }

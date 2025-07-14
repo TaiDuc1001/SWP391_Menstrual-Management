@@ -71,6 +71,7 @@ public class DoctorController {
                     .name(doctor.getName())
                     .specialization(doctor.getSpecialization())
                     .price(doctor.getPrice() != null ? doctor.getPrice().intValue() : 0)
+                    .experience(doctor.getExperience() != null ? doctor.getExperience() : 0)
                     .isProfileComplete(isProfileComplete(doctor))
                     .build();
             return ResponseEntity.ok(profileDTO);
@@ -83,6 +84,7 @@ public class DoctorController {
                     .name("")
                     .specialization("")
                     .price(0)
+                    .experience(0)
                     .isProfileComplete(false)
                     .build();
             return ResponseEntity.ok(emptyProfile);
@@ -101,6 +103,7 @@ public class DoctorController {
                     .name(profileDTO.getName())
                     .specialization(profileDTO.getSpecialization())
                     .price(profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null)
+                    .experience(profileDTO.getExperience() != null ? profileDTO.getExperience() : 0)
                     .build();
             
             Doctor savedDoctor = doctorService.updateDoctor(currentDoctorId, updatedDoctor);
@@ -110,6 +113,7 @@ public class DoctorController {
                     .name(savedDoctor.getName())
                     .specialization(savedDoctor.getSpecialization())
                     .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
+                    .experience(savedDoctor.getExperience() != null ? savedDoctor.getExperience() : 0)
                     .isProfileComplete(isProfileComplete(savedDoctor))
                     .build();
             
@@ -121,7 +125,8 @@ public class DoctorController {
                         currentDoctorId,
                         profileDTO.getName(),
                         profileDTO.getSpecialization(),
-                        profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null
+                        profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null,
+                        profileDTO.getExperience() != null ? profileDTO.getExperience() : 0
                 );
                 
                 DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
@@ -129,6 +134,7 @@ public class DoctorController {
                         .name(savedDoctor.getName())
                         .specialization(savedDoctor.getSpecialization())
                         .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
+                        .experience(savedDoctor.getExperience() != null ? savedDoctor.getExperience() : 0)
                         .isProfileComplete(isProfileComplete(savedDoctor))
                         .build();
                 
@@ -175,7 +181,8 @@ public class DoctorController {
                     accountId,
                     profileDTO.getName(),
                     profileDTO.getSpecialization(),
-                    profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null
+                    profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null,
+                    profileDTO.getExperience() != null ? profileDTO.getExperience() : 0
             );
             DoctorDTO doctorDTO = doctorMapper.toDTO(doctor);
             return ResponseEntity.status(HttpStatus.CREATED).body(doctorDTO);

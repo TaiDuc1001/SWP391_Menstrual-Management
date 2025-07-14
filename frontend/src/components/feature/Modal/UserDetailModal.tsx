@@ -55,6 +55,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                 name: profile.name,
                 specialization: profile.specialization,
                 price: profile.price,
+                experience: profile.experience ?? 0,
                 isProfileComplete: !!(profile.name && profile.specialization && profile.price > 0)
             };
 
