@@ -244,6 +244,12 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                                             </div>
                                         </div>
                                         <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Years of Experience</label>
+                                            <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
+                                                {doctorProfile.experience !== undefined ? doctorProfile.experience + ' years' : 'Not set'}
+                                            </div>
+                                        </div>
+                                        <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Consultation Fee</label>
                                             <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
                                                 {doctorProfile.price > 0 
