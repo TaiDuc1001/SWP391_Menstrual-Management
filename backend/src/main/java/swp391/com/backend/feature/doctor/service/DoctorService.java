@@ -35,11 +35,12 @@ public class DoctorService {
                 .name(doctorDetails.getName())
                 .specialization(doctorDetails.getSpecialization())
                 .price(doctorDetails.getPrice())
+                .experience(doctorDetails.getExperience())
                 .build();
         return doctorRepository.save(doctor);
     }
 
-    public Doctor createDoctorForAccount(Long accountId, String name, String specialization, BigDecimal price) {
+    public Doctor createDoctorForAccount(Long accountId, String name, String specialization, BigDecimal price, int experience) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + accountId));
         
@@ -51,6 +52,7 @@ public class DoctorService {
                     .name(name)
                     .specialization(specialization)
                     .price(price)
+                    .experience(experience)
                     .build();
             return doctorRepository.save(updatedDoctor);
         }
@@ -60,6 +62,7 @@ public class DoctorService {
                 .name(name)
                 .specialization(specialization)
                 .price(price)
+                .experience(experience)
                 .build();
         
         return doctorRepository.save(doctor);

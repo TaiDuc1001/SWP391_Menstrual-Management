@@ -28,12 +28,11 @@ const MyProfile: React.FC = () => {
 
     const calculateCompletionPercentage = (profile: DoctorProfile): number => {
         let completed = 0;
-        let total = 3;
-        
+        let total = 4;
         if (profile.name && profile.name.trim() !== '') completed++;
         if (profile.specialization && profile.specialization.trim() !== '') completed++;
         if (profile.price > 0) completed++;
-        
+        if (profile.experience !== undefined && profile.experience >= 0) completed++;
         return Math.round((completed / total) * 100);
     };
 
@@ -130,6 +129,12 @@ const MyProfile: React.FC = () => {
                                     <div className="text-xs text-gray-500 mb-1">Specialization</div>
                                     <div className="p-3 bg-gray-50 rounded border border-gray-100 text-gray-800 font-medium">
                                         {profile.specialization || 'Not provided'}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-xs text-gray-500 mb-1">Years of Experience</div>
+                                    <div className="p-3 bg-gray-50 rounded border border-gray-100 text-gray-800 font-medium">
+                                        {profile.experience !== undefined ? profile.experience : 'Not provided'}
                                     </div>
                                 </div>
                             </div>

@@ -117,6 +117,7 @@ const AppointmentBooking: React.FC = () => {
                                 appointments: 0,
                                 specialization: doctor.specialization,
                                 price: doctor.price,
+                                experience: doctor.experience,
                             };
                         } catch (error) {
                             // If rating fetch fails, use default values
@@ -280,6 +281,7 @@ const AppointmentBooking: React.FC = () => {
                                                         <div>
                                                             <div className="font-semibold text-gray-800">{a.name}</div>
                                                             <div className="text-sm text-gray-600 mb-1">{a.specialization}</div>
+                                                            <div className="text-xs text-gray-500 mb-1">{typeof a.experience === 'number' ? `${a.experience} years experience` : ''}</div>
                                                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                                                 {a.rating > 0 ? (
                                                                     <>

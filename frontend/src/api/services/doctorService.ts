@@ -20,6 +20,7 @@ export interface DoctorProfile {
     name: string;
     specialization: string;
     price: number;
+    experience: number;
     isProfileComplete: boolean;
 }
 
@@ -55,12 +56,12 @@ export const doctorService = {
     },
 
     // Admin update doctor profile
-    adminUpdateDoctorProfile: (id: number, profileData: { name: string; specialization: string; price: number }) => {
+    adminUpdateDoctorProfile: (id: number, profileData: { name: string; specialization: string; price: number; experience: number }) => {
         return api.put(`/doctors/${id}`, profileData);
     },
 
     // Admin create doctor profile
-    adminCreateDoctorProfile: (userId: number, profileData: { name: string; specialization: string; price: number }) => {
+    adminCreateDoctorProfile: (userId: number, profileData: { name: string; specialization: string; price: number; experience: number }) => {
         return api.post(`/doctors/admin/${userId}`, profileData);
     },
 

@@ -118,7 +118,8 @@ const Accounts: React.FC = () => {
                         const updateResult = await doctorService.adminUpdateDoctorProfile(result.data.id, {
                             name: doctorProfile.name!,
                             specialization: doctorProfile.specialization!,
-                            price: doctorProfile.price!
+                            price: doctorProfile.price!,
+                            experience: doctorProfile.experience ?? 0
                         });
                     } catch (profileError: any) {
                         console.error('Error updating doctor profile:', profileError);
@@ -218,7 +219,8 @@ const Accounts: React.FC = () => {
             const result = await doctorService.adminUpdateDoctorProfile(selectedUser.id, {
                 name: profileData.name!,
                 specialization: profileData.specialization!,
-                price: profileData.price!
+                price: profileData.price!,
+                experience: profileData.experience ?? 0
             });
 
             if (result) {

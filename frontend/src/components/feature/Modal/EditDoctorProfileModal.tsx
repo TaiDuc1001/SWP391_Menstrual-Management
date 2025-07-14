@@ -16,12 +16,14 @@ interface ProfileFormData {
     name: string;
     specialization: string;
     price: number;
+    experience: number;
 }
 
 interface ProfileFormErrors {
     name?: string;
     specialization?: string;
     price?: string;
+    experience?: string;
 }
 
 const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
@@ -35,7 +37,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
     const [formData, setFormData] = useState<ProfileFormData>({
         name: '',
         specialization: '',
-        price: 0
+        price: 0,
+        experience: 0
     });
 
     const [errors, setErrors] = useState<ProfileFormErrors>({});
@@ -46,7 +49,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
             setFormData({
                 name: profile.name || '',
                 specialization: profile.specialization || '',
-                price: profile.price || 0
+                price: profile.price || 0,
+                experience: profile.experience !== undefined ? profile.experience : 0
             });
             setErrors({});
             setServerError(null);
@@ -61,15 +65,16 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
         } else if (formData.name.trim().length < 2) {
             newErrors.name = 'Name must be at least 2 characters';
         }
-
         if (!formData.specialization.trim()) {
             newErrors.specialization = 'Specialization is required';
         }
-
         if (!formData.price || formData.price < 100000) {
             newErrors.price = 'Consultation fee must be at least 100,000 VND';
         } else if (formData.price > 1000000) {
             newErrors.price = 'Consultation fee cannot exceed 1,000,000 VND';
+        }
+        if (formData.experience === undefined || formData.experience < 0) {
+            newErrors.experience = 'Experience must be 0 or greater';
         }
 
 
@@ -103,7 +108,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
             await onSubmit({
                 name: formData.name.trim(),
                 specialization: formData.specialization.trim(),
-                price: formData.price
+                price: formData.price,
+                experience: formData.experience
             });
             onClose();
         } catch (error: any) {
@@ -117,7 +123,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
             setFormData({
                 name: '',
                 specialization: '',
-                price: 0
+                price: 0,
+                experience: 0
             });
             setErrors({});
             setServerError(null);
@@ -127,12 +134,11 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 
     const calculateCompletion = (): number => {
         let completed = 0;
-        let total = 3;
-
+        let total = 4;
         if (formData.name.trim().length >= 2) completed++;
         if (formData.specialization.trim()) completed++;
         if (formData.price >= 100000 && formData.price <= 1000000) completed++;
-
+        if (formData.experience !== undefined && formData.experience >= 0) completed++;
         return Math.round((completed / total) * 100);
     };
 
@@ -141,7 +147,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
         return formData.name.trim().length >= 2 &&
             formData.specialization.trim().length > 0 &&
             formData.price >= 100000 &&
-            formData.price <= 1000000;
+            formData.price <= 1000000 &&
+            formData.experience !== undefined && formData.experience >= 0;
     };
 
 
@@ -175,6 +182,43 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 {/* Form */}
                 <div className="p-6">
                     <form onSubmit={handleSubmit}>
+                        {/* Experience */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <span className="flex items-center space-x-2">
+                                    <span>🎓</span>
+                                    <span>Years of Experience *</span>
+                                </span>
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    className={`w-full px-4 py-3 text-lg border-2 rounded-xl transition-all duration-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 ${
+                                        errors.experience
+                                            ? 'border-red-300 bg-red-50'
+                                            : formData.experience !== undefined && formData.experience >= 0
+                                                ? 'border-green-300 bg-green-50'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                    value={formData.experience !== undefined ? formData.experience : ''}
+                                    onChange={(e) => handleInputChange('experience', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value)))}
+                                    placeholder="0"
+                                />
+                                {formData.experience !== undefined && formData.experience >= 0 && !errors.experience && (
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
+                                        ✓
+                                    </div>
+                                )}
+                            </div>
+                            {errors.experience && (
+                                <p className="text-red-500 text-sm mt-2 flex items-center space-x-1">
+                                    <span>⚠️</span>
+                                    <span>{errors.experience}</span>
+                                </p>
+                            )}
+                        </div>
                         {serverError && (
                             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                                 <div className="flex items-center space-x-2">

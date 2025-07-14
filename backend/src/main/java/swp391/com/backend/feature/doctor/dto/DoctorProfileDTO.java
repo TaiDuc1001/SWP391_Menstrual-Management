@@ -14,5 +14,6 @@ public class DoctorProfileDTO {
     private String name;
     private String specialization;
     private Integer price;
+    private Integer experience; // Số năm kinh nghiệm
     private Boolean isProfileComplete;
 }

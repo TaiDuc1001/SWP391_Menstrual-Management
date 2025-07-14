@@ -13,4 +13,5 @@ public class SimpleDoctorDTO {
     String name;
     String specialization;
     BigDecimal price;
+    Integer experience; // Số năm kinh nghiệm
 }

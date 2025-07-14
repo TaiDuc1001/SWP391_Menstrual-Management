@@ -55,6 +55,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                 name: profile.name,
                 specialization: profile.specialization,
                 price: profile.price,
+                experience: profile.experience ?? 0,
                 isProfileComplete: !!(profile.name && profile.specialization && profile.price > 0)
             };
 
@@ -240,6 +241,12 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
                                             <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
                                                 {doctorProfile.specialization || 'Not specified'}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Years of Experience</label>
+                                            <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
+                                                {doctorProfile.experience !== undefined ? doctorProfile.experience + ' years' : 'Not set'}
                                             </div>
                                         </div>
                                         <div>
