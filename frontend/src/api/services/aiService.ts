@@ -287,6 +287,9 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
             cycle.cycleLength < 28 || cycle.cycleLength > 35
         );
         
+        console.log('AI Detection - Cycle lengths:', cycles.map(c => c.cycleLength));
+        console.log('AI Detection - Has irregular cycles:', hasIrregularCycles);
+        
         // Check for heavy symptoms
         const hasHeavySymptoms = symptomsText.includes('heavy');
         
@@ -309,12 +312,17 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
         const healthConcerns = hasIrregularCycles || hasHeavySymptoms || hasStiSymptoms || hasConcerningSymptoms;
         const needsSTITesting = hasIrregularCycles || hasHeavySymptoms || hasStiSymptoms || hasConcerningSymptoms;
         
+        console.log('AI Detection - Health concerns:', healthConcerns);
+        console.log('AI Detection - Needs STI testing:', needsSTITesting);
+        
         let healthIssueDescription = undefined;
         
         if (hasIrregularCycles && hasHeavySymptoms) {
             healthIssueDescription = "Chu kỳ kinh nguyệt không đều (không trong khoảng 28-35 ngày) và có triệu chứng nặng. Nên thực hiện xét nghiệm để kiểm tra sức khỏe sinh sản.";
         } else if (hasIrregularCycles) {
-            healthIssueDescription = "Chu kỳ kinh nguyệt không đều (không trong khoảng 28-35 ngày). Nên thực hiện xét nghiệm để đánh giá tình trạng sức khỏe.";
+            const irregularCycles = cycles.filter(cycle => cycle.cycleLength < 28 || cycle.cycleLength > 35);
+            const cycleLengths = irregularCycles.map(c => c.cycleLength).join(', ');
+            healthIssueDescription = `Phát hiện chu kỳ kinh nguyệt không đều: ${cycleLengths} ngày (bình thường: 28-35 ngày). Nên thực hiện xét nghiệm để đánh giá tình trạng sức khỏe.`;
         } else if (hasHeavySymptoms) {
             healthIssueDescription = "Phát hiện triệu chứng nặng trong chu kỳ kinh nguyệt. Nên thực hiện xét nghiệm để kiểm tra sức khỏe sinh sản.";
         } else if (hasStiSymptoms) {

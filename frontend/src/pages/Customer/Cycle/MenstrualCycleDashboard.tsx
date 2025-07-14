@@ -443,6 +443,20 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 >
                                     Refresh
                                 </button>
+                                <button
+                                    onClick={() => {
+                                        // Force show health concerns for testing
+                                        console.log('Force testing health concerns');
+                                        const testCycles = cycles.map(cycle => ({
+                                            ...cycle,
+                                            cycleLength: 40 // Force irregular cycle for testing
+                                        }));
+                                        generateRecommendations(testCycles, symptoms, true);
+                                    }}
+                                    className="ml-2 text-xs bg-red-100 border border-red-400 text-red-600 px-2 py-1 rounded hover:bg-red-200 transition-all duration-200"
+                                >
+                                    Test Alert
+                                </button>
                             </h3>
                             <ul className="list-disc pl-4 text-xs text-gray-800 flex flex-col gap-1">
                                 {recommendations.length > 0 ? recommendations.map((recommendation, index) => (

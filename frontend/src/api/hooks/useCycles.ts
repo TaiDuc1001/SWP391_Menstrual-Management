@@ -155,7 +155,7 @@ export const useAIRecommendations = () => {
                 }
             });
             
-            const cycleData = cycles.map(cycle => {
+            const cycleData = cycles.map((cycle, index) => {
                 const cycleSymptoms: string[] = [];
                 
                 if (cycle.cycleSymptomByDate) {
@@ -200,9 +200,19 @@ export const useAIRecommendations = () => {
                     }
                 });
 
+                // Calculate actual cycle length based on next cycle start date
+                const sortedCycles = cycles
+                    .filter(c => new Date(c.cycleStartDate) > cycleStartDate)
+                    .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
+                
+                const nextCycle = sortedCycles[0];
+                const actualCycleLength = nextCycle 
+                    ? Math.ceil((new Date(nextCycle.cycleStartDate).getTime() - cycleStartDate.getTime()) / (24 * 60 * 60 * 1000))
+                    : cycle.cycleLength; // fallback to declared cycle length if no next cycle
+
                 return {
                     cycleStartDate: cycle.cycleStartDate,
-                    cycleLength: cycle.cycleLength,
+                    cycleLength: actualCycleLength,
                     periodDuration: cycle.periodDuration,
                     symptoms: cycleSymptoms
                 };
@@ -214,6 +224,11 @@ export const useAIRecommendations = () => {
             };
 
             console.log('Sending data to AI:', requestData);
+            console.log('Cycle lengths being analyzed:', requestData.cycles.map(c => ({
+                startDate: c.cycleStartDate,
+                cycleLength: c.cycleLength,
+                periodDuration: c.periodDuration
+            })));
             console.log('Health-concerning symptoms found:', requestData.recentSymptoms.filter(s => 
                 ['discharge', 'burning', 'urination', 'itching', 'bleeding between', 'pelvic pain', 'fever', 'odor'].some(concern => 
                     s.toLowerCase().includes(concern)
@@ -249,12 +264,25 @@ export const useAIRecommendations = () => {
                 }
             });
             
-            const cycleData = cycles.map(cycle => ({
-                cycleStartDate: cycle.cycleStartDate,
-                cycleLength: cycle.cycleLength,
-                periodDuration: cycle.periodDuration,
-                symptoms: []
-            }));
+            const cycleData = cycles.map((cycle, index) => {
+                // Calculate actual cycle length based on next cycle start date
+                const cycleStartDate = new Date(cycle.cycleStartDate);
+                const sortedCycles = cycles
+                    .filter(c => new Date(c.cycleStartDate) > cycleStartDate)
+                    .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
+                
+                const nextCycle = sortedCycles[0];
+                const actualCycleLength = nextCycle 
+                    ? Math.ceil((new Date(nextCycle.cycleStartDate).getTime() - cycleStartDate.getTime()) / (24 * 60 * 60 * 1000))
+                    : cycle.cycleLength; // fallback to declared cycle length if no next cycle
+
+                return {
+                    cycleStartDate: cycle.cycleStartDate,
+                    cycleLength: actualCycleLength,
+                    periodDuration: cycle.periodDuration,
+                    symptoms: []
+                };
+            });
 
             const fallbackRequestData: AIRecommendationRequest = {
                 cycles: cycleData,
