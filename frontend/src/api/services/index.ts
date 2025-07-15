@@ -17,6 +17,7 @@ export * from './aiService';
 export * from './cycleSymptomService';
 export {getRecentActivities} from './recentActivityService';
 export {getSystemNotifications} from './systemNotificationService';
+export {scheduleService} from './scheduleService';
 
 export type {User, UserFilters} from './userService';
 export type {Appointment, AppointmentFilters} from './appointmentService';
@@ -44,3 +45,10 @@ export type {
     CreateTestTypeRequest, 
     PanelFilters
 } from './panelService';
+export type {
+    Schedule, 
+    DoctorSchedule, 
+    CreateScheduleRequest, 
+    UpdateScheduleRequest, 
+    Slot
+} from './scheduleService';

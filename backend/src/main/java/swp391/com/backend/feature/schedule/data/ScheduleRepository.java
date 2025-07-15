@@ -16,6 +16,18 @@ import java.util.List;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByDoctorAndDate(Doctor doctor, LocalDate date);
     
+    List<Schedule> findByDoctor(Doctor doctor);
+    
+    List<Schedule> findByDoctorId(Long doctorId);
+    
+    List<Schedule> findByDoctorIdAndDate(Long doctorId, LocalDate date);
+    
+    boolean existsByDoctorAndDateAndSlot(Doctor doctor, LocalDate date, Slot slot);
+    
+    @Modifying
+    @Transactional
+    void deleteByDoctorIdAndDate(Long doctorId, LocalDate date);
+    
     @Modifying
     @Transactional
     @Query("UPDATE Schedule s SET s.doctor = null WHERE s.doctor.id = :doctorId")

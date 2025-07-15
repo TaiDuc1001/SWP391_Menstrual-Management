@@ -13,7 +13,7 @@ public enum Slot {
     ONE("7:00 AM - 8:00 AM"),
     TWO("8:15 AM - 9:15 AM"),
     THREE("9:30 AM - 10:30 AM"),
-    FOUR("10:45 PM - 11:45 PM"),
+    FOUR("10:45 AM - 11:45 AM"),
     FIVE("1:00 PM - 2:00 PM"),
     SIX("2:15 PM - 3:15 PM"),
     SEVEN("3:30 PM - 4:30 PM"),
