@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DoctorSchedule, scheduleService, Slot } from '../../../api/services/scheduleService';
 import { doctorService } from '../../../api/services/doctorService';
 import NewUserButton from "../../../components/common/Button/AdminCreateButton";
+import { applyPagination } from '../../../utils';
 import plusWhiteIcon from "../../../assets/icons/plus-white.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import refreshIcon from "../../../assets/icons/refresh.svg";
@@ -13,7 +14,6 @@ import ErrorNotification from '../../../components/feature/Notification/ErrorNot
 import CreateScheduleModal from '../../../components/feature/Modal/CreateScheduleModal';
 import UpdateScheduleModal from '../../../components/feature/Modal/UpdateScheduleModal';
 import ViewScheduleModal from '../../../components/feature/Modal/ViewScheduleModal';
-import DeleteConfirmModal from '../../../components/feature/Modal/DeleteConfirmModal';
 
 const WorkScheduleManagement: React.FC = () => {
     const [doctorSchedules, setDoctorSchedules] = useState<DoctorSchedule[]>([]);
@@ -27,11 +27,7 @@ const WorkScheduleManagement: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState<DoctorSchedule | null>(null);
-    const [selectedScheduleId, setSelectedScheduleId] = useState<number | null>(null);
-    const [deleteType, setDeleteType] = useState<'schedule' | 'date'>('schedule');
-    const [deleteDate, setDeleteDate] = useState<string>('');
 
     // Notification states
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
@@ -72,6 +68,16 @@ const WorkScheduleManagement: React.FC = () => {
         fetchData();
     }, []);
 
+    // Update selectedDoctor when doctorSchedules changes
+    useEffect(() => {
+        if (selectedDoctor && doctorSchedules.length > 0) {
+            const updatedDoctor = doctorSchedules.find(d => d.doctorId === selectedDoctor.doctorId);
+            if (updatedDoctor) {
+                setSelectedDoctor(updatedDoctor);
+            }
+        }
+    }, [doctorSchedules, selectedDoctor]);
+
     const handleRefresh = () => {
         setSearchTerm('');
         setCurrentPage(1);
@@ -83,12 +89,15 @@ const WorkScheduleManagement: React.FC = () => {
         doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const paginatedDoctors = filteredDoctors.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-    );
+    const paginationResult = applyPagination(filteredDoctors, {
+        currentPage,
+        itemsPerPage: pageSize
+    });
+    const { items: paginatedDoctors, totalPages, totalItems, startIdx, endIdx } = paginationResult;
 
-    const totalPages = Math.ceil(filteredDoctors.length / pageSize);
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    };
 
     const handleCreateSchedule = () => {
         setShowCreateModal(true);
@@ -104,34 +113,29 @@ const WorkScheduleManagement: React.FC = () => {
         setShowUpdateModal(true);
     };
 
-    const handleDeleteSchedule = (scheduleId: number) => {
-        setSelectedScheduleId(scheduleId);
-        setDeleteType('schedule');
-        setShowDeleteModal(true);
-    };
-
-    const handleDeleteDaySchedule = (doctorId: number, date: string) => {
-        setSelectedDoctor(doctorSchedules.find(d => d.doctorId === doctorId) || null);
-        setDeleteDate(date);
-        setDeleteType('date');
-        setShowDeleteModal(true);
-    };
-
-    const confirmDelete = async () => {
+    const handleDeleteSchedule = async (scheduleId: number) => {
         try {
-            if (deleteType === 'schedule' && selectedScheduleId) {
-                await scheduleService.deleteSchedule(selectedScheduleId);
-                showSuccess('Schedule Deleted', 'Schedule has been deleted successfully');
-            } else if (deleteType === 'date' && selectedDoctor) {
-                await scheduleService.deleteDoctorSchedulesByDate(selectedDoctor.doctorId, deleteDate);
-                showSuccess('Schedules Deleted', 'All schedules for the selected date have been deleted');
-            }
-            
-            setShowDeleteModal(false);
-            fetchData();
+            await scheduleService.deleteSchedule(scheduleId);
+            showSuccess('Schedule Deleted', 'Schedule has been deleted successfully');
+            // Refresh after successful deletion
+            await fetchData();
         } catch (error: any) {
             console.error('Error deleting schedule:', error);
             showError('Delete Error', error.response?.data?.message || 'Failed to delete schedule');
+            throw error;
+        }
+    };
+
+    const handleDeleteDaySchedule = async (doctorId: number, date: string) => {
+        try {
+            await scheduleService.deleteDoctorSchedulesByDate(doctorId, date);
+            showSuccess('Schedules Deleted', 'All schedules for the selected date have been deleted');
+            // Refresh after successful deletion
+            await fetchData();
+        } catch (error: any) {
+            console.error('Error deleting day schedules:', error);
+            showError('Delete Error', error.response?.data?.message || 'Failed to delete schedules');
+            throw error;
         }
     };
 
@@ -288,68 +292,44 @@ const WorkScheduleManagement: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
+                
+                <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-700">
+                            Showing <span className="font-medium">{Math.min(startIdx + 1, totalItems)}</span> to <span className="font-medium">{Math.min(endIdx, totalItems)}</span> of <span className="font-medium">{totalItems}</span> doctors
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                {/* Pagination */}
-                <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    <div className="flex-1 flex justify-between sm:hidden">
+            <div className="mt-6 min-h-[60px] flex items-center justify-center">
+                {totalItems > 0 && (
+                    <div className="flex items-center gap-2">
                         <button
-                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
                         >
-                            Previous
+                            Prev
                         </button>
+                        {Array.from({length: totalPages}, (_, i) => (
+                            <button
+                                key={i + 1}
+                                onClick={() => handlePageChange(i + 1)}
+                                className={`px-3 py-1 rounded font-semibold ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100'}`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
                         <button
-                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                            className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
                         >
                             Next
                         </button>
                     </div>
-                    <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                        <div>
-                            <p className="text-sm text-gray-700">
-                                Showing <span className="font-medium">{(currentPage - 1) * pageSize + 1}</span> to{' '}
-                                <span className="font-medium">
-                                    {Math.min(currentPage * pageSize, filteredDoctors.length)}
-                                </span>{' '}
-                                of <span className="font-medium">{filteredDoctors.length}</span> results
-                            </p>
-                        </div>
-                        <div>
-                            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                                <button
-                                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                    disabled={currentPage === 1}
-                                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                                >
-                                    Previous
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                    <button
-                                        key={page}
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                            page === currentPage
-                                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                                >
-                                    Next
-                                </button>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
+                )}
             </div>
 
             {/* Modals */}
@@ -361,7 +341,21 @@ const WorkScheduleManagement: React.FC = () => {
                         fetchData();
                         showSuccess('Schedule Created', 'New schedule has been created successfully');
                     }}
-                    onError={(message: string) => showError('Create Error', message)}
+                    onError={(message: string) => {
+                        let title = 'Create Error';
+                        let displayMessage = message;
+                        
+                        if (message.toLowerCase().includes('conflict') || message.toLowerCase().includes('already booked')) {
+                            title = 'Schedule Conflict';
+                            displayMessage = 'Some time slots are already booked. Please choose others or update existing ones.';
+                        } else if (message.toLowerCase().includes('invalid')) {
+                            title = 'Invalid Data';
+                        } else if (message.toLowerCase().includes('server error')) {
+                            title = 'Server Error';
+                        }
+                        
+                        showError(title, displayMessage);
+                    }}
                 />
             )}
 
@@ -371,6 +365,7 @@ const WorkScheduleManagement: React.FC = () => {
                     onClose={() => setShowViewModal(false)}
                     onDeleteSchedule={handleDeleteSchedule}
                     onDeleteDaySchedule={handleDeleteDaySchedule}
+                    onRefreshData={fetchData}
                 />
             )}
 
@@ -384,19 +379,6 @@ const WorkScheduleManagement: React.FC = () => {
                         showSuccess('Schedule Updated', 'Schedule has been updated successfully');
                     }}
                     onError={(message: string) => showError('Update Error', message)}
-                />
-            )}
-
-            {showDeleteModal && (
-                <DeleteConfirmModal
-                    title={deleteType === 'schedule' ? 'Delete Schedule' : 'Delete Day Schedules'}
-                    message={
-                        deleteType === 'schedule' 
-                            ? 'Are you sure you want to delete this schedule? This action cannot be undone.'
-                            : `Are you sure you want to delete all schedules for ${selectedDoctor?.doctorName} on ${deleteDate}? This action cannot be undone.`
-                    }
-                    onConfirm={confirmDelete}
-                    onCancel={() => setShowDeleteModal(false)}
                 />
             )}
 

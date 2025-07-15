@@ -15,6 +15,5 @@ public class ScheduleResponse {
     private String doctorName;
     private LocalDate date;
     private SlotResponse slot;
-    private String slotTimeRange;
     private boolean hasAppointment;
 }

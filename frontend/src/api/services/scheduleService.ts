@@ -18,7 +18,6 @@ export interface Schedule {
     doctorName: string;
     date: string;
     slot: ScheduleSlot;
-    slotTimeRange: string;
     hasAppointment: boolean;
 }
 

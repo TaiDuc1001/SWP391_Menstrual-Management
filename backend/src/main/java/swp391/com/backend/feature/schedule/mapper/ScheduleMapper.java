@@ -15,7 +15,6 @@ public interface ScheduleMapper {
     @Mapping(source = "doctor.id", target = "doctorId")
     @Mapping(source = "doctor.name", target = "doctorName")
     @Mapping(source = "slot", target = "slot", qualifiedByName = "slotToSlotResponse")
-    @Mapping(source = "slot.timeRange", target = "slotTimeRange")
     @Mapping(target = "hasAppointment", ignore = true)
     ScheduleResponse toScheduleResponse(Schedule schedule);
     
@@ -24,13 +23,15 @@ public interface ScheduleMapper {
         if (slot == null) {
             return null;
         }
-        return new SlotResponse(slot.name(), slot.getTimeRange());
+        String displayName = slot == Slot.ZERO ? slot.name() : "Slot " + slot.ordinal();
+        return new SlotResponse(displayName, slot.getTimeRange());
     }
     
     default SlotOptionResponse toSlotOptionResponse(Slot slot) {
         if (slot == null) {
             return null;
         }
-        return new SlotOptionResponse(slot.name(), slot.name(), slot.getTimeRange(), slot.ordinal());
+        String displayName = slot == Slot.ZERO ? slot.name() : "Slot " + slot.ordinal();
+        return new SlotOptionResponse(slot.name(), displayName, slot.getTimeRange(), slot.ordinal());
     }
 }
