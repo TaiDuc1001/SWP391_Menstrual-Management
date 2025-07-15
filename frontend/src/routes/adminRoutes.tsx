@@ -8,6 +8,7 @@ import Examinations from '../pages/Admin/Examination/Examinations';
 import TestPanels from '../pages/Admin/TestPanel/TestPanels';
 import Reports from '../pages/Admin/Statistic/Reports';
 import Activities from '../pages/Admin/Activities';
+import WorkScheduleManagement from '../pages/Admin/WorkSchedule/WorkScheduleManagement';
 
 export const adminPaths: RouteConfig[] = [
     {
@@ -48,6 +49,13 @@ export const adminPaths: RouteConfig[] = [
         element: <TestPanels/>,
         label: 'Test Panels',
         iconName: 'FaFlask',
+        showInSidebar: true
+    },
+    {
+        path: '/admin/work-schedules',
+        element: <WorkScheduleManagement/>,
+        label: 'Work Schedules',
+        iconName: 'FaCalendarAlt',
         showInSidebar: true
     },
     {
