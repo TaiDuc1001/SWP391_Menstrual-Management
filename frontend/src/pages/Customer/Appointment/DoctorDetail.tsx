@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {Doctor, doctorService} from '../../../api/services';
 import {TitleBar} from '../../../components';
+import '../../../styles/pages/doctor-detail.css';
 
 const DoctorDetail: React.FC = () => {
     const {id} = useParams<{ id: string }>();
@@ -85,7 +86,29 @@ const DoctorDetail: React.FC = () => {
                     </div>
                     <div className="doctor-detail-section">
                         <div className="doctor-detail-section-title">About</div>
-                        <div className="doctor-detail-section-content">{doctor.bio || 'No bio available'}</div>
+                        <div className="doctor-detail-section-content">
+                            {doctor.degree || doctor.university ? (
+                                <div className="space-y-2">
+                                    {doctor.degree && (
+                                        <div>
+                                            <strong>Degree:</strong> {doctor.degree}
+                                        </div>
+                                    )}
+                                    {doctor.university && (
+                                        <div>
+                                            <strong>University:</strong> {doctor.university}
+                                        </div>
+                                    )}
+                                    {doctor.bio && (
+                                        <div className="mt-3">
+                                            <strong>Bio:</strong> {doctor.bio}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                doctor.bio || 'No additional information available'
+                            )}
+                        </div>
                     </div>
 
                 </div>

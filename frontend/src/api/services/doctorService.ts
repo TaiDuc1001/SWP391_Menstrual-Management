@@ -13,6 +13,8 @@ export interface Doctor {
     rating?: number;
     reviews?: number;
     appointments?: number;
+    degree?: string;
+    university?: string;
 }
 
 export interface DoctorProfile {
