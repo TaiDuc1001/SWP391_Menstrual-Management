@@ -7,6 +7,9 @@ interface DoctorProfileErrors {
     name?: string;
     specialization?: string;
     price?: string;
+    experience?: string;
+    degree?: string;
+    university?: string;
 }
 
 interface CreateUserModalProps {
@@ -41,7 +44,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     const [doctorProfileData, setDoctorProfileData] = useState<Partial<DoctorProfile>>({
         name: '',
         specialization: '',
-        price: 0
+        price: 0,
+        experience: 0,
+        degree: '',
+        university: ''
     });
 
     const [errors, setErrors] = useState<Partial<CreateAccountRequest>>({});
@@ -84,6 +90,9 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
             }
             if (!doctorProfileData.price || doctorProfileData.price <= 0 || doctorProfileData.price < 100000 || doctorProfileData.price > 1000000) {
                 newDoctorProfileErrors.price = 'Price must be between 100,000 and 1,000,000 VND';
+            }
+            if (doctorProfileData.experience === undefined || doctorProfileData.experience < 0) {
+                newDoctorProfileErrors.experience = 'Experience must be 0 or greater';
             }
         }
 
@@ -136,7 +145,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         setDoctorProfileData({
             name: '',
             specialization: '',
-            price: 0
+            price: 0,
+            experience: 0,
+            degree: '',
+            university: ''
         });
         setErrors({});
         setDoctorProfileErrors({});
@@ -509,6 +521,74 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                     {doctorProfileErrors.specialization}
+                                                </p>}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Years of Experience *
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    value={doctorProfileData.experience !== undefined ? doctorProfileData.experience : ''}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0);
+                                                        handleDoctorProfileChange('experience', value);
+                                                    }}
+                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${doctorProfileErrors.experience ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                    placeholder="0"
+                                                    min="0"
+                                                    step="1"
+                                                    disabled={loading}
+                                                />
+                                                {doctorProfileErrors.experience && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {doctorProfileErrors.experience}
+                                                </p>}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Degree
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={doctorProfileData.degree || ''}
+                                                    onChange={(e) => handleDoctorProfileChange('degree', e.target.value)}
+                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${doctorProfileErrors.degree ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                    placeholder="e.g. MD, PhD, Specialist..."
+                                                    disabled={loading}
+                                                />
+                                                {doctorProfileErrors.degree && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {doctorProfileErrors.degree}
+                                                </p>}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    University
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={doctorProfileData.university || ''}
+                                                    onChange={(e) => handleDoctorProfileChange('university', e.target.value)}
+                                                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${doctorProfileErrors.university ? 'border-red-300 bg-red-50' : ''
+                                                        }`}
+                                                    placeholder="e.g. Harvard Medical School, Hanoi Medical University..."
+                                                    disabled={loading}
+                                                />
+                                                {doctorProfileErrors.university && <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {doctorProfileErrors.university}
                                                 </p>}
                                             </div>
 

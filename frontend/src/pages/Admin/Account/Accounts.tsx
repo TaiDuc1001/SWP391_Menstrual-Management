@@ -119,7 +119,9 @@ const Accounts: React.FC = () => {
                             name: doctorProfile.name!,
                             specialization: doctorProfile.specialization!,
                             price: doctorProfile.price!,
-                            experience: doctorProfile.experience ?? 0
+                            experience: doctorProfile.experience ?? 0,
+                            degree: doctorProfile.degree ?? '',
+                            university: doctorProfile.university ?? ''
                         });
                     } catch (profileError: any) {
                         console.error('Error updating doctor profile:', profileError);
@@ -220,7 +222,9 @@ const Accounts: React.FC = () => {
                 name: profileData.name!,
                 specialization: profileData.specialization!,
                 price: profileData.price!,
-                experience: profileData.experience ?? 0
+                experience: profileData.experience ?? 0,
+                degree: profileData.degree ?? '',
+                university: profileData.university ?? ''
             });
 
             if (result) {

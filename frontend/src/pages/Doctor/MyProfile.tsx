@@ -137,6 +137,18 @@ const MyProfile: React.FC = () => {
                                         {profile.experience !== undefined ? profile.experience : 'Not provided'}
                                     </div>
                                 </div>
+                                <div>
+                                    <div className="text-xs text-gray-500 mb-1">Degree</div>
+                                    <div className="p-3 bg-gray-50 rounded border border-gray-100 text-gray-800 font-medium">
+                                        {profile.degree || 'Not provided'}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-xs text-gray-500 mb-1">University</div>
+                                    <div className="p-3 bg-gray-50 rounded border border-gray-100 text-gray-800 font-medium">
+                                        {profile.university || 'Not provided'}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         {/* Profile Status */}

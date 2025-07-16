@@ -28,63 +28,53 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
     const [doctorProfile, setDoctorProfile] = useState<DoctorProfileWithRating | null>(null);
     const [profileLoading, setProfileLoading] = useState(false);
     const [profileError, setProfileError] = useState<string | null>(null);
-
     useEffect(() => {
         if (isOpen && user && user.role === 'DOCTOR') {
-            fetchDoctorProfile();
+            const fetchProfile = async () => {
+                setProfileLoading(true);
+                setProfileError(null);
+                try {
+                    const profileResponse = await doctorService.getDoctorById(user.id);
+                    let profile = profileResponse.data;
+                    const doctorProfileRaw: DoctorProfileWithRating = {
+                        id: profile.id ?? 0,
+                        name: profile.name ?? '',
+                        specialization: profile.specialization ?? '',
+                        price: profile.price ?? 0,
+                        experience: profile.experience ?? 0,
+                        isProfileComplete: !!(profile.name && profile.specialization && profile.price > 0),
+                        degree: profile.degree ?? '',
+                        university: profile.university ?? '',
+                        averageRating: 0,
+                        totalRatings: 0
+                    };
+                    try {
+                        const ratingResponse = await doctorRatingService.getDoctorAverageRating(user.id);
+                        const { averageRating, totalRatings } = ratingResponse.data;
+                        setDoctorProfile({
+                            ...doctorProfileRaw,
+                            averageRating: averageRating || 0,
+                            totalRatings: totalRatings || 0
+                        });
+                    } catch (ratingError) {
+                        setDoctorProfile({
+                            ...doctorProfileRaw,
+                            averageRating: 0,
+                            totalRatings: 0
+                        });
+                    }
+                } catch (error) {
+                    setProfileError('Failed to load doctor profile information');
+                    setDoctorProfile(null);
+                } finally {
+                    setProfileLoading(false);
+                }
+            };
+            fetchProfile();
         } else {
             setDoctorProfile(null);
-            setProfileError(null);
         }
     }, [isOpen, user]);
-
-    const fetchDoctorProfile = async () => {
-        if (!user) return;
-
-        setProfileLoading(true);
-        setProfileError(null);
-
-        try {
-            // Fetch doctor profile by ID
-            const profileResponse = await doctorService.getDoctorById(user.id);
-            let profile = profileResponse.data;
-
-            // Convert to DoctorProfile format
-            const doctorProfile: DoctorProfile = {
-                id: profile.id,
-                name: profile.name,
-                specialization: profile.specialization,
-                price: profile.price,
-                experience: profile.experience ?? 0,
-                isProfileComplete: !!(profile.name && profile.specialization && profile.price > 0)
-            };
-
-            // Fetch rating data
-            try {
-                const ratingResponse = await doctorRatingService.getDoctorAverageRating(user.id);
-                const { averageRating, totalRatings } = ratingResponse.data;
-                
-                setDoctorProfile({
-                    ...doctorProfile,
-                    averageRating: averageRating || 0,
-                    totalRatings: totalRatings || 0
-                });
-            } catch (ratingError) {
-                console.log('Could not fetch rating data:', ratingError);
-                setDoctorProfile({
-                    ...doctorProfile,
-                    averageRating: 0,
-                    totalRatings: 0
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching doctor profile:', error);
-            setProfileError('Failed to load doctor profile information');
-            setDoctorProfile(null);
-        } finally {
-            setProfileLoading(false);
-        }
-    };
 
     const handleEditProfile = () => {
         if (user && doctorProfile && onEditDoctorProfile) {
@@ -247,6 +237,18 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Years of Experience</label>
                                             <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
                                                 {doctorProfile.experience !== undefined ? doctorProfile.experience + ' years' : 'Not set'}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+                                            <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
+                                                {doctorProfile.degree || <span className="text-gray-500">Not set</span>}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">University</label>
+                                            <div className="p-3 bg-orange-50 border border-orange-200 rounded-md text-gray-900">
+                                                {doctorProfile.university || <span className="text-gray-500">Not set</span>}
                                             </div>
                                         </div>
                                         <div>

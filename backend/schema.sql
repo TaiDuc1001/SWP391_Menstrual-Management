@@ -34,7 +34,10 @@ CREATE TABLE doctors (
     id BIGINT PRIMARY KEY,
     name VARCHAR(255),
     specialization VARCHAR(255),
+    degree VARCHAR(255),
+    university VARCHAR(255),
     price DECIMAL(19,2),
+    experience INTEGER,
     FOREIGN KEY (id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 

@@ -47,7 +47,9 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
     const [profile, setProfile] = useState<Partial<DoctorProfile>>({
         name: '',
         specialization: '',
-        price: undefined
+        price: undefined,
+        degree: '',
+        university: ''
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [specializations, setSpecializations] = useState<string[]>([]);
@@ -103,7 +105,10 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
             const profileData = {
                 name: profile.name!,
                 specialization: profile.specialization!,
-                price: profile.price!
+                price: profile.price!,
+                experience: profile.experience ?? 0,
+                degree: profile.degree ?? '',
+                university: profile.university ?? ''
             };
 
             await updateProfile(profileData);
@@ -198,6 +203,38 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
 
                     {/* Form Body */}
                     <div className="p-8">
+                        {/* Degree */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                <span className="flex items-center space-x-2">
+                                    <span>🎓</span>
+                                    <span>Degree</span>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-4 text-lg border-2 rounded-xl transition-all duration-200 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 bg-white border-gray-200 hover:border-gray-300"
+                                value={profile.degree || ''}
+                                onChange={e => handleInputChange('degree', e.target.value)}
+                                placeholder="e.g. MD, PhD, Specialist..."
+                            />
+                        </div>
+                        {/* University */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                <span className="flex items-center space-x-2">
+                                    <span>🏫</span>
+                                    <span>University</span>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-4 text-lg border-2 rounded-xl transition-all duration-200 focus:ring-4 focus:ring-purple-100 focus:border-purple-500 bg-white border-gray-200 hover:border-gray-300"
+                                value={profile.university || ''}
+                                onChange={e => handleInputChange('university', e.target.value)}
+                                placeholder="e.g. Harvard Medical School, Hanoi Medical University..."
+                            />
+                        </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {/* Left Column */}
                             <div className="space-y-6">

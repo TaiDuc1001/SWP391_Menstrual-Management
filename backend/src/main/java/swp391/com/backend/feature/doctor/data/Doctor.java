@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.account.data.Account;
-import swp391.com.backend.feature.account.data.Role;
 import swp391.com.backend.feature.schedule.data.Schedule;
 
 import java.math.BigDecimal;
@@ -38,6 +37,8 @@ public class Doctor implements Actor {
 
     private String name;
     private String specialization;
+    private String degree; // Bằng cấp
+    private String university; // Trường học
     private BigDecimal price;
     private Integer experience; // Số năm kinh nghiệm
 }

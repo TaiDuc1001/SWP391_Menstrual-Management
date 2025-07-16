@@ -73,6 +73,8 @@ public class DoctorController {
                     .price(doctor.getPrice() != null ? doctor.getPrice().intValue() : 0)
                     .experience(doctor.getExperience() != null ? doctor.getExperience() : 0)
                     .isProfileComplete(isProfileComplete(doctor))
+                    .degree(doctor.getDegree())
+                    .university(doctor.getUniversity())
                     .build();
             return ResponseEntity.ok(profileDTO);
         } catch (Exception e) {
@@ -86,6 +88,8 @@ public class DoctorController {
                     .price(0)
                     .experience(0)
                     .isProfileComplete(false)
+                    .degree("")
+                    .university("")
                     .build();
             return ResponseEntity.ok(emptyProfile);
         }
@@ -102,6 +106,8 @@ public class DoctorController {
             Doctor updatedDoctor = doctor.toBuilder()
                     .name(profileDTO.getName())
                     .specialization(profileDTO.getSpecialization())
+                    .degree(profileDTO.getDegree())
+                    .university(profileDTO.getUniversity())
                     .price(profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null)
                     .experience(profileDTO.getExperience() != null ? profileDTO.getExperience() : 0)
                     .build();
@@ -115,6 +121,8 @@ public class DoctorController {
                     .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
                     .experience(savedDoctor.getExperience() != null ? savedDoctor.getExperience() : 0)
                     .isProfileComplete(isProfileComplete(savedDoctor))
+                    .degree(savedDoctor.getDegree())
+                    .university(savedDoctor.getUniversity())
                     .build();
             
             return ResponseEntity.ok(responseDTO);
@@ -126,7 +134,9 @@ public class DoctorController {
                         profileDTO.getName(),
                         profileDTO.getSpecialization(),
                         profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null,
-                        profileDTO.getExperience() != null ? profileDTO.getExperience() : 0
+                        profileDTO.getExperience() != null ? profileDTO.getExperience() : 0,
+                        profileDTO.getDegree() != null ? profileDTO.getDegree() : "",
+                        profileDTO.getUniversity() != null ? profileDTO.getUniversity() : ""
                 );
                 
                 DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
@@ -136,6 +146,8 @@ public class DoctorController {
                         .price(savedDoctor.getPrice() != null ? savedDoctor.getPrice().intValue() : 0)
                         .experience(savedDoctor.getExperience() != null ? savedDoctor.getExperience() : 0)
                         .isProfileComplete(isProfileComplete(savedDoctor))
+                        .degree(savedDoctor.getDegree())
+                        .university(savedDoctor.getUniversity())
                         .build();
                 
                 return ResponseEntity.ok(responseDTO);
@@ -182,7 +194,9 @@ public class DoctorController {
                     profileDTO.getName(),
                     profileDTO.getSpecialization(),
                     profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null,
-                    profileDTO.getExperience() != null ? profileDTO.getExperience() : 0
+                    profileDTO.getExperience() != null ? profileDTO.getExperience() : 0,
+                    profileDTO.getDegree() != null ? profileDTO.getDegree() : "",
+                    profileDTO.getUniversity() != null ? profileDTO.getUniversity() : ""
             );
             DoctorDTO doctorDTO = doctorMapper.toDTO(doctor);
             return ResponseEntity.status(HttpStatus.CREATED).body(doctorDTO);
