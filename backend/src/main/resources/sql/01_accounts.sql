@@ -28,10 +28,10 @@ INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, addr
 -- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (17, 'Hoang Thi Lan', '1988-09-05', 0, '0943216547', '654321987654', '202 Ba Trieu, Hue');
 
 INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (1, 'Gynecology', 'Tran Duc Linh', 'Bachelor of Medicine', 'University of Medicine and Pharmacy Ho Chi Minh City', 210000.00, 10);
-INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (6, 'Gynecology', 'Vo Thi Minh', 'Doctor of Medicine', 'Hanoi Medical University', 200000.00, 8);
-INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (7, 'Urology', 'Bui Van Thanh', 'Doctor of Medicine', 'Hue University of Medicine and Pharmacy', 180000.00, 6);
-INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (8, 'Infectious Diseases', 'Hồng Tỷ', 'Master of Medicine', 'Can Tho University of Medicine and Pharmacy', 220000.00, 12);
-INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (9, 'Sexual Health', 'Ly Mac Sau', 'Bachelor of Medicine', 'University of Medicine and Pharmacy Ho Chi Minh City', 160000.00, 5);
+INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (6, 'Gynecology', 'Nguyen Trung Tin', 'Doctor of Medicine', 'Hanoi Medical University', 200000.00, 8);
+INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (7, 'Urology', 'Nguyen Le Quang Hung', 'Doctor of Medicine', 'Hue University of Medicine and Pharmacy', 180000.00, 6);
+INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (8, 'Infectious Diseases', 'Hong Ty', 'Master of Medicine', 'Can Tho University of Medicine and Pharmacy', 220000.00, 12);
+INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (9, 'Sexual Health', 'Luong Minh Nhat', 'Bachelor of Medicine', 'University of Medicine and Pharmacy Ho Chi Minh City', 160000.00, 5);
 INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (10, 'Sexual Health', 'Thanh Cat Tu Han', 'Doctor of Medicine', 'Hanoi Medical University', 150000.00, 4);
 
 INSERT INTO admins (id, name) VALUES (4, 'Admin');
