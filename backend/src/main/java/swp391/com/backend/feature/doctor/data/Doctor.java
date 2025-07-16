@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import swp391.com.backend.feature.account.data.Actor;
 import swp391.com.backend.feature.appointment.data.Appointment;
 import swp391.com.backend.feature.account.data.Account;
-import swp391.com.backend.feature.account.data.Role;
 import swp391.com.backend.feature.schedule.data.Schedule;
 
 import java.math.BigDecimal;
