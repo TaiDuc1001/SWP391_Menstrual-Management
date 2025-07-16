@@ -46,22 +46,19 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({ profile, c
         
         let completed = 0;
         const total = fields.length + arrayFields.length + 1; // +1 for avatar
-        
-        // Check basic fields
+
         fields.forEach(field => {
             if (profile[field] && profile[field] !== '' && profile[field] !== 0) {
                 completed++;
             }
         });
-        
-        // Check array fields
+
         arrayFields.forEach(field => {
             if (profile[field] && Array.isArray(profile[field]) && profile[field].length > 0) {
                 completed++;
             }
         });
-        
-        // Check avatar
+
         if (profile.avatar) {
             completed++;
         }
@@ -86,3 +83,4 @@ export const ProfileCompletion: React.FC<ProfileCompletionProps> = ({ profile, c
         </div>
     );
 };
+

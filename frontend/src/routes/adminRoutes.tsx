@@ -73,3 +73,4 @@ export const adminPaths: RouteConfig[] = [
         showInSidebar: false
     },
 ];
+

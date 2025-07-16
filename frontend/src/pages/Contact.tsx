@@ -56,7 +56,7 @@ const Contact: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-            {/* Hero Section */}
+            {}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
@@ -103,15 +103,15 @@ const Contact: React.FC = () => {
                     </div>
                 </div>
                 
-                {/* Floating elements */}
+                {}
                 <div className="absolute top-20 left-10 w-20 h-20 bg-pink-300 rounded-full opacity-30 animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-30 animate-pulse delay-1000"></div>
             </section>
-            {/* Contact Form & Info Section */}
+            {}
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="grid lg:grid-cols-2 gap-16 items-start">
-                        {/* Contact Form */}
+                        {}
                         <div>
                             <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-4 py-2 rounded-full mb-8">
                                 <span>✉️</span>
@@ -212,7 +212,7 @@ const Contact: React.FC = () => {
                             </form>
                         </div>
                         
-                        {/* Contact Information */}
+                        {}
                         <div>
                             <div className="inline-flex items-center gap-2 bg-green-100 text-green-600 px-4 py-2 rounded-full mb-8">
                                 <span>📍</span>
@@ -289,7 +289,7 @@ const Contact: React.FC = () => {
                 </div>
             </section>
             
-            {/* Health News Section */}
+            {}
             <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
                     <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -357,7 +357,7 @@ const Contact: React.FC = () => {
                             </div>
                         </div>
                         
-                        {/* Navigation Buttons */}
+                        {}
                         <button
                             onClick={handlePrev}
                             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full shadow-xl p-4 hover:bg-pink-50 transition-all duration-300 transform hover:scale-110 z-10"
@@ -388,7 +388,7 @@ const Contact: React.FC = () => {
                             </svg>
                         </button>
                         
-                        {/* Pagination Dots */}
+                        {}
                         <div className="flex justify-center mt-8 gap-2">
                             {Array.from({length: newsData.length - 1}).map((_, idx) => (
                                 <button
@@ -410,3 +410,4 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
+

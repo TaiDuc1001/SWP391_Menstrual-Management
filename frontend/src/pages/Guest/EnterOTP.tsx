@@ -70,3 +70,4 @@ const EnterOTP: React.FC = () => {
 };
 
 export default EnterOTP;
+

@@ -12,3 +12,4 @@ const AppointmentUtilityBar: React.FC<AppointmentUtilityBarProps> = ({children})
 );
 
 export default AppointmentUtilityBar;
+

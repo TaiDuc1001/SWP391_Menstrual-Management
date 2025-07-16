@@ -42,7 +42,6 @@ const CreateScheduleModal: React.FC<CreateScheduleModalProps> = ({
         };
     }, [onClose]);
 
-    // Get current date
     const getCurrentDate = () => {
         const today = new Date();
         const year = today.getFullYear();
@@ -126,7 +125,7 @@ const CreateScheduleModal: React.FC<CreateScheduleModalProps> = ({
 
                 <form onSubmit={handleSubmit} className="p-6">
                     <div className="space-y-4">
-                        {/* Doctor Selection */}
+                        {}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Doctor <span className="text-red-500">*</span>
@@ -146,7 +145,7 @@ const CreateScheduleModal: React.FC<CreateScheduleModalProps> = ({
                             </select>
                         </div>
 
-                        {/* Date Selection */}
+                        {}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Date <span className="text-red-500">*</span>
@@ -161,7 +160,7 @@ const CreateScheduleModal: React.FC<CreateScheduleModalProps> = ({
                             />
                         </div>
 
-                        {/* Slot Selection */}
+                        {}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Time Slots <span className="text-red-500">*</span>
@@ -226,3 +225,4 @@ const CreateScheduleModal: React.FC<CreateScheduleModalProps> = ({
 };
 
 export default CreateScheduleModal;
+

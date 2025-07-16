@@ -35,20 +35,18 @@ const AppointmentBooking: React.FC = () => {
 
     const customerId = 3;
 
-    // Get current date and minimum allowed date
     const getCurrentDate = () => {
         const now = new Date();
         return now.toISOString().split('T')[0];
     };
 
     const getMinDate = () => {
-        // Allow booking from tomorrow onwards
+
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         return tomorrow.toISOString().split('T')[0];
     };
 
-    // Validate if selected date is in the future
     const isDateInFuture = (dateString: string) => {
         const selectedDate = new Date(dateString);
         const today = new Date();
@@ -101,8 +99,7 @@ const AppointmentBooking: React.FC = () => {
             try {
                 const doctorsResponse = await api.get('/doctors');
                 const doctors = doctorsResponse.data;
-                
-                // Fetch ratings for each doctor
+
                 const doctorsWithRatings = await Promise.all(
                     doctors.map(async (doctor: any) => {
                         try {
@@ -120,7 +117,7 @@ const AppointmentBooking: React.FC = () => {
                                 experience: doctor.experience,
                             };
                         } catch (error) {
-                            // If rating fetch fails, use default values
+
                             return {
                                 id: doctor.id,
                                 name: doctor.name,
@@ -149,20 +146,17 @@ const AppointmentBooking: React.FC = () => {
         ...Array.from(new Set(advisors.map(a => a.specialization))).map(s => ({value: s, label: s}))
     ];    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Enhanced validation
+
         if (!selectedAdvisor || !selectedDate || !selectedTime) {
             setShowSlotError(!selectedTime);
             return;
         }
 
-        // Validate date is in the future
         if (!isDateInFuture(selectedDate)) {
             alert('You can only book appointments for future dates. Please select a date starting from tomorrow.');
             return;
         }
 
-        // Validate the selected date is not older than current date
         const selectedDateObj = new Date(selectedDate);
         const currentDate = new Date();
         if (selectedDateObj < currentDate) {
@@ -322,7 +316,7 @@ const AppointmentBooking: React.FC = () => {
                                     value={selectedDate}
                                     onChange={e => {
                                         const newDate = e.target.value;
-                                        // Additional validation on change
+
                                         if (newDate && !isDateInFuture(newDate)) {
                                             alert('Please select a future date. You can only book appointments starting from tomorrow.');
                                             return;
@@ -446,3 +440,4 @@ const AppointmentBooking: React.FC = () => {
 };
 
 export default AppointmentBooking;
+

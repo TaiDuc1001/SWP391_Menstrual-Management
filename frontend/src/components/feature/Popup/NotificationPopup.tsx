@@ -38,3 +38,4 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({message, type, isO
 };
 
 export default NotificationPopup;
+

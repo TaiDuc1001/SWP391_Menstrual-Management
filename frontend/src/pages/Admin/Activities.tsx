@@ -30,16 +30,13 @@ const Activities: React.FC = () => {
         fetchActivities();
     }, []);
 
-    // Filter activities based on type and search term
     useEffect(() => {
         let filtered = activities;
 
-        // Filter by type
         if (filter !== 'all') {
             filtered = filtered.filter(activity => activity.type === filter);
         }
 
-        // Filter by search term
         if (searchTerm) {
             filtered = filtered.filter(activity => 
                 activity.action.toLowerCase().includes(searchTerm.toLowerCase())
@@ -165,7 +162,7 @@ const Activities: React.FC = () => {
                         </button>
                     </div>
                     
-                    {/* Activity Stats */}
+                    {}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <div className="text-blue-600 text-sm font-medium">Total Activities</div>

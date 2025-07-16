@@ -10,3 +10,4 @@ const NewAppointmentButton: React.FC<NewAppointmentButtonProps> = ({icon, childr
 );
 
 export default NewAppointmentButton;
+

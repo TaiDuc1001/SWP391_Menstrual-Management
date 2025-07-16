@@ -59,3 +59,4 @@ const AdminHeader: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) =
 };
 
 export default AdminHeader;
+

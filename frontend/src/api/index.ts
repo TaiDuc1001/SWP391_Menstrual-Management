@@ -1,7 +1,4 @@
-/**
- * Centralized API exports for the entire application
- * Import all API functionality from this single entry point
- */
+
 
 
 export {default as api} from './axios';
@@ -155,3 +152,4 @@ export const formatApiResponse = <T>(data: T, message?: string): ApiResponse<T> 
         success: true
     };
 };
+

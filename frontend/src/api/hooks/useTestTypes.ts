@@ -67,7 +67,6 @@ export const useTestTypes = () => {
         }
     };
 
-    // Auto-fetch test types when hook is initialized
     useEffect(() => {
         fetchTestTypes();
     }, []);
@@ -83,3 +82,4 @@ export const useTestTypes = () => {
         setError
     };
 };
+

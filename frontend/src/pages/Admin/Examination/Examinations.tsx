@@ -520,3 +520,4 @@ const Examinations: React.FC = () => {
 };
 
 export default Examinations;
+

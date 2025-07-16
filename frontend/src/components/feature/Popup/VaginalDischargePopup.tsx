@@ -132,3 +132,4 @@ const VaginalDischargePopup: React.FC<VaginalDischargePopupProps> = ({
 };
 
 export default VaginalDischargePopup;
+

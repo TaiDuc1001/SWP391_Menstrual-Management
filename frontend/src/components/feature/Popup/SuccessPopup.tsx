@@ -25,3 +25,4 @@ const SuccessPopup: React.FC<SuccessPopupProps> = ({open, onClose, message = 'Su
 };
 
 export default SuccessPopup;
+

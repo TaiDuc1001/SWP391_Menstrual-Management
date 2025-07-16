@@ -118,3 +118,4 @@ const DoctorDetail: React.FC = () => {
 };
 
 export default DoctorDetail;
+

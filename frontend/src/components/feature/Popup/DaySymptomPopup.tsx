@@ -366,3 +366,4 @@ const DaySymptomPopup: React.FC<DaySymptomPopupProps> = ({open, onClose, onSave,
 };
 
 export default DaySymptomPopup;
+

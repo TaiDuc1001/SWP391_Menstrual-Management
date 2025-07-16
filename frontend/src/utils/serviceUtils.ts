@@ -75,3 +75,4 @@ export const createBaseService = <T extends BaseEntity, F extends BaseFilters>(
         return response.data;
     }
 });
+

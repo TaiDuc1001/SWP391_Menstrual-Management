@@ -87,3 +87,4 @@ const BookingSuccessPopup: React.FC<BookingSuccessPopupProps> = ({
 };
 
 export default BookingSuccessPopup;
+

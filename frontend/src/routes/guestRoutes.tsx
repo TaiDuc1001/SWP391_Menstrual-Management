@@ -10,3 +10,4 @@ export const guestPaths: RouteConfig[] = [
     {path: '/enter-otp', element: <EnterOTP/>},
     {path: '/change-password', element: <ChangePassword/>},
 ];
+

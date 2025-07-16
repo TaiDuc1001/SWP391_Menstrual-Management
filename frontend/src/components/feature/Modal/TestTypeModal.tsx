@@ -33,7 +33,7 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
         setLoading(true);
         try {
             await onSubmit(formData);
-            // Reset form
+
             setFormData({
                 name: '',
                 description: '',
@@ -49,7 +49,7 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
     };
 
     const handleClose = () => {
-        // Reset form when closing
+
         setFormData({
             name: '',
             description: '',
@@ -73,7 +73,7 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
             onClick={handleBackdropClick}
         >
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-hidden flex flex-col">
-                {/* Header */}
+                {}
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
                     <div className="flex justify-between items-center">
                         <div>
@@ -91,11 +91,11 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
                     </div>
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="flex-1 overflow-y-auto">
                     <form onSubmit={handleSubmit} className="p-6">
                         <div className="space-y-6">
-                            {/* Test Type Name */}
+                            {}
                             <div className="bg-blue-50 rounded-lg p-4">
                                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                                     <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,7 +138,7 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
                                 </div>
                             </div>
 
-                            {/* Technical Specifications */}
+                            {}
                             <div className="bg-purple-50 rounded-lg p-4">
                                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                                     <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +183,7 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
                     </form>
                 </div>
 
-                {/* Footer */}
+                {}
                 <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
                     <button
                         type="button"
@@ -218,3 +218,4 @@ const TestTypeModal: React.FC<TestTypeModalProps> = ({
 };
 
 export default TestTypeModal;
+

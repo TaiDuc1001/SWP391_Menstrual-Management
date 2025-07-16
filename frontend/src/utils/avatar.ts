@@ -7,3 +7,4 @@ export const generateAvatarUrl = (
     const encodedName = encodeURIComponent(name || 'User');
     return `https://ui-avatars.com/api/?name=${encodedName}&size=${size}&background=${background}&color=${color}&bold=true`;
 };
+

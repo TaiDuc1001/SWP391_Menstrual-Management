@@ -18,7 +18,7 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
     onDeleteDaySchedule,
     onRefreshData
 }) => {
-    // Get current date
+
     const getCurrentDate = () => {
         const today = new Date();
         const year = today.getFullYear();
@@ -27,7 +27,6 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
         return `${year}-${month}-${day}`;
     };
 
-    // Get date 30 days from now
     const getDateAfter30Days = () => {
         const date = new Date();
         date.setDate(date.getDate() + 30);
@@ -43,12 +42,10 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
     const [currentDoctor, setCurrentDoctor] = useState<DoctorSchedule>(initialDoctor);
     const modalRef = useRef<HTMLDivElement>(null);
 
-    // Update currentDoctor when initialDoctor changes
     useEffect(() => {
         setCurrentDoctor(initialDoctor);
     }, [initialDoctor]);
 
-    // Handle click outside to close
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -114,7 +111,7 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
             .map(([date, dateSchedules]: [string, any]) => ({
                 date,
                 schedules: dateSchedules.sort((a: Schedule, b: Schedule) => {
-                    // Sort by slot ordinal
+
                     const aOrdinal = a.slot.name === 'ZERO' ? 0 : 
                                    a.slot.name === 'ONE' ? 1 :
                                    a.slot.name === 'TWO' ? 2 :
@@ -162,7 +159,7 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
                 </div>
 
                 <div className="p-6">
-                    {/* Date Range Filter */}
+                    {}
                     <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Filter by Date Range
@@ -278,3 +275,4 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
 };
 
 export default ViewScheduleModal;
+

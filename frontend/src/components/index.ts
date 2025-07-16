@@ -1,7 +1,4 @@
-/**
- * Centralized component exports to reduce code duplication
- * Import all reusable components from this single entry point
- */
+
 
 
 export {Button} from './common/Button';
@@ -38,6 +35,6 @@ export {default as PublicLayout} from './layout/Layouts/PublicLayout';
 
 export {default as TestResultPopup} from './feature/Popup/TestResultPopup';
 
-// Profile Management
 export { default as DoctorProfileGuard } from './DoctorProfileGuard';
 export * from './common/ProgressBar';
+

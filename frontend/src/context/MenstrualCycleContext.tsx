@@ -37,3 +37,4 @@ export const MenstrualCycleProvider: React.FC<{ children: React.ReactNode }> = (
         </MenstrualCycleContext.Provider>
     );
 };
+

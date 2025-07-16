@@ -121,8 +121,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             ...prev,
             [field]: value
         }));
-        
-        // Clear error when user starts typing
+
         if (errors[field]) {
             setErrors(prev => ({
                 ...prev,
@@ -143,7 +142,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-                {/* Header */}
+                {}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-3 border-b border-gray-200">
                     <div className="flex justify-between items-center">
                         <div>
@@ -162,7 +161,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                     </div>
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="flex-1 overflow-y-auto">
                     {serverError && (
                         <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-2">
@@ -175,9 +174,9 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
 
                     <form onSubmit={handleSubmit} className="p-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Left Column */}
+                            {}
                             <div className="space-y-4">
-                                {/* User Information Section */}
+                                {}
                                 <div className="bg-green-50 rounded-lg p-4">
                                     <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
                                         <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,7 +232,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Security Section */}
+                                {}
                                 <div className="bg-purple-50 rounded-lg p-4">
                                     <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
                                         <svg className="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,9 +265,9 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                                 </div>
                             </div>
 
-                            {/* Right Column */}
+                            {}
                             <div className="space-y-4">
-                                {/* Contact & Settings Section */}
+                                {}
                                 <div className="bg-orange-50 rounded-lg p-4">
                                     <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
                                         <svg className="w-4 h-4 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,7 +306,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                                                     type="tel"
                                                     value={formData.phoneNumber}
                                                     onChange={(e) => {
-                                                        // Only allow digits and ensure it starts with 0
+
                                                         const value = e.target.value.replace(/\D/g, '');
                                                         if (value.length <= 10 && (value === '' || value.startsWith('0'))) {
                                                             handleInputChange('phoneNumber', value);
@@ -354,7 +353,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
                     </form>
                 </div>
 
-                {/* Footer */}
+                {}
                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end space-x-3">
                     <button
                         type="button"
@@ -390,3 +389,4 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
 };
 
 export default UpdateUserModal;
+

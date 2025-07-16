@@ -12,3 +12,4 @@ const ViewResultButton: React.FC<ViewResultsButtonProps> = ({onClick}) => (
 );
 
 export default ViewResultButton;
+

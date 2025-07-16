@@ -218,3 +218,4 @@ const SpecialDayPopup: React.FC<SpecialDayPopupProps> = ({ open, onClose, onSave
 };
 
 export default SpecialDayPopup;
+

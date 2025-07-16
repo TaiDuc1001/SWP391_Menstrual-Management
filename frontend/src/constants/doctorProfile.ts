@@ -1,4 +1,4 @@
-// Validation constants for doctor profile
+
 export const VALIDATION_RULES = {
     NAME: {
         MIN_LENGTH: 2,
@@ -70,3 +70,4 @@ export const WORKING_HOURS_OPTIONS = [
     { value: '20:00', label: '20:00' },
     { value: '21:00', label: '21:00' }
 ];
+

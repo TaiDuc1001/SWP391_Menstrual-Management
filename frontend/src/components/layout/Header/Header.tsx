@@ -43,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
             setUserName(userProfile.profile.name);
             setUserAvatar(generateAvatarUrl(userProfile.profile.name));
         } else if (userProfile?.email) {
-            // Fallback to email if name is not available
+
             const emailName = userProfile.email.split('@')[0];
             setUserName(emailName);
             setUserAvatar(generateAvatarUrl(emailName));
@@ -54,15 +54,13 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
         updateUserInfo();
     }, []);
 
-    // Listen for storage changes to update header when profile is updated
     useEffect(() => {
         const handleStorageChange = () => {
             updateUserInfo();
         };
 
         window.addEventListener('storage', handleStorageChange);
-        
-        // Also listen for custom event when localStorage is updated in the same tab
+
         window.addEventListener('profileUpdated', handleStorageChange);
         
         return () => {
@@ -147,3 +145,4 @@ const Header: React.FC<HeaderProps> = ({isAuthenticated, onAuthToggle}) => {
 };
 
 export default Header;
+

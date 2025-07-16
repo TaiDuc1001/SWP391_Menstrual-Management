@@ -74,3 +74,4 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({post, onClose}) => {
 };
 
 export default PostDetailModal;
+

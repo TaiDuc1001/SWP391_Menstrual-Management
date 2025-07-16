@@ -55,7 +55,7 @@ const PanelDetail: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-blue-50">
             <div className="p-6">
                 <div className="max-w-4xl mx-auto">
-                    {/* Header */}
+                    {}
                     <div className="mb-8">
                         <TitleBar
                             text={panel.panelName}
@@ -64,11 +64,11 @@ const PanelDetail: React.FC = () => {
                         />
                     </div>
 
-                    {/* Main Content */}
+                    {}
                     <div className="grid md:grid-cols-3 gap-8">
-                        {/* Left Column - Main Info */}
+                        {}
                         <div className="md:col-span-2 space-y-6">
-                            {/* Package Overview Card */}
+                            {}
                             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                                 <div className="flex items-start justify-between mb-6">
                                     <div>
@@ -102,7 +102,7 @@ const PanelDetail: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Tests Included Card */}
+                            {}
                             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                                     <span className="bg-pink-100 p-2 rounded-lg mr-3">🧪</span>
@@ -134,9 +134,9 @@ const PanelDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Right Column - Sidebar */}
+                        {}
                         <div className="space-y-6">
-                            {/* Quick Info Card */}
+                            {}
                             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 sticky top-6">
                                 <h3 className="text-xl font-bold text-gray-900 mb-4">Package Details</h3>
                                 
@@ -180,7 +180,7 @@ const PanelDetail: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Benefits Card */}
+                            {}
                             <div className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
                                 <h3 className="text-xl font-bold mb-4">Why Choose This Package?</h3>
                                 <div className="space-y-3">
@@ -211,3 +211,4 @@ const PanelDetail: React.FC = () => {
 };
 
 export default PanelDetail;
+

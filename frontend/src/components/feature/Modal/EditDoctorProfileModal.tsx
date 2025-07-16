@@ -166,7 +166,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
-                {/* Header */}
+                {}
                 <div className="bg-blue-600 px-6 py-4 flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <div className="text-white">
@@ -185,10 +185,10 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                     </div>
                 </div>
 
-                {/* Form */}
+                {}
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
                     <div className="p-6 flex-1 overflow-y-auto">
-                        {/* Degree */}
+                        {}
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <span className="flex items-center space-x-2">
@@ -205,7 +205,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                 disabled={loading}
                             />
                         </div>
-                        {/* University */}
+                        {}
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <span className="flex items-center space-x-2">
@@ -222,7 +222,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                 disabled={loading}
                             />
                         </div>
-                        {/* Experience */}
+                        {}
                         <div className="mb-6">
                             <label className="block text-sm font-semibold text-gray-700 mb-2">
                                 <span className="flex items-center space-x-2">
@@ -268,7 +268,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                         )}
 
                         <div className="space-y-4">
-                            {/* Full Name */}
+                            {}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Full Name *
@@ -289,7 +289,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                 )}
                             </div>
 
-                            {/* Specialization */}
+                            {}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Medical Specialization *
@@ -315,7 +315,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                 )}
                             </div>
 
-                            {/* Consultation Fee */}
+                            {}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Consultation Fee (VND) *
@@ -343,7 +343,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Footer - sticky at bottom */}
+                    {}
                     <div className="flex justify-end space-x-3 px-6 py-4 border-t border-gray-200 bg-white flex-shrink-0">
                         <button
                             type="button"
@@ -378,3 +378,4 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 };
 
 export default EditDoctorProfileModal;
+

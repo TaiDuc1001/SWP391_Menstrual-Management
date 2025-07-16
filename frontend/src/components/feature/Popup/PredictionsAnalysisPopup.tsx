@@ -164,3 +164,4 @@ const PredictionsAnalysisPopup: React.FC<PredictionsAnalysisPopupProps> = ({
 };
 
 export default PredictionsAnalysisPopup;
+

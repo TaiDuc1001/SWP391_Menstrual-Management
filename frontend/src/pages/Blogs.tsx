@@ -15,28 +15,23 @@ const Blogs: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const blogsPerPage = 6; // 2 dòng x 3 cột
 
-    // Filter blogs based on search term and category
     useEffect(() => {
         setFilteredBlogs(blogs);
     }, [blogs]);
 
-    // Get featured blog (first blog or any blog marked as featured)
     const displayBlogs = searchTerm.trim() ? filteredBlogs : blogs;
     const featuredBlog = displayBlogs.length > 0 && !searchTerm && selectedCategory === 'ALL' ? displayBlogs[0] : null;
     const regularBlogs = featuredBlog ? displayBlogs.slice(1) : displayBlogs;
 
-    // Pagination logic
     const totalPages = Math.ceil(regularBlogs.length / blogsPerPage);
     const startIndex = (currentPage - 1) * blogsPerPage;
     const endIndex = startIndex + blogsPerPage;
     const currentBlogs = regularBlogs.slice(startIndex, endIndex);
 
-    // Reset to first page when search or category changes
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, selectedCategory]);
 
-    // Pagination handlers
     const goToPage = (page: number) => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -54,7 +49,6 @@ const Blogs: React.FC = () => {
         }
     };
 
-    // Format date helper
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -63,12 +57,10 @@ const Blogs: React.FC = () => {
         });
     };
 
-    // Format category for display
     const formatCategory = (category: string) => {
         return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
-    // Handle search
     const handleSearch = async (term: string) => {
         setSearchTerm(term);
         
@@ -80,7 +72,7 @@ const Blogs: React.FC = () => {
                 console.error('Error searching blogs:', err);
             }
         } else {
-            // If search is cleared, show all blogs or filtered by category
+
             if (selectedCategory === 'ALL') {
                 await fetchBlogs();
             } else {
@@ -89,7 +81,6 @@ const Blogs: React.FC = () => {
         }
     };
 
-    // Handle category filter
     const handleCategoryFilter = async (category: keyof BlogCategory | 'ALL') => {
         setSelectedCategory(category);
         setSearchTerm(''); // Clear search when filtering by category
@@ -105,7 +96,6 @@ const Blogs: React.FC = () => {
         }
     };
 
-    // Handle blog click
     const handleBlogClick = async (blog: SimpleBlogDTO) => {
         try {
             const fullBlog = await getBlogById(blog.id);
@@ -141,7 +131,7 @@ const Blogs: React.FC = () => {
     }
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-            {/* Hero Section */}
+            {}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
@@ -163,7 +153,7 @@ const Blogs: React.FC = () => {
                             in women's health and reproductive care.
                         </p>
                         
-                        {/* Enhanced Search Bar */}
+                        {}
                         <div className="max-w-2xl mx-auto relative">
                             <div className="relative">
                                 <input
@@ -208,11 +198,11 @@ const Blogs: React.FC = () => {
                     </div>
                 </div>
                 
-                {/* Floating elements */}
+                {}
                 <div className="absolute top-20 left-10 w-20 h-20 bg-pink-300 rounded-full opacity-30 animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-30 animate-pulse delay-1000"></div>
             </section>
-            {/* Featured Article */}
+            {}
             {featuredBlog && !searchTerm && selectedCategory === 'ALL' && (
                 <section className="py-16 bg-white">
                     <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
@@ -228,7 +218,7 @@ const Blogs: React.FC = () => {
                                         <span className="text-8xl">�</span>
                                     </div>
                                     
-                                    {/* Decorative elements */}
+                                    {}
                                     <div className="absolute -top-4 -right-4 w-16 h-16 bg-pink-300 rounded-full opacity-60 animate-pulse"></div>
                                     <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-purple-300 rounded-full opacity-60 animate-pulse delay-500"></div>
                                 </div>
@@ -269,7 +259,7 @@ const Blogs: React.FC = () => {
                 </section>
             )}
 
-            {/* Category Filter & Articles Grid */}
+            {}
             <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-6">
@@ -285,7 +275,7 @@ const Blogs: React.FC = () => {
                             </p>
                         </div>
                         
-                        {/* Enhanced Category Dropdown */}
+                        {}
                         <div className="relative min-w-[250px]">
                             <select
                                 value={selectedCategory}
@@ -308,10 +298,10 @@ const Blogs: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Articles Grid */}
+                    {}
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {loading ? (
-                            // Enhanced skeleton loading
+
                             Array.from({ length: 6 }).map((_, index) => (
                                 <div key={index} className="bg-white rounded-3xl overflow-hidden shadow-lg">
                                     <div className="h-56 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse"></div>
@@ -337,14 +327,14 @@ const Blogs: React.FC = () => {
                                             <span className="text-6xl opacity-60">📄</span>
                                         </div>
                                         
-                                        {/* Category badge */}
+                                        {}
                                         <div className="absolute top-4 left-4">
                                             <span className="bg-white/90 backdrop-blur-sm text-pink-600 font-semibold px-3 py-1 rounded-full text-sm shadow-lg">
                                                 {formatCategory(post.category)}
                                             </span>
                                         </div>
                                         
-                                        {/* Gradient overlay */}
+                                        {}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/30 transition-all duration-300"></div>
                                     </div>
                                     
@@ -382,7 +372,7 @@ const Blogs: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Enhanced Empty State */}
+                    {}
                     {displayBlogs.length === 0 && !loading && (
                         <div className="text-center py-24">
                             <div className="text-8xl mb-6">�</div>
@@ -407,11 +397,11 @@ const Blogs: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Enhanced Pagination */}
+                    {}
                     {totalPages > 1 && (
                         <div className="bg-white rounded-3xl p-8 shadow-lg mt-16">
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                                {/* Previous Button */}
+                                {}
                                 <button
                                     onClick={goToPrevPage}
                                     disabled={currentPage === 1}
@@ -427,7 +417,7 @@ const Blogs: React.FC = () => {
                                     Previous
                                 </button>
 
-                                {/* Page Numbers */}
+                                {}
                                 <div className="flex gap-2">
                                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                                         let pageNum: number;
@@ -457,7 +447,7 @@ const Blogs: React.FC = () => {
                                     })}
                                 </div>
 
-                                {/* Next Button */}
+                                {}
                                 <button
                                     onClick={goToNextPage}
                                     disabled={currentPage === totalPages}
@@ -474,7 +464,7 @@ const Blogs: React.FC = () => {
                                 </button>
                             </div>
                             
-                            {/* Page Info */}
+                            {}
                             <div className="text-center mt-6 text-gray-500">
                                 <span className="bg-gray-100 px-4 py-2 rounded-full text-sm font-medium">
                                     Showing {startIndex + 1}-{Math.min(endIndex, regularBlogs.length)} of {regularBlogs.length} articles
@@ -485,7 +475,7 @@ const Blogs: React.FC = () => {
                 </div>
             </section>
 
-            {/* Blog Detail Modal */}
+            {}
             <BlogDetailModal 
                 blog={selectedBlog}
                 isOpen={isModalOpen}

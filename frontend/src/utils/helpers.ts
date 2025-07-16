@@ -1,6 +1,4 @@
-/**
- * Common utility functions for data formatting and manipulation
- */
+
 
 
 export const formatDate = (date: string | Date, format: 'short' | 'long' | 'time' = 'short'): string => {
@@ -199,3 +197,4 @@ export const retry = async <T>(
         throw error;
     }
 };
+

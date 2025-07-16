@@ -18,7 +18,6 @@ const CompleteProfile: React.FC = () => {
 
     const userProfile = getCurrentUserProfile();
 
-    // Redirect if not logged in
     if (!userProfile) {
         navigate('/login');
         return null;
@@ -33,21 +32,18 @@ const CompleteProfile: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Comprehensive validation
+
         const errors = [];
         if (!formData.name.trim()) errors.push('Full name is required');
         if (!formData.phoneNumber.trim()) errors.push('Phone number is required');
         if (!formData.dateOfBirth) errors.push('Date of birth is required');
         if (!formData.address.trim()) errors.push('Address is required');
-        
-        // Phone number validation
+
         const phoneRegex = /^[0-9]{10,11}$/;
         if (formData.phoneNumber && !phoneRegex.test(formData.phoneNumber.replace(/\D/g, ''))) {
             errors.push('Please enter a valid phone number');
         }
-        
-        // Date validation (must be at least 13 years old)
+
         if (formData.dateOfBirth) {
             const birthDate = new Date(formData.dateOfBirth);
             const today = new Date();
@@ -75,7 +71,6 @@ const CompleteProfile: React.FC = () => {
                 return;
             }
 
-            // For new registrations, the profile might be null, but we can still proceed
             const profileId = userProfile.profile?.id || userProfile.id;
             
             if (!profileId) {
@@ -84,8 +79,7 @@ const CompleteProfile: React.FC = () => {
             }
 
             await api.put(`/customers/${profileId}`, formData);
-            
-            // Update localStorage with new profile data
+
             const updatedProfile = {
                 ...userProfile,
                 profile: {
@@ -99,8 +93,7 @@ const CompleteProfile: React.FC = () => {
                 }
             };
             localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-            
-            // Dispatch event to notify other components of profile update
+
             window.dispatchEvent(new CustomEvent('profileUpdated'));
             
             navigate('/customer/dashboard');
@@ -170,7 +163,7 @@ const CompleteProfile: React.FC = () => {
                                 required
                                 value={formData.phoneNumber}
                                 onChange={(e) => {
-                                    // Only allow numbers and limit length
+
                                     const value = e.target.value.replace(/\D/g, '');
                                     if (value.length <= 11) {
                                         handleInputChange('phoneNumber', value);

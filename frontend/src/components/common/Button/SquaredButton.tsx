@@ -12,3 +12,4 @@ const SquaredButton: React.FC<SquaredButtonProps> = ({className = '', ...props})
 );
 
 export default SquaredButton;
+

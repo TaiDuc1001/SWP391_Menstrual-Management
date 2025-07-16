@@ -682,3 +682,4 @@ const ExaminationDetail: React.FC = () => {
 };
 
 export default ExaminationDetail;
+

@@ -111,8 +111,7 @@ const TestPanels: React.FC = () => {
     const [selectedPanel, setSelectedPanel] = useState<Panel | null>(null);
     const [panelToDelete, setPanelToDelete] = useState<Panel | null>(null);
     const [panelForDetails, setPanelForDetails] = useState<Panel | null>(null);
-    
-    // Notification states
+
     const [successNotification, setSuccessNotification] = useState<{
         isOpen: boolean;
         title: string;
@@ -150,7 +149,6 @@ const TestPanels: React.FC = () => {
         fetchTestTypes
     } = useTestTypes();
 
-    // Helper functions for notifications
     const showSuccessNotification = (title: string, message: string) => {
         setSuccessNotification({
             isOpen: true,
@@ -269,7 +267,7 @@ const TestPanels: React.FC = () => {
         try {
             await createTestType(data);
             showSuccessNotification('Success', 'Test type created successfully');
-            // Refresh test types immediately after creation
+
             await fetchTestTypes();
             setIsTestTypeModalOpen(false);
         } catch (error) {
@@ -449,12 +447,12 @@ const TestPanels: React.FC = () => {
                 </div>
             )}
 
-            {/* Panel Modal */}
+            {}
             <PanelModal
                 isOpen={isPanelModalOpen}
                 onClose={() => {
                     setIsPanelModalOpen(false);
-                    // Refresh data when modal is closed
+
                     const filters = {
                         page: currentPage - 1,
                         size: pageSize,
@@ -467,12 +465,12 @@ const TestPanels: React.FC = () => {
                 mode={modalMode}
             />
 
-            {/* Test Type Modal */}
+            {}
             <TestTypeModal
                 isOpen={isTestTypeModalOpen}
                 onClose={() => {
                     setIsTestTypeModalOpen(false);
-                    // Refresh both panels and test types when modal is closed
+
                     const filters = {
                         page: currentPage - 1,
                         size: pageSize,
@@ -484,7 +482,7 @@ const TestPanels: React.FC = () => {
                 onSubmit={handleTestTypeSubmit}
             />
 
-            {/* Delete Confirmation Dialog */}
+            {}
             <ConfirmDialog
                 isOpen={isDeleteConfirmOpen}
                 title="Delete Panel"
@@ -496,14 +494,14 @@ const TestPanels: React.FC = () => {
                 type="danger"
             />
 
-            {/* Panel Details Modal */}
+            {}
             {isDetailsModalOpen && panelForDetails && (
                 <div 
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
                     onClick={handleBackdropClick}
                 >
                     <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[95vh] flex flex-col">
-                        {/* Header */}
+                        {}
                         <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-800 mb-1">Panel Details</h2>
@@ -519,12 +517,12 @@ const TestPanels: React.FC = () => {
                             </button>
                         </div>
                         
-                        {/* Content */}
+                        {}
                         <div className="flex-1 p-6 overflow-y-auto">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* Left Column */}
+                                {}
                                 <div className="space-y-6">
-                                    {/* Basic Information */}
+                                    {}
                                     <div className="bg-gray-50 rounded-lg p-4">
                                         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                                             <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -547,7 +545,7 @@ const TestPanels: React.FC = () => {
                                         </div>
                                     </div>
                                     
-                                    {/* Technical Details */}
+                                    {}
                                     <div className="bg-blue-50 rounded-lg p-4">
                                         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                                             <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -569,9 +567,9 @@ const TestPanels: React.FC = () => {
                                     </div>
                                 </div>
                                 
-                                {/* Right Column */}
+                                {}
                                 <div className="space-y-6">
-                                    {/* Pricing & Classification */}
+                                    {}
                                     <div className="bg-green-50 rounded-lg p-4">
                                         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                                             <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -603,7 +601,7 @@ const TestPanels: React.FC = () => {
                                         </div>
                                     </div>
                                     
-                                    {/* Test Types */}
+                                    {}
                                     <div className="bg-purple-50 rounded-lg p-4">
                                         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                                             <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -635,7 +633,7 @@ const TestPanels: React.FC = () => {
                             </div>
                         </div>
                         
-                        {/* Footer */}
+                        {}
                         <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl">
                             <div className="flex justify-end">
                                 <button
@@ -650,7 +648,7 @@ const TestPanels: React.FC = () => {
                 </div>
             )}
 
-            {/* Success Notification */}
+            {}
             <SuccessNotification
                 isOpen={successNotification.isOpen}
                 onClose={closeSuccessNotification}
@@ -658,7 +656,7 @@ const TestPanels: React.FC = () => {
                 message={successNotification.message}
             />
 
-            {/* Error Notification */}
+            {}
             <ErrorNotification
                 isOpen={errorNotification.isOpen}
                 onClose={closeErrorNotification}
@@ -670,3 +668,4 @@ const TestPanels: React.FC = () => {
 };
 
 export default TestPanels;
+

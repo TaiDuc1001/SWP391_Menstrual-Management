@@ -42,17 +42,17 @@ const SuccessNotification: React.FC<SuccessNotificationProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
-            {/* Backdrop */}
+            {}
             <div 
                 className="fixed inset-0 bg-black bg-opacity-20" 
                 onClick={handleClose}
             />
             
-            {/* Notification */}
+            {}
             <div className={`relative bg-white rounded-lg shadow-lg border-l-4 border-green-500 max-w-md w-full transform transition-all duration-300 ${
                 isVisible ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-4 opacity-0 scale-95'
             }`}>
-                {/* Header */}
+                {}
                 <div className="flex items-start p-4">
                     <div className="flex-shrink-0">
                         <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -82,7 +82,7 @@ const SuccessNotification: React.FC<SuccessNotificationProps> = ({
                     </button>
                 </div>
                 
-                {/* Progress bar */}
+                {}
                 {duration > 0 && (
                     <div className="h-1 bg-gray-200">
                         <div 
@@ -100,3 +100,4 @@ const SuccessNotification: React.FC<SuccessNotificationProps> = ({
 };
 
 export default SuccessNotification;
+

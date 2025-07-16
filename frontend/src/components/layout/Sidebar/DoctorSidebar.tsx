@@ -22,3 +22,4 @@ const DoctorSidebar: React.FC<SidebarProps> = () => {
 };
 
 export default DoctorSidebar;
+

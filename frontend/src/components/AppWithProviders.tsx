@@ -20,3 +20,4 @@ const AppWithProviders: React.FC<AppWithProvidersProps> = ({ children }) => {
 };
 
 export default AppWithProviders;
+

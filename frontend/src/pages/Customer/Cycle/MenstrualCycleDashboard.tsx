@@ -96,7 +96,6 @@ const MenstrualCycleDashboard: React.FC = () => {
         return '';
     };
 
-    // Get user-specific storage key for symptoms
     const getCurrentUserId = (): string => {
         try {
             const userProfile = localStorage.getItem('userProfile');
@@ -156,7 +155,7 @@ const MenstrualCycleDashboard: React.FC = () => {
     }, [specialDays]);
 
     useEffect(() => {
-        // Clear period days for June 2025 (month 5, since months are 0-indexed)
+
         const targetYear = 2025;
         const targetMonth = 5; // June
         const daysInJune = getDaysInMonth(targetMonth, targetYear);
@@ -279,12 +278,10 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     let hasNote = false;
                                     if (day) {
                                         const dayKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                                        
-                                        // Check old symptom data
+
                                         const symptomData = symptoms[dayKey];
                                         hasSymptom = !!(symptomData && symptomData.symptom && symptomData.symptom !== 'None');
-                                        
-                                        // Check new detailed symptom data
+
                                         const detailedStorageKey = getDetailedSymptomsStorageKey();
                                         const detailedSaved = localStorage.getItem(detailedStorageKey);
                                         const detailedData = detailedSaved ? JSON.parse(detailedSaved) : {};
@@ -443,9 +440,9 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 >
                                     Refresh
                                 </button>
-                                <button
+                                {/* <button
                                     onClick={() => {
-                                        // Force show health concerns for testing
+
                                         console.log('Force testing health concerns');
                                         const testCycles = cycles.map(cycle => ({
                                             ...cycle,
@@ -456,7 +453,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                     className="ml-2 text-xs bg-red-100 border border-red-400 text-red-600 px-2 py-1 rounded hover:bg-red-200 transition-all duration-200"
                                 >
                                     Test Alert
-                                </button>
+                                </button> */}
                             </h3>
                             <ul className="list-disc pl-4 text-xs text-gray-800 flex flex-col gap-1">
                                 {recommendations.length > 0 ? recommendations.map((recommendation, index) => (
@@ -487,7 +484,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 </div>
                             )}
                             
-                            {/* Health Concerns Alert */}
+                            {}
                             {healthConcerns && (
                                 <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg shadow-sm">
                                     <div className="flex items-start gap-2">
@@ -588,8 +585,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                             setShowSuccess(true);
                             if (selectedDay) {
                                 const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                                
-                                // Update symptoms
+
                                 if (data.symptom === 'None') {
                                     setSymptoms(prev => {
                                         const newState = {...prev};
@@ -599,8 +595,7 @@ const MenstrualCycleDashboard: React.FC = () => {
                                 } else {
                                     setSymptoms(prev => ({...prev, [key]: {symptom: data.symptom, period: data.period, flow: data.flow}}));
                                 }
-                                
-                                // Update notes
+
                                 if (data.note.trim() === '') {
                                     setDayNotes(prev => {
                                         const newState = {...prev};

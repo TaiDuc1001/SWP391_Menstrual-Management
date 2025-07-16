@@ -167,3 +167,4 @@ const SymptomSelectionPopup: React.FC<SymptomSelectionPopupProps> = ({
 };
 
 export default SymptomSelectionPopup;
+

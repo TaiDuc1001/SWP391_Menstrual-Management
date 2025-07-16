@@ -9,7 +9,6 @@ interface ManageProfileProps {
     isFirstTime?: boolean;
 }
 
-// Validation schema
 const validateProfile = (profile: Partial<DoctorProfile>) => {
     const errors: Record<string, string> = {};
     
@@ -28,7 +27,6 @@ const validateProfile = (profile: Partial<DoctorProfile>) => {
     return errors;
 };
 
-// Calculate completion percentage
 const calculateCompletion = (profile: Partial<DoctorProfile>): number => {
     const completedFields = [
         profile.name?.trim(),
@@ -80,17 +78,14 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
         ]);
     }, []);
 
-    // Handle input changes
     const handleInputChange = useCallback((field: keyof DoctorProfile, value: any) => {
         setProfile(prev => ({ ...prev, [field]: value }));
-        
-        // Clear error when user starts typing
+
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
     }, [errors]);
 
-    // Handle form submission
     const handleSubmit = async () => {
         const validationErrors = validateProfile(profile);
         
@@ -143,7 +138,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-            {/* Header Section */}
+            {}
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 relative overflow-hidden">
                 <div className="absolute inset-0 bg-black opacity-10"></div>
                 <div className="absolute inset-0 opacity-10"
@@ -167,7 +162,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                             </p>
                         </div>
 
-                        {/* Progress Indicator */}
+                        {}
                         <div className="max-w-md mx-auto">
                             <div className="flex items-center justify-between text-sm text-purple-200 mb-2">
                                 <span>Profile Completion</span>
@@ -184,10 +179,10 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                 </div>
             </div>
 
-            {/* Main Form */}
+            {}
             <div className="max-w-4xl mx-auto px-6 py-12">
                 <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-                    {/* Form Header */}
+                    {}
                     <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-8 py-6 border-b border-gray-100">
                         <div className="flex items-center justify-between">
                             <div>
@@ -201,9 +196,9 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                         </div>
                     </div>
 
-                    {/* Form Body */}
+                    {}
                     <div className="p-8">
-                        {/* Degree */}
+                        {}
                         <div className="mb-6">
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
                                 <span className="flex items-center space-x-2">
@@ -219,7 +214,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                 placeholder="e.g. MD, PhD, Specialist..."
                             />
                         </div>
-                        {/* University */}
+                        {}
                         <div className="mb-6">
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
                                 <span className="flex items-center space-x-2">
@@ -236,9 +231,9 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                             />
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Left Column */}
+                            {}
                             <div className="space-y-6">
-                                {/* Full Name */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                                         <span className="flex items-center space-x-2">
@@ -274,7 +269,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                     )}
                                 </div>
 
-                                {/* Specialization */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                                         <span className="flex items-center space-x-2">
@@ -316,9 +311,9 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                 </div>
                             </div>
 
-                            {/* Right Column */}
+                            {}
                             <div className="space-y-6">
-                                {/* Consultation Fee */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                                         <span className="flex items-center space-x-2">
@@ -359,7 +354,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                                     )}
                                 </div>
 
-                                {/* Profile Preview */}
+                                {}
                                 <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
                                     <h3 className="font-semibold text-gray-800 mb-4 flex items-center space-x-2">
                                         <span>👁️</span>
@@ -399,7 +394,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                             </div>
                         </div>
 
-                        {/* Submit Button */}
+                        {}
                         <div className="mt-12 text-center">
                             <Button
                                 type="button"
@@ -440,7 +435,7 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
                 </div>
             </div>
                 
-            {/* Simple Notification */}
+            {}
             {notification && (
                 <SimpleNotification
                     message={notification.message}
@@ -453,3 +448,4 @@ const ManageProfile: React.FC<ManageProfileProps> = ({ isFirstTime = false }) =>
 };
 
 export default ManageProfile;
+

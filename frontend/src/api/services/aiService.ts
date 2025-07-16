@@ -179,7 +179,7 @@ Set STI_TESTING_NEEDED to YES if symptoms include:
 Use these categories for recommendations: Cycle tracking, Reminders, Nutrition & exercise, Lifestyle, Sleep, Stress management. Keep each recommendation concise (max 80 words), actionable, and tailored to the data.`;
     },
     parseAIResponse(text: string): AIRecommendationResponse {
-        // Parse health analysis
+
         const healthAnalysisMatch = text.match(/HEALTH_ANALYSIS_START([\s\S]*?)HEALTH_ANALYSIS_END/);
         let healthConcerns = false;
         let needsSTITesting = false;
@@ -201,14 +201,13 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
             }
         }
 
-        // Parse recommendations
         const recommendationsMatch = text.match(/RECOMMENDATIONS_START([\s\S]*?)RECOMMENDATIONS_END/);
         let recommendations: string[] = [];
 
         if (recommendationsMatch) {
             recommendations = this.parseRecommendations(recommendationsMatch[1]);
         } else {
-            // Fallback: try to parse the whole text as recommendations
+
             recommendations = this.parseRecommendations(text);
         }
 
@@ -281,34 +280,29 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
         });
         
         const symptomsText = allSymptoms.join(' ').toLowerCase();
-        
-        // Check for irregular cycles (not in 28-35 days range)
+
         const hasIrregularCycles = cycles.some(cycle => 
             cycle.cycleLength < 28 || cycle.cycleLength > 35
         );
         
         console.log('AI Detection - Cycle lengths:', cycles.map(c => c.cycleLength));
         console.log('AI Detection - Has irregular cycles:', hasIrregularCycles);
-        
-        // Check for heavy symptoms
+
         const hasHeavySymptoms = symptomsText.includes('heavy');
-        
-        // Check for STI-related symptoms
+
         const stiSymptoms = [
             'discharge', 'unusual discharge', 'burning', 'itching', 'odor', 'pain during urination',
             'pelvic pain', 'bleeding between periods', 'irregular bleeding'
         ];
         
         const hasStiSymptoms = stiSymptoms.some(symptom => symptomsText.includes(symptom));
-        
-        // Check for concerning symptoms
+
         const concerningSymptoms = [
             'severe pain', 'heavy bleeding', 'fever', 'severe cramps'
         ];
         
         const hasConcerningSymptoms = concerningSymptoms.some(symptom => symptomsText.includes(symptom));
-        
-        // Determine if health concerns exist and STI testing is needed
+
         const healthConcerns = hasIrregularCycles || hasHeavySymptoms || hasStiSymptoms || hasConcerningSymptoms;
         const needsSTITesting = hasIrregularCycles || hasHeavySymptoms || hasStiSymptoms || hasConcerningSymptoms;
         
@@ -371,3 +365,4 @@ Use these categories for recommendations: Cycle tracking, Reminders, Nutrition &
         console.log('AI recommendations cache cleared');
     }
 };
+

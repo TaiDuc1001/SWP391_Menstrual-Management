@@ -6,3 +6,4 @@ export {default as CustomerTable} from './Customer/BaseTable';
 
 export * from './types';
 export * from './utils';
+

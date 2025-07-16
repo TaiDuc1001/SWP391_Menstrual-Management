@@ -103,16 +103,16 @@ const Accounts: React.FC = () => {
     const handleCreateUser = async (userData: CreateAccountRequest, doctorProfile?: Partial<DoctorProfile>) => {
         setIsCreating(true);
         try {
-            // For DOCTOR role, include doctor profile data in the main request
+
             if (userData.role === 'DOCTOR' && doctorProfile) {
-                // Update the userData with doctor profile information
+
                 userData.name = doctorProfile.name || userData.name;
             }
             
             const result = await createAccount(userData);
             
             if (result.success) {
-                // If user is a doctor and has profile data, update the doctor profile with specialization and price
+
                 if (userData.role === 'DOCTOR' && doctorProfile && result.data) {
                     try {
                         const updateResult = await doctorService.adminUpdateDoctorProfile(result.data.id, {
@@ -125,7 +125,7 @@ const Accounts: React.FC = () => {
                         });
                     } catch (profileError: any) {
                         console.error('Error updating doctor profile:', profileError);
-                        // Account was created but profile update failed - show partial success message
+
                         showError('Partial Success', `Account for ${userData.name} was created but doctor profile update failed. You can update the profile later.`);
                         setShowCreateModal(false);
                         await fetchAccounts(); // Refresh the accounts list
@@ -524,3 +524,4 @@ const Accounts: React.FC = () => {
 };
 
 export default Accounts;
+

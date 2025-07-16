@@ -20,3 +20,4 @@ const BlogSkeleton: React.FC = () => {
 };
 
 export default BlogSkeleton;
+

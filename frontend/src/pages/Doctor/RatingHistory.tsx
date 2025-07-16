@@ -46,7 +46,6 @@ const DoctorRatingHistory: React.FC = () => {
     if (loading) return <div className="doctor-rating-history-container doctor-rating-history-empty">Loading rating history...</div>;
     if (error) return <div className="doctor-rating-history-container doctor-rating-history-empty text-red-500">{error}</div>;
 
-    // Filter ratings by star rating only
     const getFilteredRatings = () => {
         let filtered = ratings;
         if (star !== '') {
@@ -61,7 +60,7 @@ const DoctorRatingHistory: React.FC = () => {
         <div className="doctor-rating-history-container">
             <div className="doctor-rating-history-title">Rating History</div>
             
-            {/* Simple Star Filter */}
+            {}
             <div className="flex gap-3 mb-6 items-center bg-pink-50 rounded-xl px-4 py-3 shadow-sm">
                 <div className="flex gap-2 items-center">
                     <span className="font-semibold text-pink-600">Filter by rating:</span>
@@ -116,3 +115,4 @@ const DoctorRatingHistory: React.FC = () => {
 };
 
 export default DoctorRatingHistory;
+

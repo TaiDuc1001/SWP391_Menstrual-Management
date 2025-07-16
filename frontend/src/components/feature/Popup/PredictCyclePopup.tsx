@@ -80,3 +80,4 @@ const PredictCyclePopup: React.FC<PredictCyclePopupProps> = ({ open, onClose, on
 };
 
 export default PredictCyclePopup;
+

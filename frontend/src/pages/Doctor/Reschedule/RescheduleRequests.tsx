@@ -11,22 +11,19 @@ interface RescheduleOption {
     isSelected: boolean;
 }
 
-// Remove the local RescheduleRequest interface since we're importing it
-// interface RescheduleRequest { ... }
+
 
 const DoctorRescheduleRequests: React.FC = () => {
     const [requests, setRequests] = useState<RescheduleRequestType[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    
-    // Notification states
+
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
     const [showErrorNotification, setShowErrorNotification] = useState(false);
     const [successMessage, setSuccessMessage] = useState({ title: '', message: '' });
     const [errorMessage, setErrorMessage] = useState({ title: '', message: '' });
 
-    // Remove hardcoded doctor ID - now using authentication header
-    // const doctorId = 1;
+
 
     useEffect(() => {
         fetchRescheduleRequests();
@@ -48,8 +45,7 @@ const DoctorRescheduleRequests: React.FC = () => {
     const handleApproveOption = async (rescheduleRequestId: number, optionId: number) => {
         try {
             await rescheduleService.approveRescheduleOption(rescheduleRequestId, optionId);
-            
-            // Refresh the list
+
             await fetchRescheduleRequests();
             showSuccess(
                 'Request Approved!', 
@@ -71,8 +67,7 @@ const DoctorRescheduleRequests: React.FC = () => {
 
         try {
             await rescheduleService.rejectRescheduleRequest(rescheduleRequestId);
-            
-            // Refresh the list
+
             await fetchRescheduleRequests();
             showSuccess(
                 'Request Rejected',
@@ -96,7 +91,6 @@ const DoctorRescheduleRequests: React.FC = () => {
         });
     };
 
-    // Helper functions for notifications
     const showSuccess = (title: string, message: string) => {
         setSuccessMessage({ title, message });
         setShowSuccessNotification(true);
@@ -153,7 +147,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                 <div className="space-y-6">
                     {requests.map((request) => (
                         <div key={request.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-                            {/* Header */}
+                            {}
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-800">
@@ -171,7 +165,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                                 </span>
                             </div>
 
-                            {/* Customer Note */}
+                            {}
                             {request.customerNote && (
                                 <div className="mb-4 bg-gray-50 rounded-lg p-4">
                                     <h4 className="font-medium text-gray-700 mb-2">Reason for Rescheduling:</h4>
@@ -179,7 +173,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* Options */}
+                            {}
                             <div className="mb-6">
                                 <h4 className="font-medium text-gray-700 mb-3">Patient's Preferred Time:</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -214,7 +208,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Actions */}
+                            {}
                             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                                 <button
                                     onClick={() => handleRejectRequest(request.id)}
@@ -228,7 +222,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                 </div>
             )}
 
-            {/* Refresh Button */}
+            {}
             <div className="mt-8 text-center">
                 <button
                     onClick={fetchRescheduleRequests}
@@ -238,7 +232,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                 </button>
             </div>
 
-            {/* Success Notification */}
+            {}
             <SuccessNotification
                 isOpen={showSuccessNotification}
                 title={successMessage.title}
@@ -246,7 +240,7 @@ const DoctorRescheduleRequests: React.FC = () => {
                 onClose={() => setShowSuccessNotification(false)}
             />
 
-            {/* Error Notification */}
+            {}
             <ErrorNotification
                 isOpen={showErrorNotification}
                 title={errorMessage.title}
@@ -258,3 +252,4 @@ const DoctorRescheduleRequests: React.FC = () => {
 };
 
 export default DoctorRescheduleRequests;
+

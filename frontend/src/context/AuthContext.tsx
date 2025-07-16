@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Initialize auth from localStorage
+
         const hasToken = doctorService.initAuth();
         setIsAuthenticated(hasToken);
         setIsLoading(false);
@@ -56,3 +56,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+

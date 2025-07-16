@@ -93,7 +93,7 @@ const RescheduleStatusCard: React.FC<RescheduleStatusCardProps> = ({
                 {config.description}
             </p>
 
-            {/* Show reason if exists */}
+            {}
             {rescheduleRequest.customerNote && (
                 <div className="mb-3 bg-white bg-opacity-60 rounded p-3">
                     <p className="text-xs font-medium text-gray-600 mb-1">Reason:</p>
@@ -101,7 +101,7 @@ const RescheduleStatusCard: React.FC<RescheduleStatusCardProps> = ({
                 </div>
             )}
 
-            {/* Show options for pending/rejected requests */}
+            {}
             {(rescheduleRequest.status === 'PENDING' || rescheduleRequest.status === 'REJECTED') && (
                 <div className="mb-3">
                     <p className="text-xs font-medium text-gray-600 mb-2">Your requested options:</p>
@@ -123,7 +123,7 @@ const RescheduleStatusCard: React.FC<RescheduleStatusCardProps> = ({
                 </div>
             )}
 
-            {/* Show approved option */}
+            {}
             {rescheduleRequest.status === 'APPROVED' && (
                 <div className="mb-3">
                     {rescheduleRequest.options
@@ -142,7 +142,7 @@ const RescheduleStatusCard: React.FC<RescheduleStatusCardProps> = ({
                 </div>
             )}
 
-            {/* Actions */}
+            {}
             {rescheduleRequest.status === 'PENDING' && onCancel && (
                 <div className="flex justify-end">
                     <button
@@ -154,7 +154,7 @@ const RescheduleStatusCard: React.FC<RescheduleStatusCardProps> = ({
                 </div>
             )}
 
-            {/* Created timestamp */}
+            {}
             {rescheduleRequest.createdAt && (
                 <div className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">
                     Requested on: {new Date(rescheduleRequest.createdAt).toLocaleString('en-GB')}
@@ -165,3 +165,4 @@ const RescheduleStatusCard: React.FC<RescheduleStatusCardProps> = ({
 };
 
 export default RescheduleStatusCard;
+

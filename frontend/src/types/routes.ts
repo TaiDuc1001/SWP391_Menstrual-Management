@@ -17,3 +17,4 @@ export interface ComponentRouteConfig {
     showInNavbar?: boolean;
     showInSidebar?: boolean;
 }
+

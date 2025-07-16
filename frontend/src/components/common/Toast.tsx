@@ -31,3 +31,4 @@ const Toast: React.FC<ToastProps> = ({ message, isVisible, onClose, duration = 2
 };
 
 export default Toast;
+

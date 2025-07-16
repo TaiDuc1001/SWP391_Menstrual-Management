@@ -72,3 +72,4 @@ export const applyPagination = <T>(items: T[], options: PaginationOptions) => {
         endIdx
     };
 };
+

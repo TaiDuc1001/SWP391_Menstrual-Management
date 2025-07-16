@@ -22,7 +22,7 @@ const RescheduleHistory: React.FC = () => {
         try {
             setLoading(true);
             const requests = await rescheduleService.getRescheduleRequestsByAppointmentId(Number(appointmentId));
-            // Sort by created date, newest first
+
             const sortedRequests = requests.sort((a, b) => 
                 new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
             );
@@ -101,7 +101,7 @@ const RescheduleHistory: React.FC = () => {
 
     return (
         <div className="p-6 max-w-4xl mx-auto">
-            {/* Header */}
+            {}
             <div className="mb-6">
                 <button
                     onClick={() => navigate(`/customer/appointments/${appointmentId}`)}
@@ -114,7 +114,7 @@ const RescheduleHistory: React.FC = () => {
                 <p className="text-gray-600 mt-2">Complete history of reschedule requests for Appointment #{appointmentId}</p>
             </div>
 
-            {/* Statistics */}
+            {}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-white rounded-lg shadow p-4 text-center">
                     <div className="text-2xl font-bold text-gray-800">{rescheduleRequests.length}</div>
@@ -140,7 +140,7 @@ const RescheduleHistory: React.FC = () => {
                 </div>
             </div>
 
-            {/* Content */}
+            {}
             {rescheduleRequests.length === 0 ? (
                 <div className="text-center py-12">
                     <div className="text-gray-400 text-6xl mb-4">📅</div>
@@ -167,10 +167,10 @@ const RescheduleHistory: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Reschedule Request Cards */}
+                    {}
                     {rescheduleRequests.map((request, index) => (
                         <div key={request.id} className="relative">
-                            {/* Request Number */}
+                            {}
                             <div className="absolute -left-4 top-4 bg-gray-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-medium z-10">
                                 {index + 1}
                             </div>
@@ -188,3 +188,4 @@ const RescheduleHistory: React.FC = () => {
 };
 
 export default RescheduleHistory;
+

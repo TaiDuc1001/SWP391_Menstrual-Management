@@ -141,3 +141,4 @@ const SymptomPopup: React.FC<SymptomPopupProps> = ({
 };
 
 export default SymptomPopup;
+

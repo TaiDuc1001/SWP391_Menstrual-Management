@@ -249,3 +249,4 @@ const BaseTable = <T extends Record<string, any>>({
 };
 
 export default BaseTable;
+

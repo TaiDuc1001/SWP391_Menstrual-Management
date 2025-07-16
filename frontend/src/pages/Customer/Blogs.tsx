@@ -431,3 +431,4 @@ const CustomerBlogs: React.FC = () => {
 };
 
 export default CustomerBlogs;
+

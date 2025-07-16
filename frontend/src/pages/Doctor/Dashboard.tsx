@@ -17,7 +17,6 @@ interface Patient {
   condition: string;
 }
 
-// Helper function to format appointment status
 const getAppointmentStatusLabel = (status: string): string => {
   const statusMap: { [key: string]: string } = {
     'BOOKED': 'Pending Payment',
@@ -31,7 +30,6 @@ const getAppointmentStatusLabel = (status: string): string => {
   return statusMap[status] || status;
 };
 
-// Helper function to get status color classes
 const getStatusColor = (status: string): string => {
   switch (status) {
     case 'Confirmed':
@@ -69,11 +67,10 @@ const DoctorDashboard: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Get all appointments
+
         const appointmentsRes = await doctorDashboardService.getTodayAppointments();
         const appointments = appointmentsRes.data || [];
-        
-        // Calculate statistics
+
         const today = new Date().toISOString().slice(0, 10);
         const todayApts = appointments.filter((a: any) => a.date === today);
         const completed = appointments.filter((a: any) => a.appointmentStatus === 'FINISHED').length;
@@ -85,7 +82,6 @@ const DoctorDashboard: React.FC = () => {
           a.appointmentStatus === 'IN_PROGRESS'
         ).length;
 
-        // Get unique patients count
         const uniquePatients = new Set(appointments.map((a: any) => a.customerId)).size;
 
         setStats({
@@ -95,7 +91,6 @@ const DoctorDashboard: React.FC = () => {
           pendingAppointments: pending,
         });
 
-        // Get upcoming appointments
         const now = new Date();
         const upcoming = appointments
           .filter((a: any) => {
@@ -115,7 +110,6 @@ const DoctorDashboard: React.FC = () => {
           }));
         setUpcomingAppointments(upcoming);
 
-        // Get recent patients
         const finished = appointments
           .filter((a: any) => a.appointmentStatus === 'FINISHED')
           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -128,7 +122,6 @@ const DoctorDashboard: React.FC = () => {
           }));
         setRecentPatients(finished);
 
-        // Create weekly chart data
         const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const weekStats = weekDays.map((day, idx) => {
           const count = appointments.filter((a: any) => {
@@ -141,7 +134,7 @@ const DoctorDashboard: React.FC = () => {
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        // Set sample/fallback data to match the image shown
+
         setStats({
           totalPatients: 1,
           todayAppointments: 0,
@@ -193,7 +186,7 @@ const DoctorDashboard: React.FC = () => {
       <div className="w-full max-w-6xl">
         <h1 className="text-2xl font-bold text-blue-700 mb-8">Doctor Dashboard</h1>
         
-        {/* Quick stats */}
+        {}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
           <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
             <span className="text-3xl font-bold text-blue-600">{stats.totalPatients}</span>
@@ -214,7 +207,7 @@ const DoctorDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-          {/* Upcoming Appointments */}
+          {}
           <div className="bg-white rounded-2xl shadow p-8">
             <h2 className="text-lg font-bold text-gray-800 mb-6">Upcoming Appointments</h2>
             <div className="space-y-4">
@@ -237,7 +230,7 @@ const DoctorDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Recent Patients */}
+          {}
           <div className="bg-white rounded-2xl shadow p-8">
             <h2 className="text-lg font-bold text-gray-800 mb-6">Recent Patients</h2>
             <div className="space-y-4">
@@ -262,7 +255,7 @@ const DoctorDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Weekly Appointments Chart */}
+        {}
         <div className="bg-white rounded-2xl shadow p-8">
           <h2 className="text-lg font-bold text-gray-800 mb-6">Weekly Appointments</h2>
           <div style={{width: '100%', height: 400}}>
@@ -284,3 +277,4 @@ const DoctorDashboard: React.FC = () => {
 };
 
 export default DoctorDashboard;
+

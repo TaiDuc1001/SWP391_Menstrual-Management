@@ -8,7 +8,6 @@ export const usePublicBlogs = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch all blogs
     const fetchBlogs = useCallback(async () => {
         try {
             setLoading(true);
@@ -23,7 +22,6 @@ export const usePublicBlogs = () => {
         }
     }, []);
 
-    // Fetch categories
     const fetchCategories = useCallback(async () => {
         try {
             const data = await publicBlogService.getAllCategories();
@@ -33,7 +31,6 @@ export const usePublicBlogs = () => {
         }
     }, []);
 
-    // Get blog by ID
     const getBlogById = useCallback(async (id: number): Promise<BlogDTO | null> => {
         try {
             setLoading(true);
@@ -49,7 +46,6 @@ export const usePublicBlogs = () => {
         }
     }, []);
 
-    // Get blogs by category
     const getBlogsByCategory = useCallback(async (category: keyof BlogCategory) => {
         try {
             setLoading(true);
@@ -63,7 +59,7 @@ export const usePublicBlogs = () => {
             setLoading(false);
         }
     }, []);
-    // Search blogs
+
     const searchBlogs = useCallback(async (keyword: string) => {
         try {
             setLoading(true);
@@ -78,7 +74,6 @@ export const usePublicBlogs = () => {
         }
     }, []);
 
-    // Initialize data
     useEffect(() => {
         fetchBlogs();
         fetchCategories();
@@ -96,3 +91,4 @@ export const usePublicBlogs = () => {
         refetch: fetchBlogs
     };
 };
+

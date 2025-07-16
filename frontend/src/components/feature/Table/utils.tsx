@@ -124,3 +124,4 @@ export const searchInFields = <T extends Record<string, any>>(obj: T, searchTerm
         return String(value).toLowerCase().includes(searchLower);
     });
 };
+

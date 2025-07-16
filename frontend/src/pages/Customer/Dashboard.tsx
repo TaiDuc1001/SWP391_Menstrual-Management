@@ -44,23 +44,21 @@ const Dashboard: React.FC = () => {
     const [recentBlogs, setRecentBlogs] = useState<SimpleBlogDTO[]>([]);
     const [currentChart, setCurrentChart] = useState<'cycle' | 'menstruation'>('cycle');
 
-    // Function to fetch appointments data
     const fetchAppointments = async () => {
         try {
             const res = await api.get('/appointments');
             console.log('Appointments raw data:', res.data);
-            // Get 3 most recent appointments (excluding cancelled ones)
+
             const recentAppointments = res.data
                 .filter((a: any) => {
-                    // Filter out cancelled appointments only
+
                     return a.appointmentStatus !== 'CANCELLED';
                 })
                 .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .slice(0, 3); // Take only first 3 most recent appointments
             
             console.log('Recent appointments:', recentAppointments);
-            
-            // Fetch doctor ratings for each appointment
+
             const appointmentsWithRatings = await Promise.all(
                 recentAppointments.map(async (a: any) => {
                     try {
@@ -76,7 +74,7 @@ const Dashboard: React.FC = () => {
                             status: a.appointmentStatus
                         };
                     } catch (error) {
-                        // If rating fetch fails, use default rating
+
                         return {
                             id: a.id,
                             name: a.doctorName,
@@ -127,8 +125,8 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         let isMounted = true; // Flag to prevent setState after unmount
         
-        setUserName('Thiên An');
-        // Fetch cycle data with error handling
+        // setUserName('Thiên An');
+
         api.get('/cycles/closest')
             .then(res => {
                 if (!isMounted) return; // Prevent setState if component unmounted
@@ -142,17 +140,16 @@ const Dashboard: React.FC = () => {
             .catch(error => {
                 if (!isMounted) return;
                 console.error('Error fetching cycle data:', error);
-                // Set default values if API fails
+
                 setCycleStart('');
                 setCycleStatus('No data');
                 setOvulationDate('');
                 setDaysToOvulation(0);
             });
-        // Fetch appointments with error handling
+
         fetchAppointments();
         fetchExaminations();
 
-        // Fetch all cycles data for prediction with error handling
         api.get('/cycles')
             .then(res => {
                 if (!isMounted) return;
@@ -164,14 +161,12 @@ const Dashboard: React.FC = () => {
                 console.error('Error fetching cycles data:', error);
                 setCycles([]);
             });
-            
-        // Cleanup function to prevent setState after unmount
+
         return () => {
             isMounted = false;
         };
     }, []);
 
-    // Refresh appointments when page becomes visible (e.g., returning from booking)
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (!document.hidden) {
@@ -213,7 +208,7 @@ const Dashboard: React.FC = () => {
     }, [cycles]);
 
     useEffect(() => {
-        // Get 3 most recent blogs for health tips
+
         if (blogs.length > 0) {
             const sortedBlogs = [...blogs]
                 .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
@@ -222,7 +217,6 @@ const Dashboard: React.FC = () => {
         }
     }, [blogs]);
 
-    // Format date helper
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             day: 'numeric',
@@ -232,7 +226,7 @@ const Dashboard: React.FC = () => {
     };
 
     useEffect(() => {
-        // Log recent blogs with formatted dates
+
         console.log('Recent blogs:', recentBlogs);
     }, [recentBlogs]);
 
@@ -550,9 +544,9 @@ const Dashboard: React.FC = () => {
             <div
                 className="flex flex-col md:flex-row justify-between items-center bg-white rounded-2xl shadow p-6 mb-6">
                 <div>
-                    <h2 className="text-xl font-bold text-pink-600 mb-1">Hello, {userName} <span
-                        className="inline-block">👋</span></h2>
-                    <p className="text-gray-500">How are you feeling today? Let's do a quick health check & update your cycle calendar!</p>
+                    <h2 className="text-xl font-bold text-pink-600 mb-1">      <span
+                        className="inline-block"></span></h2>
+                    <p className="text-gray-500"> </p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
                     <button

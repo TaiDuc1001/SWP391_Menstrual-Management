@@ -33,17 +33,14 @@ export const getCurrentUserName = (): string | null => {
     return profile?.profile?.name || null;
 };
 
-/**
- * Clears all authentication data and caches
- */
+
 export const clearAuthenticationData = async () => {
     try {
-        // Clear localStorage
+
         localStorage.removeItem('userProfile');
         localStorage.removeItem('doctor_token');
         localStorage.removeItem('role');
-        
-        // Clear doctor profile cache
+
         const { doctorProfileService, DoctorProfileService } = await import('../api/services/doctorProfileService');
         
         if (DoctorProfileService?.resetInstance) {
@@ -60,15 +57,12 @@ export const clearAuthenticationData = async () => {
     }
 };
 
-/**
- * Prepares for new user login by clearing previous user's data
- */
+
 export const prepareForNewUser = async (newRole?: string) => {
     console.log('Preparing for new user login with role:', newRole);
     
     await clearAuthenticationData();
-    
-    // Force reset doctor profile service instance for any new user
+
     try {
         const { DoctorProfileService } = await import('../api/services/doctorProfileService');
         if (DoctorProfileService?.resetInstance) {
@@ -79,3 +73,4 @@ export const prepareForNewUser = async (newRole?: string) => {
         console.log('Doctor profile service reset not available');
     }
 };
+

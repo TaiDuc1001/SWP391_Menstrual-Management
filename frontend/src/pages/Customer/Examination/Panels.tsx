@@ -40,10 +40,9 @@ const Panels: React.FC = () => {
             const nameB = b.panelName.toLowerCase();
             const typeA = a.panelType?.toLowerCase() || '';
             const typeB = b.panelType?.toLowerCase() || '';
-            
-            // Priority order: health checkups and pregnancy first, HIV last
+
             const getOrderPriority = (name: string, type: string) => {
-                // Health checkups and pregnancy first
+
                 if (
                     name.includes('pregnancy') ||
                     name.includes('health') ||
@@ -51,18 +50,15 @@ const Panels: React.FC = () => {
                     type.includes('general') ||
                     type.includes('basic')
                 ) return 1;
-                
-                // Other STI panels in the middle
+
                 if (
                     name.includes('syphilis') ||
                     name.includes('chlamydia') ||
                     name.includes('gonorrhea')
                 ) return 2;
-                
-                // HIV last
+
                 if (name.includes('hiv')) return 999;
-                
-                // Others
+
                 return 500;
             };
             
@@ -72,8 +68,7 @@ const Panels: React.FC = () => {
             if (priorityA !== priorityB) {
                 return priorityA - priorityB;
             }
-            
-            // If same priority, sort alphabetically
+
             return nameA.localeCompare(nameB);
         });
     };
@@ -153,7 +148,7 @@ const Panels: React.FC = () => {
                                     : pkg.description
                                 }
                             </div>
-                              {/* Tests included section - compact */}
+                              {}
                             <div className="mb-3">
                                 <div className="font-semibold text-sm text-gray-700 mb-1">Tests included:</div>
                                 {pkg.testTypesNames && pkg.testTypesNames.length > 0 ? (
@@ -244,3 +239,4 @@ const Panels: React.FC = () => {
 };
 
 export default Panels;
+

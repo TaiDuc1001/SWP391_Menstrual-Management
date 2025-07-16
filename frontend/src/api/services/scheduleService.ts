@@ -40,7 +40,7 @@ export interface UpdateScheduleRequest {
 }
 
 export const scheduleService = {
-    // Admin APIs
+
     getAllDoctorSchedules: () => {
         return api.get<DoctorSchedule[]>('/schedules/admin/all');
     },
@@ -69,10 +69,10 @@ export const scheduleService = {
         return api.get<Slot[]>('/schedules/admin/slot-options');
     },
 
-    // Public APIs to get available slots
     getAvailableSlots: (doctorId: number, date: string) => {
         return api.get<Slot[]>(`/schedules/${doctorId}/${date}`);
     }
 };
 
 export default scheduleService;
+

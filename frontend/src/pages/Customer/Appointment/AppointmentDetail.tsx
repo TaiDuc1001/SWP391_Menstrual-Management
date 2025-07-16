@@ -51,8 +51,7 @@ const AppointmentDetail: React.FC = () => {
                 setLoading(true);
                 const response = await api.get(`/appointments/${id}`);
                 setAppointment(response.data);
-                
-                // Fetch reschedule requests for this appointment
+
                 await fetchRescheduleRequests();
             } catch (err) {
                 console.error('Error fetching appointment details:', err);
@@ -86,7 +85,7 @@ const AppointmentDetail: React.FC = () => {
     };
 
     const handleRescheduleSuccess = () => {
-        // Refresh appointment data
+
         const fetchAppointmentDetail = async () => {
             if (!id) return;
 
@@ -94,8 +93,7 @@ const AppointmentDetail: React.FC = () => {
                 setLoading(true);
                 const response = await api.get(`/appointments/${id}`);
                 setAppointment(response.data);
-                
-                // Refresh reschedule requests
+
                 await fetchRescheduleRequests();
             } catch (err) {
                 console.error('Error fetching appointment details:', err);
@@ -136,7 +134,7 @@ const AppointmentDetail: React.FC = () => {
 
         try {
             await api.put(`/appointments/cancel/${id}`);
-            // Refresh appointment data
+
             const response = await api.get(`/appointments/${id}`);
             setAppointment(response.data);
             setSuccessTitle('Appointment Cancelled Successfully!');
@@ -150,7 +148,7 @@ const AppointmentDetail: React.FC = () => {
     };
 
     const handleRatingSuccess = (score: number, feedback: string) => {
-        // Update appointment data with new rating
+
         if (appointment) {
             setAppointment({
                 ...appointment,
@@ -163,7 +161,6 @@ const AppointmentDetail: React.FC = () => {
         setShowSuccessNotification(true);
     };
 
-    // Check if there's an active reschedule request (PENDING)
     const hasPendingRescheduleRequest = rescheduleRequests.some(req => req.status === 'PENDING');
 
     const formatDate = (dateString: string) => {
@@ -185,7 +182,7 @@ const AppointmentDetail: React.FC = () => {
                 appointmentStatus: 'PENDING'
             });
             setShowRescheduleModal(false);
-            // Refetch appointment details
+
             const response = await api.get(`/appointments/${id}`);
             setAppointment(response.data);
         } catch (err) {
@@ -249,7 +246,7 @@ const AppointmentDetail: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Latest Reschedule Status Card */}
+                        {}
                         {!loadingReschedule && rescheduleRequests.length > 0 && (() => {
                             const latestRequest = rescheduleRequests
                                 .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())[0];
@@ -326,7 +323,7 @@ const AppointmentDetail: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Rating Display */}
+                        {}
                         {appointment.appointmentStatus === 'FINISHED' && appointment.score && (
                             <div className="appointment-detail-rating-card">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -372,7 +369,7 @@ const AppointmentDetail: React.FC = () => {
                                     </button>
                                 )}
                                 
-                                {/* Reschedule Button - Only show after payment is confirmed */}
+                                {}
                                 {['CONFIRMED', 'WAITING_FOR_CUSTOMER', 'WAITING_FOR_DOCTOR'].includes(appointment.appointmentStatus) && (
                                     <button
                                         onClick={() => setShowRescheduleModal(true)}
@@ -388,7 +385,7 @@ const AppointmentDetail: React.FC = () => {
                                     </button>
                                 )}
                                 
-                                {/* Payment Required Message for BOOKED status */}
+                                {}
                                 {appointment.appointmentStatus === 'BOOKED' && (
                                     <div className="appointment-detail-info-note">
                                         <p className="text-sm text-amber-600">
@@ -406,7 +403,7 @@ const AppointmentDetail: React.FC = () => {
                                     </button>
                                 )}
 
-                                {/* Rate Doctor Button */}
+                                {}
                                 {appointment.appointmentStatus === 'FINISHED' && (
                                     <button
                                         onClick={() => setShowRatingModal(true)}
@@ -508,7 +505,7 @@ const AppointmentDetail: React.FC = () => {
                 />
             )}
 
-            {/* Rating Modal */}
+            {}
             {showRatingModal && appointment && (
                 <RatingModal
                     appointmentId={appointment.id}
@@ -519,7 +516,7 @@ const AppointmentDetail: React.FC = () => {
                 />
             )}
 
-            {/* Success Notification */}
+            {}
             <SuccessNotification
                 isOpen={showSuccessNotification}
                 onClose={() => setShowSuccessNotification(false)}
@@ -528,7 +525,7 @@ const AppointmentDetail: React.FC = () => {
                 duration={6000}
             />
 
-            {/* Error Notification */}
+            {}
             <ErrorNotification
                 isOpen={showErrorNotification}
                 onClose={() => setShowErrorNotification(false)}
@@ -541,3 +538,4 @@ const AppointmentDetail: React.FC = () => {
 };
 
 export default AppointmentDetail;
+

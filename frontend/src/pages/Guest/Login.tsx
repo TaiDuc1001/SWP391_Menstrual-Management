@@ -29,11 +29,9 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
             console.log('Login response:', response.data);
             console.log('User role:', returnedRole);
             console.log('User profile:', response.data.profile);
-            
-            // Prepare for new user login - clear all previous data
+
             await prepareForNewUser(returnedRole);
-            
-            // Store new user data
+
             localStorage.setItem('userProfile', JSON.stringify(response.data));
             console.log('Stored user profile in localStorage:', JSON.stringify(response.data));
             
@@ -145,3 +143,4 @@ const Login: React.FC<LoginProps> = ({onLogin}) => {
 };
 
 export default Login;
+

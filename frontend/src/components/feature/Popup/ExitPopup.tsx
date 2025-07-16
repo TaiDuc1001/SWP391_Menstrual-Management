@@ -7,7 +7,6 @@ interface PopupProps {
     className?: string;
 }
 
-//exit
 const Popup: React.FC<PopupProps> = ({open, onClose, children, className = ''}) => {
     if (!open) return null;
     return (
@@ -26,3 +25,4 @@ const Popup: React.FC<PopupProps> = ({open, onClose, children, className = ''}) 
 };
 
 export default Popup;
+

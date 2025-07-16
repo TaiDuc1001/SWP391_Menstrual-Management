@@ -9,3 +9,4 @@ export const markNotificationAsRead = async (id: string) => {
     const response = await api.get(`/admin/dashboard/notifications/${id}/mark-read`);
     return response.data;
 };
+

@@ -33,3 +33,4 @@ export const staffPaths: RouteConfig[] = [{
         showInSidebar: true
     },
 ];
+

@@ -15,7 +15,7 @@ export interface CycleSymptomResponse {
 
 export const cycleSymptomService = {
     async saveSymptom(data: CycleSymptomRequest): Promise<CycleSymptomResponse> {
-        // Convert frontend symptom names to backend enum values
+
         const symptomMapping: { [key: string]: string } = {
             'Abdominal pain': 'CRAMPS',
             'Back pain': 'BACK_PAIN',
@@ -75,3 +75,4 @@ export const cycleSymptomService = {
         });
     }
 };
+

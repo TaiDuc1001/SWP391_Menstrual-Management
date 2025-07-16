@@ -12,3 +12,4 @@ export interface SystemNotificationDTO {
     priority: 'low' | 'medium' | 'high';
     isRead: boolean;
 }
+

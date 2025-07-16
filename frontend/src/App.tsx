@@ -26,13 +26,11 @@ function App() {
     const handleAuthToggle = () => {
         setIsAuthenticated(false);
         setRole(null);
-        
-        // Clear authentication-related data
+
         localStorage.removeItem('role');
         localStorage.removeItem('userProfile');
         localStorage.removeItem('doctor_token');
-        
-        // Clear doctor profile cache when logging out
+
         try {
             const { doctorProfileService, DoctorProfileService } = require('./api/services/doctorProfileService');
             if (DoctorProfileService?.resetInstance) {
@@ -69,3 +67,4 @@ function App() {
 }
 
 export default App;
+

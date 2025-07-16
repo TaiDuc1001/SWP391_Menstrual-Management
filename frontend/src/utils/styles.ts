@@ -1,6 +1,4 @@
-/**
- * Common utility functions to reduce code duplication
- */
+
 
 
 export const cn = (...classes: (string | undefined | null | false)[]): string => {
@@ -140,3 +138,4 @@ export const textClasses = {
     error: 'text-red-500',
     success: 'text-green-500'
 };
+

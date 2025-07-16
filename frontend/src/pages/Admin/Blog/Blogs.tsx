@@ -34,8 +34,7 @@ const Blogs: React.FC = () => {
     const [editingBlog, setEditingBlog] = useState<Post | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage] = useState(5);
-    
-    // Notification states
+
     const [successNotification, setSuccessNotification] = useState<{
         isOpen: boolean;
         title: string;
@@ -56,7 +55,6 @@ const Blogs: React.FC = () => {
         message: ''
     });
 
-    // Confirm dialog state
     const [confirmDialog, setConfirmDialog] = useState<{
         isOpen: boolean;
         title: string;
@@ -69,7 +67,6 @@ const Blogs: React.FC = () => {
         blogId: null
     });
 
-    // Helper functions for notifications
     const showSuccessNotification = (title: string, message: string) => {
         setSuccessNotification({
             isOpen: true,
@@ -461,7 +458,7 @@ const Blogs: React.FC = () => {
                 </div>
             )}
 
-            {/* Success Notification */}
+            {}
             <SuccessNotification
                 isOpen={successNotification.isOpen}
                 onClose={closeSuccessNotification}
@@ -469,7 +466,7 @@ const Blogs: React.FC = () => {
                 message={successNotification.message}
             />
 
-            {/* Error Notification */}
+            {}
             <ErrorNotification
                 isOpen={errorNotification.isOpen}
                 onClose={closeErrorNotification}
@@ -477,7 +474,7 @@ const Blogs: React.FC = () => {
                 message={errorNotification.message}
             />
 
-            {/* Confirm Dialog */}
+            {}
             <ConfirmDialog
                 isOpen={confirmDialog.isOpen}
                 title={confirmDialog.title}
@@ -493,3 +490,4 @@ const Blogs: React.FC = () => {
 };
 
 export default Blogs;
+

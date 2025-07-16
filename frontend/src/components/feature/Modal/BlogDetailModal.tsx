@@ -25,22 +25,22 @@ const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, isOpen, onClose
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
             <div className="bg-white rounded-3xl max-w-5xl max-h-[95vh] overflow-hidden shadow-2xl border border-gray-100 animate-in slide-in-from-bottom-4 duration-300">
-                {/* Header with gradient background */}
+                {}
                 <div className="bg-gradient-to-r from-pink-50 via-purple-50 to-blue-50 p-8 border-b border-gray-100">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 pr-6">
-                            {/* Category badge */}
+                            {}
                             <div className="inline-flex items-center gap-2 text-sm font-semibold text-pink-600 bg-pink-100 px-4 py-2 rounded-full mb-4 shadow-sm">
                                 <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
                                 {formatCategory(blog.category)}
                             </div>
                             
-                            {/* Title */}
+                            {}
                             <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
                                 {blog.title}
                             </h1>
                             
-                            {/* Author and date info */}
+                            {}
                             <div className="flex items-center gap-6 text-gray-600">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full flex items-center justify-center">
@@ -63,7 +63,7 @@ const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, isOpen, onClose
                             </div>
                         </div>
                         
-                        {/* Close button */}
+                        {}
                         <button
                             onClick={onClose}
                             className="flex items-center justify-center w-10 h-10 bg-white/80 hover:bg-white text-gray-400 hover:text-gray-600 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
@@ -75,7 +75,7 @@ const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, isOpen, onClose
                     </div>
                 </div>
                 
-                {/* Content */}
+                {}
                 <div className="overflow-y-auto max-h-[calc(95vh-300px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     <div className="p-8">
                         <div 
@@ -95,7 +95,7 @@ const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, isOpen, onClose
                     </div>
                 </div>
                 
-                {/* Footer */}
+                {}
                 <div className="flex items-center justify-between p-6 border-t border-gray-100 bg-gray-50/50">
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-2">
@@ -132,3 +132,4 @@ const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, isOpen, onClose
 };
 
 export default BlogDetailModal;
+

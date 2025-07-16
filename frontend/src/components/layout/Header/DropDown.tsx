@@ -46,3 +46,4 @@ const DropDown: React.FC<ProfileDropdownProps> = ({onAuthToggle, closeDropdown})
 };
 
 export default DropDown;
+

@@ -88,3 +88,4 @@ export const customerPaths: RouteConfig[] = [
     {path: '/customer/profile', element: <ProfileGuard><MyProfile/></ProfileGuard>},
     {path: '/customer/complete-profile', element: <CompleteProfile/>, showInSidebar: false},
 ];
+

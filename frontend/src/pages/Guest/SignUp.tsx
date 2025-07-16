@@ -31,38 +31,33 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
             return;
         }
         try {
-            // Default role is customer since we removed role selection
+
             const role = 'customer';
             const response = await api.post('/accounts/register', {email, password, role}, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            
-            // Ensure the response has the correct structure for user profile
+
             const userData = {
                 id: response.data.id,
                 email: response.data.email || email,
                 role: response.data.role || role,
                 profile: response.data.profile || null // This might be null for new registrations
             };
-            
-            // Clear any existing user data before storing new user data
+
             localStorage.removeItem('userProfile');
             localStorage.removeItem('doctor_token');
-            
-            // Store user data in localStorage
+
             localStorage.setItem('userProfile', JSON.stringify(userData));
             localStorage.setItem('role', role);
             
             onSignUp(role);
-            
-            // All new registrations go to customer complete profile
+
             navigate('/customer/complete-profile');
         } catch (err: any) {
             console.error('Registration error:', err);
-            
-            // Handle specific error cases
+
             if (err.response?.status === 409 || err.response?.data?.message?.includes('email')) {
                 setError('Email already exists. Please use a different email or try logging in.');
             } else if (err.response?.status === 400) {
@@ -157,3 +152,4 @@ const SignUp: React.FC<SignUpProps> = ({onSignUp}) => {
 };
 
 export default SignUp;
+

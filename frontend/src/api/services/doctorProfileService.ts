@@ -59,8 +59,7 @@ class DoctorProfileService {
             return this.profile;
         } catch (error) {
             console.error('Error loading profile:', error);
-            
-            // Don't use fallback profile, let the error bubble up
+
             this.profile = null;
             this.hasLoaded = false;
             
@@ -86,7 +85,7 @@ class DoctorProfileService {
     }
 
     async checkProfileComplete(): Promise<{ isComplete: boolean; percentage: number }> {
-        // If we have a cached profile, calculate completion from that
+
         if (this.profile) {
             const completedFields = [
                 this.profile.name?.trim(),
@@ -100,7 +99,6 @@ class DoctorProfileService {
             return { isComplete, percentage };
         }
 
-        // Otherwise, make API call
         try {
             const response = await doctorService.checkProfileComplete();
             return response.data;
@@ -117,7 +115,6 @@ class DoctorProfileService {
         this.notify();
     }
 
-    // Reset instance để tạo instance mới khi cần
     static resetInstance() {
         if (DoctorProfileService.instance) {
             DoctorProfileService.instance.clearCache();
@@ -128,3 +125,4 @@ class DoctorProfileService {
 
 export const doctorProfileService = DoctorProfileService.getInstance();
 export { DoctorProfileService };
+

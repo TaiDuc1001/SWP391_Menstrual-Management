@@ -14,3 +14,4 @@ export interface UserFilters extends BaseFilters {
 }
 
 export const userService = createBaseService<User, UserFilters>('/users');
+

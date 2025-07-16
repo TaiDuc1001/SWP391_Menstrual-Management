@@ -25,20 +25,18 @@ const ExaminationBooking: React.FC = () => {
 
     const panelId = panelIdParam || (location.state && location.state.panelId);
 
-    // Get current date and minimum allowed date
     const getCurrentDate = () => {
         const now = new Date();
         return now.toISOString().split('T')[0];
     };
 
     const getMinDate = () => {
-        // Allow booking from tomorrow onwards
+
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         return tomorrow.toISOString().split('T')[0];
     };
 
-    // Validate if selected date is in the future
     const isDateInFuture = (dateString: string) => {
         const selectedDate = new Date(dateString);
         const today = new Date();
@@ -110,13 +108,11 @@ const ExaminationBooking: React.FC = () => {
             return;
         }
 
-        // Validate date is in the future
         if (!isDateInFuture(date)) {
             setError('You can only book examinations for future dates. Please select a date starting from tomorrow.');
             return;
         }
 
-        // Additional validation for past dates
         const selectedDateObj = new Date(date);
         const currentDate = new Date();
         if (selectedDateObj < currentDate) {
@@ -190,7 +186,7 @@ const ExaminationBooking: React.FC = () => {
                                         min={getMinDate()}
                                         onChange={e => {
                                             const newDate = e.target.value;
-                                            // Additional validation on change
+
                                             if (newDate && !isDateInFuture(newDate)) {
                                                 setError('Please select a future date. You can only book examinations starting from tomorrow.');
                                                 return;
@@ -341,3 +337,4 @@ const ExaminationBooking: React.FC = () => {
 };
 
 export default ExaminationBooking;
+

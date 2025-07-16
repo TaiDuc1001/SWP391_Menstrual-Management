@@ -17,3 +17,4 @@ export interface ServiceFilters extends BaseFilters {
 }
 
 export const serviceManagementService = createBaseService<Service, ServiceFilters>('/services');
+

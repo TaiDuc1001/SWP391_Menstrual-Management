@@ -15,7 +15,6 @@ interface CustomerProfile {
     address: string;
 }
 
-// Extended interface for better type safety
 interface ExtendedUserProfile {
     id: number;
     email: string;
@@ -54,7 +53,6 @@ const MyProfile: React.FC = () => {
                 return;
             }
 
-            // Get user data with better type safety
             const customerData = userProfile.profile;
             
             const profileData: CustomerProfile = {
@@ -91,7 +89,6 @@ const MyProfile: React.FC = () => {
     const handleSave = async () => {
         if (!editedProfile) return;
 
-        // Basic validation
         if (!editedProfile.name.trim()) {
             setError('Name is required');
             return;
@@ -127,14 +124,12 @@ const MyProfile: React.FC = () => {
             };
 
             const response = await api.put(`/customers/${editedProfile.id}`, updateData);
-            
-            // Update local storage with new profile data
+
             const storedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
             if (storedProfile.profile) {
                 Object.assign(storedProfile.profile, updateData);
                 localStorage.setItem('userProfile', JSON.stringify(storedProfile));
-                
-                // Dispatch custom event to notify header of profile update
+
                 window.dispatchEvent(new CustomEvent('profileUpdated'));
             }
 
@@ -201,7 +196,7 @@ const MyProfile: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-4xl mx-auto">
-                {/* Header */}
+                {}
                 <div className="flex justify-between items-start mb-6">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800 mb-2">My Profile</h1>
@@ -218,7 +213,7 @@ const MyProfile: React.FC = () => {
                     )}
                 </div>
 
-                {/* Warning for incomplete profile */}
+                {}
                 {showIncompleteWarning && !isEditing && (
                     <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                         <div className="flex items-center">
@@ -233,14 +228,14 @@ const MyProfile: React.FC = () => {
                     </div>
                 )}
 
-                {/* Success Message */}
+                {}
                 {successMessage && (
                     <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
                         <div className="text-green-700">{successMessage}</div>
                     </div>
                 )}
 
-                {/* Error Message */}
+                {}
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-400 rounded-lg">
                         <div className="text-red-700">{error}</div>
@@ -248,7 +243,7 @@ const MyProfile: React.FC = () => {
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column - Avatar and Basic Info */}
+                    {}
                     <div className="space-y-6">
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <div className="flex flex-col items-center">
@@ -273,13 +268,13 @@ const MyProfile: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Right Columns - Form */}
+                    {}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <h3 className="text-xl font-semibold text-gray-800 mb-6">Personal Information</h3>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Full Name */}
+                                {}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Full Name <span className="text-red-500">*</span>
@@ -299,7 +294,7 @@ const MyProfile: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Email (readonly) */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                                     <p className="p-3 bg-gray-100 rounded-lg text-gray-600">
@@ -308,7 +303,7 @@ const MyProfile: React.FC = () => {
                                     <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                                 </div>
 
-                                {/* Phone Number */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Phone Number <span className="text-red-500">*</span>
@@ -328,7 +323,7 @@ const MyProfile: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Date of Birth */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Date of Birth <span className="text-red-500">*</span>
@@ -346,7 +341,7 @@ const MyProfile: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Gender */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
                                     {isEditing ? (
@@ -365,7 +360,7 @@ const MyProfile: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* CCCD */}
+                                {}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Citizen ID (CCCD)
@@ -385,7 +380,7 @@ const MyProfile: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Address */}
+                                {}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Address <span className="text-red-500">*</span>
@@ -406,7 +401,7 @@ const MyProfile: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Action Buttons */}
+                            {}
                             {isEditing && (
                                 <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
                                     <Button
@@ -436,3 +431,4 @@ const MyProfile: React.FC = () => {
 };
 
 export default MyProfile;
+

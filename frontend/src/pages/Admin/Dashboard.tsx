@@ -30,12 +30,12 @@ import { getSystemNotifications, markNotificationAsRead } from '../../api/servic
 import { RecentActivityDTO, SystemNotificationDTO } from '../../types/dashboard';
 import { IconType, IconBaseProps } from 'react-icons';
 
-// Wrapper to render react-icons components correctly
-const IconWrapper: FC<{ icon: IconType; className?: string }> = ({ icon: Icon, className }) => {
-    // @ts-ignore: Icon may return ReactNode not JSX.Element
-    return <Icon className={className} /> as JSX.Element;
+const IconWrapper: FC<{ icon: IconType; className?: string }> = ({ icon, className }) => {
+    const IconComponent = icon as React.ComponentType<IconBaseProps>;
+    if (!IconComponent) return null;
+    return <IconComponent className={className} />;
 };
-// Helper functions for activity items styling (match Complete Activity History)
+
 const getActivityTypeColor = (type: string): string => {
     switch (type) {
         case 'appointment': return 'bg-blue-100 text-blue-800';
@@ -53,7 +53,6 @@ const getActivityIcon = (type: string): React.ReactNode => {
     }
 };
 
-// Interface for dashboard data from API
 interface DashboardData {
     totalAccounts: number;
     totalBlogs: number;
@@ -63,7 +62,6 @@ interface DashboardData {
     growthRate: number;
 }
 
-// Default stats for when data is loading
 const defaultStats = [
     {icon: FaUser, color: 'text-blue-500', bgColor: 'bg-blue-100', label: 'Users', value: '---'},
     {icon: FaBlog, color: 'text-emerald-500', bgColor: 'bg-emerald-100', label: 'Blogs', value: '---'},
@@ -72,7 +70,6 @@ const defaultStats = [
     {icon: FaDollarSign, color: 'text-violet-500', bgColor: 'bg-violet-100', label: 'Revenue', value: '---'},
 ];
 
-// Types for chart data
 interface MonthlyRevenue { month: number; revenue: number; }
 interface ServiceDistribution { name: string; value: number; }
 
@@ -95,7 +92,6 @@ const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch dashboard data when component mounts
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -108,7 +104,7 @@ const Dashboard: React.FC = () => {
                     getSystemNotifications()
                 ]);
                 setDashboardData(dashboard);
-                // Map backend months (1-12) to labels, fill 0 if missing
+
                 const revenueArr = Array.from({ length: 12 }, (_, i) => {
                     const found = (monthlyRevenue as MonthlyRevenue[]).find(item => item.month === i + 1);
                     return {
@@ -129,8 +125,7 @@ const Dashboard: React.FC = () => {
             }
         };
         fetchDashboardData();
-        
-        // Set up periodic refresh for notifications - every 60 seconds
+
         const notificationRefreshInterval = setInterval(async () => {
             try {
                 const notifications = await getSystemNotifications();
@@ -145,14 +140,12 @@ const Dashboard: React.FC = () => {
         };
     }, []);
 
-    // Helper to format growth rate with correct sign
     const formatGrowthRate = (rate: number) => {
         if (rate > 0) return `+${rate}%`;
         if (rate < 0) return `${rate}%`;
         return '0%';
     };
 
-    // Prepare stats based on the fetched data
     const stats = dashboardData ? [
         {icon: FaUser, color: 'text-blue-600', bgColor: 'bg-blue-100', label: 'Users', value: dashboardData.totalAccounts.toLocaleString()},
         {icon: FaBlog, color: 'text-emerald-600', bgColor: 'bg-emerald-100', label: 'Blogs', value: dashboardData.totalBlogs.toLocaleString()},
@@ -164,7 +157,7 @@ const Dashboard: React.FC = () => {
     const handleMarkAsRead = async (id: string) => {
         try {
             await markNotificationAsRead(id);
-            // Update local state to reflect change immediately
+
             setSystemNotifications(prev => 
                 prev.map(notif => 
                     notif.id === id ? { ...notif, isRead: true } : notif
@@ -174,7 +167,7 @@ const Dashboard: React.FC = () => {
             console.error('Error marking notification as read:', err);
         }
     };
-    // Get current date for welcome message
+
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('en-US', {
         weekday: 'long',
@@ -183,7 +176,6 @@ const Dashboard: React.FC = () => {
         day: 'numeric'
     });
 
-    // Time-based greeting
     const getGreeting = () => {
         const hour = currentDate.getHours();
         if (hour < 12) return 'Good Morning';
@@ -192,7 +184,7 @@ const Dashboard: React.FC = () => {
     };
     return (
         <div className="p-6 lg:p-8 bg-gradient-to-br from-blue-50 via-white to-blue-50 min-h-screen">
-            {/* Welcome header */}
+            {}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 bg-white p-6 rounded-2xl shadow-lg border border-blue-50">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
@@ -218,7 +210,7 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
             )}
-            {/* Stats Overview Cards */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
                 {stats.map((stat) => (
                     <div key={stat.label}
@@ -232,7 +224,7 @@ const Dashboard: React.FC = () => {
                 ))}
             </div>
 
-            {/* Charts */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                 <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                     <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
@@ -296,9 +288,9 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* Activities and Notifications */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Recent Activities */}
+                {}
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-gray-800 flex items-center">
@@ -312,7 +304,7 @@ const Dashboard: React.FC = () => {
                         </button>
                     </div>
                     
-                    {/* Activity Stats */}
+                    {}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <div className="text-blue-600 text-sm font-medium">Total Activities</div>
@@ -390,7 +382,7 @@ const Dashboard: React.FC = () => {
                     </button>
                 </div>
 
-                {/* System Notifications */}
+                {}
                 <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                     <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
                         <IconWrapper icon={FaBell} className="mr-2 text-blue-600" /> System Notifications
@@ -489,3 +481,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+

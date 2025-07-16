@@ -53,3 +53,4 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
 };
 
 export default BaseSidebar;
+

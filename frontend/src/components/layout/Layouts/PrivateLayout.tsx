@@ -50,3 +50,4 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({
 };
 
 export default PrivateLayout;
+

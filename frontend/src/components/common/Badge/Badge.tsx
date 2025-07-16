@@ -18,3 +18,4 @@ const Badge: React.FC<BadgeProps> = ({children, className = '', style}) => {
 };
 
 export default Badge;
+

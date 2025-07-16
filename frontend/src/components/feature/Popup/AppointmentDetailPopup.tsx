@@ -110,3 +110,4 @@ const AppointmentDetailPopup: React.FC<AppointmentDetailPopupProps> = ({open, on
 };
 
 export default AppointmentDetailPopup;
+

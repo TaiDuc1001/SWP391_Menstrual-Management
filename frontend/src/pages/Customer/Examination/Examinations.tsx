@@ -45,57 +45,52 @@ const Examinations: React.FC = () => {
     const navigate = useNavigate();
 
     const parseDate = (dateStr: string): Date => {
-        // Handle different date formats: DD-MM-YYYY, DD/MM/YYYY, YYYY-MM-DD
+
         if (dateStr.includes('-')) {
             const parts = dateStr.split('-');
             if (parts[0].length === 4) {
-                // YYYY-MM-DD format
+
                 const [year, month, day] = parts.map(Number);
                 return new Date(year, month - 1, day);
             } else {
-                // DD-MM-YYYY format
+
                 const [day, month, year] = parts.map(Number);
                 return new Date(year, month - 1, day);
             }
         } else if (dateStr.includes('/')) {
-            // DD/MM/YYYY format
+
             const [day, month, year] = dateStr.split('/').map(Number);
             return new Date(year, month - 1, day);
         }
-        // Fallback: try to parse as-is
+
         return new Date(dateStr);
     };
 
-    // Enhanced filtering logic with improved search
     const filteredRecords = testRecords.filter((record: any) => {
-        // Enhanced search using multi-field search
+
         const searchFields = ['panels', 'date', 'status', 'statusRaw', 'id', 'panelName'];
         const searchMatch = createMultiFieldSearch(searchTerm, searchFields)(record);
-        
-        // Slot filter - match time slot with multiple field support
+
         const slotMatch = selectedSlot ? (
             record.slot === selectedSlot ||
             record.time === selectedSlot ||
             record.slotTime === selectedSlot ||
             record.timeRange === selectedSlot
         ) : true;
-        
-        // Status filter - match both display and raw status
+
         const statusMatch = selectedStatus ? (
             record.status === selectedStatus ||
             record.statusRaw === selectedStatus ||
             record.status.toLowerCase() === selectedStatus.toLowerCase() ||
             record.statusRaw?.toLowerCase() === selectedStatus.toLowerCase()
         ) : true;
-        
-        // Panel filter - match panel name with multiple field support
+
         const panelMatch = selectedPanel ? (
             record.panels === selectedPanel ||
             record.panelName === selectedPanel ||
             record.panels?.toLowerCase() === selectedPanel.toLowerCase()
         ) : true;
-        
-        // Date filters with enhanced parsing
+
         let dateMatch = true;
         if (selectedDateFrom || selectedDateTo) {
             try {
@@ -142,7 +137,7 @@ const Examinations: React.FC = () => {
                 }
             }
             const mapped = data.map((order: any) => {
-                // Format status for display using the centralized function
+
                 const status = formatExaminationStatus(order.examinationStatus || '');
 
                 return {
@@ -156,8 +151,7 @@ const Examinations: React.FC = () => {
                     rawDate: order.date ? new Date(order.date) : null, // Keep raw date for sorting
                 };
             });
-            
-            // Sort by date descending (newest first)
+
             const sortedMapped = mapped.sort((a: any, b: any) => {
                 if (!a.rawDate && !b.rawDate) return 0;
                 if (!a.rawDate) return 1;

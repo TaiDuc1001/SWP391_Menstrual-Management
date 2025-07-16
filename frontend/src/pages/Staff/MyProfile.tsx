@@ -31,7 +31,6 @@ const MyProfile: React.FC = () => {
     if (error) return <div className="flex justify-center items-center h-64 text-red-500 font-semibold">{error}</div>;
     if (!profile) return null;
 
-    // Only show fields that have value
     const infoFields = [
         { label: 'Name', value: profile.name },
         { label: 'Email', value: profile.email },
@@ -66,3 +65,4 @@ const MyProfile: React.FC = () => {
 };
 
 export default MyProfile;
+

@@ -32,7 +32,6 @@ const UpdateScheduleModal: React.FC<UpdateScheduleModalProps> = ({
         }
     }, [selectedDate, doctor.schedules]);
 
-    // Handle click outside to close modal
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -46,7 +45,6 @@ const UpdateScheduleModal: React.FC<UpdateScheduleModalProps> = ({
         };
     }, [onClose]);
 
-    // Get current date
     const getCurrentDate = () => {
         const today = new Date();
         const year = today.getFullYear();
@@ -139,7 +137,7 @@ const UpdateScheduleModal: React.FC<UpdateScheduleModalProps> = ({
 
                 <div className="p-6">
                     <div className="space-y-4">
-                        {/* Date Selection */}
+                        {}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Select Date
@@ -268,3 +266,4 @@ const UpdateScheduleModal: React.FC<UpdateScheduleModalProps> = ({
 };
 
 export default UpdateScheduleModal;
+

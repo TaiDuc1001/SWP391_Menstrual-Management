@@ -60,3 +60,4 @@ const StaffHeader: React.FC<HeaderProps> = ({ isAuthenticated, onAuthToggle }) =
 };
 
 export default StaffHeader;
+

@@ -13,3 +13,4 @@ const TagBadge: React.FC<TagBadgeProps> = ({label, className = ''}) => {
 };
 
 export default TagBadge;
+

@@ -117,7 +117,7 @@ const Home: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-            {/* Hero Section */}
+            {}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
@@ -185,7 +185,7 @@ const Home: React.FC = () => {
                                     </div>
                                 </div>
                                 
-                                {/* Floating elements */}
+                                {}
                                 <div className="absolute -top-4 -left-4 w-20 h-20 bg-pink-300 rounded-full opacity-60 animate-pulse"></div>
                                 <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-blue-300 rounded-full opacity-60 animate-pulse delay-1000"></div>
                             </div>
@@ -194,7 +194,7 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* Features Section */}
+            {}
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -221,7 +221,7 @@ const Home: React.FC = () => {
                                     </button>
                                 </div>
                                 
-                                {/* Decorative elements */}
+                                {}
                                 <div className={`absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r ${feature.color} rounded-full opacity-60 group-hover:scale-150 transition-transform duration-300`}></div>
                             </div>
                         ))}
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* Health Blog Section */}
+            {}
             <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="flex justify-between items-center mb-16">
@@ -276,7 +276,7 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* Team Section */}
+            {}
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -327,7 +327,7 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* Testimonials Section */}
+            {}
             <section className="py-16 bg-gradient-to-br from-purple-50 to-pink-50">
                 <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -363,7 +363,7 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* CTA Section */}
+            {}
             <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white text-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative">
@@ -409,7 +409,7 @@ const Home: React.FC = () => {
                     </div>
                 </div>
                 
-                {/* Decorative elements */}
+                {}
                 <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
                 <div className="absolute bottom-10 right-10 w-16 h-16 bg-white/10 rounded-full animate-pulse delay-1000"></div>
             </section>

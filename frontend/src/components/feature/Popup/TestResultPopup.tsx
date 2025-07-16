@@ -184,3 +184,4 @@ const TestResultPopup: React.FC<TestResultPopupProps> = ({onClose, examinationId
 };
 
 export default TestResultPopup;
+

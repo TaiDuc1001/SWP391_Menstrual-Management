@@ -65,3 +65,4 @@ export const contentManagementService = {
         return response.data;
     }
 };
+

@@ -59,12 +59,10 @@ export const doctorService = {
         return api.put(`/doctors/${id}`, doctor);
     },
 
-    // Admin update doctor profile
     adminUpdateDoctorProfile: (id: number, profileData: { name: string; specialization: string; price: number; experience: number; degree?: string; university?: string }) => {
         return api.put(`/doctors/${id}`, profileData);
     },
 
-    // Admin create doctor profile
     adminCreateDoctorProfile: (userId: number, profileData: { name: string; specialization: string; price: number; experience: number }) => {
         return api.post(`/doctors/admin/${userId}`, profileData);
     },
@@ -73,7 +71,6 @@ export const doctorService = {
         return api.delete(`/doctors/${id}`);
     },
 
-    // Profile management APIs
     getDoctorProfile: () => {
         return api.get('/doctors/profile');
     },
@@ -96,12 +93,10 @@ export const doctorService = {
         return api.get('/doctors/profile/check-complete');
     },
 
-    // Specialization options
     getSpecializations: () => {
         return api.get('/doctors/specializations');
     },
 
-    // Authentication token management
     setAuthToken: (token: string) => {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         localStorage.setItem('doctor_token', token);
@@ -110,14 +105,13 @@ export const doctorService = {
     removeAuthToken: () => {
         delete api.defaults.headers.common['Authorization'];
         localStorage.removeItem('doctor_token');
-        // Clear doctor profile cache khi remove token
+
         const { doctorProfileService } = require('./doctorProfileService');
         if (doctorProfileService) {
             doctorProfileService.clearCache();
         }
     },
 
-    // Initialize auth from localStorage
     initAuth: () => {
         const token = localStorage.getItem('doctor_token');
         if (token) {
@@ -126,3 +120,4 @@ export const doctorService = {
         return !!token;
     }
 };
+

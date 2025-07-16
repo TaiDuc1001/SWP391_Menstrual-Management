@@ -8,3 +8,4 @@ export const doctorRatingService = {
         return api.get(`/appointments/doctor/rating-history?doctorId=${doctorId}`);
     }
 };
+

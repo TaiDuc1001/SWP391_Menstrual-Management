@@ -13,3 +13,4 @@ const TypeBadge: React.FC<TypeBadgeProps> = ({label, className = ''}) => {
 };
 
 export default TypeBadge;
+

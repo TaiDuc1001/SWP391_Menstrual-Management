@@ -1,6 +1,5 @@
 import api from '../axios';
 
-// Types
 export interface TestType {
     id: number;
     name: string;
@@ -63,7 +62,7 @@ export interface PanelFilters {
 }
 
 export const panelService = {
-    // Panel Management APIs
+
     async getAllPanels(): Promise<Panel[]> {
         const response = await api.get('/admin/panels/all');
         return response.data.panels;
@@ -124,7 +123,6 @@ export const panelService = {
         return response.data;
     },
 
-    // Test Type Management APIs
     async getAllTestTypes(): Promise<TestType[]> {
         const response = await api.get('/admin/test-types');
         return response.data.testTypes;
@@ -145,3 +143,4 @@ export const panelService = {
         return response.data;
     }
 };
+

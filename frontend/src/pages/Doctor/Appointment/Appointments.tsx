@@ -443,7 +443,7 @@ const Appointments: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {/* Customer Rating */}
+                                    {}
                                     {detailModal.appointment.score && detailModal.appointment.score > 0 && (
                                         <div className="bg-yellow-50 rounded-lg p-6">
                                             <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -712,3 +712,4 @@ const Appointments: React.FC = () => {
 };
 
 export default Appointments;
+

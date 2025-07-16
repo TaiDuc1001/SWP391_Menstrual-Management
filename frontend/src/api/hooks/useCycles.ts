@@ -17,7 +17,7 @@ export const useCycles = () => {
         } catch (err) {
             setError('Failed to fetch cycles');
             console.error('Error fetching cycles:', err);
-            // Set empty array on error so UI can still function
+
             setCycles([]);
         } finally {
             setLoading(false);
@@ -162,7 +162,7 @@ export const useAIRecommendations = () => {
                     cycle.cycleSymptomByDate.forEach(symptomData => {
                         if (symptomData.symptom) {
                             if (symptomData.symptom === 'OTHER') {
-                                // Map OTHER symptoms to health-concerning text for AI detection
+
                                 const healthSymptoms = [
                                     'unusual discharge',
                                     'burning sensation',
@@ -174,7 +174,7 @@ export const useAIRecommendations = () => {
                                     'strong odor',
                                     'unusual vaginal discharge with odor'
                                 ];
-                                // Add multiple concerning symptoms for each OTHER entry to ensure detection
+
                                 healthSymptoms.forEach(symptom => {
                                     cycleSymptoms.push(symptom);
                                     recentSymptoms.push(symptom);
@@ -200,7 +200,6 @@ export const useAIRecommendations = () => {
                     }
                 });
 
-                // Calculate actual cycle length based on next cycle start date
                 const sortedCycles = cycles
                     .filter(c => new Date(c.cycleStartDate) > cycleStartDate)
                     .sort((a, b) => new Date(a.cycleStartDate).getTime() - new Date(b.cycleStartDate).getTime());
@@ -255,7 +254,7 @@ export const useAIRecommendations = () => {
         } catch (err) {
             setError('Failed to generate recommendations');
             console.error('Error generating recommendations:', err);
-            // Recreate requestData for fallback
+
             const recentSymptoms: string[] = [];
             
             Object.values(symptoms).forEach(symptomData => {
@@ -265,7 +264,7 @@ export const useAIRecommendations = () => {
             });
             
             const cycleData = cycles.map((cycle, index) => {
-                // Calculate actual cycle length based on next cycle start date
+
                 const cycleStartDate = new Date(cycle.cycleStartDate);
                 const sortedCycles = cycles
                     .filter(c => new Date(c.cycleStartDate) > cycleStartDate)
@@ -309,3 +308,4 @@ export const useAIRecommendations = () => {
         generateRecommendations
     };
 };
+

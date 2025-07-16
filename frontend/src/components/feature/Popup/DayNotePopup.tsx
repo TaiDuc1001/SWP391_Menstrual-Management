@@ -33,7 +33,6 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defau
     const [flow, setFlow] = useState('');
     const [note, setNote] = useState('');
 
-    // Reset form when popup opens or defaultValue changes
     useEffect(() => {
         if (open) {
             setSymptom(defaultValue?.symptom || '');
@@ -43,7 +42,6 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defau
         }
     }, [open, defaultValue, defaultNote]);
 
-    // Clear form when popup closes
     useEffect(() => {
         if (!open) {
             setSymptom('');
@@ -116,3 +114,4 @@ const DayNotePopup: React.FC<DayNotePopupProps> = ({open, onClose, onSave, defau
 };
 
 export default DayNotePopup;
+

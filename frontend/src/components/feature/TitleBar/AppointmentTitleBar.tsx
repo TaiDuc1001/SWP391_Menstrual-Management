@@ -22,3 +22,4 @@ const AppointmentTitleBar: React.FC<AppointmentTitleBarProps> = ({title, onNewAp
 );
 
 export default AppointmentTitleBar;
+

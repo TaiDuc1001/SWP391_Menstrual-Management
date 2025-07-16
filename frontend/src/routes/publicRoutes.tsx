@@ -16,3 +16,4 @@ export const publicPaths: RouteConfig[] = [
     {path: '/contact', element: <Contact/>, label: 'Contact', iconName: 'FaEnvelope', showInNavbar: true},
     {path: '*', element: <NotFound/>, showInNavbar: false},
 ];
+

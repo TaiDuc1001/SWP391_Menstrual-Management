@@ -40,7 +40,7 @@ export const appointmentService = {
     async createAppointment(appointmentData: any): Promise<{ data?: any; error?: AppointmentConflictError }> {
         try {
             const response = await api.post('/appointments', appointmentData);
-            // Dispatch custom event to refresh appointments in dashboard
+
             window.dispatchEvent(new CustomEvent('appointmentBooked'));
             return { data: response.data };
         } catch (error: any) {
@@ -61,3 +61,4 @@ export const appointmentService = {
         }
     }
 };
+

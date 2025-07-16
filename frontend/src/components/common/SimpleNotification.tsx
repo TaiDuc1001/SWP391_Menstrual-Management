@@ -59,3 +59,4 @@ export const useSimpleNotification = () => {
         hideNotification
     };
 };
+

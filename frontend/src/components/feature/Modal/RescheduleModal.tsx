@@ -24,14 +24,13 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Get next 30 days excluding today
     const getNextDays = (count: number) => {
         const days = [];
         const today = new Date();
         for (let i = 1; i <= count; i++) { // Start from 1 to exclude today
             const date = new Date(today);
             date.setDate(today.getDate() + i);
-            // Skip weekends (optional)
+
             if (date.getDay() !== 0 && date.getDay() !== 6) {
                 days.push(date.toISOString().split('T')[0]);
             }
@@ -39,14 +38,12 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
         return days;
     };
 
-    // Get minimum date (tomorrow)
     const getMinDate = () => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         return tomorrow.toISOString().split('T')[0];
     };
 
-    // Validate if selected date is in the future
     const isDateInFuture = (dateString: string) => {
         const selectedDate = new Date(dateString);
         const today = new Date();
@@ -65,7 +62,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
 
     useEffect(() => {
         if (!isOpen) {
-            // Reset form when modal is closed
+
             setSelectedDate('');
             setSelectedSlot('');
             setCustomerNote('');
@@ -95,13 +92,11 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
             return;
         }
 
-        // Validate date is in the future
         if (!isDateInFuture(selectedDate)) {
             setError('You can only reschedule to future dates. Please select a date starting from tomorrow.');
             return;
         }
 
-        // Additional validation for past dates
         const selectedDateObj = new Date(selectedDate);
         const currentDate = new Date();
         if (selectedDateObj < currentDate) {
@@ -127,8 +122,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
             onClose();
         } catch (err: any) {
             console.error('Error creating reschedule request:', err);
-            
-            // Extract error message from backend response
+
             let errorMessage = 'Failed to submit reschedule request';
             if (err.response?.data?.message) {
                 errorMessage = err.response.data.message;
@@ -157,7 +151,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                {/* Header */}
+                {}
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-2xl font-bold text-gray-800">Reschedule Appointment</h2>
                     <button
@@ -168,9 +162,9 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                     </button>
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="p-6 space-y-6">
-                    {/* Instructions */}
+                    {}
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start space-x-2">
                             <span className="text-blue-500 mt-0.5">ℹ️</span>
@@ -183,7 +177,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Date Selection */}
+                    {}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Select Date
@@ -192,7 +186,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                             value={selectedDate}
                             onChange={(e) => {
                                 const newDate = e.target.value;
-                                // Additional validation on change
+
                                 if (newDate && !isDateInFuture(newDate)) {
                                     setError('Please select a future date. You can only reschedule to dates starting from tomorrow.');
                                     return;
@@ -215,7 +209,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Time Slot Selection */}
+                    {}
                     {selectedDate && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -242,7 +236,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         </div>
                     )}
 
-                    {/* Selected Option Display */}
+                    {}
                     {selectedDate && selectedSlot && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -261,7 +255,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         </div>
                     )}
 
-                    {/* Customer Note */}
+                    {}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Reason for Rescheduling
@@ -279,7 +273,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Error Message */}
+                    {}
                     {error && (
                         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                             <p className="text-red-700 text-sm">{error}</p>
@@ -287,7 +281,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                     )}
                 </div>
 
-                {/* Footer */}
+                {}
                 <div className="flex justify-end space-x-3 p-6 border-t">
                     <button
                         onClick={onClose}
@@ -309,3 +303,4 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
 };
 
 export default RescheduleModal;
+

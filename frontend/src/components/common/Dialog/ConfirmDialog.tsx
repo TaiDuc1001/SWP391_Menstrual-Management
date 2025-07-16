@@ -24,7 +24,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     if (!isOpen) return null;
 
     const handleBackdropClick = (e: React.MouseEvent) => {
-        // Only close on backdrop click for non-danger dialogs
+
         if (e.target === e.currentTarget && type !== 'danger') {
             onCancel();
         }
@@ -62,17 +62,17 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={handleBackdropClick}
         >
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-                {/* Header */}
+                {}
                 <div className={`px-6 py-4 border-b border-gray-200 ${getHeaderColors()}`}>
                     <h3 className="text-xl font-bold text-gray-800">{title}</h3>
                 </div>
                 
-                {/* Content */}
+                {}
                 <div className="p-6">
                     <p className="text-gray-600 leading-relaxed">{message}</p>
                 </div>
                 
-                {/* Footer */}
+                {}
                 <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
                     <button
                         onClick={onCancel}
@@ -93,3 +93,4 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 };
 
 export default ConfirmDialog;
+

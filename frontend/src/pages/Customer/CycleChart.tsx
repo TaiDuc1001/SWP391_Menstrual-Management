@@ -407,3 +407,4 @@ const CycleChart: React.FC = () => {
 };
 
 export default CycleChart;
+

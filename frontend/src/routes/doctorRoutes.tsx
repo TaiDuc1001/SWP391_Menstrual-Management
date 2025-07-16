@@ -14,7 +14,7 @@ import DoctorProfileGuard from '../components/DoctorProfileGuard';
 import DoctorRatingHistory from '../pages/Doctor/RatingHistory';
 
 export const doctorPaths: RouteConfig[] = [
-    // ...existing code...
+
     {
         path: '/doctor',
         element: <Navigate to="/doctor/dashboard" replace/>,
@@ -66,3 +66,4 @@ export const doctorPaths: RouteConfig[] = [
         showInSidebar: true
     },
 ];
+

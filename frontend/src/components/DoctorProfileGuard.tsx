@@ -14,7 +14,6 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     const location = useLocation();
     const { checkProfileComplete } = useDoctorProfile();
 
-    // Allow access to profile management routes without checking
     const allowedRoutes = [
         '/doctor/manage-profile',
         '/doctor/setup-profile'
@@ -27,16 +26,14 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
-                // Get current user to ensure we're checking the right profile
+
                 const userProfile = getCurrentUserProfile();
                 const userId = userProfile?.profile?.id;
-                
-                // If user changed, force reload
+
                 if (userId && userId !== currentUserId) {
                     setCurrentUserId(userId);
                     console.log('DoctorProfileGuard: User changed, checking profile for user:', userId);
-                    
-                    // Clear any cached profile data for the previous user
+
                     const { doctorProfileService } = await import('../api/services/doctorProfileService');
                     doctorProfileService.clearCache();
                 }
@@ -46,14 +43,13 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
                 setIsProfileComplete(result.isComplete);
             } catch (error) {
                 console.error('Error checking profile status:', error);
-                // If API fails, assume profile is incomplete to be safe
+
                 setIsProfileComplete(false);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        // Only check if not on allowed routes
         if (!isAllowedRoute) {
             checkProfileStatus();
         } else {
@@ -73,7 +69,6 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
         );
     }
 
-    // If profile is not complete and not on allowed routes, redirect to setup
     if (!isProfileComplete && !isAllowedRoute) {
         return <Navigate to="/doctor/setup-profile" replace />;
     }
@@ -82,3 +77,4 @@ const DoctorProfileGuard: React.FC<DoctorProfileGuardProps> = ({ children }) => 
 };
 
 export default DoctorProfileGuard;
+

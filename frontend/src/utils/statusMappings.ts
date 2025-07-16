@@ -1,4 +1,4 @@
-// Status mappings for consistent display across the application
+
 export const appointmentStatusMapping: { [key: string]: string } = {
     'BOOKED': 'Booked',
     'CONFIRMED': 'Confirmed',
@@ -32,7 +32,6 @@ export const formatGenericStatus = (status: string): string => {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase().replace(/_/g, ' ');
 };
 
-// Enhanced search function for multi-field searching
 export const createMultiFieldSearch = (searchTerm: string, fields: string[]) => {
     return (item: any): boolean => {
         if (!searchTerm) return true;
@@ -46,7 +45,6 @@ export const createMultiFieldSearch = (searchTerm: string, fields: string[]) => 
     };
 };
 
-// Enhanced date comparison function
 export const createDateFilter = (fromDate: Date | null, toDate: Date | null, dateField: string) => {
     return (item: any): boolean => {
         if (!fromDate && !toDate) return true;
@@ -64,3 +62,4 @@ export const createDateFilter = (fromDate: Date | null, toDate: Date | null, dat
         }
     };
 };
+

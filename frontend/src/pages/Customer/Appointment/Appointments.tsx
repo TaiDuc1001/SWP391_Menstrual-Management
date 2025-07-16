@@ -43,18 +43,15 @@ const AppointmentHistory: React.FC = () => {
     const filteredRecords = appointments.filter((record: any) => {
         if (hideRows.includes(record.id)) return false;
 
-        // Enhanced search using multi-field search
         const searchFields = ['name', 'doctor', 'date', 'status', 'appointmentStatus', 'id'];
         const searchMatch = createMultiFieldSearch(searchTerm, searchFields)(record);
 
-        // Status filter - match both display status and raw appointment status
         const statusMatch = selectedStatus ? (
             record.appointmentStatus === selectedStatus ||
             record.status === selectedStatus ||
             record.status.toLowerCase() === selectedStatus.toLowerCase()
         ) : true;
-        
-        // Slot filter - match time slot with multiple field support
+
         const slotMatch = selectedSlot ? (
             record.time === selectedSlot || 
             record.slotTime === selectedSlot ||
@@ -62,11 +59,9 @@ const AppointmentHistory: React.FC = () => {
             record.slot === selectedSlot
         ) : true;
 
-        // Enhanced date filtering
         const dateFilter = createDateFilter(selectedDateFrom, selectedDateTo, 'date');
         let dateMatch = true;
-        
-        // Custom date parsing for DD/MM/YYYY format
+
         if (selectedDateFrom || selectedDateTo) {
             try {
                 const recordDate = parseDate(record.date);
@@ -131,8 +126,7 @@ const AppointmentHistory: React.FC = () => {
                         rawDate: item.date ? new Date(item.date) : null, // Keep raw date for sorting
                     };
                 });
-                
-                // Sort by date descending (newest first)
+
                 const sortedMapped = mapped.sort((a: any, b: any) => {
                     if (!a.rawDate && !b.rawDate) return 0;
                     if (!a.rawDate) return 1;
@@ -181,8 +175,7 @@ const AppointmentHistory: React.FC = () => {
                     rawDate: item.date ? new Date(item.date) : null, // Keep raw date for sorting
                 };
             });
-            
-            // Sort by date descending (newest first)
+
             const sortedMapped = mapped.sort((a: any, b: any) => {
                 if (!a.rawDate && !b.rawDate) return 0;
                 if (!a.rawDate) return 1;
@@ -191,7 +184,7 @@ const AppointmentHistory: React.FC = () => {
             });
             
             setAppointments(sortedMapped);
-            // alert('Meeting is starting! You can now join the meeting.');
+
         } catch (error) {
             console.error('Error confirming appointment:', error);
             alert('Failed to confirm appointment');
@@ -321,3 +314,4 @@ const AppointmentHistory: React.FC = () => {
 };
 
 export default AppointmentHistory;
+

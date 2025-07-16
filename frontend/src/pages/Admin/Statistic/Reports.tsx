@@ -25,10 +25,9 @@ import {
   getAdminDailyUserGrowth
 } from '../../../api/services/adminDashboardService';
 import { exportNodeToPDF } from '../../../utils/exportPdf';
-// For html2canvas fallback if needed
-// import html2canvas from 'html2canvas';
 
-// Wrapper giống Dashboard
+
+
 import { IconType } from 'react-icons';
 
 interface IconWrapperProps {
@@ -36,13 +35,12 @@ interface IconWrapperProps {
   className?: string;
 }
 const IconWrapper = ({ icon, className }: IconWrapperProps) => {
-  // react-icons IconType is a function that returns JSX.Element
-  // TypeScript sometimes fails to infer, so cast to any
+
+
   const IconComponent = icon as any;
   return IconComponent ? <IconComponent className={className} /> : null;
 };
 
-// Màu giống Dashboard
 const DASHBOARD_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
@@ -59,14 +57,14 @@ const Reports: React.FC = () => {
 
     const [timeRange, setTimeRange] = useState('6months');
     const reportRef = useRef<HTMLDivElement>(null);
-    // For PDF: include all chart data, not just by month
-    // Filtered data for export based on timeRange
+
+
     const getFilteredData = (data: any[]) => {
         if (timeRange === '7days') {
-            // Lấy 7 phần tử cuối cùng
+
             return data.slice(-7);
         } else if (timeRange === '30days') {
-            // Lấy 30 phần tử cuối cùng
+
             return data.slice(-30);
         } else if (timeRange === '6months') {
             return data.slice(-6);
@@ -85,7 +83,6 @@ const Reports: React.FC = () => {
 
     const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    // Helper to get date range for daily endpoints
     const getDateRange = (days: number) => {
       const end = new Date();
       const start = new Date();
@@ -101,7 +98,7 @@ const Reports: React.FC = () => {
         try {
           setLoading(true);
           setError(null);
-          // Always get dashboard summary and service distribution
+
           const [dashboardRes, serviceDist] = await Promise.all([
             getAdminDashboard(),
             getAdminServiceDistribution(),
@@ -112,31 +109,31 @@ const Reports: React.FC = () => {
           if (timeRange === '7days' || timeRange === '30days') {
             const days = timeRange === '7days' ? 7 : 30;
             const { startDate, endDate } = getDateRange(days);
-            // Fetch daily data for each chart separately
+
             const [dailyRevenue, dailyAppointments, dailyUserGrowth] = await Promise.all([
               getAdminDailyRevenue(startDate, endDate),
               getAdminDailyAppointments(startDate, endDate),
               getAdminDailyUserGrowth(startDate, endDate),
             ]);
-            // Revenue chart
+
             setRevenueData(dailyRevenue.map((item: any) => ({
               date: item.date,
               revenue: item.revenue
             })));
-            // Appointments chart
+
             setAppointmentsData(dailyAppointments.map((item: any) => ({
               date: item.date,
               appointments: item.count
             })));
-            // User Growth chart
+
             setUserGrowthData(dailyUserGrowth.map((item: any) => ({
               date: item.date,
               users: item.newUsers
             })));
           } else {
-            // Monthly data for 6 months/1 year
+
             const year = new Date().getFullYear();
-            // Revenue
+
             const monthlyRevenue = await getAdminMonthlyRevenue(year);
             setRevenueData(Array.from({ length: 12 }, (_, i) => {
               const found = (monthlyRevenue as any[]).find((item) => item.month === i + 1);
@@ -145,7 +142,7 @@ const Reports: React.FC = () => {
                 revenue: found ? found.revenue : 0
               };
             }));
-            // Appointments
+
             setAppointmentsData(Array.from({ length: 12 }, (_, i) => {
               const found = dashboardRes.appointmentsByMonth?.find((item: any) => item.month === i + 1);
               return {
@@ -153,7 +150,7 @@ const Reports: React.FC = () => {
                 appointments: found ? found.count : 0
               };
             }));
-            // User Growth
+
             setUserGrowthData(Array.from({ length: 12 }, (_, i) => {
               const found = dashboardRes.userGrowthByMonth?.find((item: any) => item.month === i + 1);
               return {
@@ -175,25 +172,21 @@ const Reports: React.FC = () => {
     if (error) return <div>{error}</div>;
     if (!dashboard) return <div>No data</div>;
 
-    // Tính phần trăm thay đổi động cho Appointments và New Users
     const getPercentChange = (current: number, prev: number) => {
         if (prev === 0) return current === 0 ? 0 : 100;
         return ((current - prev) / prev * 100);
     };
 
-    // Lấy tháng hiện tại (theo dữ liệu)
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
     const currentApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth)?.count || 0;
     const prevApp = dashboard.appointmentsByMonth?.find((a: any) => a.month === currentMonth - 1)?.count || 0;
     const appPercent = getPercentChange(currentApp, prevApp);
 
-    // Lấy từ userGrowthData đã chuẩn hóa để không bị mất tháng
     const currentUser = userGrowthData[currentMonth - 1]?.users || 0;
     const prevUser = userGrowthData[currentMonth - 2]?.users || 0;
     const userPercent = getPercentChange(currentUser, prevUser);
 
-    // Metrics
     const metrics: Metric[] = [
         {
             title: 'Total Revenue',
@@ -218,25 +211,19 @@ const Reports: React.FC = () => {
         },
     ];
 
-
-
-    // X-axis key for charts
     const xAxisKey = timeRange === '7days' || timeRange === '30days' ? 'date' : 'month';
 
-    // Format tiền giống Dashboard (VND, có dấu phẩy)
     const formatRevenue = (value: number) => {
         if (typeof value !== 'number' || isNaN(value)) return '';
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
     };
 
-    // Format dates for daily views
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
         const date = new Date(dateStr);
         return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' }).format(date);
     };
 
-    // Formatter for X-axis labels - compacts dates in daily view
     const formatXAxis = (value: string) => {
         if (timeRange === '7days' || timeRange === '30days') {
             return formatDate(value);
@@ -244,7 +231,6 @@ const Reports: React.FC = () => {
         return value; // Return month name for monthly views
     };
 
-    // Handler for exporting PDF with current time range
     const handleExportPDF = async () => {
         if (reportRef.current) {
             let filename = 'Report_';
@@ -256,9 +242,9 @@ const Reports: React.FC = () => {
                 default: filename += 'Custom';
             }
             filename += `_${new Date().toISOString().slice(0,10)}.pdf`;
-            // Scroll to top to ensure all charts are visible
+
             window.scrollTo(0, 0);
-            // Wait a bit for charts to render fully (esp. recharts)
+
             setTimeout(async () => {
                 if (reportRef.current) {
                     await exportNodeToPDF(reportRef.current as HTMLElement, filename);
@@ -291,8 +277,8 @@ const Reports: React.FC = () => {
                     </button>
                 </div>
             </div>
-            {/* PDF Exportable Content */}
-            {/* PDF Exportable Content: include all charts, not just month */}
+            {}
+            {}
             <div ref={reportRef}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     {metrics.map((metric, index) => (
@@ -315,7 +301,7 @@ const Reports: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    {/* Revenue Trend Chart (Dashboard style) */}
+                    {}
                     <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                         <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
                             <IconWrapper icon={FaChartLine} className="mr-2 text-blue-600" /> Revenue Trend
@@ -356,7 +342,7 @@ const Reports: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Service Distribution Chart (Dashboard style) */}
+                    {}
                     <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                         <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
                             <IconWrapper icon={FaStethoscope} className="mr-2 text-blue-600" /> Service Distribution
@@ -579,3 +565,4 @@ const Reports: React.FC = () => {
 };
 
 export default Reports;
+

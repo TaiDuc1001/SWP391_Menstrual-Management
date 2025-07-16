@@ -33,3 +33,4 @@ export async function exportNodeToPDF(node: HTMLElement, filename: string = 'res
     }
     pdf.save(filename);
 }
+

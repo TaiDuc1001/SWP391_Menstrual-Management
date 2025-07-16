@@ -24,13 +24,11 @@ const WorkScheduleManagement: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
 
-    // Modal states
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState<DoctorSchedule | null>(null);
 
-    // Notification states
     const [showSuccessNotification, setShowSuccessNotification] = useState(false);
     const [showErrorNotification, setShowErrorNotification] = useState(false);
     const [notificationTitle, setNotificationTitle] = useState('');
@@ -76,7 +74,6 @@ const WorkScheduleManagement: React.FC = () => {
         fetchData();
     }, []);
 
-    // Update selectedDoctor when doctorSchedules changes
     useEffect(() => {
         if (selectedDoctor && doctorSchedules.length > 0) {
             const updatedDoctor = doctorSchedules.find(d => d.doctorId === selectedDoctor.doctorId);
@@ -125,7 +122,7 @@ const WorkScheduleManagement: React.FC = () => {
         try {
             await scheduleService.deleteSchedule(scheduleId);
             showSuccess('Schedule Deleted', 'Schedule has been deleted successfully');
-            // Refresh after successful deletion
+
             await fetchData();
         } catch (error: any) {
             console.error('Error deleting schedule:', error);
@@ -208,7 +205,7 @@ const WorkScheduleManagement: React.FC = () => {
                 </NewUserButton>
             </div>
 
-            {/* Search and filters */}
+            {}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
                 <div className="flex justify-between items-center gap-4">
                     <div className="flex-1 relative">
@@ -235,7 +232,7 @@ const WorkScheduleManagement: React.FC = () => {
                 </div>
             </div>
 
-            {/* Doctors schedule table */}
+            {}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div className="p-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900">Doctor Schedules</h2>
@@ -366,7 +363,7 @@ const WorkScheduleManagement: React.FC = () => {
                 )}
             </div>
 
-            {/* Modals */}
+            {}
             {showCreateModal && (<CreateScheduleModal
                     doctors={doctors}
                     onClose={() => setShowCreateModal(false)}
@@ -416,7 +413,7 @@ const WorkScheduleManagement: React.FC = () => {
                 />
             )}
 
-            {/* Notifications */}
+            {}
             {showSuccessNotification && (
                 <SuccessNotification
                     isOpen={showSuccessNotification}
@@ -435,7 +432,7 @@ const WorkScheduleManagement: React.FC = () => {
                 />
             )}
 
-            {/* ConfirmDialog */}
+            {}
             {confirmDialog && (
                 <ConfirmDialog
                     isOpen={confirmDialog.isOpen}
@@ -454,3 +451,4 @@ const WorkScheduleManagement: React.FC = () => {
 };
 
 export default WorkScheduleManagement;
+

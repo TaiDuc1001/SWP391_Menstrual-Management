@@ -17,3 +17,4 @@ const TitleBar: React.FC<TitleBarProps> = ({text, buttonLabel, onButtonClick}) =
 );
 
 export default TitleBar;
+

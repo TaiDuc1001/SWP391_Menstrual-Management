@@ -119,7 +119,7 @@ const Services: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-            {/* Hero Section */}
+            {}
             <section className="relative overflow-hidden bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 text-white">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl py-20">
@@ -153,12 +153,12 @@ const Services: React.FC = () => {
                     </div>
                 </div>
                 
-                {/* Floating elements */}
+                {}
                 <div className="absolute top-20 left-10 w-20 h-20 bg-pink-300 rounded-full opacity-30 animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-16 h-16 bg-blue-300 rounded-full opacity-30 animate-pulse delay-1000"></div>
             </section>
 
-            {/* Main Services */}
+            {}
             <section className="py-16 bg-white">
                     <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -177,7 +177,7 @@ const Services: React.FC = () => {
                         </p>
                     </div>
 
-                    {/* Service Tabs */}
+                    {}
                     <div className="flex justify-center mb-12">
                         <div className="bg-gray-100 rounded-3xl p-2 flex gap-2">
                             {services.map((service, index) => (
@@ -197,7 +197,7 @@ const Services: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Active Service Detail */}
+                    {}
                     <div className="max-w-6xl mx-auto">
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
                             <div>
@@ -265,7 +265,7 @@ const Services: React.FC = () => {
                                     />
                                 </div>
                                 
-                                {/* Decorative elements */}
+                                {}
                                 <div className={`absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r ${services[activeService].color} rounded-full opacity-20 animate-pulse`}></div>
                                 <div className={`absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r ${services[activeService].color} rounded-full opacity-20 animate-pulse delay-500`}></div>
                             </div>
@@ -274,7 +274,7 @@ const Services: React.FC = () => {
                 </div>
             </section>
 
-            {/* Additional Services */}
+            {}
             <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
                     <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -310,7 +310,7 @@ const Services: React.FC = () => {
                 </div>
             </section>
 
-            {/* Testimonials */}
+            {}
             <section className="py-16 bg-white">
                     <div className="container mx-auto px-4 md:px-8 max-w-screen-xl">
                     <div className="text-center mb-16">
@@ -352,7 +352,7 @@ const Services: React.FC = () => {
                 </div>
             </section>
 
-            {/* CTA Section */}
+            {}
             <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative container mx-auto px-4 md:px-8 max-w-screen-xl text-center">
@@ -398,7 +398,7 @@ const Services: React.FC = () => {
                     </div>
                 </div>
                 
-                {/* Decorative elements */}
+                {}
                 <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
                 <div className="absolute bottom-10 right-10 w-16 h-16 bg-white/10 rounded-full animate-pulse delay-1000"></div>
             </section>
@@ -407,3 +407,4 @@ const Services: React.FC = () => {
 };
 
 export default Services;
+

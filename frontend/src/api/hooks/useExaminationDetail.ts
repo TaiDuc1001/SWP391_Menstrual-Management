@@ -48,3 +48,4 @@ export const useExaminationDetail = (id: string | undefined) => {
         refetch
     };
 };
+

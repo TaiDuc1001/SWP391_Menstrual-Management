@@ -155,3 +155,4 @@ const Blogs: React.FC<ContentManagementTableProps> = ({
 };
 
 export default Blogs;
+

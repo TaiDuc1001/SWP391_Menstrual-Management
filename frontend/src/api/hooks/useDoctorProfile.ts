@@ -9,17 +9,17 @@ export const useDoctorProfile = () => {
     const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
     useEffect(() => {
-        // Check if user changed
+
         const userProfile = getCurrentUserProfile();
         const userId = userProfile?.profile?.id;
         
         if (userId && userId !== currentUserId) {
-            // User changed, clear cache and reload
+
             setCurrentUserId(userId);
             doctorProfileService.clearCache();
             console.log('useDoctorProfile: User changed to:', userId, 'clearing cache');
         } else if (!userId) {
-            // No user logged in, clear everything
+
             setCurrentUserId(null);
             doctorProfileService.clearCache();
             console.log('useDoctorProfile: No user logged in, clearing cache');
@@ -30,7 +30,6 @@ export const useDoctorProfile = () => {
             setLoading(isLoading);
         });
 
-        // Only load profile if user is logged in
         if (userId) {
             doctorProfileService.loadProfile();
         }
@@ -53,3 +52,4 @@ export const useDoctorProfile = () => {
         checkProfileComplete
     };
 };
+

@@ -37,7 +37,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         
         setNotifications(prev => [...prev, newNotification]);
 
-        // Auto remove after duration
         const duration = notification.duration || 5000;
         setTimeout(() => {
             removeNotification(id);
@@ -88,3 +87,4 @@ const NotificationContainer: React.FC = () => {
         </div>
     );
 };
+

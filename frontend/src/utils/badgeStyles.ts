@@ -12,3 +12,4 @@ export const TAG_BADGE_STYLES: Record<string, string> = {
     EXPRESS: 'bg-green-100 text-green-600',
     NEW: 'bg-blue-100 text-blue-600',
 };
+

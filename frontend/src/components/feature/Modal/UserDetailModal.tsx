@@ -113,7 +113,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
-                {/* Header */}
+                {}
                 <div className="bg-white p-6 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
@@ -163,10 +163,10 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                     </div>
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="flex-1 p-6 overflow-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left Side - Account Information */}
+                        {}
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h3>
                             <div className="space-y-4">
@@ -199,7 +199,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                             </div>
                         </div>
 
-                        {/* Right Side - Doctor Profile Section */}
+                        {}
                         {user.role === 'DOCTOR' ? (
                             <div>
                                 <div className="flex items-center justify-between mb-4">
@@ -345,7 +345,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                     </div>
                 </div>
 
-                {/* Footer */}
+                {}
                 <div className="flex justify-end p-6 border-t border-gray-200 bg-gray-50">
                     <button
                         onClick={onClose}
@@ -360,3 +360,4 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
 };
 
 export default UserDetailModal;
+

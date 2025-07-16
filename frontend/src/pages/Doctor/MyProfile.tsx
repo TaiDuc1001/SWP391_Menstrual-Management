@@ -67,9 +67,9 @@ const MyProfile: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4">
-                {/* Header */}
+                {}
                 <div className="flex flex-col md:flex-row items-center gap-8 bg-white rounded-2xl shadow p-8 border border-gray-200 mb-8">
-                    {/* Avatar & Completion */}
+                    {}
                     <div className="flex flex-col items-center md:items-start">
                         <div className="relative mb-3">
                             <div className="w-28 h-28 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-5xl text-gray-400">
@@ -83,7 +83,7 @@ const MyProfile: React.FC = () => {
                         </div>
                         <div className="text-xs text-gray-500 mt-1">Profile Completion</div>
                     </div>
-                    {/* Info */}
+                    {}
                     <div className="flex-1 text-center md:text-left">
                         <div className="mb-1">
                             <span className="inline-block px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-600 font-medium">Medical Professional</span>
@@ -100,7 +100,7 @@ const MyProfile: React.FC = () => {
                                 {profile.price > 0 ? `${profile.price.toLocaleString('vi-VN')} VND` : 'Not set'}
                             </span>
                         </div>
-                        {/* Doctor Rating */}
+                        {}
                         <div className="text-base text-gray-500 flex items-center justify-center md:justify-start gap-2 mt-2">
                             <span>⭐</span>
                             <span>Avg. Rating:</span>
@@ -111,11 +111,11 @@ const MyProfile: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                {/* Main Content */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Details */}
+                    {}
                     <div className="md:col-span-2 space-y-6">
-                        {/* Basic Info */}
+                        {}
                         <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
                             <h2 className="text-lg font-semibold text-gray-700 mb-4">Professional Information</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -151,7 +151,7 @@ const MyProfile: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* Profile Status */}
+                        {}
                         <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className={`w-8 h-8 rounded flex items-center justify-center ${profile.isProfileComplete ? 'bg-green-500' : 'bg-gray-300'}`}>
@@ -182,9 +182,9 @@ const MyProfile: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Sidebar */}
+                    {}
                     <div className="space-y-6">
-                        {/* Consultation Fee */}
+                        {}
                         <div className="bg-white rounded-xl shadow p-6 border border-gray-200 text-center">
                             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2 text-xl text-gray-400">
                                 <span>💰</span>
@@ -201,7 +201,7 @@ const MyProfile: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        {/* Quick Stats */}
+                        {}
                         <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-xs text-gray-500">Profile Completion</span>
@@ -228,3 +228,4 @@ const MyProfile: React.FC = () => {
 };
 
 export default MyProfile;
+

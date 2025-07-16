@@ -1,7 +1,4 @@
-/**
- * Centralized type exports for the entire application
- * Import all types from this single entry point
- */
+
 
 export * from './routes';
 
@@ -214,3 +211,4 @@ export interface BaseComponentProps {
     className?: string;
     'data-testid'?: string;
 }
+

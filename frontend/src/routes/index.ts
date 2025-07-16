@@ -4,3 +4,4 @@ export {customerPaths} from './customerRoutes';
 export {staffPaths} from './staffRoutes';
 export {doctorPaths} from './doctorRoutes';
 export {adminPaths} from './adminRoutes';
+

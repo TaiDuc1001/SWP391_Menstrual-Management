@@ -5,15 +5,13 @@ const api = axios.create({
     baseURL: url,
 });
 
-// Add request interceptor to include auth token and user ID
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('authToken');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        
-        // Add user ID for authenticated requests based on role
+
         try {
             const userProfile = localStorage.getItem('userProfile');
             if (userProfile) {
@@ -21,7 +19,7 @@ api.interceptors.request.use(
                 console.log('Axios interceptor - parsed user profile:', parsed);
                 
                 if (parsed.profile?.id) {
-                    // Add role-specific headers
+
                     if (parsed.role === 'CUSTOMER') {
                         config.headers['X-Customer-ID'] = parsed.profile.id.toString();
                         console.log('Added X-Customer-ID header:', parsed.profile.id);
@@ -29,8 +27,7 @@ api.interceptors.request.use(
                         config.headers['X-Doctor-ID'] = parsed.profile.id.toString();
                         console.log('Added X-Doctor-ID header:', parsed.profile.id);
                     }
-                    
-                    // Also add generic user ID header for backward compatibility
+
                     config.headers['X-User-ID'] = parsed.profile.id.toString();
                     console.log('Added X-User-ID header:', parsed.profile.id);
                 } else {
@@ -50,14 +47,13 @@ api.interceptors.request.use(
     }
 );
 
-// Add response interceptor to handle auth errors
 api.interceptors.response.use(
     (response) => {
         return response;
     },
     (error) => {
         if (error.response?.status === 401) {
-            // Redirect to login if unauthorized
+
             localStorage.removeItem('authToken');
             window.location.href = '/login';
         }
@@ -66,3 +62,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

@@ -10,3 +10,4 @@ const NewOrderButton: React.FC<NewOrderButtonProps> = ({icon, children = 'New or
 );
 
 export default NewOrderButton;
+

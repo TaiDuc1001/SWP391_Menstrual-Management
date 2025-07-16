@@ -24,21 +24,20 @@ export const useCycleSymptoms = () => {
         setLoading(true);
         setError(null);
         try {
-            // First, delete any existing symptoms for this date
+
             await cycleSymptomService.deleteSymptomsByDate(symptomData.date);
-            
-            // Then save the new symptom if it's not "None"
+
             if (symptomData.symptom !== 'None') {
                 const savedSymptom = await cycleSymptomService.saveSymptom(symptomData);
                 setSymptoms(prev => {
-                    // Remove any existing symptoms for this date and add the new one
+
                     const filtered = prev.filter(s => 
                         new Date(s.date).toDateString() !== new Date(symptomData.date).toDateString()
                     );
                     return [...filtered, savedSymptom];
                 });
             } else {
-                // If symptom is "None", just remove any existing symptoms for this date
+
                 setSymptoms(prev => prev.filter(s => 
                     new Date(s.date).toDateString() !== new Date(symptomData.date).toDateString()
                 ));
@@ -95,3 +94,4 @@ export const useCycleSymptoms = () => {
         refetch: fetchSymptoms
     };
 };
+

@@ -39,21 +39,19 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
-  // Quick statistics
   const total = examinations.length;
   const sampled = examinations.filter(e => e.examinationStatus === 'SAMPLED').length;
   const inProgress = examinations.filter(e => e.examinationStatus === 'IN_PROGRESS').length;
   const examined = examinations.filter(e => e.examinationStatus === 'EXAMINED').length;
   const completed = examinations.filter(e => e.examinationStatus === 'COMPLETED').length;
 
-  // Get 5 latest samples
   const latest = [...examinations].sort((a, b) => b.id - a.id).slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-pink-50 py-10 px-4 flex flex-col items-center">
       <div className="w-full max-w-6xl">
         <h1 className="text-2xl font-bold text-blue-700 mb-8">Staff Dashboard</h1>
-        {/* Quick stats */}
+        {}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
           <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
             <span className="text-3xl font-bold text-blue-600">{total}</span>
@@ -73,7 +71,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Latest samples */}
+        {}
         <div className="bg-white rounded-2xl shadow p-8 mb-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-gray-800">Latest Samples</h2>
@@ -116,10 +114,11 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick actions */}
+        {}
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+

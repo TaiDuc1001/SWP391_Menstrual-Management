@@ -1,7 +1,6 @@
 
 import { api } from '..';
 
-// Daily endpoints for admin dashboard
 export const getAdminDailyRevenue = async (startDate: string, endDate: string) => {
     const response = await api.get(`/admin/dashboard/daily-revenue?startDate=${startDate}&endDate=${endDate}`);
     return response.data;
@@ -36,3 +35,4 @@ export const getAllActivities = async () => {
     const response = await api.get('/admin/dashboard/all-activities');
     return response.data;
 };
+

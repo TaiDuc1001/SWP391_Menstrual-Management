@@ -39,7 +39,7 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             if (initialData && mode === 'edit') {
-                // Only set publishDate if it exists and is not null/undefined
+
                 let publishDateValue = '';
                 if (initialData.publishDate && initialData.publishDate.trim() !== '') {
                     try {
@@ -248,3 +248,4 @@ const BlogFormModal: React.FC<BlogFormModalProps> = ({
 };
 
 export default BlogFormModal;
+
