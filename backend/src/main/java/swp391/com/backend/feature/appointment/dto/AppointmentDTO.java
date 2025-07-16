@@ -23,3 +23,4 @@ public class AppointmentDTO {
     Integer score;
     String feedback;
 }
+

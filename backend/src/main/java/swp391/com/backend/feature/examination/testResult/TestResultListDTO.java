@@ -15,3 +15,4 @@ public class TestResultListDTO {
     String normalRange;
     String note;
 }
+

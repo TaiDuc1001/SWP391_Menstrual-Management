@@ -39,3 +39,4 @@ class CycleSymptomByDateId implements Serializable {
     private Symptom symptom;
 }
 
+

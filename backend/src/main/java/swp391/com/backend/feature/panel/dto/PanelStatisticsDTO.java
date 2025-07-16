@@ -13,3 +13,4 @@ public class PanelStatisticsDTO {
     String mostPopularPanel;
     Double averagePrice;
 }
+

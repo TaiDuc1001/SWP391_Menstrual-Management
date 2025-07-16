@@ -17,3 +17,4 @@ public class ScheduleResponse {
     private SlotResponse slot;
     private boolean hasAppointment;
 }
+

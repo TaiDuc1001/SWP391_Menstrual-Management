@@ -8,3 +8,4 @@ public class AppointmentConflictException extends BusinessException {
         super(message, "Appointment Conflict", HttpStatus.CONFLICT);
     }
 }
+

@@ -19,3 +19,4 @@ public class PaymentInfoDTO {
     Double amount;
     String qrCodeUrl;
 }
+

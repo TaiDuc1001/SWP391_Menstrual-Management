@@ -16,3 +16,4 @@ public class SystemNotificationDTO {
     private String priority; // high, medium, low
     private boolean isRead;
 }
+

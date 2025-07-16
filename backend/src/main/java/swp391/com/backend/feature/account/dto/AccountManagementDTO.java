@@ -16,8 +16,7 @@ public class AccountManagementDTO {
     private String name;
     private String phoneNumber;
     private String avatar;
-    
-    // Constructor for basic account info
+
     public AccountManagementDTO(Long id, String email, Role role, Boolean status) {
         this.id = id;
         this.email = email;
@@ -25,3 +24,4 @@ public class AccountManagementDTO {
         this.status = status;
     }
 }
+

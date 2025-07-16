@@ -23,3 +23,4 @@ public class SimplePanelDTO {
     private List<String> testTypesNames;
     private List<String> testTypesDescriptions;
 }
+

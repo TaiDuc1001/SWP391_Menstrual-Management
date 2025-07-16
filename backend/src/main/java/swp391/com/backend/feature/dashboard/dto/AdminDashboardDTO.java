@@ -26,4 +26,4 @@ public record AdminDashboardDTO(
     double bandwidth
 ) {}
 
-// DTO phụ trợ đã được tách ra file riêng
+

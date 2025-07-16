@@ -21,3 +21,4 @@ public class UpdatePanelResponse {
     PanelTag panelTag;
     List<Long> testTypeIds;
 }
+

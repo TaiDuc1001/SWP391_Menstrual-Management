@@ -33,3 +33,4 @@ public class Staff implements Actor {
     @OneToMany(mappedBy = "staff")
     private List<Examination> examinations;
 }
+

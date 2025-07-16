@@ -10,3 +10,4 @@ public interface TestTypeMapper {
     TestTypeDTO toDTO(TestType entity);
     TestType toEntity(TestTypeDTO dto);
 }
+

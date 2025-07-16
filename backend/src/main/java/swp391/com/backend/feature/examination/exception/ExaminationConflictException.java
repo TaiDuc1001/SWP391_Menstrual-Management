@@ -8,3 +8,4 @@ public class ExaminationConflictException extends BusinessException {
         super(message, "Examination Conflict", HttpStatus.CONFLICT);
     }
 }
+

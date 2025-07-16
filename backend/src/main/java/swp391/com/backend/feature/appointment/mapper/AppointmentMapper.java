@@ -23,3 +23,4 @@ public interface AppointmentMapper {
     @Mapping(source = "slot.timeRange", target = "timeRange")
     AppointmentDTO toDTO(Appointment entity);
 }
+

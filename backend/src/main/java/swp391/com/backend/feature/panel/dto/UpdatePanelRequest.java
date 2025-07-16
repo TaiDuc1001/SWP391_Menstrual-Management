@@ -42,3 +42,4 @@ public class UpdatePanelRequest {
     
     List<Long> testTypeIds;
 }
+

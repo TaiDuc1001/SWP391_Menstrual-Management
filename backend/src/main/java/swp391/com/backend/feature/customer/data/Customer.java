@@ -51,3 +51,4 @@ public class Customer implements Actor {
     @OneToMany(mappedBy = "customer")
     private List<Examination> examinations;
 }
+

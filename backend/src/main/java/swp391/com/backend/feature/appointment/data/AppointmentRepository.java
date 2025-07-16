@@ -41,3 +41,4 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT COUNT(a) FROM Appointment a WHERE a.doctor.id = :doctorId AND a.score IS NOT NULL")
     Long countRatingsByDoctorId(@Param("doctorId") Long doctorId);
 }
+

@@ -27,3 +27,4 @@ public interface PanelRepository extends JpaRepository<Panel, Long> {
     @Query("SELECT AVG(p.price) FROM Panel p")
     Double getAveragePrice();
 }
+

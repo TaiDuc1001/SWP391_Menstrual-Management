@@ -8,3 +8,4 @@ public class CreatePaymentRequest {
     private String serviceId;
     private String service;
 }
+

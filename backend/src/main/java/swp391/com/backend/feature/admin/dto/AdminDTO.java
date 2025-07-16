@@ -8,3 +8,4 @@ public class AdminDTO implements ActorDTO {
     private Integer id;
     private String name;
 }
+

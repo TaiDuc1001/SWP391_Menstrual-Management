@@ -113,3 +113,4 @@ public class AppointmentsService {
         return appointmentRepository.countRatingsByDoctorId(doctorId);
     }
 }
+

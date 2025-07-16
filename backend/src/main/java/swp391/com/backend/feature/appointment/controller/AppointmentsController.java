@@ -43,7 +43,7 @@ public class AppointmentsController {
     }
     @GetMapping("/doctor")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsForDoctor() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("AppointmentsController.getAppointmentsForDoctor: Looking for appointments for doctor ID: " + currentDoctorId);
         
@@ -278,7 +278,7 @@ public class AppointmentsController {
 
     @GetMapping("/doctor/my-average-rating")
     public ResponseEntity<Map<String, Object>> getMyAverageRating() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("AppointmentsController.getMyAverageRating: Getting average rating for doctor ID: " + currentDoctorId);
         
@@ -305,7 +305,7 @@ public class AppointmentsController {
 
     @GetMapping("/doctor/rating-history")
     public ResponseEntity<List<AppointmentDTO>> getDoctorRatingHistory() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("AppointmentsController.getDoctorRatingHistory: Getting rating history for doctor ID: " + currentDoctorId);
         
@@ -317,3 +317,4 @@ public class AppointmentsController {
         return ResponseEntity.ok(results);
     }
 }
+

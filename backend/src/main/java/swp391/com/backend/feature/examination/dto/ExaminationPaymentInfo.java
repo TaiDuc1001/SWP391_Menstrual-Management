@@ -17,3 +17,4 @@ public class ExaminationPaymentInfo {
     private String panelName;
     private String qrCodeUrl;
 }
+

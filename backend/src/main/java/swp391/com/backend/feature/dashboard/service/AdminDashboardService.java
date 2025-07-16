@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdminDashboardService {
-    // DTO cho dữ liệu daily
+
     public static class DailyRevenue {
         public String date; // yyyy-MM-dd
         public double revenue;
@@ -53,7 +53,6 @@ public class AdminDashboardService {
         }
     }
 
-    // Service method trả về dữ liệu daily theo khoảng ngày
     public List<DailyRevenue> getDailyRevenue(java.time.LocalDate from, java.time.LocalDate to) {
         List<DailyRevenue> result = new ArrayList<>();
         java.time.LocalDate date = from;
@@ -105,13 +104,12 @@ public class AdminDashboardService {
         }
         return result;
     }
-    // Doanh thu từng tháng trong năm hiện tại
+
     public java.util.List<MonthlyRevenue> getMonthlyRevenue(int year) {
         java.util.Map<Integer, Double> revenueByMonth = new java.util.HashMap<>();
-        // Khởi tạo 12 tháng = 0
+
         for (int m = 1; m <= 12; m++) revenueByMonth.put(m, 0.0);
 
-        // Xét nghiệm
         examinationRepository.findAll().stream()
             .filter(exam -> exam.getPanel() != null && exam.getPanel().getPrice() != null)
             .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.COMPLETED ||
@@ -122,7 +120,7 @@ public class AdminDashboardService {
                 double price = exam.getPanel().getPrice().doubleValue();
                 revenueByMonth.put(month, revenueByMonth.get(month) + price);
             });
-        // Lịch hẹn
+
         appointmentRepository.findAll().stream()
             .filter(app -> app.getAppointmentStatus() == AppointmentStatus.FINISHED)
             .filter(app -> app.getDoctor() != null && app.getDoctor().getPrice() != null)
@@ -139,7 +137,6 @@ public class AdminDashboardService {
         return result;
     }
 
-    // Phân bố số lượng dịch vụ (panel)
     public java.util.List<ServiceDistribution> getServiceDistribution() {
         java.util.Map<String, Integer> panelCount = new java.util.HashMap<>();
         examinationRepository.findAll().stream()
@@ -155,7 +152,6 @@ public class AdminDashboardService {
         return result;
     }
 
-    // DTO cho biểu đồ
     public static class MonthlyRevenue {
         public int month;
         public double revenue;
@@ -179,13 +175,12 @@ public class AdminDashboardService {
     private final ExaminationRepository examinationRepository;
 
     public AdminDashboardDTO getDashboardData() {
-        // Get actual counts from repositories
+
         long totalAccounts = accountRepository.count();
         long totalBlogs = blogRepository.count();
         long totalAppointments = appointmentRepository.count();
         long totalExaminations = examinationRepository.count();
 
-        // Tổng doanh thu (từ tất cả các phiếu xét nghiệm và lịch hẹn đã hoàn thành)
         double examinationRevenue = examinationRepository.findAll().stream()
             .filter(exam -> exam.getPanel() != null && exam.getPanel().getPrice() != null)
             .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.COMPLETED ||
@@ -199,7 +194,6 @@ public class AdminDashboardService {
             .sum();
         double totalRevenue = examinationRevenue + appointmentRevenue;
 
-        // User growth by month (12 months)
         List<UserGrowthDTO> userGrowthByMonth = new ArrayList<>();
         java.time.Year currentYear = java.time.Year.now();
         for (int m = 1; m <= 12; m++) {
@@ -210,7 +204,6 @@ public class AdminDashboardService {
             userGrowthByMonth.add(new UserGrowthDTO(month, newUsers));
         }
 
-        // Appointments by month (12 months)
         List<AppointmentCountDTO> appointmentsByMonth = new ArrayList<>();
         for (int m = 1; m <= 12; m++) {
             final int month = m;
@@ -220,7 +213,6 @@ public class AdminDashboardService {
             appointmentsByMonth.add(new AppointmentCountDTO(month, count));
         }
 
-        // Dummy/placeholder values for advanced metrics (replace with real calculations)
         double satisfactionRate = 95.0;
         double returnRate = 78.0;
         double avgWaitTime = 15.0;
@@ -255,12 +247,10 @@ public class AdminDashboardService {
                 .bandwidth(bandwidth)
                 .build();
     }
-    
-    // Recent Activities
+
     public List<RecentActivityDTO> getRecentActivities() {
         List<RecentActivityDTO> activities = new ArrayList<>();
-        
-        // Lấy appointments gần đây (5 ngày qua) - sử dụng date thay vì createdAt
+
         LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
         
         appointmentRepository.findAll().stream()
@@ -277,8 +267,7 @@ public class AdminDashboardService {
                     .timestamp(app.getDate().atStartOfDay())
                     .build());
             });
-        
-        // Lấy examinations gần đây - sử dụng date thay vì updatedAt
+
         examinationRepository.findAll().stream()
             .filter(exam -> exam.getDate() != null && exam.getDate().isAfter(fiveDaysAgo.toLocalDate()))
             .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
@@ -294,8 +283,7 @@ public class AdminDashboardService {
                     .timestamp(exam.getDate().atStartOfDay())
                     .build());
             });
-        
-        // Lấy blogs được tạo gần đây - Blog có createdAt
+
         blogRepository.findAll().stream()
             .filter(blog -> blog.getCreatedAt() != null && blog.getCreatedAt().isAfter(fiveDaysAgo))
             .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
@@ -308,19 +296,16 @@ public class AdminDashboardService {
                     .timestamp(blog.getCreatedAt())
                     .build());
             });
-        
-    // Sắp xếp theo thời gian mới nhất và lấy 10 hoạt động gần nhất
+
         return activities.stream()
             .sorted(Comparator.comparing(RecentActivityDTO::getTimestamp).reversed())
             .limit(10)
             .collect(Collectors.toList());
     }
-    
-    // All Activities (for Activities page)
+
     public List<RecentActivityDTO> getAllActivities() {
         List<RecentActivityDTO> activities = new ArrayList<>();
-        
-        // Lấy tất cả appointments (30 ngày qua)
+
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
         
         appointmentRepository.findAll().stream()
@@ -337,8 +322,7 @@ public class AdminDashboardService {
                     .timestamp(app.getDate().atStartOfDay())
                     .build());
             });
-        
-        // Lấy tất cả examinations (30 ngày qua)
+
         examinationRepository.findAll().stream()
             .filter(exam -> exam.getDate() != null && exam.getDate().isAfter(thirtyDaysAgo.toLocalDate()))
             .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
@@ -353,8 +337,7 @@ public class AdminDashboardService {
                     .timestamp(exam.getDate().atStartOfDay())
                     .build());
             });
-        
-        // Lấy tất cả blogs (30 ngày qua)
+
         blogRepository.findAll().stream()
             .filter(blog -> blog.getCreatedAt() != null && blog.getCreatedAt().isAfter(thirtyDaysAgo))
             .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
@@ -366,18 +349,15 @@ public class AdminDashboardService {
                     .timestamp(blog.getCreatedAt())
                     .build());
             });
-        
-        // Sắp xếp theo thời gian mới nhất
+
         return activities.stream()
             .sorted(Comparator.comparing(RecentActivityDTO::getTimestamp).reversed())
             .collect(Collectors.toList());
     }
-    
-    // System Notifications
+
     public List<SystemNotificationDTO> getSystemNotifications() {
         List<SystemNotificationDTO> notifications = new ArrayList<>();
-        
-        // Kiểm tra accounts pending approval
+
         long pendingAccounts = accountRepository.findAll().stream()
             .filter(account -> !account.getStatus()) // status = false means pending
             .count();
@@ -392,10 +372,8 @@ public class AdminDashboardService {
                 .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
-        
-        // Separate notifications for different examination states that need attention
-        
-        // 1. SAMPLED examinations that need processing
+
+
         long sampledExams = examinationRepository.findAll().stream()
             .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.SAMPLED)
             .count();
@@ -410,8 +388,7 @@ public class AdminDashboardService {
                 .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
-        
-        // 2. EXAMINED examinations that need final review/approval
+
         long examinedExams = examinationRepository.findAll().stream()
             .filter(exam -> exam.getExaminationStatus() == ExaminationStatus.EXAMINED)
             .count();
@@ -426,8 +403,7 @@ public class AdminDashboardService {
                 .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
-        
-        // 3. Overdue PENDING examinations
+
         long overdueExams = examinationRepository.findAll().stream()
             .filter(exam -> 
                 exam.getExaminationStatus() == ExaminationStatus.PENDING &&
@@ -446,8 +422,7 @@ public class AdminDashboardService {
                 .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
-        
-        // Kiểm tra appointments cần confirm
+
         long pendingAppointments = appointmentRepository.findAll().stream()
             .filter(app -> app.getAppointmentStatus() == AppointmentStatus.BOOKED)
             .count();
@@ -462,8 +437,7 @@ public class AdminDashboardService {
                 .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
-        
-        // Check for appointments scheduled for today
+
         long todayAppointments = appointmentRepository.findAll().stream()
             .filter(app -> app.getDate() != null && app.getDate().equals(java.time.LocalDate.now()))
             .filter(app -> app.getAppointmentStatus() != AppointmentStatus.CANCELLED 
@@ -480,10 +454,9 @@ public class AdminDashboardService {
                 .isRead(notificationReadStatus.getOrDefault(id, false))
                 .build());
         }
-        
-        // Add system maintenance notification if scheduled
-        // In a real system, this would come from a configuration or scheduled maintenance table
-        // For demo purposes, we'll check if today is a maintenance day (e.g., first day of the month)
+
+
+
         if (java.time.LocalDate.now().getDayOfMonth() == 1) {
             String id = "system-maintenance-monthly";
             notifications.add(SystemNotificationDTO.builder()
@@ -497,16 +470,13 @@ public class AdminDashboardService {
         
         return notifications;
     }
-    
-    // System Notifications repository for storing read status
+
     private final Map<String, Boolean> notificationReadStatus = new HashMap<>();
-    
-    // Mark notification as read
+
     public void markNotificationAsRead(String id) {
         notificationReadStatus.put(id, true);
     }
-    
-    // Mark all notifications as read
+
     public void markAllNotificationsAsRead() {
         List<SystemNotificationDTO> notifications = getSystemNotifications();
         for (SystemNotificationDTO notification : notifications) {
@@ -514,3 +484,4 @@ public class AdminDashboardService {
         }
     }
 }
+

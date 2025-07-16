@@ -22,3 +22,4 @@ public class SimpleAppointmentDTO {
     String customerNote;
     String url;
 }
+

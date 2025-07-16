@@ -21,3 +21,4 @@ public interface CycleSymptomByDateRepository extends JpaRepository<CycleSymptom
     @Query("SELECT c FROM CycleSymptomByDate c WHERE DATE(c.date) = DATE(:date)")
     List<CycleSymptomByDate> findByDateOnly(@Param("date") LocalDateTime date);
 }
+

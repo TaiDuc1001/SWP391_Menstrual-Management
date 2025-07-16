@@ -17,3 +17,4 @@ public class SampledExaminationDTO {
     private String staffName;
     private ExaminationStatus examinationStatus;
 }
+

@@ -58,7 +58,7 @@ public class DoctorController {
 
     @GetMapping("/profile")
     public ResponseEntity<DoctorProfileDTO> getDoctorProfile() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("DoctorController.getDoctorProfile: Looking for doctor with ID: " + currentDoctorId);
         
@@ -79,8 +79,7 @@ public class DoctorController {
             return ResponseEntity.ok(profileDTO);
         } catch (Exception e) {
             System.out.println("DoctorController.getDoctorProfile: Doctor not found with ID: " + currentDoctorId + ", error: " + e.getMessage());
-            
-            // If doctor not found, return empty profile for profile creation
+
             DoctorProfileDTO emptyProfile = DoctorProfileDTO.builder()
                     .id(currentDoctorId)
                     .name("")
@@ -97,7 +96,7 @@ public class DoctorController {
 
     @PutMapping("/profile")
     public ResponseEntity<DoctorProfileDTO> updateDoctorProfile(@RequestBody DoctorProfileDTO profileDTO) {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         
         try {
@@ -127,7 +126,7 @@ public class DoctorController {
             
             return ResponseEntity.ok(responseDTO);
         } catch (Exception e) {
-            // If doctor doesn't exist, create profile using doctor service method
+
             try {
                 Doctor savedDoctor = doctorService.createDoctorForAccount(
                         currentDoctorId,
@@ -159,7 +158,7 @@ public class DoctorController {
 
     @GetMapping("/profile/check-complete")
     public ResponseEntity<DoctorProfileCompleteDTO> checkProfileComplete() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         
         try {
@@ -174,7 +173,7 @@ public class DoctorController {
             
             return ResponseEntity.ok(responseDTO);
         } catch (Exception e) {
-            // If doctor not found, return incomplete profile
+
             DoctorProfileCompleteDTO responseDTO = DoctorProfileCompleteDTO.builder()
                     .isComplete(false)
                     .percentage(0)
@@ -224,3 +223,4 @@ public class DoctorController {
         return Math.round((completed * 100.0f) / total);
     }
 }
+

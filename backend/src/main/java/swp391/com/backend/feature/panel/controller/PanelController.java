@@ -37,7 +37,7 @@ public class PanelController {
         List<SimplePanelDTO> result = panels.stream()
                 .map(panel -> {
                     SimplePanelDTO dto = panelMapper.toSimpleDTO(panel);
-                    // Add test types information for each panel
+
                     List<String> testTypesNames = panelTestTypeService.getTestTypesByPanelId(panel.getId())
                             .stream()
                             .map(testType -> testType.getName())
@@ -121,3 +121,4 @@ public class PanelController {
         return ResponseEntity.ok(response);
     }
 }
+

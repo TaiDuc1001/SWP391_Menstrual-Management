@@ -45,7 +45,7 @@ public class DoctorService {
     public Doctor createDoctorForAccount(Long accountId, String name, String specialization, BigDecimal price, int experience, String degree, String university) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + accountId));
-        // Check if doctor profile already exists
+
         if (doctorRepository.findById(accountId).isPresent()) {
             Doctor existingDoctor = doctorRepository.findById(accountId).get();
             Doctor updatedDoctor = existingDoctor.toBuilder()
@@ -74,3 +74,4 @@ public class DoctorService {
         return doctorRepository.save(doctor);
     }
 }
+

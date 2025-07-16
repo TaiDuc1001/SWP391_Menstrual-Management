@@ -47,3 +47,4 @@ class ResultDetailId implements Serializable {
     private Long resultId;
     private Long testTypeId;
 }
+

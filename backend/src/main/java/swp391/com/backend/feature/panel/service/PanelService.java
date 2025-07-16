@@ -40,7 +40,6 @@ public class PanelService {
         panelRepository.deleteById(id);
     }
 
-    // Admin CRUD methods
     public Page<Panel> getPanelsWithPagination(Pageable pageable) {
         return panelRepository.findAll(pageable);
     }
@@ -73,8 +72,7 @@ public class PanelService {
     @Transactional
     public Panel updatePanel(Long id, Panel updatedPanel, List<Long> testTypeIds) {
         Panel existingPanel = findPanelById(id);
-        
-        // Update panel fields
+
         existingPanel.setPanelName(updatedPanel.getPanelName());
         existingPanel.setDescription(updatedPanel.getDescription());
         existingPanel.setPrice(updatedPanel.getPrice());
@@ -84,13 +82,11 @@ public class PanelService {
         existingPanel.setPanelTag(updatedPanel.getPanelTag());
         
         Panel savedPanel = panelRepository.save(existingPanel);
-        
-        // Update test types relationship
+
         if (testTypeIds != null) {
-            // Delete existing relationships
+
             panelTestTypeRepository.deleteByPanelId(id);
-            
-            // Create new relationships
+
             for (Long testTypeId : testTypeIds) {
                 TestType testType = testTypeRepository.findById(testTypeId)
                     .orElseThrow(() -> new RuntimeException("TestType not found with id: " + testTypeId));
@@ -110,11 +106,9 @@ public class PanelService {
     @Transactional
     public void deletePanel(Long id) {
         Panel panel = findPanelById(id);
-        
-        // Delete panel-test type relationships first
+
         panelTestTypeRepository.deleteByPanelId(id);
-        
-        // Delete the panel
+
         panelRepository.delete(panel);
     }
 
@@ -133,3 +127,4 @@ public class PanelService {
         return statistics;
     }
 }
+

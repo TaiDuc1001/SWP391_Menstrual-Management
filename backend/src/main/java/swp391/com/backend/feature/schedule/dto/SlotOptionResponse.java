@@ -13,3 +13,4 @@ public class SlotOptionResponse {
     private String timeRange;
     private int ordinal;
 }
+

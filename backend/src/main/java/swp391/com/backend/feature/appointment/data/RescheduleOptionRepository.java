@@ -12,3 +12,4 @@ public interface RescheduleOptionRepository extends JpaRepository<RescheduleOpti
     
     List<RescheduleOption> findByRescheduleRequestIdAndIsSelected(Long rescheduleRequestId, Boolean isSelected);
 }
+

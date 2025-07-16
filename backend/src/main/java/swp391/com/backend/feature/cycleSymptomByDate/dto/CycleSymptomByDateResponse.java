@@ -15,3 +15,4 @@ public class CycleSymptomByDateResponse {
     private LocalDateTime date;
     private Symptom symptom;
 }
+

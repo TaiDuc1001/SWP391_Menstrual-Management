@@ -25,3 +25,4 @@ public class PanelDTO {
     List<String> testTypesUnits;
     List<Long> testTypesIds;
 }
+

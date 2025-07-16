@@ -132,7 +132,6 @@ public class AccountService {
             throw new RuntimeException("Email already exists: " + email);
         }
 
-        // Validate phone number for customer role
         if (role == Role.CUSTOMER && phoneNumber != null && !phoneNumber.isEmpty() && !phoneNumber.matches("^0\\d{9}$")) {
             throw new RuntimeException("Phone number must be 10 digits starting with 0.");
         }
@@ -189,7 +188,6 @@ public class AccountService {
             throw new RuntimeException("Email already exists: " + email);
         }
 
-        // Validate phone number for customer role
         if (account.getRole() == Role.CUSTOMER && phoneNumber != null && !phoneNumber.isEmpty() && !phoneNumber.matches("^0\\d{9}$")) {
             throw new RuntimeException("Phone number must be 10 digits starting with 0.");
         }
@@ -301,3 +299,4 @@ public class AccountService {
         }
     }
 }
+

@@ -48,3 +48,4 @@ public class Panel {
     @OneToMany(mappedBy = "panel")
     private List<Examination> examinations;
 }
+

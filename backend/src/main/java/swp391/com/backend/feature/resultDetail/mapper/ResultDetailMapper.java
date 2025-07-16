@@ -9,3 +9,4 @@ public interface ResultDetailMapper {
     ResultDetailDTO toDTO(ResultDetail entity);
     ResultDetail toEntity(ResultDetailDTO dto);
 }
+

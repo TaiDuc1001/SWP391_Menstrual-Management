@@ -19,3 +19,4 @@ public class DoctorProfileDTO {
     private String degree; // Bằng cấp
     private String university; // Trường học
 }
+

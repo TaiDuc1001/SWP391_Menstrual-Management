@@ -14,3 +14,4 @@ public class CycleSymptomByDateDTO {
     LocalDate date;
     Symptom symptom;
 }
+

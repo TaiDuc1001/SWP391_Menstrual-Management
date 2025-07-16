@@ -32,3 +32,4 @@ public class TestType {
     @OneToMany(mappedBy = "testType")
     private List<ResultDetail> resultDetails;
 }
+

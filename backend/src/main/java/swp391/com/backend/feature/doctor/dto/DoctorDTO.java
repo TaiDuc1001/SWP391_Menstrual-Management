@@ -15,3 +15,4 @@ public class DoctorDTO implements ActorDTO {
     private String degree; // Bằng cấp
     private String university; // Trường học
 }
+

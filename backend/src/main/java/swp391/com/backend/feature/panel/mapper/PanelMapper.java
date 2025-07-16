@@ -22,8 +22,7 @@ public interface PanelMapper {
     @Mapping(target = "testTypesIds", ignore = true)
     PanelDTO toDTO(Panel entity);
     Panel toEntity(PanelDTO dto);
-    
-    // Admin mappings
+
     @Mapping(target = "testTypes", ignore = true)
     AdminPanelDTO toAdminDTO(Panel panel);
     
@@ -41,3 +40,4 @@ public interface PanelMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Panel fromUpdateRequest(UpdatePanelRequest request);
 }
+

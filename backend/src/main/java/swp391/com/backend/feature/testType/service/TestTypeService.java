@@ -40,3 +40,4 @@ public class TestTypeService {
                 .orElseThrow(() -> new RuntimeException("Test type not found with id: " + id));
     }
 }
+

@@ -23,3 +23,4 @@ public class CycleCreationRequest {
     @NotNull(message = "Thời gian chu kỳ không được để trống")
     Integer cycleLength;
 }
+

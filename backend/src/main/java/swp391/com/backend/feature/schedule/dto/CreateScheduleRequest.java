@@ -16,3 +16,4 @@ public class CreateScheduleRequest {
     private LocalDate date;
     private List<Slot> slots;
 }
+

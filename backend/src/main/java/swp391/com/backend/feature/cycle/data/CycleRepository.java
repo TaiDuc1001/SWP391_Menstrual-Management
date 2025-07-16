@@ -14,3 +14,4 @@ public interface CycleRepository extends JpaRepository<Cycle, Long> {
     @Query("UPDATE Cycle c SET c.customer = null WHERE c.customer.id = :customerId")
     void updateCustomerToNullByCustomerId(@Param("customerId") Long customerId);
 }
+

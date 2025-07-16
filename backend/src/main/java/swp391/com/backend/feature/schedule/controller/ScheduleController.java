@@ -24,7 +24,6 @@ public class ScheduleController {
         return ResponseEntity.ok(availableSlots);
     }
 
-    // Admin endpoints
     @GetMapping("/admin/all")
     public ResponseEntity<List<DoctorScheduleResponse>> getAllDoctorSchedules() {
         List<DoctorScheduleResponse> schedules = scheduleService.getAllDoctorSchedules();
@@ -69,3 +68,4 @@ public class ScheduleController {
         return ResponseEntity.ok(slotOptions);
     }
 }
+

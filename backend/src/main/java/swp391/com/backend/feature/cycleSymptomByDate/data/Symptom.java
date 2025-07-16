@@ -1,6 +1,5 @@
 package swp391.com.backend.feature.cycleSymptomByDate.data;
 
-// 15
 public enum Symptom {
     HEADACHE,
     CRAMPS,
@@ -18,3 +17,4 @@ public enum Symptom {
     DIGESTIVE_ISSUES,
     OTHER
 }
+

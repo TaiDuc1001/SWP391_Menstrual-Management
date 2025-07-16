@@ -5,3 +5,4 @@ public enum PanelType {
     SPECIALIZED,
     PREVENTIVE,
 }
+

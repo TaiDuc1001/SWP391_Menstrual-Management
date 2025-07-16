@@ -25,8 +25,7 @@ public interface RescheduleRequestRepository extends JpaRepository<RescheduleReq
     
     @Query("SELECT r FROM RescheduleRequest r WHERE r.customer.id = :customerId ORDER BY r.createdAt DESC")
     List<RescheduleRequest> findByCustomerIdOrderByCreatedAtDesc(@Param("customerId") Long customerId);
-    
-    // Keep old methods for backward compatibility
+
     List<RescheduleRequest> findByDoctorAndStatus(Doctor doctor, RescheduleStatus status);
     List<RescheduleRequest> findByAppointmentId(Long appointmentId);
     
@@ -36,3 +35,4 @@ public interface RescheduleRequestRepository extends JpaRepository<RescheduleReq
     @Query("SELECT r FROM RescheduleRequest r WHERE r.customer.id = :customerId")
     List<RescheduleRequest> findByCustomerId(@Param("customerId") Long customerId);
 }
+

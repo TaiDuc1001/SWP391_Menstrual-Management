@@ -20,3 +20,4 @@ public class SimpleBlogDTO {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
+

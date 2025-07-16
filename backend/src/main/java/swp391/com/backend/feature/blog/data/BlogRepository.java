@@ -53,3 +53,4 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     @Query("UPDATE Blog b SET b.admin = null WHERE b.admin.id = :adminId")
     void updateAdminToNullByAdminId(@Param("adminId") Long adminId);
 }
+

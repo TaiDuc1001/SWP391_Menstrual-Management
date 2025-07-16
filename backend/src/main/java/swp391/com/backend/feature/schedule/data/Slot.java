@@ -31,3 +31,4 @@ public enum Slot {
         throw new IllegalArgumentException("Unknown slot: " + value);
     }
 }
+

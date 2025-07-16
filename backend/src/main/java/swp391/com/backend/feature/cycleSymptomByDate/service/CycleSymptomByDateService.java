@@ -20,8 +20,8 @@ public class CycleSymptomByDateService {
     private final CycleRepository cycleRepository;
 
     public CycleSymptomByDate saveSymptom(CycleSymptomByDateRequest request) {
-        // Find the most recent cycle for the user
-        // For now, we'll use the latest cycle (you might want to implement user-specific logic)
+
+
         List<Cycle> cycles = cycleRepository.findAll();
         if (cycles.isEmpty()) {
             throw new RuntimeException("No cycles found");
@@ -59,3 +59,4 @@ public class CycleSymptomByDateService {
         cycleSymptomByDateRepository.deleteAll(symptoms);
     }
 }
+

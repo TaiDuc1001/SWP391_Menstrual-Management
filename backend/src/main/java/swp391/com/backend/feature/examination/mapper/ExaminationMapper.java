@@ -34,3 +34,4 @@ public interface ExaminationMapper {    @Mapping(target = "testResults", ignore 
     Examination toEntity(ExaminedExaminationDTO dto);
 }
 
+

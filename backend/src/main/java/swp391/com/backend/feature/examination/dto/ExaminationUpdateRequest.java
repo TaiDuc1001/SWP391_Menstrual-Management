@@ -22,3 +22,4 @@ public class ExaminationUpdateRequest {
     String staffName;
     String examinationStatus;
 }
+

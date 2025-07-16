@@ -42,3 +42,4 @@ public interface BlogMapper {
         return content.substring(0, 150) + "...";
     }
 }
+

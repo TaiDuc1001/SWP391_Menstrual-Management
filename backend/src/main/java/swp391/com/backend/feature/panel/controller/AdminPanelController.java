@@ -32,9 +32,7 @@ public class AdminPanelController {
     private final PanelTestTypeService panelTestTypeService;
     private final TestTypeMapper testTypeMapper;
 
-    /**
-     * GET /api/admin/panels - Lấy danh sách với phân trang
-     */
+    
     @GetMapping
     public ResponseEntity<Map<String, Object>> getPanelsWithPagination(
             @RequestParam(defaultValue = "0") int page,
@@ -52,7 +50,7 @@ public class AdminPanelController {
         List<AdminPanelDTO> panels = panelPage.getContent().stream()
                 .map(panel -> {
                     AdminPanelDTO dto = panelMapper.toAdminDTO(panel);
-                    // Get test types for each panel
+
                     dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(panel.getId())
                             .stream()
                             .map(testTypeMapper::toDTO)
@@ -71,15 +69,12 @@ public class AdminPanelController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * GET /api/admin/panels/{id} - Lấy chi tiết panel
-     */
+    
     @GetMapping("/{id}")
     public ResponseEntity<AdminPanelDTO> getPanelById(@PathVariable Long id) {
         Panel panel = panelService.findPanelById(id);
         AdminPanelDTO dto = panelMapper.toAdminDTO(panel);
-        
-        // Get test types
+
         dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(id)
                 .stream()
                 .map(testTypeMapper::toDTO)
@@ -88,9 +83,7 @@ public class AdminPanelController {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * GET /api/admin/panels/search - Tìm kiếm panel
-     */
+    
     @GetMapping("/search")
     public ResponseEntity<Map<String, Object>> searchPanels(
             @RequestParam(required = false) String keyword,
@@ -111,7 +104,7 @@ public class AdminPanelController {
         List<AdminPanelDTO> panels = panelPage.getContent().stream()
                 .map(panel -> {
                     AdminPanelDTO dto = panelMapper.toAdminDTO(panel);
-                    // Get test types for each panel
+
                     dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(panel.getId())
                             .stream()
                             .map(testTypeMapper::toDTO)
@@ -133,16 +126,14 @@ public class AdminPanelController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * POST /api/admin/panels - Tạo panel mới
-     */
+    
     @PostMapping
     public ResponseEntity<AdminPanelDTO> createPanel(@Valid @RequestBody CreatePanelRequest request) {
         Panel panel = panelMapper.fromCreateRequest(request);
         Panel createdPanel = panelService.createPanel(panel, request.getTestTypeIds());
         
         AdminPanelDTO dto = panelMapper.toAdminDTO(createdPanel);
-        // Get test types for created panel
+
         dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(createdPanel.getId())
                 .stream()
                 .map(testTypeMapper::toDTO)
@@ -151,9 +142,7 @@ public class AdminPanelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    /**
-     * PUT /api/admin/panels/{id} - Cập nhật panel
-     */
+    
     @PutMapping("/{id}")
     public ResponseEntity<AdminPanelDTO> updatePanel(
             @PathVariable Long id, 
@@ -163,7 +152,7 @@ public class AdminPanelController {
         Panel updatedPanel = panelService.updatePanel(id, panelToUpdate, request.getTestTypeIds());
         
         AdminPanelDTO dto = panelMapper.toAdminDTO(updatedPanel);
-        // Get test types for updated panel
+
         dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(updatedPanel.getId())
                 .stream()
                 .map(testTypeMapper::toDTO)
@@ -172,9 +161,7 @@ public class AdminPanelController {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * DELETE /api/admin/panels/{id} - Xóa panel
-     */
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deletePanel(@PathVariable Long id) {
         panelService.deletePanel(id);
@@ -186,18 +173,14 @@ public class AdminPanelController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * GET /api/admin/panels/statistics - Thống kê panels
-     */
+    
     @GetMapping("/statistics")
     public ResponseEntity<PanelStatisticsDTO> getPanelStatistics() {
         PanelStatisticsDTO statistics = panelService.getPanelStatistics();
         return ResponseEntity.ok(statistics);
     }
 
-    /**
-     * GET /api/admin/panels/all - Lấy tất cả panels (không phân trang)
-     */
+    
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllPanels() {
         List<Panel> allPanels = panelService.getAllPanels();
@@ -205,7 +188,7 @@ public class AdminPanelController {
         List<AdminPanelDTO> panels = allPanels.stream()
                 .map(panel -> {
                     AdminPanelDTO dto = panelMapper.toAdminDTO(panel);
-                    // Get test types for each panel
+
                     dto.setTestTypes(panelTestTypeService.getTestTypesByPanelId(panel.getId())
                             .stream()
                             .map(testTypeMapper::toDTO)
@@ -221,3 +204,4 @@ public class AdminPanelController {
         return ResponseEntity.ok(response);
     }
 }
+

@@ -23,9 +23,7 @@ public class AdminTestTypeController {
     private final TestTypeService testTypeService;
     private final TestTypeMapper testTypeMapper;
 
-    /**
-     * GET /api/admin/test-types - Lấy danh sách tất cả test types
-     */
+    
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllTestTypes() {
         List<TestType> testTypes = testTypeService.getAllTests();
@@ -41,9 +39,7 @@ public class AdminTestTypeController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * GET /api/admin/test-types/{id} - Lấy chi tiết test type theo ID
-     */
+    
     @GetMapping("/{id}")
     public ResponseEntity<TestTypeDTO> getTestTypeById(@PathVariable Long id) {
         TestType testType = testTypeService.findTestById(id);
@@ -52,9 +48,7 @@ public class AdminTestTypeController {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * POST /api/admin/test-types - Tạo mới test type
-     */
+    
     @PostMapping
     public ResponseEntity<Map<String, Object>> createTestType(@Valid @RequestBody CreateTestTypeRequest request) {
         TestType createdTestType = testTypeService.createTestType(request);
@@ -67,12 +61,10 @@ public class AdminTestTypeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * DELETE /api/admin/test-types/{id} - Xóa test type
-     */
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteTestType(@PathVariable Long id) {
-        // Kiểm tra test type có tồn tại không
+
         testTypeService.findTestById(id);
         
         testTypeService.deleteTestById(id);

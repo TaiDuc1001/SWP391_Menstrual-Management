@@ -87,17 +87,14 @@ public class BlogService {
     }
 
     public Blog createBlog(BlogCreateRequest request) {
-        // Validate admin exists
+
         Admin admin = adminService.findAdminById(request.getAdminId());
-        
-        // Create blog entity
+
         Blog blog = blogMapper.toEntity(request);
         blog.setAdmin(admin);
-        
-        // Generate slug from title
+
         blog.setSlug(generateSlug(request.getTitle()));
-        
-        // Set publish date if not provided
+
         if (blog.getPublishDate() == null) {
             blog.setPublishDate(LocalDateTime.now());
         }
@@ -107,14 +104,11 @@ public class BlogService {
 
     public Blog updateBlog(Long id, BlogUpdateRequest request) {
         Blog existingBlog = findBlogById(id);
-        
-        // Store original title before updating
+
         String originalTitle = existingBlog.getTitle();
-        
-        // Update fields using mapper
+
         blogMapper.updateBlogFromRequest(request, existingBlog);
-        
-        // Update slug if title changed
+
         if (request.getTitle() != null && !request.getTitle().equals(originalTitle)) {
             existingBlog.setSlug(generateSlug(request.getTitle()));
         }
@@ -146,8 +140,7 @@ public class BlogService {
                 .replaceAll("\\s+", "-") // Replace spaces with hyphens
                 .replaceAll("-+", "-") // Replace multiple hyphens with single
                 .replaceAll("^-|-$", ""); // Remove leading/trailing hyphens
-        
-        // Ensure slug is unique
+
         String uniqueSlug = slug;
         int counter = 1;
         while (existsBySlug(uniqueSlug)) {
@@ -158,3 +151,4 @@ public class BlogService {
         return uniqueSlug;
     }
 }
+

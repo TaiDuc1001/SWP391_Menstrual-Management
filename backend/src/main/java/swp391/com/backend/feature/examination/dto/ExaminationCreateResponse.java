@@ -13,3 +13,4 @@ public class ExaminationCreateResponse {
     LocalDate date;
     String timeRange;
 }
+

@@ -35,3 +35,4 @@ public interface ScheduleMapper {
         return new SlotOptionResponse(slot.name(), displayName, slot.getTimeRange(), slot.ordinal());
     }
 }
+

@@ -24,7 +24,7 @@ public class RescheduleService {
 
     @Transactional
     public RescheduleRequest createRescheduleRequest(CreateRescheduleRequestDTO createRequest) {
-        // Validation: chỉ cho phép 1 option duy nhất
+
         if (createRequest.getOptions() == null || createRequest.getOptions().isEmpty()) {
             throw new RuntimeException("At least one reschedule option is required");
         }
@@ -32,23 +32,19 @@ public class RescheduleService {
         if (createRequest.getOptions().size() > 1) {
             throw new RuntimeException("Only one reschedule option is allowed per request");
         }
-        
-        // Lấy appointment gốc
+
         Appointment appointment = appointmentsService.findAppointmentById(createRequest.getAppointmentId());
-        
-        // Kiểm tra trạng thái appointment - chỉ cho phép reschedule sau khi đã thanh toán
+
         if (appointment.getAppointmentStatus() == AppointmentStatus.BOOKED) {
             throw new RuntimeException("Cannot reschedule appointment before payment is completed. Please complete payment first.");
         }
-        
-        // Chỉ cho phép reschedule các appointment ở trạng thái hợp lệ
+
         if (appointment.getAppointmentStatus() != AppointmentStatus.CONFIRMED && 
             appointment.getAppointmentStatus() != AppointmentStatus.WAITING_FOR_CUSTOMER &&
             appointment.getAppointmentStatus() != AppointmentStatus.WAITING_FOR_DOCTOR) {
             throw new RuntimeException("Cannot reschedule appointment in current status: " + appointment.getAppointmentStatus());
         }
-        
-        // Kiểm tra xem đã có reschedule request pending chưa
+
         var existingRequest = rescheduleRequestRepository.findByAppointmentIdAndStatus(
             createRequest.getAppointmentId(), RescheduleStatus.PENDING);
         
@@ -56,7 +52,6 @@ public class RescheduleService {
             throw new RuntimeException("There is already a pending reschedule request for this appointment");
         }
 
-        // Tạo reschedule request
         RescheduleRequest rescheduleRequest = RescheduleRequest.builder()
                 .appointment(appointment)
                 .customer(appointment.getCustomer())
@@ -67,7 +62,6 @@ public class RescheduleService {
 
         RescheduleRequest savedRequest = rescheduleRequestRepository.save(rescheduleRequest);
 
-        // Tạo các options
         List<RescheduleOption> options = createRequest.getOptions().stream()
                 .map(optionRequest -> RescheduleOption.builder()
                         .rescheduleRequest(savedRequest)
@@ -105,20 +99,17 @@ public class RescheduleService {
             throw new RuntimeException("Only pending reschedule requests can be approved");
         }
 
-        // Reset tất cả options về false
         rescheduleRequest.getOptions().forEach(option -> {
             option.setIsSelected(false);
             rescheduleOptionRepository.save(option);
         });
 
-        // Set option được chọn thành true
         RescheduleOption selectedOption = rescheduleOptionRepository.findById(optionId)
                 .orElseThrow(() -> new RuntimeException("Reschedule option not found with id: " + optionId));
         
         selectedOption.setIsSelected(true);
         rescheduleOptionRepository.save(selectedOption);
 
-        // Update appointment với thông tin mới
         Appointment appointment = rescheduleRequest.getAppointment();
         appointment.setDate(selectedOption.getDate());
         appointment.setSlot(selectedOption.getSlot());
@@ -127,7 +118,6 @@ public class RescheduleService {
         appointment.setDoctorConfirmed(false);
         appointmentsService.updateAppointment(appointment.getId(), appointment);
 
-        // Update reschedule request status
         rescheduleRequest.setStatus(RescheduleStatus.APPROVED);
         return rescheduleRequestRepository.save(rescheduleRequest);
     }
@@ -164,3 +154,4 @@ public class RescheduleService {
         return rescheduleRequestRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
     }
 }
+

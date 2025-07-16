@@ -45,3 +45,4 @@ public interface ExaminationRepository extends JpaRepository<Examination, Long> 
     void updateCustomerToNullByCustomerId(@Param("customerId") Long customerId);
 
 }
+

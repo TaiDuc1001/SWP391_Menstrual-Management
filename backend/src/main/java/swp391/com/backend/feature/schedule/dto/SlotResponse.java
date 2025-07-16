@@ -11,3 +11,4 @@ public class SlotResponse {
     private String name;
     private String timeRange;
 }
+

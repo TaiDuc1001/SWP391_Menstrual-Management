@@ -24,9 +24,7 @@ public class RescheduleController {
     private final RescheduleMapper rescheduleMapper;
     private final AuthenticationUtil authenticationUtil;
 
-    /**
-     * Customer tạo reschedule request
-     */
+    
     @PostMapping("/request")
     public ResponseEntity<?> createRescheduleRequest(@RequestBody CreateRescheduleRequestDTO createRequest) {
         try {
@@ -34,18 +32,16 @@ public class RescheduleController {
             RescheduleRequestDTO responseDTO = rescheduleMapper.toDTO(rescheduleRequest);
             return ResponseEntity.ok(responseDTO);
         } catch (RuntimeException e) {
-            // Return error message to frontend
+
             return ResponseEntity.badRequest()
                 .body(Map.of("message", e.getMessage()));
         }
     }
 
-    /**
-     * Doctor xem danh sách reschedule requests pending
-     */
+    
     @GetMapping("/doctor/pending")
     public ResponseEntity<List<RescheduleRequestDTO>> getPendingRescheduleRequestsForDoctor() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("RescheduleController.getPendingRescheduleRequestsForDoctor: Getting pending requests for doctor ID: " + currentDoctorId);
         
@@ -54,12 +50,10 @@ public class RescheduleController {
         return ResponseEntity.ok(responseDTOs);
     }
 
-    /**
-     * Doctor xem tất cả reschedule requests
-     */
+    
     @GetMapping("/doctor")
     public ResponseEntity<List<RescheduleRequestDTO>> getRescheduleRequestsForDoctor() {
-        // Get the current authenticated doctor ID from request header
+
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("RescheduleController.getRescheduleRequestsForDoctor: Getting all requests for doctor ID: " + currentDoctorId);
         
@@ -68,9 +62,7 @@ public class RescheduleController {
         return ResponseEntity.ok(responseDTOs);
     }
 
-    /**
-     * Customer xem reschedule requests của mình
-     */
+    
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<RescheduleRequestDTO>> getRescheduleRequestsForCustomer(@PathVariable Long customerId) {
         List<RescheduleRequest> requests = rescheduleService.getRescheduleRequestsForCustomer(customerId);
@@ -78,9 +70,7 @@ public class RescheduleController {
         return ResponseEntity.ok(responseDTOs);
     }
 
-    /**
-     * Xem chi tiết một reschedule request
-     */
+    
     @GetMapping("/{id}")
     public ResponseEntity<RescheduleRequestDTO> getRescheduleRequestById(@PathVariable Long id) {
         try {
@@ -92,9 +82,7 @@ public class RescheduleController {
         }
     }
 
-    /**
-     * Doctor approve một option
-     */
+    
     @PutMapping("/{rescheduleRequestId}/approve/{optionId}")
     public ResponseEntity<RescheduleRequestDTO> approveRescheduleOption(
             @PathVariable Long rescheduleRequestId, 
@@ -108,9 +96,7 @@ public class RescheduleController {
         }
     }
 
-    /**
-     * Doctor reject reschedule request
-     */
+    
     @PutMapping("/{rescheduleRequestId}/reject")
     public ResponseEntity<RescheduleRequestDTO> rejectRescheduleRequest(@PathVariable Long rescheduleRequestId) {
         try {
@@ -122,9 +108,7 @@ public class RescheduleController {
         }
     }
 
-    /**
-     * Customer cancel reschedule request
-     */
+    
     @PutMapping("/{rescheduleRequestId}/cancel")
     public ResponseEntity<RescheduleRequestDTO> cancelRescheduleRequest(@PathVariable Long rescheduleRequestId) {
         try {
@@ -136,9 +120,7 @@ public class RescheduleController {
         }
     }
 
-    /**
-     * Xem reschedule requests cho một appointment cụ thể
-     */
+    
     @GetMapping("/appointment/{appointmentId}")
     public ResponseEntity<List<RescheduleRequestDTO>> getRescheduleRequestsByAppointmentId(@PathVariable Long appointmentId) {
         List<RescheduleRequest> requests = rescheduleService.getRescheduleRequestsByAppointmentId(appointmentId);
@@ -146,3 +128,4 @@ public class RescheduleController {
         return ResponseEntity.ok(responseDTOs);
     }
 }
+

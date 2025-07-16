@@ -27,3 +27,4 @@ public class CreateRescheduleRequestDTO {
         private Slot slot;
     }
 }
+

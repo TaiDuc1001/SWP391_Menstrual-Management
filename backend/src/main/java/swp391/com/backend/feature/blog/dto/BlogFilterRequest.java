@@ -17,3 +17,4 @@ public class BlogFilterRequest {
     Integer page = 0; // Default page 0
     Integer size = 20; // Default 20 items per page
 }
+

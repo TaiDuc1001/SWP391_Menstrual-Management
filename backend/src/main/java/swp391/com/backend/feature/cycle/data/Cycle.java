@@ -48,3 +48,4 @@ public class Cycle{
     private LocalDate fertilityWindowEnd;
 }
 
+

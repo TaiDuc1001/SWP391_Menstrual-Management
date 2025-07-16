@@ -10,3 +10,4 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
 
     Result findResultByExamination(Examination examination);
 }
+

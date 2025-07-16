@@ -11,3 +11,4 @@ public class ResultDetailDTO {
     String testIndex;
     String note;
 }
+

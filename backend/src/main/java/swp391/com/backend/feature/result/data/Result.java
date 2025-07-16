@@ -26,3 +26,4 @@ public class Result {
     @OneToMany(mappedBy = "result")
     private List<ResultDetail> resultDetails;
 }
+

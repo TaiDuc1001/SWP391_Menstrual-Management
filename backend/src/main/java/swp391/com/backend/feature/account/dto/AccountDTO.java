@@ -14,3 +14,4 @@ public class AccountDTO {
     private Role role;
     private ActorDTO profile;
 }
+

@@ -9,3 +9,4 @@ public interface AdminMapper {
     AdminDTO toDTO(Admin entity);
     Admin toEntity(AdminDTO dto);
 }
+

@@ -13,3 +13,4 @@ public class DoctorProfileCompleteDTO {
     private Boolean isComplete;
     private Integer percentage;
 }
+

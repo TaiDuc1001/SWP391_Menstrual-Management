@@ -222,3 +222,4 @@ public class CycleService {
         cycleRepository.deleteAll(customerCycles);
     }
 }
+

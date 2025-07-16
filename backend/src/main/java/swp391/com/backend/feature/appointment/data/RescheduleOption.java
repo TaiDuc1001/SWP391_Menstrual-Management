@@ -32,3 +32,4 @@ public class RescheduleOption {
     @Column(name = "is_selected")
     private Boolean isSelected = false;
 }
+

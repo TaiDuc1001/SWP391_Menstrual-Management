@@ -9,3 +9,4 @@ public interface StaffMapper {
     StaffDTO toDTO(Staff entity);
     Staff toEntity(StaffDTO dto);
 }
+

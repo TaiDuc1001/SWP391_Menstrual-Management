@@ -38,3 +38,4 @@ class PanelTestTypeID implements Serializable {
     private Long testTypeId;
     private Long panelId;
 }
+

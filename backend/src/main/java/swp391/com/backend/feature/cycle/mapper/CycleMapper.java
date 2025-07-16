@@ -10,3 +10,4 @@ public interface CycleMapper {
     CycleDTO toDTO(Cycle cycle);
     Cycle toEntity(CycleDTO cycleDTO);
 }
+

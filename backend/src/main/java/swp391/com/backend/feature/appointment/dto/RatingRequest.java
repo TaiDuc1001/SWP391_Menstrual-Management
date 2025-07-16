@@ -10,3 +10,4 @@ public class RatingRequest {
     Integer score;
     String feedback;
 }
+

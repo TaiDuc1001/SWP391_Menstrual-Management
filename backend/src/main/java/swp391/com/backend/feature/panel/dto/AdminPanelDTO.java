@@ -26,3 +26,4 @@ public class AdminPanelDTO {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
+

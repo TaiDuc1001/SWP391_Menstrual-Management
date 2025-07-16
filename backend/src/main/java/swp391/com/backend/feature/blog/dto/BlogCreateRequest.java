@@ -29,3 +29,4 @@ public class BlogCreateRequest {
     
     LocalDateTime publishDate; // Optional, will use current time if not provided
 }
+

@@ -12,3 +12,4 @@ public class PanelNotFoundException extends BusinessException {
         super("Panel not found with id: " + id, "Panel Not Found", HttpStatus.NOT_FOUND);
     }
 }
+

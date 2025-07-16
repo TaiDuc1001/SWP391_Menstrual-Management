@@ -28,3 +28,4 @@ public class EnumeratorController {
         return ResponseEntity.ok(ExaminationStatus.values());
     }
 }
+

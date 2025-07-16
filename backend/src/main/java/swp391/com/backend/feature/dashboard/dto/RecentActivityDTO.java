@@ -17,3 +17,4 @@ public class RecentActivityDTO {
     private String type;
     private LocalDateTime timestamp;
 }
+

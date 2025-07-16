@@ -9,3 +9,4 @@ public interface CycleSymptomByDateMapper {
     CycleSymptomByDateDTO toDTO(CycleSymptomByDate cycleSymptomByDate);
     CycleSymptomByDate toEntity(CycleSymptomByDateDTO cycleSymptomByDateDTO);
 }
+

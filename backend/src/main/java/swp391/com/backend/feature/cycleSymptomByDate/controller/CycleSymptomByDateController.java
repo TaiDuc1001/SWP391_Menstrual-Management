@@ -77,3 +77,4 @@ public class CycleSymptomByDateController {
         return ResponseEntity.ok().build();
     }
 }
+

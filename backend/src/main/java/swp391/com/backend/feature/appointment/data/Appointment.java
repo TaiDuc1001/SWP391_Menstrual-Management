@@ -46,3 +46,4 @@ public class Appointment {
     private Boolean customerConfirmed = false;
     private Boolean doctorConfirmed = false;
 }
+

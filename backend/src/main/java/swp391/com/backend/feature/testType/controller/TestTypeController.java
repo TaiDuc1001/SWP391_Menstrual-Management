@@ -28,3 +28,4 @@ public class TestTypeController {
         return ResponseEntity.ok(testTypes);
     }
 }
+

@@ -18,6 +18,7 @@ public interface DoctorMapper {
     @Mapping(target = "appointments", ignore = true)
     @Mapping(target = "schedules", ignore = true)
     Doctor toEntity(DoctorDTO dto);
-    // MapStruct sẽ tự động map các trường cùng tên, nếu cần custom thì dùng @Mapping
-    // MapStruct sẽ tự động map các trường cùng tên, nếu cần custom thì dùng @Mapping
+
+
 }
+

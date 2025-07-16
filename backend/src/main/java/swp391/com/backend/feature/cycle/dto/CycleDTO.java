@@ -20,3 +20,4 @@ public class CycleDTO{
     LocalDate fertilityWindowEnd;
     List<CycleSymptomByDateDTO> cycleSymptomByDate;
 }
+

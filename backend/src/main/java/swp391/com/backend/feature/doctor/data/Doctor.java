@@ -42,3 +42,4 @@ public class Doctor implements Actor {
     private BigDecimal price;
     private Integer experience; // Số năm kinh nghiệm
 }
+

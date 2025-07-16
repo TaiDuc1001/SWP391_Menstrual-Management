@@ -31,3 +31,4 @@ public class AppointmentCreateRequest {
 
     String customerNote;
 }
+

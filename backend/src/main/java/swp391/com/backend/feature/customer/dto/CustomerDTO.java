@@ -15,3 +15,4 @@ public class CustomerDTO implements ActorDTO {
     private String cccd;
     private String address;
 }
+

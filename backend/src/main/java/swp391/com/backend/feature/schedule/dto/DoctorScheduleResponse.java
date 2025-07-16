@@ -14,3 +14,4 @@ public class DoctorScheduleResponse {
     private String specialization;
     private List<ScheduleResponse> schedules;
 }
+

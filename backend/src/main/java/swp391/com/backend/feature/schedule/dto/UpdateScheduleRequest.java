@@ -14,3 +14,4 @@ public class UpdateScheduleRequest {
     private LocalDate date;
     private Slot slot;
 }
+

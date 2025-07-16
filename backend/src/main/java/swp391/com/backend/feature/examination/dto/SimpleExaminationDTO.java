@@ -18,3 +18,4 @@ public class SimpleExaminationDTO {
     String customerName;
     String staffName;
 }
+

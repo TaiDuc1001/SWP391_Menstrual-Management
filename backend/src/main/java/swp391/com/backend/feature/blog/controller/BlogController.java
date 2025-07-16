@@ -146,3 +146,4 @@ public class BlogController {
         return ResponseEntity.ok(BlogCategory.values());
     }
 }
+

@@ -20,3 +20,4 @@ public class ExaminedExaminationDTO {
     private Long panelId;
     private String panelName;
 }
+

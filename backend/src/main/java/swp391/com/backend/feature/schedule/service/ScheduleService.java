@@ -39,7 +39,6 @@ public class ScheduleService {
         return scheduledSlots;
     }
 
-    // Admin methods
     public List<DoctorScheduleResponse> getAllDoctorSchedules() {
         List<Doctor> doctors = doctorRepository.findAll();
         return doctors.stream()
@@ -61,7 +60,7 @@ public class ScheduleService {
         List<Schedule> createdSchedules = new ArrayList<>();
         
         for (Slot slot : request.getSlots()) {
-            // Check if slot already exists
+
             if (scheduleRepository.existsByDoctorAndDateAndSlot(doctor, request.getDate(), slot)) {
                 throw new RuntimeException("Schedule already exists for doctor " + doctor.getName() + 
                     " on " + request.getDate() + " at slot " + slot.name());
@@ -85,7 +84,6 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
 
-        // Check if new slot conflicts with existing schedules
         if (scheduleRepository.existsByDoctorAndDateAndSlot(schedule.getDoctor(), request.getDate(), request.getSlot())) {
             Schedule existingSchedule = scheduleRepository.findByDoctorAndDate(schedule.getDoctor(), request.getDate())
                     .stream()
@@ -111,7 +109,6 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + scheduleId));
 
-        // Check if schedule has appointments
         boolean hasAppointments = appointmentRepository.findAppointmentByDoctorAndDate(schedule.getDoctor(), schedule.getDate())
                 .stream()
                 .anyMatch(appointment -> appointment.getSlot().equals(schedule.getSlot()));
@@ -128,7 +125,6 @@ public class ScheduleService {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found with id: " + doctorId));
 
-        // Check if any schedules have appointments
         List<Schedule> schedules = scheduleRepository.findByDoctorIdAndDate(doctorId, date);
         boolean hasAppointments = schedules.stream()
                 .anyMatch(schedule -> appointmentRepository.findAppointmentByDoctorAndDate(doctor, date)
@@ -165,8 +161,7 @@ public class ScheduleService {
 
     private ScheduleResponse mapToScheduleResponse(Schedule schedule) {
         ScheduleResponse response = scheduleMapper.toScheduleResponse(schedule);
-        
-        // Check if this schedule has appointments
+
         boolean hasAppointment = appointmentRepository.findAppointmentByDoctorAndDate(schedule.getDoctor(), schedule.getDate())
                 .stream()
                 .anyMatch(appointment -> appointment.getSlot().equals(schedule.getSlot()));
@@ -175,3 +170,4 @@ public class ScheduleService {
         return response;
     }
 }
+

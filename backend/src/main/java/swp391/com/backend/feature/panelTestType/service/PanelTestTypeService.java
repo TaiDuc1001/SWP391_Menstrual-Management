@@ -36,3 +36,4 @@ public class PanelTestTypeService {
         panelTestTypeRepository.deleteByPanelIdAndTestTypeId(packageId, testTypeId);
     }
 }
+

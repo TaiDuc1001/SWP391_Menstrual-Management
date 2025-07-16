@@ -17,3 +17,4 @@ public enum BlogCategory {
     LGBTQ_HEALTH,
     POLICY_AND_ADVOCACY
 }
+

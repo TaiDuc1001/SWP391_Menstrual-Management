@@ -33,3 +33,4 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("UPDATE Schedule s SET s.doctor = null WHERE s.doctor.id = :doctorId")
     void updateDoctorToNullByDoctorId(@Param("doctorId") Long doctorId);
 }
+

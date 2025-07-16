@@ -16,3 +16,4 @@ public class CycleSymptomByDateRequest {
     private String period; // For compatibility with frontend
     private String flow; // For compatibility with frontend
 }
+

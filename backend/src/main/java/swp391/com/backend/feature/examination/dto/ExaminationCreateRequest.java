@@ -22,3 +22,4 @@ public class ExaminationCreateRequest {
     @NotNull(message = "Khung giờ không được để trống")
     Slot slot;
 }
+

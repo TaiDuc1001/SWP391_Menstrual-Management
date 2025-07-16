@@ -33,3 +33,4 @@ public class Admin implements Actor {
 
     private String name;
 }
+
