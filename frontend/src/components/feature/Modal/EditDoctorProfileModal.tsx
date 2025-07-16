@@ -165,7 +165,7 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
                 {/* Header */}
                 <div className="bg-blue-600 px-6 py-4">
                     <div className="flex items-center justify-between">
@@ -186,8 +186,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 </div>
 
                 {/* Form */}
-                <div className="p-6">
-                    <form onSubmit={handleSubmit}>
+                <div className="p-6 flex-1 overflow-auto">
+                    <form onSubmit={handleSubmit} className="flex flex-col h-full">
                         {/* Degree */}
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -342,8 +342,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                             </div>
                         </div>
 
-                        {/* Footer */}
-                        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                        {/* Footer - sticky at bottom */}
+                        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
                             <button
                                 type="button"
                                 onClick={handleClose}
