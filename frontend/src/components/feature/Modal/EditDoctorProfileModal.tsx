@@ -165,9 +165,9 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
                 {/* Header */}
-                <div className="bg-blue-600 px-6 py-4">
+                <div className="bg-blue-600 px-6 py-4 flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <div className="text-white">
                             <h2 className="text-xl font-semibold">Edit Doctor Profile</h2>
@@ -186,8 +186,8 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 </div>
 
                 {/* Form */}
-                <div className="p-6 flex-1 overflow-auto">
-                    <form onSubmit={handleSubmit} className="flex flex-col h-full">
+                <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                    <div className="p-6 flex-1 overflow-y-auto">
                         {/* Degree */}
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -341,37 +341,37 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                                 </p>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Footer - sticky at bottom */}
-                        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
-                            <button
-                                type="button"
-                                onClick={handleClose}
-                                disabled={loading}
-                                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={loading || !isValid}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-2"
-                            >
-                                {loading ? (
-                                    <>
-                                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                        </svg>
-                                        <span>Saving...</span>
-                                    </>
-                                ) : (
-                                    <span>Save Profile</span>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    {/* Footer - sticky at bottom */}
+                    <div className="flex justify-end space-x-3 px-6 py-4 border-t border-gray-200 bg-white flex-shrink-0">
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            disabled={loading}
+                            className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={loading || !isValid}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-2"
+                        >
+                            {loading ? (
+                                <>
+                                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                    </svg>
+                                    <span>Saving...</span>
+                                </>
+                            ) : (
+                                <span>Save Profile</span>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
