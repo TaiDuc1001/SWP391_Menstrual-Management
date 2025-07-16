@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import swp391.com.backend.feature.schedule.data.ScheduleRepository;
+import swp391.com.backend.feature.schedule.data.Schedule;
 
 @Service
 @RequiredArgsConstructor
@@ -23,13 +25,13 @@ public class AppointmentsService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorService doctorService;
     private final AuthenticationUtil authenticationUtil;
+    private final ScheduleRepository scheduleRepository;
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
 
     public List<Appointment> getAppointmentsForDoctor() {
-        // Get the current authenticated doctor ID from request header
         Long currentDoctorId = authenticationUtil.getCurrentDoctorId();
         System.out.println("AppointmentsService.getAppointmentsForDoctor: Getting appointments for doctor ID: " + currentDoctorId);
         
@@ -91,11 +93,16 @@ public class AppointmentsService {
         Doctor doctor = doctorService.findDoctorById(doctorId);
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
         
+        List<Slot> scheduledSlots = scheduleRepository.findByDoctorAndDate(doctor, date)
+            .stream()
+            .map(Schedule::getSlot)
+            .collect(Collectors.toList());
         return Arrays.stream(Slot.values())
-                .filter(slot -> !slot.equals(Slot.ZERO))
-                .filter(slot -> !appointmentRepository.existsByDoctorAndDateAndSlotAndNotCancelled(doctor, date, slot))
-                .map(Slot::getTimeRange)
-                .collect(Collectors.toList());
+            .filter(slot -> !slot.equals(Slot.ZERO))
+            .filter(slot -> scheduledSlots.contains(slot))
+            .filter(slot -> !appointmentRepository.existsByDoctorAndDateAndSlotAndNotCancelled(doctor, date, slot))
+            .map(Slot::getTimeRange)
+            .collect(Collectors.toList());
     }
 
     public Double getAverageRatingByDoctorId(Long doctorId) {

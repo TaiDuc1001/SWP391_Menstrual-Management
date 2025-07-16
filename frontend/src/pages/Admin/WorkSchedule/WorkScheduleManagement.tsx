@@ -14,6 +14,7 @@ import ErrorNotification from '../../../components/feature/Notification/ErrorNot
 import CreateScheduleModal from '../../../components/feature/Modal/CreateScheduleModal';
 import UpdateScheduleModal from '../../../components/feature/Modal/UpdateScheduleModal';
 import ViewScheduleModal from '../../../components/feature/Modal/ViewScheduleModal';
+import ConfirmDialog from '../../../components/common/Dialog/ConfirmDialog';
 
 const WorkScheduleManagement: React.FC = () => {
     const [doctorSchedules, setDoctorSchedules] = useState<DoctorSchedule[]>([]);
@@ -34,6 +35,13 @@ const WorkScheduleManagement: React.FC = () => {
     const [showErrorNotification, setShowErrorNotification] = useState(false);
     const [notificationTitle, setNotificationTitle] = useState('');
     const [notificationMessage, setNotificationMessage] = useState('');
+
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    } | null>(null);
 
     const showSuccess = (title: string, message: string) => {
         setNotificationTitle(title);
@@ -130,13 +138,39 @@ const WorkScheduleManagement: React.FC = () => {
         try {
             await scheduleService.deleteDoctorSchedulesByDate(doctorId, date);
             showSuccess('Schedules Deleted', 'All schedules for the selected date have been deleted');
-            // Refresh after successful deletion
             await fetchData();
         } catch (error: any) {
             console.error('Error deleting day schedules:', error);
             showError('Delete Error', error.response?.data?.message || 'Failed to delete schedules');
             throw error;
         }
+    };
+
+    const handleRequestDeleteSchedule = async (scheduleId: number): Promise<void> => {
+        return new Promise((resolve) => {
+            setConfirmDialog({
+                isOpen: true,
+                title: 'Delete Schedule Confirmation',
+                message: 'Are you sure you want to delete this schedule? This action cannot be undone.',
+                onConfirm: async () => {
+                    await handleDeleteSchedule(scheduleId);
+                    resolve();
+                }
+            });
+        });
+    };
+    const handleRequestDeleteDaySchedule = async (doctorId: number, date: string): Promise<void> => {
+        return new Promise((resolve) => {
+            setConfirmDialog({
+                isOpen: true,
+                title: 'Delete All Schedules for This Day',
+                message: `Are you sure you want to delete all schedules for this doctor on ${new Date(date).toLocaleDateString()}? This action cannot be undone.`,
+                onConfirm: async () => {
+                    await handleDeleteDaySchedule(doctorId, date);
+                    resolve();
+                }
+            });
+        });
     };
 
     const formatSchedulesByDate = (schedules: any[]) => {
@@ -363,8 +397,8 @@ const WorkScheduleManagement: React.FC = () => {
                 <ViewScheduleModal
                     doctor={selectedDoctor}
                     onClose={() => setShowViewModal(false)}
-                    onDeleteSchedule={handleDeleteSchedule}
-                    onDeleteDaySchedule={handleDeleteDaySchedule}
+                    onDeleteSchedule={handleRequestDeleteSchedule}
+                    onDeleteDaySchedule={handleRequestDeleteDaySchedule}
                     onRefreshData={fetchData}
                 />
             )}
@@ -398,6 +432,21 @@ const WorkScheduleManagement: React.FC = () => {
                     title={notificationTitle}
                     message={notificationMessage}
                     onClose={() => setShowErrorNotification(false)}
+                />
+            )}
+
+            {/* ConfirmDialog */}
+            {confirmDialog && (
+                <ConfirmDialog
+                    isOpen={confirmDialog.isOpen}
+                    title={confirmDialog.title}
+                    message={confirmDialog.message}
+                    onConfirm={async () => {
+                        await confirmDialog.onConfirm();
+                        setConfirmDialog(null);
+                    }}
+                    onCancel={() => setConfirmDialog(null)}
+                    type="danger"
                 />
             )}
         </div>

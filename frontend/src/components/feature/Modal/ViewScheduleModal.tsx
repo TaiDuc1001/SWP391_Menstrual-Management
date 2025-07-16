@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DoctorSchedule, Schedule, scheduleService } from '../../../api/services/scheduleService';
 import deleteIcon from '../../../assets/icons/trash-bin.svg';
+import ConfirmDialog from '../../common/Dialog/ConfirmDialog';
 
 interface ViewScheduleModalProps {
     doctor: DoctorSchedule;
@@ -47,7 +48,7 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
         setCurrentDoctor(initialDoctor);
     }, [initialDoctor]);
 
-    // Handle click outside to close modal
+    // Handle click outside to close
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -77,7 +78,7 @@ const ViewScheduleModal: React.FC<ViewScheduleModalProps> = ({
         setIsLoading(true);
         try {
             await onDeleteSchedule(scheduleId);
-            await refreshDoctorData(); // Refresh current doctor data
+            await refreshDoctorData();
         } finally {
             setIsLoading(false);
         }
