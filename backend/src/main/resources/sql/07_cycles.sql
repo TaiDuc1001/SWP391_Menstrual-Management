@@ -4,7 +4,6 @@ INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_dura
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (4, 3, '2025-03-16', 28, 5, '2025-03-30', '2025-03-26', '2025-04-01');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (5, 3, '2025-02-15', 26, 4, '2025-03-01', '2025-02-25', '2025-03-03');
 
--- Problematic customer with health issues that trigger STI testing recommendation
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (6, 5, '2025-06-05', 18, 8, '2025-06-14', '2025-06-10', '2025-06-16');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (7, 5, '2025-05-18', 19, 9, '2025-05-27', '2025-05-23', '2025-05-29');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (8, 5, '2025-04-29', 38, 7, '2025-05-13', '2025-05-09', '2025-05-15');
@@ -18,35 +17,10 @@ INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_dura
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (16, 5, '2024-11-06', 55, 7, '2024-11-19', '2024-11-15', '2024-11-21');
 INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (17, 5, '2024-10-12', 13, 14, '2024-10-19', '2024-10-15', '2024-10-21');
 
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (18, 5, '2025-06-17', 31, 7, '2025-07-01', '2025-06-27', '2025-07-03');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (19, 5, '2025-05-17', 28, 5, '2025-05-31', '2025-05-27', '2025-06-02');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (20, 5, '2025-04-19', 27, 6, '2025-05-03', '2025-04-29', '2025-05-05');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (21, 5, '2025-03-23', 29, 5, '2025-04-06', '2025-03-31', '2025-04-08');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (22, 5, '2025-02-22', 26, 4, '2025-03-08', '2025-03-04', '2025-03-10');
 
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (23, 16, '2025-06-01', 28, 5, '2025-06-15', '2025-06-11', '2025-06-17');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (24, 16, '2025-05-04', 27, 6, '2025-05-18', '2025-05-14', '2025-05-20');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (25, 16, '2025-04-07', 29, 7, '2025-04-21', '2025-04-17', '2025-04-23');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (26, 16, '2025-03-09', 26, 4, '2025-03-23', '2025-03-19', '2025-03-25');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (27, 16, '2025-02-11', 30, 5, '2025-02-25', '2025-02-21', '2025-02-27');
 
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (28, 17, '2025-06-10', 27, 6, '2025-06-24', '2025-06-20', '2025-06-26');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (29, 17, '2025-05-14', 28, 5, '2025-05-28', '2025-05-24', '2025-05-30');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (30, 17, '2025-04-16', 29, 7, '2025-04-30', '2025-04-26', '2025-05-02');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (31, 17, '2025-03-18', 26, 4, '2025-04-01', '2025-03-28', '2025-04-03');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (32, 17, '2025-02-20', 30, 5, '2025-03-06', '2025-02-26', '2025-03-08');
 
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (33, 19, '2025-06-05', 28, 6, '2025-06-19', '2025-06-15', '2025-06-21');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (34, 19, '2025-05-08', 27, 5, '2025-05-22', '2025-05-18', '2025-05-24');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (35, 19, '2025-04-11', 29, 7, '2025-04-25', '2025-04-21', '2025-04-27');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (36, 19, '2025-03-13', 26, 4, '2025-03-27', '2025-03-23', '2025-03-29');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (37, 19, '2025-02-15', 30, 5, '2025-03-01', '2025-02-25', '2025-03-03');
 
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (38, 20, '2025-06-07', 27, 5, '2025-06-21', '2025-06-17', '2025-06-23');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (39, 20, '2025-05-10', 28, 6, '2025-05-24', '2025-05-20', '2025-05-26');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (40, 20, '2025-04-12', 29, 7, '2025-04-26', '2025-04-22', '2025-04-28');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (41, 20, '2025-03-14', 26, 4, '2025-03-28', '2025-03-24', '2025-03-30');
--- INSERT INTO cycles (id, customer_id, cycle_start_date, cycle_length, period_duration, ovulation_date, fertility_window_start, fertility_window_end) VALUES (42, 20, '2025-02-16', 30, 5, '2025-03-02', '2025-02-22', '2025-03-04');
 
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (1, 1, '2025-06-10');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (1, 2, '2025-06-11');
@@ -190,8 +164,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (5, 12, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (5, 13, '2025-03-10');
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (5, 14, '2025-03-11');
 
--- Problematic customer symptoms that trigger health concerns and STI testing recommendation
--- Cycle 6: Customer ID 5, irregular short cycle (18 days) with concerning symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (6, 15, '2025-06-05');  -- OTHER (could represent unusual discharge)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (6, 7, '2025-06-06');   -- BACK_PAIN (severe pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (6, 15, '2025-06-07');  -- OTHER (burning sensation)
@@ -201,7 +173,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (6, 4, '2025-
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (6, 15, '2025-06-11');  -- OTHER (itching)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (6, 1, '2025-06-12');   -- HEADACHE
 
--- Cycle 7: Customer ID 5, irregular short cycle (19 days) with continued concerning symptoms  
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (7, 15, '2025-05-18');  -- OTHER (unusual discharge with odor)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (7, 7, '2025-05-19');   -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (7, 15, '2025-05-20');  -- OTHER (burning)
@@ -212,7 +183,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (7, 15, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (7, 4, '2025-05-25');   -- FATIGUE
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (7, 15, '2025-05-26');  -- OTHER (bleeding between periods)
 
--- Cycle 8: Customer ID 5, irregular long cycle (38 days) with concerning symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (8, 15, '2025-04-29');  -- OTHER (unusual discharge)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (8, 7, '2025-04-30');   -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (8, 15, '2025-05-01');  -- OTHER (burning)
@@ -221,7 +191,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (8, 15, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (8, 4, '2025-05-04');   -- FATIGUE
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (8, 15, '2025-05-05');  -- OTHER (itching)
 
--- Cycle 9: Customer ID 5, irregular very short cycle (17 days) with severe symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (9, 15, '2025-03-22');  -- OTHER (unusual discharge with strong odor)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (9, 7, '2025-03-23');   -- BACK_PAIN (severe pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (9, 15, '2025-03-24');  -- OTHER (burning sensation)
@@ -233,7 +202,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (9, 1, '2025-
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (9, 15, '2025-03-30');  -- OTHER (bleeding between periods)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (9, 10, '2025-03-31');  -- IRRITABILITY
 
--- Cycle 10: Customer ID 5, irregular very long cycle (40 days) with persistent concerning symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (10, 15, '2025-03-05'); -- OTHER (unusual discharge)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (10, 7, '2025-03-06');  -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (10, 15, '2025-03-07'); -- OTHER (burning)
@@ -241,7 +209,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (10, 2, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (10, 15, '2025-03-09'); -- OTHER (pain during urination)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (10, 4, '2025-03-10');  -- FATIGUE
 
--- Cycle 11: Customer ID 5, extremely short cycle (15 days) with severe symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (11, 15, '2025-01-25'); -- OTHER (unusual discharge with strong odor)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (11, 7, '2025-01-26');  -- BACK_PAIN (severe pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (11, 15, '2025-01-27'); -- OTHER (burning sensation)
@@ -255,7 +222,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (11, 10, '202
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (11, 15, '2025-02-04'); -- OTHER (fever)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (11, 7, '2025-02-05');  -- BACK_PAIN (pelvic pain)
 
--- Cycle 12: Customer ID 5, extremely long cycle (45 days) with concerning symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (12, 15, '2025-01-10'); -- OTHER (unusual discharge)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (12, 7, '2025-01-11');  -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (12, 15, '2025-01-12'); -- OTHER (burning)
@@ -265,7 +231,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (12, 4, '2025
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (12, 15, '2025-01-16'); -- OTHER (itching)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (12, 1, '2025-01-17');  -- HEADACHE
 
--- Cycle 13: Customer ID 5, extremely short cycle (14 days) with severe symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (13, 15, '2024-12-26'); -- OTHER (unusual discharge with strong odor)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (13, 7, '2024-12-27');  -- BACK_PAIN (severe pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (13, 15, '2024-12-28'); -- OTHER (burning sensation)
@@ -278,7 +243,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (13, 15, '202
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (13, 10, '2025-01-04'); -- IRRITABILITY
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (13, 15, '2025-01-05'); -- OTHER (fever)
 
--- Cycle 14: Customer ID 5, extremely long cycle (50 days) with persistent symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 15, '2024-12-12'); -- OTHER (unusual discharge)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 7, '2024-12-13');  -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 15, '2024-12-14'); -- OTHER (burning)
@@ -289,7 +253,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 15, '202
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 1, '2024-12-19');  -- HEADACHE
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (14, 15, '2024-12-20'); -- OTHER (bleeding between periods)
 
--- Cycle 15: Customer ID 5, extremely short cycle (16 days) with severe symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 15, '2024-11-22'); -- OTHER (unusual discharge with strong odor)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 7, '2024-11-23');  -- BACK_PAIN (severe pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 15, '2024-11-24'); -- OTHER (burning sensation)
@@ -304,7 +267,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 15, '202
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 7, '2024-12-03');  -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (15, 15, '2024-12-04'); -- OTHER (unusual discharge)
 
--- Cycle 16: Customer ID 5, extremely long cycle (55 days) with concerning symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 15, '2024-11-06'); -- OTHER (unusual discharge)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 7, '2024-11-07');  -- BACK_PAIN (pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 15, '2024-11-08'); -- OTHER (burning)
@@ -313,7 +275,6 @@ INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 15, '202
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 4, '2024-11-11');  -- FATIGUE
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (16, 15, '2024-11-12'); -- OTHER (itching)
 
--- Cycle 17: Customer ID 5, extremely short cycle (13 days) with severe symptoms
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (17, 15, '2024-10-12'); -- OTHER (unusual discharge with strong odor)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (17, 7, '2024-10-13');  -- BACK_PAIN (severe pelvic pain)
 INSERT INTO cycle_symptom_by_date (cycle_id, symptom, date) VALUES (17, 15, '2024-10-14'); -- OTHER (burning sensation)

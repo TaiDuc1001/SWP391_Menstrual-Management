@@ -49,7 +49,8 @@ def remove_comments():
             f.writelines(content)
 
 def main():
-    generate_schedule()
+    # generate_schedule()
+    remove_comments()
 
 if __name__ == "__main__":
     main()

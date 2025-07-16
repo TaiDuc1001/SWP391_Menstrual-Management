@@ -41,57 +41,38 @@ INSERT INTO test_types (id, name, normal_range, unit, description) VALUES (21, '
 INSERT INTO test_types (id, name, normal_range, unit, description) VALUES (22, 'Neisseria gonorrhoeae Culture', 'Negative', 'Boolean', 'Culture for Neisseria gonorrhoeae');
 INSERT INTO test_types (id, name, normal_range, unit, description) VALUES (23, 'Trichomonas Wet Mount', 'Negative', 'Boolean', 'Microscopy for Trichomonas vaginalis');
 
--- New panel-test mappings (ensure ≥5 tests per panel)
--- Panel 1 (HIV Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7,1),(8,1),(13,1),(14,1),(17,1);
 
--- Panel 2 (Chlamydia Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,2),(3,2),(9,2),(10,2),(20,2);
 
--- Panel 3 (Syphilis Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (2,3),(5,3),(15,3),(1,3),(3,3);
 
--- Panel 4 (Gonorrhea Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,4),(3,4),(5,4),(10,4),(22,4);
 
--- Panel 5 (Full STI Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,5),(2,5),(3,5),(4,5),(5,5),(6,5),(7,5),(8,5),(9,5),(10,5);
 
--- Panel 6 (Comprehensive STI Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,6),(2,6),(3,6),(5,6),(6,6);
 
--- Panel 7 (HPV Screening Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6,7),(19,7),(18,7),(21,7),(5,7);
 
--- Panel 8 (Basic STD Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,8),(3,8),(5,8),(9,8),(22,8);
 
--- Panel 9 (Hepatitis Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (7,9),(8,9),(16,9),(17,9),(18,9);
 
--- Panel 10 (Women's Health Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,10),(3,10),(5,10),(11,10),(12,10);
 
--- Panel 11 (HIV & Syphilis Duo Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13,11),(14,11),(2,11),(15,11),(7,11);
 
--- Panel 12 (STD Follow-up Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,12),(2,12),(3,12),(8,12),(15,12);
 
--- Panel 13 (Herpes Simplex Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (4,13),(21,13),(1,13),(3,13),(5,13);
 
--- Panel 14 (Trichomoniasis Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (5,14),(23,14),(1,14),(3,14),(6,14);
 
--- Panel 15 (Comprehensive STD Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,15),(2,15),(3,15),(4,15),(5,15),(6,15);
 
--- Panel 16 (HPV & Cervical Cancer Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (6,16),(19,16),(11,16),(12,16),(5,16);
 
--- Panel 17 (Quick STD Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (13,17),(14,17),(2,17),(3,17),(1,17);
 
--- Panel 18 (Chlamydia & Gonorrhea Panel)
 INSERT INTO panel_test_types (test_type_id, panel_id) VALUES (1,18),(3,18),(5,18),(20,18),(22,18);

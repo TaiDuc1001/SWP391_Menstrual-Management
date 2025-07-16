@@ -9,23 +9,9 @@ INSERT INTO accounts (id, email, password, status, role) VALUES (7, 'hoa.le@exam
 INSERT INTO accounts (id, email, password, status, role) VALUES (8, 'lan.hoang@example.com', '123', 1, 'DOCTOR');
 INSERT INTO accounts (id, email, password, status, role) VALUES (9, 'hoa.le2@example.com', '123', 1, 'DOCTOR');
 INSERT INTO accounts (id, email, password, status, role) VALUES (10, 'tuan.pham2@example.com', '123', 1, 'DOCTOR');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (11, 'lan.hoang2@example.com', '123', 1, 'STAFF');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (12, 'minh.vo@example.com', '123', 1, 'STAFF');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (13, 'thanh.bui@example.com', '123', 1, 'STAFF');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (14, 'long.nguyen@example.com', '123', 1, 'STAFF');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (15, 'ngoc.tran@example.com', '123', 1, 'STAFF');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (16, 'nam.nguyen@example.com', '123', 1, 'CUSTOMER');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (17, 'hong.nguyen@example.com', '123', 1, 'CUSTOMER');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (18, 'phuc.tran@example.com', '123', 1, 'CUSTOMER');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (19, 'mai.le@example.com', '123', 1, 'CUSTOMER');
--- INSERT INTO accounts (id, email, password, status, role) VALUES (20, 'hieu.pham@example.com', '123', 1, 'CUSTOMER');
 
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (3, 'Tuan Anh', '1990-01-01', 1, '0123456789', '123456789012', '123 Test Street, Test City');
 INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (5, 'Maria Problematic', '1992-05-15', 0, '0987654321', '987654321123', '456 Health Issue Street, Concern City');
--- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (19, 'Tran Van Hung', '1990-07-22', 1, '0987654321', '987654321098', '456 Nguyen Trai, Ho Chi Minh City');
--- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (20, 'Le Thi Hoa', '1978-11-30', 0, '0932123456', '456789123456', '789 Tran Hung Dao, Da Nang');
--- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (16, 'Pham Minh Tuan', '1995-05-10', 1, '0908765432', '321654987123', '101 Vo Van Tan, Hanoi');
--- INSERT INTO customers (id, name, date_of_birth, gender, phone_number, cccd, address) VALUES (17, 'Hoang Thi Lan', '1988-09-05', 0, '0943216547', '654321987654', '202 Ba Trieu, Hue');
 
 INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (1, 'Gynecology', 'Tran Duc Linh', 'Bachelor of Medicine', 'University of Medicine and Pharmacy Ho Chi Minh City', 210000.00, 10);
 INSERT INTO doctors (id, specialization, name, degree, university, price, experience) VALUES (6, 'Gynecology', 'Nguyen Trung Tin', 'Doctor of Medicine', 'Hanoi Medical University', 200000.00, 8);
@@ -37,9 +23,4 @@ INSERT INTO doctors (id, specialization, name, degree, university, price, experi
 INSERT INTO admins (id, name) VALUES (4, 'Admin');
 
 INSERT INTO staffs (id, name) VALUES (2, 'Nguyen Phuc Khang');
--- INSERT INTO staffs (id, name) VALUES (11, 'Nguyen Thi Hong');
--- INSERT INTO staffs (id, name) VALUES (12, 'Tran Van Phuc');
--- INSERT INTO staffs (id, name) VALUES (13, 'Le Thi Mai');
--- INSERT INTO staffs (id, name) VALUES (14, 'Pham Van Hieu');
--- INSERT INTO staffs (id, name) VALUES (15, 'Hoang Thi Lan');
 
