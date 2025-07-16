@@ -22,6 +22,8 @@ export interface DoctorProfile {
     price: number;
     experience: number;
     isProfileComplete: boolean;
+    degree?: string;
+    university?: string;
 }
 
 export interface DoctorFilters {
@@ -56,7 +58,7 @@ export const doctorService = {
     },
 
     // Admin update doctor profile
-    adminUpdateDoctorProfile: (id: number, profileData: { name: string; specialization: string; price: number; experience: number }) => {
+    adminUpdateDoctorProfile: (id: number, profileData: { name: string; specialization: string; price: number; experience: number; degree?: string; university?: string }) => {
         return api.put(`/doctors/${id}`, profileData);
     },
 

@@ -17,6 +17,8 @@ interface ProfileFormData {
     specialization: string;
     price: number;
     experience: number;
+    degree: string;
+    university: string;
 }
 
 interface ProfileFormErrors {
@@ -38,7 +40,9 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
         name: '',
         specialization: '',
         price: 0,
-        experience: 0
+        experience: 0,
+        degree: '',
+        university: ''
     });
 
     const [errors, setErrors] = useState<ProfileFormErrors>({});
@@ -50,7 +54,9 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 name: profile.name || '',
                 specialization: profile.specialization || '',
                 price: profile.price || 0,
-                experience: profile.experience !== undefined ? profile.experience : 0
+                experience: profile.experience !== undefined ? profile.experience : 0,
+                degree: profile.degree || '',
+                university: profile.university || ''
             });
             setErrors({});
             setServerError(null);
@@ -84,13 +90,9 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
 
     const handleInputChange = (field: keyof ProfileFormData, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-
-        // Clear error when user starts typing
         if (errors[field as keyof ProfileFormErrors]) {
             setErrors(prev => ({ ...prev, [field as keyof ProfileFormErrors]: undefined }));
         }
-
-        // Clear server error
         if (serverError) {
             setServerError(null);
         }
@@ -109,7 +111,9 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 name: formData.name.trim(),
                 specialization: formData.specialization.trim(),
                 price: formData.price,
-                experience: formData.experience
+                experience: formData.experience,
+                degree: formData.degree,
+                university: formData.university
             });
             onClose();
         } catch (error: any) {
@@ -124,7 +128,9 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 name: '',
                 specialization: '',
                 price: 0,
-                experience: 0
+                experience: 0,
+                degree: '',
+                university: ''
             });
             setErrors({});
             setServerError(null);
@@ -182,6 +188,40 @@ const EditDoctorProfileModal: React.FC<EditDoctorProfileModalProps> = ({
                 {/* Form */}
                 <div className="p-6">
                     <form onSubmit={handleSubmit}>
+                        {/* Degree */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <span className="flex items-center space-x-2">
+                                    <span>🎓</span>
+                                    <span>Degree</span>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                value={formData.degree}
+                                onChange={e => handleInputChange('degree', e.target.value)}
+                                placeholder="e.g. MD, PhD, Specialist..."
+                                disabled={loading}
+                            />
+                        </div>
+                        {/* University */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <span className="flex items-center space-x-2">
+                                    <span>🏫</span>
+                                    <span>University</span>
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                value={formData.university}
+                                onChange={e => handleInputChange('university', e.target.value)}
+                                placeholder="e.g. Harvard Medical School, Hanoi Medical University..."
+                                disabled={loading}
+                            />
+                        </div>
                         {/* Experience */}
                         <div className="mb-6">
                             <label className="block text-sm font-semibold text-gray-700 mb-2">

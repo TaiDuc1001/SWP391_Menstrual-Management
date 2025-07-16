@@ -220,7 +220,9 @@ const Accounts: React.FC = () => {
                 name: profileData.name!,
                 specialization: profileData.specialization!,
                 price: profileData.price!,
-                experience: profileData.experience ?? 0
+                experience: profileData.experience ?? 0,
+                degree: profileData.degree ?? '',
+                university: profileData.university ?? ''
             });
 
             if (result) {

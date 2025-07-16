@@ -34,6 +34,8 @@ public class DoctorService {
         Doctor doctor = findDoctorById(id).toBuilder()
                 .name(doctorDetails.getName())
                 .specialization(doctorDetails.getSpecialization())
+                .degree(doctorDetails.getDegree())
+                .university(doctorDetails.getUniversity())
                 .price(doctorDetails.getPrice())
                 .experience(doctorDetails.getExperience())
                 .build();
@@ -43,28 +45,26 @@ public class DoctorService {
     public Doctor createDoctorForAccount(Long accountId, String name, String specialization, BigDecimal price, int experience) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + accountId));
-        
         // Check if doctor profile already exists
         if (doctorRepository.findById(accountId).isPresent()) {
-            // Update existing doctor profile instead of throwing exception
             Doctor existingDoctor = doctorRepository.findById(accountId).get();
             Doctor updatedDoctor = existingDoctor.toBuilder()
                     .name(name)
                     .specialization(specialization)
                     .price(price)
                     .experience(experience)
+                    // giữ nguyên degree và university nếu không truyền vào
                     .build();
             return doctorRepository.save(updatedDoctor);
         }
-        
         Doctor doctor = Doctor.builder()
                 .account(account)
                 .name(name)
                 .specialization(specialization)
                 .price(price)
                 .experience(experience)
+                // degree và university sẽ được set sau nếu cần
                 .build();
-        
         return doctorRepository.save(doctor);
     }
 
