@@ -134,8 +134,9 @@ public class DoctorController {
                         profileDTO.getName(),
                         profileDTO.getSpecialization(),
                         profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null,
-                        profileDTO.getExperience() != null ? profileDTO.getExperience() : 0
-                        // degree và university chưa truyền vào, cần cập nhật lại DoctorService nếu muốn truyền
+                        profileDTO.getExperience() != null ? profileDTO.getExperience() : 0,
+                        profileDTO.getDegree() != null ? profileDTO.getDegree() : "",
+                        profileDTO.getUniversity() != null ? profileDTO.getUniversity() : ""
                 );
                 
                 DoctorProfileDTO responseDTO = DoctorProfileDTO.builder()
@@ -193,7 +194,9 @@ public class DoctorController {
                     profileDTO.getName(),
                     profileDTO.getSpecialization(),
                     profileDTO.getPrice() != null ? java.math.BigDecimal.valueOf(profileDTO.getPrice()) : null,
-                    profileDTO.getExperience() != null ? profileDTO.getExperience() : 0
+                    profileDTO.getExperience() != null ? profileDTO.getExperience() : 0,
+                    profileDTO.getDegree() != null ? profileDTO.getDegree() : "",
+                    profileDTO.getUniversity() != null ? profileDTO.getUniversity() : ""
             );
             DoctorDTO doctorDTO = doctorMapper.toDTO(doctor);
             return ResponseEntity.status(HttpStatus.CREATED).body(doctorDTO);

@@ -42,7 +42,7 @@ public class DoctorService {
         return doctorRepository.save(doctor);
     }
 
-    public Doctor createDoctorForAccount(Long accountId, String name, String specialization, BigDecimal price, int experience) {
+    public Doctor createDoctorForAccount(Long accountId, String name, String specialization, BigDecimal price, int experience, String degree, String university) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + accountId));
         // Check if doctor profile already exists
@@ -53,7 +53,8 @@ public class DoctorService {
                     .specialization(specialization)
                     .price(price)
                     .experience(experience)
-                    // giữ nguyên degree và university nếu không truyền vào
+                    .degree(degree)
+                    .university(university)
                     .build();
             return doctorRepository.save(updatedDoctor);
         }
@@ -63,7 +64,8 @@ public class DoctorService {
                 .specialization(specialization)
                 .price(price)
                 .experience(experience)
-                // degree và university sẽ được set sau nếu cần
+                .degree(degree)
+                .university(university)
                 .build();
         return doctorRepository.save(doctor);
     }
